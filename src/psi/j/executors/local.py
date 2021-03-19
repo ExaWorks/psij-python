@@ -1,4 +1,4 @@
-"""This module contains the local :class:`psi.j.job_executor.JobExecutor`."""
+"""This module contains the local :class:`~psi.j.JobExecutor`."""
 from __future__ import annotations
 
 import logging
