@@ -1,0 +1,7 @@
+[mypy]
+
+[mypy-distutils.versionpredicate]
+ignore_missing_imports = True
+
+[mypy-psutil.*]
+ignore_missing_imports = True

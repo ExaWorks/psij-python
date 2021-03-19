@@ -1,0 +1,6 @@
+six
+Sphinx
+sphinx_rtd_theme
+sphinx-tabs
+# sphinx-autodoc-typehints
+

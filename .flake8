@@ -1,0 +1,31 @@
+[flake8]
+
+# It's 2021. We can fit more than 80 columns on today's terminals
+max-line-length = 100
+
+# B902
+#
+# This complains about catching `Exception`. The idea is a noble one.
+# However, Python lacks checked exceptions and is not very formal in
+# documenting exceptions that can be thrown by varions methods. For 
+# example, there appears to be no mention in the Python documentation 
+# about exceptions that could be thrown by IO.close(). However, 
+# https://github.com/python/cpython/blob/master/Modules/_io/fileio.c
+# indicates that close() can throw an OSError. There is no other
+# reasonable solution to catching exceptions thrown by methods 
+# whose exceptions are unspecified than catching generic exceptions.
+
+
+# D401 - "First line should be in imperative mood". 
+#
+# It's somewhat ironic that a language with such a lax type system
+# have such a rigid style spec.
+
+# D100 - "Missing docstring in public module"
+#
+# It is more common than not in this implementation for a module to
+# contain a single class. Consequently, module docstrings are mostly
+# redundant.
+
+
+ignore = B902, D401, D100
