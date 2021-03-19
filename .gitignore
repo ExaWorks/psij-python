@@ -9,3 +9,6 @@ __pycache__/
 
 docs/.build/
 docs/.generated/
+
+src/test.py
+
