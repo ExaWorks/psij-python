@@ -1,6 +1,6 @@
 # This is meant as a simple test file to check if psi/j was installed successfully
 
-from psi.j import SubmitException, Job, JobExecutor, JobSpec, JobState
+from psi.j import Job, JobExecutor, JobSpec
 
 
 if __name__ == '__main__':
