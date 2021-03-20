@@ -14,8 +14,9 @@ typecheck:
 .PHONY: stylecheck
 stylecheck:
 	flake8 src
+	flake8 tests
 
-.PHONY: check
+.PHONY: checks
 check: typecheck stylecheck
 
 
