@@ -14,9 +14,10 @@ typecheck:
 .PHONY: stylecheck
 stylecheck:
 	flake8 src
+	flake8 tests
 
-.PHONY: check
-check: typecheck stylecheck
+.PHONY: checks
+checks: typecheck stylecheck
 
 
 .PHONY: genautodocs

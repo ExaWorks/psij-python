@@ -29,3 +29,9 @@ max-line-length = 100
 
 
 ignore = B902, D401, D100
+
+# D103 - Missing docstring in public function
+#
+# Ignore docstrings requirement in tests
+
+per-file-ignores = tests/*:D103
