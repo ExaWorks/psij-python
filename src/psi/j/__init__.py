@@ -16,14 +16,13 @@ from .job_spec import JobSpec
 from .job_state import JobState
 from .job_status import JobStatus
 from .launchers.launcher import Launcher
-from .native_id import NativeId
 from .resource_spec import ResourceSpec, ResourceSpecV1
 
 
 __all__ = [
     'JobExecutor', 'JobExecutorConfig', 'Job', 'JobStatusCallback', 'JobSpec', 'JobAttributes',
-    'JobStatus', 'JobState', 'ResourceSpec', 'ResourceSpecV1', 'NativeId', 'Launcher',
-    'SubmitException', 'InvalidJobException', 'UnreachableStateException'
+    'JobStatus', 'JobState', 'ResourceSpec', 'ResourceSpecV1', 'Launcher', 'SubmitException',
+    'InvalidJobException', 'UnreachableStateException'
 ]
 
 logger = logging.getLogger(__name__)

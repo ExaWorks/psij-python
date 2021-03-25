@@ -10,7 +10,6 @@ from psi.j.exceptions import SubmitException, UnreachableStateException
 from psi.j.job_spec import JobSpec
 from psi.j.job_state import JobState
 from psi.j.job_status import JobStatus
-from psi.j.native_id import NativeId
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +46,9 @@ class Job:
         self._status = JobStatus(JobState.NEW)
         # need indirect ref to avoid a circular reference
         self._executor = None  # type: Optional['psi.j.JobExecutor']
-        self._native_id = None  # type: Optional[NativeId]
+        # allow the native ID to be anything and do the string conversion in the getter; there's
+        # no point in storing integers as strings.
+        self._native_id = None  # type: Optional[object]
         self.status_callback = None  # type: Optional[JobStatusCallback]
         """Setting this property registers a :class:`~psi.j.JobStatusCallback` with this executor.
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
@@ -70,14 +71,17 @@ class Job:
         return self._id
 
     @property
-    def native_id(self) -> Optional[NativeId]:
+    def native_id(self) -> Optional[str]:
         """
         Returns the native ID of this job.
 
         The native ID may not be available until after the job is submitted to a
         :class:`~psi.j.JobExecutor`.
         """
-        return self._native_id
+        if self._native_id is None:
+            return None
+        else:
+            return str(self._native_id)
 
     @property
     def status(self) -> JobStatus:

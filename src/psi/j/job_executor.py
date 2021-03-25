@@ -9,7 +9,6 @@ import psi.j
 from psi.j.job import Job, JobStatusCallback
 from psi.j.job_executor_config import JobExecutorConfig
 from psi.j.launchers.launcher import Launcher
-from psi.j.native_id import NativeId
 
 
 class JobExecutor(ABC):
@@ -91,12 +90,12 @@ class JobExecutor(ABC):
         pass
 
     @abstractmethod
-    def attach(self, job: Job, native_id: NativeId) -> None:
+    def attach(self, job: Job, native_id: str) -> None:
         """
         Attaches a job to a native job.
 
         :param job: A job to attach. The job must be in the :attr:`~psi.j.JobState.NEW` state.
-        :param native_id: The native ID to attach to.
+        :param native_id: The native ID to attach to as returned by :attr:`~psi.j.Job.native_id`.
         """
         pass
 
