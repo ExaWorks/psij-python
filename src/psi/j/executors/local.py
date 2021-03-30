@@ -205,7 +205,7 @@ class LocalJobExecutor(JobExecutor):
             raise InvalidJobException('Missing specification')
 
         launcher = self._get_launcher(self._get_launcher_name(spec))
-        args = launcher.get_launch_command(spec)
+        args = launcher.get_launch_command(job)
 
         p = _ChildProcessEntry(job, self)
 
@@ -213,6 +213,9 @@ class LocalJobExecutor(JobExecutor):
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug('Running {},  out={}, err={}'.format(args, spec.stdout_path,
+                                                                  spec.stderr_path))
             p.process = subprocess.Popen(args, stdin=p.stream(spec.stdin_path, False),
                                          stdout=p.stream(spec.stdout_path, True),
                                          stderr=p.stream(spec.stderr_path, True),
