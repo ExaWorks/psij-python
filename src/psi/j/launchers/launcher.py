@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, Type, Dict
 
 from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.job_spec import JobSpec
+from psi.j.job import Job
 
 
 class Launcher(ABC):
@@ -24,11 +24,11 @@ class Launcher(ABC):
         self.config = config
 
     @abstractmethod
-    def get_launch_command(self, spec: JobSpec) -> List[str]:
+    def get_launch_command(self, job: Job) -> List[str]:
         """
         Constructs a command to launch a job given a job specification.
 
-        :param spec: The job specification.
+        :param job: The job to launch.
         :return: A list of strings representing the launch command and all of its arguments.
         """
         pass
