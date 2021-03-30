@@ -1,9 +1,10 @@
+import inspect
 from abc import ABC, abstractmethod
 from bisect import bisect_left
 from distutils.version import Version
 from distutils.versionpredicate import VersionPredicate
 from threading import RLock
-from typing import Optional, Dict, List, Tuple, Type, cast, Union, Callable
+from typing import Optional, Dict, List, Type, cast, Union, Callable
 
 import psi.j
 from psi.j.job import Job, JobStatusCallback
@@ -11,10 +12,36 @@ from psi.j.job_executor_config import JobExecutorConfig
 from psi.j.launchers.launcher import Launcher
 
 
+class _VersionEntry:
+    def __init__(self, version: Version, ecls: Type['JobExecutor']) -> None:
+        self.version = version
+        self.ecls = ecls
+
+    def __cmp__(self, other: '_VersionEntry') -> int:
+        if self.version == other.version:
+            return 0
+        elif self.version < other.version:
+            return -1
+        else:
+            return 1
+
+    def __eq__(self, other: object) -> bool:
+        assert isinstance(other, _VersionEntry)
+        return self.version == other.version
+
+    def __lt__(self, other: object) -> bool:
+        assert isinstance(other, _VersionEntry)
+        return self.version < other.version
+
+    def __gt__(self, other: object) -> bool:
+        assert isinstance(other, _VersionEntry)
+        return self.version > other.version
+
+
 class JobExecutor(ABC):
     """This is an abstract base class for all JobExecutor implementations."""
 
-    _executors = {}  # type: Dict[str, List[Tuple[Version, Type[JobExecutor]]]]
+    _executors = {}  # type: Dict[str, List[_VersionEntry]]
 
     def __init__(self, url: Optional[str] = None, config: Optional[JobExecutorConfig] = None):
         """
@@ -153,11 +180,10 @@ class JobExecutor(ABC):
         if version_constraint:
             pred = VersionPredicate('x(' + version_constraint + ')')
             for entry in reversed(versions):
-                version = entry[0]
-                if pred.satisfied_by(version):
-                    ecls = entry[1]
+                if pred.satisfied_by(entry.version):
+                    ecls = entry.ecls
         else:
-            ecls = versions[-1][1]
+            ecls = versions[-1].ecls
 
         if ecls is None:
             raise ValueError('No executor "{}" found to satisfy "{}"'.format(name,
@@ -188,12 +214,17 @@ class JobExecutor(ABC):
         if name not in JobExecutor._executors:
             JobExecutor._executors[name] = []
         existing = JobExecutor._executors[name]
+        entry = _VersionEntry(version, ecls)
         # check if an executor with this version already exists
-        index = bisect_left(existing, version)
-        if index != len(existing) and existing[index] == version:
+        index = bisect_left(existing, entry)
+        if index != len(existing) and existing[index].version == version:
+            p1 = inspect.getfile(existing[index].ecls)
+            p2 = inspect.getfile(ecls)
             raise ValueError(('An executor by the name "{}" with version {} is already '
-                              'registered').format(name, version))
-        existing.insert(index, (version, ecls))
+                              'registered. Existing path: {}; current path: {}').format(name,
+                                                                                        version,
+                                                                                        p1, p2))
+        existing.insert(index, entry)
 
     @staticmethod
     def _check_cls_attr(ecls: Type['JobExecutor'], attr: str, name: str) -> None:
