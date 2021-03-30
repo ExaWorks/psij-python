@@ -14,7 +14,7 @@ from typing import IO, Union, Any, Optional, Dict, List, Type
 import psutil
 
 from psi.j import InvalidJobException, SubmitException
-from psi.j import Job, JobSpec, NativeId, JobExecutorConfig, JobState, JobStatus
+from psi.j import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psi.j import JobExecutor
 
 logger = logging.getLogger(__name__)
@@ -165,22 +165,6 @@ class _ProcessReaper(threading.Thread):
             p.kill_flag = True
 
 
-class LocalNativeId(NativeId):
-    """A :class:`psi.j.NativeId` for :class:`~psi.j.executors.LocalJobExecutor`."""
-
-    def __init__(self, pid: int) -> None:
-        """Initialize a `LocalNativeId` using a PID."""
-        self.pid = pid
-
-    def __str__(self) -> str:
-        """Returns a string version of this native ID."""
-        return '(pid={})'.format(self.pid)
-
-    def __repr__(self) -> str:
-        """Returns a string version of this native ID."""
-        return self.__str__()
-
-
 class LocalJobExecutor(JobExecutor):
     """
     A job executor that runs jobs locally using :func:`popen`.
@@ -234,7 +218,7 @@ class LocalJobExecutor(JobExecutor):
                                          stderr=p.stream(spec.stderr_path, True),
                                          close_fds=True, cwd=spec.directory, env=_get_env(spec))
             self._reaper.register(p)
-            job._native_id = LocalNativeId(p.process.pid)
+            job._native_id = p.process.pid
             self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
                                                    metadata={'nativeId': job._native_id}))
             self._update_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
@@ -265,7 +249,7 @@ class LocalJobExecutor(JobExecutor):
 
         self._update_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code))
 
-    def list(self) -> List[NativeId]:
+    def list(self) -> List[str]:
         """
         Return a list of ids representing jobs that are running on the underlying implementation.
 
@@ -278,10 +262,10 @@ class LocalJobExecutor(JobExecutor):
             processes running locally.
         """
         my_username = psutil.Process().username()
-        return [LocalNativeId(p.pid) for p in psutil.process_iter(['pid', 'username'])
+        return [str(p.pid) for p in psutil.process_iter(['pid', 'username'])
                 if p.info['username'] == my_username]
 
-    def attach(self, job: Job, native_id: NativeId) -> None:
+    def attach(self, job: Job, native_id: str) -> None:
         """
         Attaches a job to a process.
 
@@ -295,10 +279,10 @@ class LocalJobExecutor(JobExecutor):
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
-        assert isinstance(native_id, LocalNativeId)
+        pid = int(native_id)
 
-        self._reaper.register(_AttachedProcessEntry(job, psutil.Process(native_id.pid), self))
-        # We assume that the native_id above has a PID that was obtained at some point using
+        self._reaper.register(_AttachedProcessEntry(job, psutil.Process(pid), self))
+        # We assume that the native_id above is a PID that was obtained at some point using
         # list(). If so, the process is either still running or has completed. Either way, we must
         # bring it up to ACTIVE state
         self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
