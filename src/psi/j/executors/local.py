@@ -30,6 +30,7 @@ class _ProcessEntry(ABC):
         self.exit_code = None  # type: Optional[int]
         self.done_time = None  # type: Optional[float]
         self.kill_flag = False
+        self.process = None  # type: Optional[subprocess.Popen[bytes]]
 
     @abstractmethod
     def kill(self) -> None:
@@ -43,12 +44,17 @@ class _ProcessEntry(ABC):
     def close(self) -> None:
         pass
 
+    def __repr__(self) -> str:
+        pid = '-'
+        if self.process:
+            pid = str(self.process.pid)
+        return '{}[jobid: {}, pid: {}]'.format(self.__class__.__name__, self.job.id, pid)
+
 
 class _ChildProcessEntry(_ProcessEntry):
     def __init__(self, job: Job, executor: LocalJobExecutor) -> None:
         super().__init__(job, executor)
         self.streams = []  # type: List[IO[Any]]
-        self.process = None  # type: Optional[subprocess.Popen[bytes]]
 
     def stream(self, spec_path: Optional[Path], write: bool) -> Union[int, IO[Any]]:
         if not spec_path:
@@ -80,10 +86,12 @@ class _AttachedProcessEntry(_ProcessEntry):
         self.process = process
 
     def kill(self) -> None:
+        assert self.process
         self.process.kill()
 
     def poll(self) -> Optional[int]:
         try:
+            assert self.process
             ec = self.process.wait(timeout=0)  # type: Optional[int]
             if ec is None:
                 return 0
