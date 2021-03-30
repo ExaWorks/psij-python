@@ -29,9 +29,6 @@ jobs:
         python -m pip install flake8 pytest
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
-    - name: Build scripts
-      run: |
-        make launcher-scripts
     - name: Lint with flake8
       run: |
         make checks
