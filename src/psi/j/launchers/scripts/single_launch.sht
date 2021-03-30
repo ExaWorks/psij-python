@@ -1,0 +1,11 @@
+#include "lib.sh"
+
+pre_launch
+
+"$@" 1>&3 2>&4
+_PSI_J_EC=$?
+echo "Command done: $_PSI_J_EC"
+
+post_launch
+
+exit $_PSI_J_EC
