@@ -34,3 +34,24 @@ docs: genautodocs docs-noauto
 .PHONY: docs-noauto
 docs-noauto:
 	sphinx-build -W -b html docs docs/.build/
+
+
+LAUNCHER_SCRIPT_DIR := src/psi/j/launchers/scripts
+LAUNCHER_SCRIPT_TEMPLATES := $(wildcard $(LAUNCHER_SCRIPT_DIR)/*.sht)
+LAUNCHER_SCRIPTS := $(patsubst $(LAUNCHER_SCRIPT_DIR)/%.sht, $(LAUNCHER_SCRIPT_DIR)/%.sh, $(LAUNCHER_SCRIPT_TEMPLATES))
+
+
+
+.PHONY: launcher-scripts
+launcher-scripts: $(LAUNCHER_SCRIPTS)
+
+$(LAUNCHER_SCRIPT_DIR)/%.sh: $(LAUNCHER_SCRIPT_DIR)/%.sht
+	cpp -P $< $@
+
+.PHONY: install
+install: launcher-scripts
+	$(PYTHON) setup.py install
+
+.PHONY: develop
+develop: launcher-scripts
+	$(PYTHON) setup.py develop
