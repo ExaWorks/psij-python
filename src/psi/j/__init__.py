@@ -63,6 +63,12 @@ def _find_plugins(path: str, type: _PluginType, ix: int) -> None:
                 _find_plugins(path + os.path.sep + mod.name, type, ix + 1)
 
 
+seen = set()
 for path in sys.path:
+    path = os.path.realpath(path)
+    if path in seen:
+        logger.info('Ignoring duplicate entry in sys.path: {}'.format(path))
+        continue
+    seen.add(path)
     for type in TYPES:
         _find_plugins(path, type, 0)
