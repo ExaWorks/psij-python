@@ -1,0 +1,201 @@
+"""This module contains the RP :class:`~psi.j.JobExecutor`."""
+
+from __future__ import annotations
+
+import time
+import logging
+
+from distutils.version import StrictVersion
+
+from psi.j import InvalidJobException, SubmitException
+from psi.j import Job, JobExecutorConfig, JobState, JobStatus
+from psi.j import JobExecutor
+
+import radical.utils as ru
+logger = logging.getLogger(__name__)
+logger = ru.Logger('radical.psi')
+
+
+_REAPER_SLEEP_TIME = 0.2
+
+
+# ------------------------------------------------------------------------------
+#
+class RPJobExecutor(JobExecutor):
+    """
+    A job executor that runs jobs via radical.pilot.
+    """
+
+    import radical.pilot as _rp
+
+    _NAME_ = 'rp'
+    _VERSION_ = StrictVersion('0.0.1')
+
+    _state_map = {_rp.NEW: JobState.NEW,
+                  _rp.TMGR_STAGING_INPUT_PENDING: JobState.QUEUED,
+                  _rp.AGENT_EXECUTING: JobState.ACTIVE,
+                  _rp.DONE: JobState.COMPLETED,
+                  _rp.FAILED: JobState.FAILED,
+                  _rp.CANCELED: JobState.CANCELED}
+
+    # --------------------------------------------------------------------------
+    #
+    def __init__(self, url: Optional[str] = None,
+                 config: Optional[JobExecutorConfig] = None) -> None:
+        """
+        Initializes a `RPJobExecutor`.
+
+        :param url: Not used, but required by the spec for automatic initialization.
+        :param config: The `RPJobExecutor` does not have any configuration options.
+        :type config: psi.j.JobExecutorConfig
+        """
+        super().__init__(url=url, config=config)
+        self._session = self._rp.Session()
+        self._pmgr = self._rp.PilotManager(session=self._session)
+        self._tmgr = self._rp.TaskManager(session=self._session)
+
+        self._pmgr.register_callback(self._pilot_state_cb)
+        self._tmgr.register_callback(self._task_state_cb)
+
+        pd = self._rp.PilotDescription({'resource': 'local.localhost',
+                                        'cores': 32,
+                                        'runtime': 15})
+        self._pilot = self._pmgr.submit_pilots(pd)
+        self._tmgr.add_pilots(self._pilot)
+        self._pmgr.wait_pilots(uids=self._pilot.uid, state=self._rp.PMGR_ACTIVE)
+        self._tasks = dict()
+
+    # --------------------------------------------------------------------------
+    #
+    def _pilot_state_cb(self, pilot, rp_state):
+
+        print('-->', pilot.uid, pilot.state)
+
+    # --------------------------------------------------------------------------
+    #
+    def _task_state_cb(self, task, rp_state):
+
+        print('==>', task.uid, task.state)
+
+        try:
+            jpsi_uid = task.name
+            jpsi_job = self._tasks[jpsi_uid][0]
+
+            ec = None
+            if task.state in self._rp.FINAL:
+                ec = task.exit_code
+
+            old_state = jpsi_job.status.state
+            new_state = self._state_map.get(task.state)
+
+            logger.debug('%s --> %s - %s', jpsi_uid, task.state, new_state)
+
+            if not new_state:
+                print('no new state')
+                # not an interesting state transition, ignore
+                return
+
+            if old_state == new_state:
+                print('old is new', new_state)
+                return
+
+            print('new state:', new_state)
+            status = JobStatus(JobState.QUEUED, time=time.time(),
+                               metadata={'nativeId': task.uid,
+                                         'exit_code': ec})
+
+            self._update_job_status(jpsi_job, status)
+
+        except Exception as e:
+            print('oops', e)
+
+    # --------------------------------------------------------------------------
+    #
+    def submit(self, job: Job) -> None:
+        """
+        Submits the specified :class:`~psi.j.Job` to the pilot.
+
+        Successful return of this method indicates that the job has been
+        submitted to RP and all changes in the job status, including failures,
+        are reported using notifications. If the job specification is invalid,
+        an :class:`~psi.j.InvalidJobException` is thrown. If the actual
+        submission fails for reasons outside the validity of the job,
+        a :class:`~psi.j.SubmitException` is thrown.
+
+        :param job: The job to be submitted.
+        """
+        spec = job.spec
+        if not spec:
+            raise InvalidJobException('Missing specification')
+
+        try:
+            td = self._rp.TaskDescription({'executable': '/bin/sleep',
+                                           'arguments': [3],
+                                           'name': job.id})
+            task = self._tmgr.submit_tasks(td)
+            self._tasks[job.id] = [job, task]
+
+        except Exception as ex:
+            raise SubmitException('Failed to submit job') from ex
+
+    # --------------------------------------------------------------------------
+    #
+    def cancel(self, job: Job) -> None:
+        """
+        Cancels a job.
+
+        :param job: The job to cancel.
+        """
+        with job._status_cv:
+            if job.status.state == JobState.NEW:
+                job._set_status(JobStatus(JobState.CANCELED))
+                return
+        _, task = self._tasks.get(job.id)
+        if not task:
+            raise ValueError('job not known')
+
+        self._tmgr.cancel_tasks(uids=task.uid)
+
+    # --------------------------------------------------------------------------
+    #
+    def list(self) -> List[str]:
+        """
+        Return a list of ids representing jobs that are running on the
+        underlying implementation - in this case RP task IDs.
+
+        :return: The list of known tasks.
+        """
+
+        return self._tmgr.list_tasks()
+
+    # --------------------------------------------------------------------------
+    #
+    def attach(self, job: Job, native_id: str) -> None:
+        """
+        Attaches a job to a process.
+
+        The job must be in the :attr:`~psi.j.JobState.NEW` state.
+
+        :param job: The job to attach.
+        :param native_id: The native ID of the process to attached to, as
+        obtained through :func:`~psi.j.executors.RPJobExecutor.list` method.
+        """
+
+        if job.status.state != JobState.NEW:
+            raise InvalidJobException('Job must be in the NEW state')
+
+        task = self._tmgr.get_tasks(uids=native_id)
+        self._jobs[job.id] = [job, task]
+
+        state = self._state_map[task.state]
+        self._update_job_status(job, JobStatus(state, time=time.time()))
+
+    # --------------------------------------------------------------------------
+    #
+    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
+        job._set_status(job_status, self)
+        if self._cb:
+            self._cb.job_status_changed(job, job_status)
+
+
+__PSI_J_EXECUTORS__ = [RPJobExecutor]

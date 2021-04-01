@@ -2,4 +2,4 @@
 
 from .local import LocalJobExecutor
 
-__all__ = ['LocalJobExecutor']
+__all__ = ['LocalJobExecutor', 'RPJobExecutor']
