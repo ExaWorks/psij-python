@@ -161,6 +161,7 @@ class _ProcessReaper(threading.Thread):
             exit_code = entry.poll()
             if exit_code is not None:
                 entry.exit_code = exit_code
+                entry.close()
                 entry.done_time = time.time()
                 done.append(entry)
         for entry in done:
