@@ -129,8 +129,7 @@ class _ProcessReaper(threading.Thread):
         self._lock = threading.RLock()
 
     def register(self, entry: _ProcessEntry) -> None:
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('Registering process {}'.format(entry))
+        logger.debug('Registering process %s', entry)
         with self._lock:
             self._jobs[entry.job] = entry
 
@@ -213,9 +212,7 @@ class LocalJobExecutor(JobExecutor):
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug('Running {},  out={}, err={}'.format(args, spec.stdout_path,
-                                                                  spec.stderr_path))
+            logger.debug('Running %s,  out=%s, err=%s', args, spec.stdout_path, spec.stderr_path)
             p.process = subprocess.Popen(args, stdin=p.stream(spec.stdin_path, False),
                                          stdout=p.stream(spec.stdout_path, True),
                                          stderr=p.stream(spec.stderr_path, True),
