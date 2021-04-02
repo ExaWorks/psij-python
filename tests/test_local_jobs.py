@@ -71,4 +71,3 @@ def test_missing_executable() -> None:
         assert status.exit_code != 0
     except SubmitException:
         pass
-
