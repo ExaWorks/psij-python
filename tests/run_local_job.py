@@ -8,11 +8,11 @@ from psi.j import Job, JobExecutor, JobSpec
 
 
 if __name__ == '__main__':
-    url = 'local'
+    name = 'local'
     if len(sys.argv) > 1:
-        url = sys.argv[1]
+        name = sys.argv[1]
     job = Job(JobSpec(executable='/bin/date'))
-    exec = JobExecutor.get_instance(url)
+    exec = JobExecutor.get_instance(name)
     exec.submit(job)
     print('Job submitted')
     status = job.wait()
