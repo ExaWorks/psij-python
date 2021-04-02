@@ -5,6 +5,8 @@ from __future__ import annotations
 import time
 import logging
 
+from typing import IO, Union, Any, Optional, Dict, List
+
 from distutils.version import StrictVersion
 
 from psi.j import InvalidJobException, SubmitException
@@ -19,8 +21,6 @@ logger = ru.Logger('radical.psi')
 _REAPER_SLEEP_TIME = 0.2
 
 
-# ------------------------------------------------------------------------------
-#
 class RPJobExecutor(JobExecutor):
     """
     A job executor that runs jobs via radical.pilot.
@@ -38,8 +38,6 @@ class RPJobExecutor(JobExecutor):
                   _rp.FAILED: JobState.FAILED,
                   _rp.CANCELED: JobState.CANCELED}
 
-    # --------------------------------------------------------------------------
-    #
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
@@ -62,55 +60,47 @@ class RPJobExecutor(JobExecutor):
                                         'runtime': 15})
         self._pilot = self._pmgr.submit_pilots(pd)
         self._tmgr.add_pilots(self._pilot)
-        self._pmgr.wait_pilots(uids=self._pilot.uid, state=self._rp.PMGR_ACTIVE)
+      # self._pmgr.wait_pilots(uids=self._pilot.uid, state=self._rp.PMGR_ACTIVE)
         self._tasks = dict()
 
-    # --------------------------------------------------------------------------
-    #
     def _pilot_state_cb(self, pilot, rp_state):
 
-        print('-->', pilot.uid, pilot.state)
+        logger.info('pilot %s: %s', pilot.uid, pilot.state)
 
-    # --------------------------------------------------------------------------
-    #
     def _task_state_cb(self, task, rp_state):
 
-        print('==>', task.uid, task.state)
+        jpsi_uid = task.name
+        jpsi_job = self._tasks[jpsi_uid][0]
 
-        try:
-            jpsi_uid = task.name
-            jpsi_job = self._tasks[jpsi_uid][0]
+        ec = None
+        if task.state in self._rp.FINAL:
+            ec = task.exit_code
 
-            ec = None
-            if task.state in self._rp.FINAL:
-                ec = task.exit_code
+        old_state = jpsi_job.status.state
+        new_state = self._state_map.get(task.state)
 
-            old_state = jpsi_job.status.state
-            new_state = self._state_map.get(task.state)
+        logger.debug('%s --> %s - %s', jpsi_uid, task.state, new_state)
 
-            logger.debug('%s --> %s - %s', jpsi_uid, task.state, new_state)
+        if new_state is None:
+            # not an interesting state transition, ignore
+            return
 
-            if not new_state:
-                print('no new state')
-                # not an interesting state transition, ignore
-                return
+        if old_state == new_state:
+            return
 
-            if old_state == new_state:
-                print('old is new', new_state)
-                return
+        metadata = {'nativeId': task.uid}
 
-            print('new state:', new_state)
-            status = JobStatus(JobState.QUEUED, time=time.time(),
-                               metadata={'nativeId': task.uid,
-                                         'exit_code': ec})
+        if ec:
+            metadata['exit_code'] = ec
 
-            self._update_job_status(jpsi_job, status)
+        if task.state in self._rp.FINAL:
+            metadata['final'] = True
 
-        except Exception as e:
-            print('oops', e)
+        status = JobStatus(new_state, time=time.time(),
+                           metadata=metadata)
+        self._update_job_status(jpsi_job, status)
 
-    # --------------------------------------------------------------------------
-    #
+
     def submit(self, job: Job) -> None:
         """
         Submits the specified :class:`~psi.j.Job` to the pilot.
@@ -129,17 +119,28 @@ class RPJobExecutor(JobExecutor):
             raise InvalidJobException('Missing specification')
 
         try:
-            td = self._rp.TaskDescription({'executable': '/bin/sleep',
-                                           'arguments': [3],
-                                           'name': job.id})
+            td = self._job_2_descr(job)
             task = self._tmgr.submit_tasks(td)
             self._tasks[job.id] = [job, task]
 
         except Exception as ex:
             raise SubmitException('Failed to submit job') from ex
 
-    # --------------------------------------------------------------------------
-    #
+    def _job_2_descr(self, job: Job) -> Any:
+
+        # TODO: use resource spec
+        # TODO: use meta data for jpsi uid
+
+        from_dict = {'name': job.id,
+                     'executable': job.spec.executable,
+                     'arguments': job.spec.arguments or [],
+                     'environment': job.spec.environment or {},
+                     'stdout': job.spec.stdout_path or '',
+                     'stderr': job.spec.stderr_path or '',
+                     'sandbox': job.spec.directory or ''}
+
+        return self._rp.TaskDescription(from_dict=from_dict)
+
     def cancel(self, job: Job) -> None:
         """
         Cancels a job.
@@ -156,8 +157,6 @@ class RPJobExecutor(JobExecutor):
 
         self._tmgr.cancel_tasks(uids=task.uid)
 
-    # --------------------------------------------------------------------------
-    #
     def list(self) -> List[str]:
         """
         Return a list of ids representing jobs that are running on the
@@ -168,8 +167,6 @@ class RPJobExecutor(JobExecutor):
 
         return self._tmgr.list_tasks()
 
-    # --------------------------------------------------------------------------
-    #
     def attach(self, job: Job, native_id: str) -> None:
         """
         Attaches a job to a process.
@@ -190,9 +187,8 @@ class RPJobExecutor(JobExecutor):
         state = self._state_map[task.state]
         self._update_job_status(job, JobStatus(state, time=time.time()))
 
-    # --------------------------------------------------------------------------
-    #
     def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
+
         job._set_status(job_status, self)
         if self._cb:
             self._cb.job_status_changed(job, job_status)
