@@ -11,9 +11,11 @@ if __name__ == '__main__':
     name = 'local'
     if len(sys.argv) > 1:
         name = sys.argv[1]
+    jobs = list()
     job = Job(JobSpec(executable='/bin/date'))
     exec = JobExecutor.get_instance(name)
     exec.submit(job)
+    jobs.append(job)
     print('Job submitted')
     status = job.wait()
     print('Job done: {}'.format(status))

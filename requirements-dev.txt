@@ -4,3 +4,6 @@ sphinx_rtd_theme
 sphinx-tabs
 # sphinx-autodoc-typehints
 
+mypy >=0.790
+pytest
+flake8
