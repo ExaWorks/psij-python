@@ -1,6 +1,4 @@
 """This module contains the local :class:`~psi.j.JobExecutor`."""
-from __future__ import annotations
-
 import logging
 import os
 import subprocess
@@ -24,7 +22,7 @@ _REAPER_SLEEP_TIME = 0.2
 
 
 class _ProcessEntry(ABC):
-    def __init__(self, job: Job, executor: LocalJobExecutor):
+    def __init__(self, job: Job, executor: 'LocalJobExecutor'):
         self.job = job
         self.executor = executor
         self.exit_code = None  # type: Optional[int]
@@ -52,7 +50,7 @@ class _ProcessEntry(ABC):
 
 
 class _ChildProcessEntry(_ProcessEntry):
-    def __init__(self, job: Job, executor: LocalJobExecutor) -> None:
+    def __init__(self, job: Job, executor: 'LocalJobExecutor') -> None:
         super().__init__(job, executor)
         self.streams = []  # type: List[IO[Any]]
 
@@ -81,7 +79,7 @@ class _ChildProcessEntry(_ProcessEntry):
 
 
 class _AttachedProcessEntry(_ProcessEntry):
-    def __init__(self, job: Job, process: psutil.Process, executor: LocalJobExecutor):
+    def __init__(self, job: Job, process: psutil.Process, executor: 'LocalJobExecutor'):
         super().__init__(job, executor)
         self.process = process
 
@@ -124,7 +122,7 @@ class _ProcessReaper(threading.Thread):
     _lock = threading.RLock()
 
     @classmethod
-    def get_instance(cls: Type[_ProcessReaper]) -> _ProcessReaper:
+    def get_instance(cls: Type['_ProcessReaper']) -> '_ProcessReaper':
         with cls._lock:
             if cls._instance is None:
                 cls._instance = _ProcessReaper()
