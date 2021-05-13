@@ -65,3 +65,12 @@ under-the-hood. PEP8 compliance is also verified as part of the CI by `flake8`.
 As much python code in this repo as is feasible should include type annotations.
 These type annotations can then be ingested and checked by `mypy`, which can be
 run with `make typecheck` and `make checks`.
+
+## Docstrings
+
+As many public python interfaces in this repo as is feasible should include
+docstring documentation. All docstrings should follow the [numpy
+format](https://numpydoc.readthedocs.io/en/latest/format.html). These
+docstrings are automatically parsed by Sphinx and turned into html-based
+documentation hosted on readthedocs. Document generation can be run locally
+with `make docs`.
