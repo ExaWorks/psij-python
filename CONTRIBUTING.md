@@ -59,3 +59,9 @@ All code should conform to [PEP8](https://www.python.org/dev/peps/pep-0008/).
 This compliance can be checked with `make stylecheck` or `make checks` and
 be automatically achieved by running `make style`, which runs `autopep8`
 under-the-hood. PEP8 compliance is also verified as part of the CI by `flake8`.
+
+## Type Annotations
+
+As much python code in this repo as is feasible should include type annotations.
+These type annotations can then be ingested and checked by `mypy`, which can be
+run with `make typecheck` and `make checks`.
