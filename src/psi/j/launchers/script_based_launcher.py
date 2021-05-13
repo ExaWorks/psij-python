@@ -19,10 +19,11 @@ class ScriptBasedLauncher(Launcher):
 
     This launcher is an abstract base class for launchers that wrap the job in a script. The script
     must be a bash script and is invoked with the first four parameters as:
-        - the job ID
-        - a launcher log file, which is taken from the launcher_log_file configuration setting and
-        defaults to `/dev/null`
-        - the pre- and post- launcher scripts, or empty strings if they are not specified
+
+    * the job ID
+    * a launcher log file, which is taken from the launcher_log_file configuration setting and
+      defaults to `/dev/null`
+    * the pre- and post- launcher scripts, or empty strings if they are not specified
 
     Additional positional arguments to the script can be specified by subclasses by overriding
     the :func:`~psi.j.launchers.script_based_launcher.ScriptBasedLauncher._get_additional_args`
@@ -32,14 +33,16 @@ class ScriptBasedLauncher(Launcher):
 
     A simple script library is provided in scripts/lib.sh. Its use is optional and it is intended
     to be included in a main launcher script using a standard C preprocessor. It does the following:
-        - sets '-e' mode (exit on error)
-        - sets the variables _PSI_J_JOB_ID, _PSI_J_LOG_FILE, _PSI_J_PRE_LAUNCH, and
-          _PSI_J_POST_LAUNCH from the first arguments, as specified above.
-        - saves the current stdout and stderr in descriptors 3 and 4, respectively
-        - redirects stdout and stderr to the log file, while pre-pending a timestamp and the
-          job ID to each line
-        - defines the commands "pre_launch" and "post_launch", which can be invoked by the main
-          script.
+
+    * sets '-e' mode (exit on error)
+    * sets the variables _PSI_J_JOB_ID, _PSI_J_LOG_FILE, _PSI_J_PRE_LAUNCH, and
+      _PSI_J_POST_LAUNCH from the first arguments, as specified above.
+    * saves the current stdout and stderr in descriptors 3 and 4, respectively
+    * redirects stdout and stderr to the log file, while pre-pending a timestamp and the
+      job ID to each line
+    * defines the commands "pre_launch" and "post_launch", which can be invoked by the main
+      script.
+
     When invoking the job executable (either directly or through a launch command), it is
     recommended that the stdout and stderr of the job process be redirected to descriptors 3 and 4,
     respectively, such that they can be captured by the entity invoking the launcher rather than

@@ -10,7 +10,7 @@ class JobExecutorConfig(object):
         Initializes a configuration object.
 
         :param launcher_log_file: If specified, log messages from launcher scripts (including
-        output from pre- and post- launch scripts) will be directed to this file.
+            output from pre- and post- launch scripts) will be directed to this file.
         """
         self.launcher_log_file = launcher_log_file
 
