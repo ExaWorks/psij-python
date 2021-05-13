@@ -52,3 +52,10 @@ details how to contribute in a standardized and efficient manner.
   PR ("close the door when you leave"), unless a merge bot is configured for the
   repository, in which case the PR should be left for the bot to merge.
 - Maintainers should not merge their own patches except in exceptional cases.
+
+## Code Style
+
+All code should conform to [PEP8](https://www.python.org/dev/peps/pep-0008/).
+This compliance can be checked with `make stylecheck` or `make checks` and
+be automatically achieved by running `make style`, which runs `autopep8`
+under-the-hood. PEP8 compliance is also verified as part of the CI by `flake8`.

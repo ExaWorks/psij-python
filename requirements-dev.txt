@@ -7,3 +7,4 @@ sphinx-tabs
 mypy >=0.790
 pytest
 flake8
+autopep8

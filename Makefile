@@ -35,6 +35,10 @@ docs: genautodocs docs-noauto
 docs-noauto:
 	sphinx-build -W -b html docs docs/.build/
 
+.PHONY: style
+style:
+	autopep8 -i -r src tests
+
 
 LAUNCHER_SCRIPT_DIR := src/psi/j/launchers/scripts
 LAUNCHER_SCRIPT_TEMPLATES := $(wildcard $(LAUNCHER_SCRIPT_DIR)/*.sht)
