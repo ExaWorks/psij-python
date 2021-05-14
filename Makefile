@@ -45,7 +45,7 @@ LAUNCHER_SCRIPTS := $(patsubst $(LAUNCHER_SCRIPT_DIR)/%.sht, $(LAUNCHER_SCRIPT_D
 .PHONY: launcher-scripts
 launcher-scripts: $(LAUNCHER_SCRIPTS)
 
-$(LAUNCHER_SCRIPT_DIR)/%.sh: $(LAUNCHER_SCRIPT_DIR)/%.sht
+$(LAUNCHER_SCRIPT_DIR)/%.sh: $(LAUNCHER_SCRIPT_DIR)/%.sht $(LAUNCHER_SCRIPT_DIR)/lib.sh
 	cpp -P $< $@
 
 .PHONY: install
