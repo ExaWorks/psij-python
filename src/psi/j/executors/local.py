@@ -6,12 +6,11 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from distutils.version import StrictVersion
-from pathlib import Path
-from typing import IO, Union, Any, Optional, Dict, List, Type
+from typing import Optional, Dict, List, Type, Tuple
 
 import psutil
 
-from psi.j import InvalidJobException, SubmitException
+from psi.j import InvalidJobException, SubmitException, Launcher
 from psi.j import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psi.j import JobExecutor
 
@@ -22,24 +21,22 @@ _REAPER_SLEEP_TIME = 0.2
 
 
 class _ProcessEntry(ABC):
-    def __init__(self, job: Job, executor: 'LocalJobExecutor'):
+    def __init__(self, job: Job, executor: 'LocalJobExecutor', launcher: Optional[Launcher]):
         self.job = job
         self.executor = executor
         self.exit_code = None  # type: Optional[int]
         self.done_time = None  # type: Optional[float]
+        self.out = None  # type: Optional[str]
         self.kill_flag = False
         self.process = None  # type: Optional[subprocess.Popen[bytes]]
+        self.launcher = launcher
 
     @abstractmethod
     def kill(self) -> None:
         pass
 
     @abstractmethod
-    def poll(self) -> Optional[int]:
-        pass
-
-    @abstractmethod
-    def close(self) -> None:
+    def poll(self) -> Tuple[Optional[int], Optional[str]]:
         pass
 
     def __repr__(self) -> str:
@@ -50,56 +47,45 @@ class _ProcessEntry(ABC):
 
 
 class _ChildProcessEntry(_ProcessEntry):
-    def __init__(self, job: Job, executor: 'LocalJobExecutor') -> None:
-        super().__init__(job, executor)
-        self.streams = []  # type: List[IO[Any]]
-
-    def stream(self, spec_path: Optional[Path], write: bool) -> Union[int, IO[Any]]:
-        if not spec_path:
-            return subprocess.DEVNULL
-        else:
-            f = spec_path.open('w' if write else 'r')
-            self.streams.append(f)
-            return f
+    def __init__(self, job: Job, executor: 'LocalJobExecutor',
+                 launcher: Optional[Launcher]) -> None:
+        super().__init__(job, executor, launcher)
 
     def kill(self) -> None:
         assert self.process is not None
         self.process.kill()
 
-    def poll(self) -> Optional[int]:
+    def poll(self) -> Tuple[Optional[int], Optional[str]]:
         assert self.process is not None
-        return self.process.poll()
-
-    def close(self) -> None:
-        for stream in self.streams:
-            try:
-                stream.close()
-            except Exception as ex:
-                logger.error('Failed to close process stream', ex)
+        exit_code = self.process.poll()
+        if exit_code is not None:
+            if self.process.stdout:
+                return exit_code, self.process.stdout.read().decode('utf-8')
+            else:
+                return exit_code, None
+        else:
+            return None, None
 
 
 class _AttachedProcessEntry(_ProcessEntry):
     def __init__(self, job: Job, process: psutil.Process, executor: 'LocalJobExecutor'):
-        super().__init__(job, executor)
+        super().__init__(job, executor, None)
         self.process = process
 
     def kill(self) -> None:
         assert self.process
         self.process.kill()
 
-    def poll(self) -> Optional[int]:
+    def poll(self) -> Tuple[Optional[int], Optional[str]]:
         try:
             assert self.process
             ec = self.process.wait(timeout=0)  # type: Optional[int]
             if ec is None:
-                return 0
+                return 0, None
             else:
-                return ec
+                return ec, None
         except psutil.TimeoutExpired:
-            return None
-
-    def close(self) -> None:
-        pass
+            return None, None
 
 
 def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
@@ -155,11 +141,11 @@ class _ProcessReaper(threading.Thread):
             if entry.kill_flag:
                 entry.kill()
 
-            exit_code = entry.poll()
+            exit_code, out = entry.poll()
             if exit_code is not None:
                 entry.exit_code = exit_code
-                entry.close()
                 entry.done_time = time.time()
+                entry.out = out
                 done.append(entry)
         for entry in done:
             del self._jobs[entry.job]
@@ -210,19 +196,16 @@ class LocalJobExecutor(JobExecutor):
         if not spec:
             raise InvalidJobException('Missing specification')
 
-        launcher = self._get_launcher(self._get_launcher_name(spec))
-        args = launcher.get_launch_command(job)
-
-        p = _ChildProcessEntry(job, self)
+        p = _ChildProcessEntry(job, self, self._get_launcher(self._get_launcher_name(spec)))
+        assert p.launcher
+        args = p.launcher.get_launch_command(job)
 
         try:
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
             logger.debug('Running %s,  out=%s, err=%s', args, spec.stdout_path, spec.stderr_path)
-            p.process = subprocess.Popen(args, stdin=p.stream(spec.stdin_path, False),
-                                         stdout=p.stream(spec.stdout_path, True),
-                                         stderr=p.stream(spec.stderr_path, True),
+            p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                          close_fds=True, cwd=spec.directory, env=_get_env(spec))
             self._reaper.register(p)
             job._native_id = p.process.pid
@@ -245,16 +228,23 @@ class LocalJobExecutor(JobExecutor):
         self._reaper.cancel(job)
 
     def _process_done(self, p: _ProcessEntry) -> None:
-        p.close()
         assert p.exit_code is not None
+        message = None
         if p.exit_code == 0:
             state = JobState.COMPLETED
         elif p.exit_code < 0 and p.kill_flag:
             state = JobState.CANCELED
         else:
+            # We want to capture errors in the launcher scripts. Since, under nomral circumstances,
+            # the exit code of the launcher is the exit code of the job, we must use a different
+            # mechanism to distinguish between job errors and launcher errors. So we delegate to
+            # the launcher implementation to figure out if the error belongs to the job or not
+            if p.launcher and p.out and p.launcher.is_launcher_failure(p.out):
+                message = p.launcher.get_launcher_failure_message(p.out)
             state = JobState.FAILED
 
-        self._update_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code))
+        self._update_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
+                                                 message=message))
 
     def list(self) -> List[str]:
         """
@@ -294,11 +284,6 @@ class LocalJobExecutor(JobExecutor):
         # bring it up to ACTIVE state
         self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
         self._update_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
-
-    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)
 
     def _get_launcher_name(self, spec: JobSpec) -> str:
         if spec.launcher is None:
