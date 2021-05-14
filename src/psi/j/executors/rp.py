@@ -1,16 +1,14 @@
 """This module contains the RP :class:`~psi.j.JobExecutor`."""
 
-from __future__ import annotations
-
 import time
 import logging
 
-from typing import IO, Union, Any, Optional, Dict, List
+from typing import Any, Optional, List, Dict, Tuple
 
 from distutils.version import StrictVersion
 
 from psi.j import InvalidJobException, SubmitException
-from psi.j import Job, JobExecutorConfig, JobState, JobStatus
+from psi.j import Job, JobExecutorConfig, JobState, JobStatus, JobSpec
 from psi.j import JobExecutor
 
 import radical.utils as ru
@@ -60,14 +58,13 @@ class RPJobExecutor(JobExecutor):
                                         'runtime': 15})
         self._pilot = self._pmgr.submit_pilots(pd)
         self._tmgr.add_pilots(self._pilot)
-      # self._pmgr.wait_pilots(uids=self._pilot.uid, state=self._rp.PMGR_ACTIVE)
-        self._tasks = dict()
+        self._tasks: Dict[str, Tuple[Any, Any]] = dict()
 
-    def _pilot_state_cb(self, pilot, rp_state):
+    def _pilot_state_cb(self, pilot: _rp.Pilot, rp_state: str) -> None:
 
         logger.info('pilot %s: %s', pilot.uid, pilot.state)
 
-    def _task_state_cb(self, task, rp_state):
+    def _task_state_cb(self, task: _rp.Task, rp_state: str) -> None:
 
         jpsi_uid = task.name
         jpsi_job = self._tasks[jpsi_uid][0]
@@ -100,7 +97,6 @@ class RPJobExecutor(JobExecutor):
                            metadata=metadata)
         self._update_job_status(jpsi_job, status)
 
-
     def submit(self, job: Job) -> None:
         """
         Submits the specified :class:`~psi.j.Job` to the pilot.
@@ -121,7 +117,7 @@ class RPJobExecutor(JobExecutor):
         try:
             td = self._job_2_descr(job)
             task = self._tmgr.submit_tasks(td)
-            self._tasks[job.id] = [job, task]
+            self._tasks[job.id] = (job, task)
 
         except Exception as ex:
             raise SubmitException('Failed to submit job') from ex
@@ -131,13 +127,18 @@ class RPJobExecutor(JobExecutor):
         # TODO: use resource spec
         # TODO: use meta data for jpsi uid
 
-        from_dict = {'name': job.id,
-                     'executable': job.spec.executable,
-                     'arguments': job.spec.arguments or [],
-                     'environment': job.spec.environment or {},
-                     'stdout': job.spec.stdout_path or '',
-                     'stderr': job.spec.stderr_path or '',
-                     'sandbox': job.spec.directory or ''}
+        spec: Optional[JobSpec] = job.spec
+
+        if not spec:
+            raise InvalidJobException('Missing specification')
+
+        from_dict: Dict[str, Any] = {'name': job.id,
+                                     'executable': spec.executable,
+                                     'arguments': spec.arguments or [],
+                                     'environment': spec.environment or {},
+                                     'stdout': spec.stdout_path or '',
+                                     'stderr': spec.stderr_path or '',
+                                     'sandbox': spec.directory or ''}
 
         return self._rp.TaskDescription(from_dict=from_dict)
 
@@ -151,9 +152,11 @@ class RPJobExecutor(JobExecutor):
             if job.status.state == JobState.NEW:
                 job._set_status(JobStatus(JobState.CANCELED))
                 return
-        _, task = self._tasks.get(job.id)
-        if not task:
+
+        if job.id not in self._tasks:
             raise ValueError('job not known')
+
+        _, task = self._tasks[job.id]
 
         self._tmgr.cancel_tasks(uids=task.uid)
 
@@ -165,7 +168,7 @@ class RPJobExecutor(JobExecutor):
         :return: The list of known tasks.
         """
 
-        return self._tmgr.list_tasks()
+        return [str(uid) for uid in self._tmgr.list_tasks()]
 
     def attach(self, job: Job, native_id: str) -> None:
         """
@@ -181,8 +184,8 @@ class RPJobExecutor(JobExecutor):
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
 
-        task = self._tmgr.get_tasks(uids=native_id)
-        self._jobs[job.id] = [job, task]
+        task = self._tmgr.get_tasks(uids=[native_id])[0]
+        self._tasks[job.id] = (job, task)
 
         state = self._state_map[task.state]
         self._update_job_status(job, JobStatus(state, time=time.time()))

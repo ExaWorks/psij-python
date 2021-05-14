@@ -117,6 +117,13 @@ class JobExecutor(ABC):
         pass
 
     @abstractmethod
+    def list(self) -> List[str]:
+        """
+        List native IDs of all jobs known to the backend.
+        """
+        pass
+
+    @abstractmethod
     def attach(self, job: Job, native_id: str) -> None:
         """
         Attaches a job to a native job.
