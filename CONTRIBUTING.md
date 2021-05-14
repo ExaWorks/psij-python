@@ -19,16 +19,16 @@ details how to contribute in a standardized and efficient manner.
   and [start a new feature branch on your fork from
   that](https://matplotlib.org/stable/devel/gitwash/development_workflow.html#make-a-new-feature-branch).
 - Make a new branch for each separable set of changes — ["one task, one
-  branch"](https://mail.python.org/pipermail/ipython-dev/2010-October/005632.html)
+  branch"](https://mail.python.org/pipermail/ipython-dev/2010-October/005632.html).
 - [Each commit should make one change](https://dev.to/ruanbrandao/how-to-make-good-git-commits-256k).
   to aide reviewing and (in the worst case) simplify reverting it in the future.
   - A patch commit message should consist of a single short (less than 50
-    character) line summarizing the change, optionally followed by a blank line
+    character) sentence summarizing the change, optionally followed by a blank line
     and then a more thorough description.
   - Where applicable, a PR or commit message body should reference an Issue by
     number (e.g. `Fixes #33`).
-- If you can possibly avoid it, avoid merging upstream branches or any other
-  branches into your feature branch while you are working.
+- If possible, avoid merging upstream branches or any other branches into your
+  feature branch while you are working.
   - If you do find yourself merging from upstream, consider [Rebasing on
     upstream](https://matplotlib.org/stable/devel/gitwash/development_workflow.html#rebase-on-trunk).
 - Submit a Pull Request from your feature branch against upstream.
