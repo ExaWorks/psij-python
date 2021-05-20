@@ -33,6 +33,43 @@ class Launcher(ABC):
         """
         pass
 
+    @abstractmethod
+    def is_launcher_failure(self, output: str) -> bool:
+        """
+        Determines whether the launcher invocation output contains a launcher failure or not.
+
+        Parameters
+        ----------
+        output
+            The output (combined stdout/stderr) from an invocation of the launcher command
+
+        Returns
+        -------
+            Returns `True` if the output
+
+        """
+        pass
+
+    @abstractmethod
+    def get_launcher_failure_message(self, output: str) -> str:
+        """
+        Extracts the launcher error message from the output of this launcher's invocation.
+
+        It is understood that the output is such that
+        :func:`~psi.j.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
+
+        Parameters
+        ----------
+        output
+            The output (combined stdout/stderr) from an invocation of the launcher command.
+
+        Returns
+        -------
+            A string representing the part of the launcher output that describes the launcher
+            error.
+        """
+        pass
+
     @staticmethod
     def get_instance(name: str, config: Optional[JobExecutorConfig] = None) -> 'Launcher':
         """

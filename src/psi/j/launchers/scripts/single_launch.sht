@@ -2,10 +2,11 @@
 
 pre_launch
 
-"$@" 1>&3 2>&4
+"$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR  <$_PSI_J_STDIN
 _PSI_J_EC=$?
-echo "Command done: $_PSI_J_EC"
+log "Command done: $_PSI_J_EC"
 
 post_launch
 
+echo "_PSI_J_LAUNCHER_DONE"
 exit $_PSI_J_EC

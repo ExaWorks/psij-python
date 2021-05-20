@@ -13,6 +13,13 @@ def _str(obj: Optional[object]) -> str:
         return ''
 
 
+def _path(obj: Optional[object]) -> str:
+    if obj is None:
+        return '/dev/null'
+    else:
+        return str(obj)
+
+
 class ScriptBasedLauncher(Launcher):
     """
     A launcher that uses a script to start the job, possibly by wrapping it in other tools.
@@ -68,7 +75,8 @@ class ScriptBasedLauncher(Launcher):
         assert spec is not None
 
         args = ['/bin/bash', str(self._script_path), job.id, _str(self._log_file),
-                _str(spec.pre_launch), _str(spec.post_launch)]
+                _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),
+                _path(spec.stdout_path), _path(spec.stderr_path)]
         args += self._get_additional_args(job)
         assert spec.executable is not None
         args += [spec.executable]
@@ -84,3 +92,11 @@ class ScriptBasedLauncher(Launcher):
         :param job: The job that is being launched.
         """
         return []
+
+    def is_launcher_failure(self, output: str) -> bool:
+        """See :func:`~psi.j.launchers.launcher.Launcher.is_launcher_failure`."""
+        return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
+
+    def get_launcher_failure_message(self, output: str) -> str:
+        """See :func:`~psi.j.launchers.launcher.Launcher.get_launcher_failure_message`."""
+        return '\n'.join(output.split('\n')[:-1])
