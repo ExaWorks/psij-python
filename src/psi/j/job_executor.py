@@ -117,6 +117,13 @@ class JobExecutor(ABC):
         pass
 
     @abstractmethod
+    def list(self) -> List[str]:
+        """
+        List native IDs of all jobs known to the backend.
+        """
+        pass
+
+    @abstractmethod
     def attach(self, job: Job, native_id: str) -> None:
         """
         Attaches a job to a native job.
@@ -220,6 +227,9 @@ class JobExecutor(ABC):
         if index != len(existing) and existing[index].version == version:
             p1 = inspect.getfile(existing[index].ecls)
             p2 = inspect.getfile(ecls)
+            if p1 == p2:
+                # can happen if PYTHONPATH has, e.g., a/, a/b/, so ignore silently
+                return
             raise ValueError(('An executor by the name "{}" with version {} is already '
                               'registered. Existing path: {}; current path: {}').format(name,
                                                                                         version,

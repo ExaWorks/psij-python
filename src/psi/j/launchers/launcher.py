@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, Type, Dict
 
 from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.job_spec import JobSpec
+from psi.j.job import Job
 
 
 class Launcher(ABC):
@@ -24,12 +24,49 @@ class Launcher(ABC):
         self.config = config
 
     @abstractmethod
-    def get_launch_command(self, spec: JobSpec) -> List[str]:
+    def get_launch_command(self, job: Job) -> List[str]:
         """
         Constructs a command to launch a job given a job specification.
 
-        :param spec: The job specification.
+        :param job: The job to launch.
         :return: A list of strings representing the launch command and all of its arguments.
+        """
+        pass
+
+    @abstractmethod
+    def is_launcher_failure(self, output: str) -> bool:
+        """
+        Determines whether the launcher invocation output contains a launcher failure or not.
+
+        Parameters
+        ----------
+        output
+            The output (combined stdout/stderr) from an invocation of the launcher command
+
+        Returns
+        -------
+            Returns `True` if the output
+
+        """
+        pass
+
+    @abstractmethod
+    def get_launcher_failure_message(self, output: str) -> str:
+        """
+        Extracts the launcher error message from the output of this launcher's invocation.
+
+        It is understood that the output is such that
+        :func:`~psi.j.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
+
+        Parameters
+        ----------
+        output
+            The output (combined stdout/stderr) from an invocation of the launcher command.
+
+        Returns
+        -------
+            A string representing the part of the launcher output that describes the launcher
+            error.
         """
         pass
 
