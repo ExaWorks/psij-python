@@ -3,7 +3,7 @@
 import time
 import logging
 
-from typing import Any, Optional, List, Dict, Tuple
+from typing import Any, Optional, List, Tuple
 
 from distutils.version import StrictVersion
 
@@ -11,12 +11,7 @@ from psi.j import InvalidJobException, SubmitException
 from psi.j import Job, JobExecutorConfig, JobState, JobStatus, JobSpec
 from psi.j import JobExecutor
 
-import radical.utils as ru
 logger = logging.getLogger(__name__)
-logger = ru.Logger('radical.psi')
-
-
-_REAPER_SLEEP_TIME = 0.2
 
 
 class RPJobExecutor(JobExecutor):
@@ -45,6 +40,10 @@ class RPJobExecutor(JobExecutor):
         :param config: The `RPJobExecutor` does not have any configuration options.
         :type config: psi.j.JobExecutorConfig
         """
+        # TODO: url is not passed
+        # if not url.startswith('rp://'):
+        #     raise ValueError('expected `rp://` url')
+
         super().__init__(url=url, config=config)
         self._session = self._rp.Session()
         self._pmgr = self._rp.PilotManager(session=self._session)
@@ -122,7 +121,7 @@ class RPJobExecutor(JobExecutor):
         except Exception as ex:
             raise SubmitException('Failed to submit job') from ex
 
-    def _job_2_descr(self, job: Job) -> Any:
+    def _job_2_descr(self, job: Job) -> Dict[str, Any]:
 
         # TODO: use resource spec
         # TODO: use meta data for jpsi uid

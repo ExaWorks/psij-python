@@ -66,6 +66,10 @@ class JobSpec:
         self.post_launch = post_launch
         self.launcher = launcher
 
+        # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
+        #       connector trying to access `job.spec.resources.process_count`
+        #       will thus face an `unknown member` warning.
+
     @property
     def name(self) -> Optional[str]:
         """Returns the name of the job."""
