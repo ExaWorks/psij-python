@@ -1,4 +1,4 @@
-#include "lib.sh"
+# <lib.sh>
 
 _PSI_J_PROCESS_COUNT_="$1"
 shift
