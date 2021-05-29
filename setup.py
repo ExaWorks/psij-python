@@ -13,13 +13,13 @@ if __name__ == '__main__':
 
         url='https://github.com/exaworks/psi-j-python',
 
-        classifiers=(
+        classifiers=[
             'Programming Language :: Python :: 3',
             'License :: OSI Approved :: MIT License',
-        ),
+        ],
 
 
-        packages=setuptools.find_packages(where='src'),
+        packages=['psi'],
         package_dir={'': 'src'},
 
         package_data={
