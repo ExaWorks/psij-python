@@ -44,7 +44,7 @@ class BuildLauncherScriptsCommand(Command):
 class CustomBuildCommand(build):
     def run(self) -> None:
         # build launcher scripts first
-        BuildLauncherScriptsCommand().run()
+        BuildLauncherScriptsCommand(self.distribution).run()
         super().run()
 
 
