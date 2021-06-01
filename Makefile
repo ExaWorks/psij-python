@@ -42,7 +42,7 @@ style:
 
 .PHONY: launcher-scripts
 launcher-scripts:
-	$(PYTHON) setup.py launcher-scripts
+	$(PYTHON) setup.py launcher_scripts
 
 .PHONY: install
 install:
