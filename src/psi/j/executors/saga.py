@@ -3,6 +3,8 @@ import logging
 from threading import RLock
 from typing import Optional, Dict, List
 
+from distutils.version import StrictVersion
+
 import radical.saga as rs
 import radical.saga.job.constants as ct
 import time
@@ -37,6 +39,10 @@ class SagaExecutor(JobExecutor):
     For details about SAGA, see https://en.wikipedia.org/wiki/Simple_API_for_Grid_Applications
     and related links.
     """
+
+    _NAME_ = 'saga'
+    _VERSION_ = StrictVersion('0.0.1')
+
 
     assert('job' in dir(rs)), 'incomplete installation'
 
@@ -106,7 +112,7 @@ class SagaExecutor(JobExecutor):
         job._executor = self
 
         jd = self._job_2_descr(job)
-        saga_job = self._js().create_job(jd)
+        saga_job = self._js.create_job(jd)
         saga_job._jex_uid = job.id
 
         job_mapping.saga_job = saga_job
@@ -196,13 +202,22 @@ class SagaExecutor(JobExecutor):
             raise InvalidJobException('Missing specification.')
 
         jd = rs.job.Description()
-        jd.set_attribute(ct.EXECUTABLE, spec.executable)
-        jd.set_attribute(ct.ARGUMENTS, spec.arguments)
-        jd.set_attribute(ct.ENVIRONMENT, spec.environment)
-        jd.set_attribute(ct.INPUT, spec.stdin_path)
-        jd.set_attribute(ct.OUTPUT, spec.stdout_path)
-        jd.set_attribute(ct.ERROR, spec.stderr_path)
-        jd.set_attribute(ct.WORKING_DIRECTORY, spec.directory)
+        if spec.executable:
+            jd.set_attribute(ct.EXECUTABLE, spec.executable)
+        if spec.arguments:
+            jd.set_attribute(ct.ARGUMENTS, spec.arguments)
+        if spec.environment:
+            jd.set_attribute(ct.ENVIRONMENT, spec.environment)
+        if spec.stdin_path:
+            jd.set_attribute(ct.INPUT, spec.stdin_path)
+        if spec.stdout_path:
+            jd.set_attribute(ct.OUTPUT, spec.stdout_path)
+        if spec.stderr_path:
+            jd.set_attribute(ct.ERROR, spec.stderr_path)
+        if spec.directory:
+            jd.set_attribute(ct.WORKING_DIRECTORY, spec.directory)
+
+        return jd
 
     def cancel(self, job: Job) -> None:
         """
