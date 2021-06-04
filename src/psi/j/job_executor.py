@@ -118,9 +118,7 @@ class JobExecutor(ABC):
 
     @abstractmethod
     def list(self) -> List[str]:
-        """
-        List native IDs of all jobs known to the backend.
-        """
+        """List native IDs of all jobs known to the backend."""
         pass
 
     @abstractmethod
