@@ -170,7 +170,10 @@ class JobExecutor(ABC):
         """
         Returns an instance of a `JobExecutor`.
 
-        :param name: The name of the executor to return.
+        :param name: The name of the executor to return. This must be one of the values returned
+            by :func:`~psi.j.JobExecutor.get_executor_names`. If the value of the `name` parameter
+            is not one of the valid values returned by
+            :func:`~psi.j.JobExecutor.get_executor_names`, `ValueError` is raised.
         :param version_constraint: A version constraint for the executor in the form
             '(' <op> <version>[, <op> <version[, ...]] ')', such as "( > 0.0.2, != 0.0.4)".
         :param url: An optional URL to pass to the `JobExecutor` instance.
