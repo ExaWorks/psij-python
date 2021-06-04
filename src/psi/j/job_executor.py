@@ -4,7 +4,7 @@ from bisect import bisect_left
 from distutils.version import Version
 from distutils.versionpredicate import VersionPredicate
 from threading import RLock
-from typing import Optional, Dict, List, Type, cast, Union, Callable
+from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psi.j
 from psi.j.job import Job, JobStatusCallback
@@ -239,6 +239,20 @@ class JobExecutor(ABC):
         if not hasattr(ecls, attr):
             raise ValueError('Class {} is missing the executor {} attribute, "{}"'.
                              format(ecls, name, attr))
+
+    @staticmethod
+    def get_executor_names() -> Set[str]:
+        """
+        Returns a set of registered executor names.
+
+        Names returned by this method can be passed to :func:`~psi.j.JobExecutor.get_instance` as
+        the `name` parameter.
+
+        Returns
+        -------
+        A set of executor names corresponding to the known executors.
+        """
+        return JobExecutor._executors.keys()
 
     def _get_launcher(self, name: str) -> Launcher:
         with self._launchers_lock:
