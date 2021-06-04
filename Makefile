@@ -19,20 +19,9 @@ stylecheck:
 .PHONY: checks
 checks: typecheck stylecheck
 
-
-.PHONY: genautodocs
-genautodocs: 
-	rm -rf docs/.generated
-	mkdir docs/.generated
-	sphinx-apidoc -f -o docs/.generated src/
-	
-
 .PHONY: docs
-docs: genautodocs docs-noauto
-
-
-.PHONY: docs-noauto
-docs-noauto:
+docs:
+	rm -rf docs/.generated
 	sphinx-build -W -b html docs docs/.build/
 
 .PHONY: style
