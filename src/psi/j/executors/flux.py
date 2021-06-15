@@ -9,12 +9,12 @@ import json
 import threading
 from functools import partial
 
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 
 from distutils.version import StrictVersion
 
 from psi.j import InvalidJobException
-from psi.j import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes
+from psi.j import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes, JobSpec
 from psi.j import JobExecutor, ResourceSpecV1
 
 logger = logging.getLogger(__name__)
@@ -63,8 +63,8 @@ class FluxJobExecutor(JobExecutor):
 
         super().__init__(url=url, config=config)
 
-        self._jobs = dict()  # {job.uid: [job, fut, flux_id]}
-        self._idmap = dict()  # {flux_id, job.uid}
+        self._jobs: Dict[str, List[Any]] = dict()  # {job.uid: [job, fut, flux_id]}
+        self._idmap: Dict[int, str] = dict()  # {flux_id, job.uid}
         self._lock = threading.RLock()  # lock state updates
 
         self._fh = self._ru.FluxHelper()
@@ -154,7 +154,9 @@ class FluxJobExecutor(JobExecutor):
                 flux_fut.add_event_callback(ev, self._event_cb)
 
     def _job_2_descr(self, job: Job) -> Dict[str, Any]:
-        jspec = job.spec
+        if job.spec is None:
+            raise InvalidJobException('no JobSpec defined')
+        jspec: JobSpec = job.spec
 
         # FIXME: what is spec, what is spec.attributes?
         # TODO: why don't we get job.attributes default values here?
@@ -175,6 +177,8 @@ class FluxJobExecutor(JobExecutor):
         if not jspec.arguments:
             jspec.arguments = []
 
+        if not isinstance(jspec.resources, ResourceSpecV1):
+            raise InvalidJobException("resource is not ResourceSpecV1")
         rspec = jspec.resources
         attr = jspec.attributes
 
@@ -222,7 +226,7 @@ class FluxJobExecutor(JobExecutor):
         job_status = JobStatus(JobState.CANCELED, time=time.time())
         self._update_job_status(job, job_status)
 
-    def list(self):
+    def list(self) -> List[str]:
         """
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case Flux job IDs.
@@ -244,7 +248,6 @@ class FluxJobExecutor(JobExecutor):
         :param native_id: The native ID of the process to attached to, as
         obtained through :func:`~psi.j.executors.RPJobExecutor.list` method.
         """
-
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
 
@@ -252,6 +255,7 @@ class FluxJobExecutor(JobExecutor):
         self._jobs[job.id] = [job, task]
 
         state = self._state_map[task.state]
+        assert state is not None
         self._update_job_status(job, JobStatus(state, time=time.time()))
 
     def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
@@ -262,4 +266,3 @@ class FluxJobExecutor(JobExecutor):
 
 
 __PSI_J_EXECUTORS__ = [FluxJobExecutor]
-

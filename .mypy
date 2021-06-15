@@ -9,3 +9,6 @@ ignore_missing_imports = True
 
 [mypy-radical.*]
 ignore_missing_imports = True
+
+[mypy-flux.*]
+ignore_missing_imports = True
