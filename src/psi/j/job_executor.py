@@ -4,7 +4,7 @@ from bisect import bisect_left
 from distutils.version import Version
 from distutils.versionpredicate import VersionPredicate
 from threading import RLock
-from typing import Optional, Dict, List, Type, cast, Union, Callable
+from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psi.j
 from psi.j.job import Job, JobStatusCallback
@@ -118,9 +118,7 @@ class JobExecutor(ABC):
 
     @abstractmethod
     def list(self) -> List[str]:
-        """
-        List native IDs of all jobs known to the backend.
-        """
+        """List native IDs of all jobs known to the backend."""
         pass
 
     @abstractmethod
@@ -172,7 +170,10 @@ class JobExecutor(ABC):
         """
         Returns an instance of a `JobExecutor`.
 
-        :param name: The name of the executor to return.
+        :param name: The name of the executor to return. This must be one of the values returned
+            by :func:`~psi.j.JobExecutor.get_executor_names`. If the value of the `name` parameter
+            is not one of the valid values returned by
+            :func:`~psi.j.JobExecutor.get_executor_names`, `ValueError` is raised.
         :param version_constraint: A version constraint for the executor in the form
             '(' <op> <version>[, <op> <version[, ...]] ')', such as "( > 0.0.2, != 0.0.4)".
         :param url: An optional URL to pass to the `JobExecutor` instance.
@@ -241,6 +242,20 @@ class JobExecutor(ABC):
         if not hasattr(ecls, attr):
             raise ValueError('Class {} is missing the executor {} attribute, "{}"'.
                              format(ecls, name, attr))
+
+    @staticmethod
+    def get_executor_names() -> Set[str]:
+        """
+        Returns a set of registered executor names.
+
+        Names returned by this method can be passed to :func:`~psi.j.JobExecutor.get_instance` as
+        the `name` parameter.
+
+        Returns
+        -------
+        A set of executor names corresponding to the known executors.
+        """
+        return JobExecutor._executors.keys()
 
     def _get_launcher(self, name: str) -> Launcher:
         with self._launchers_lock:
