@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
         package_data={
             '': ['README.md', 'LICENSE'],
-            'psi-j-python': ['*.sh']
+            'psi': ['j/launchers/scripts/*.sh']
         },
 
 
