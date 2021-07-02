@@ -1,5 +1,4 @@
-#define _HASH_ #
-#define _BIN_BASH_ #!/bin/bash
+#!/bin/bash
 
 set -e
 
