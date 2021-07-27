@@ -248,15 +248,7 @@ class FluxJobExecutor(JobExecutor):
         :param native_id: The native ID of the process to attached to, as
         obtained through :func:`~psi.j.executors.RPJobExecutor.list` method.
         """
-        if job.status.state != JobState.NEW:
-            raise InvalidJobException('Job must be in the NEW state')
-
-        task = self._tmgr.get_tasks(uids=native_id)
-        self._jobs[job.id] = [job, task]
-
-        state = self._state_map[task.state]
-        assert state is not None
-        self._update_job_status(job, JobStatus(state, time=time.time()))
+        raise NotImplementedError()
 
     def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
 
