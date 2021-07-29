@@ -19,7 +19,7 @@ class BuildLauncherScriptsCommand(Command):
         pass
 
     def run(self) -> None:
-        dir = pathlib.Path(self._get_script_dir())
+        dir = pathlib.Path(self._get_script_dir()).resolve(strict=True)
         for file in dir.iterdir():
             if file.suffix == '.sht':
                 self._build_script(file)
