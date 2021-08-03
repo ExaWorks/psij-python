@@ -27,6 +27,7 @@ jobs:
         pip install -r requirements-connector-radical.txt
     - name: Lint with flake8
       run: |
+        make typecheck
         make stylecheck
 
   pytest:
