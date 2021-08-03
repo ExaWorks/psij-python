@@ -246,7 +246,7 @@ class JobExecutor(ABC):
     @staticmethod
     def get_executor_names() -> Set[str]:
         """
-        Returns a set of registered executor names.
+        Returns the names of registered executors.
 
         Names returned by this method can be passed to :func:`~psi.j.JobExecutor.get_instance` as
         the `name` parameter.
@@ -255,7 +255,7 @@ class JobExecutor(ABC):
         -------
         A set of executor names corresponding to the known executors.
         """
-        return JobExecutor._executors.keys()
+        return set(JobExecutor._executors.keys())
 
     def _get_launcher(self, name: str) -> Launcher:
         with self._launchers_lock:
