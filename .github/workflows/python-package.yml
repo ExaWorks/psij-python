@@ -10,27 +10,42 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  lint:
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -r requirements-connector-radical.txt
     - name: Lint with flake8
       run: |
-        make checks
+        make stylecheck
+
+  pytest:
+    runs-on: ubuntu-latest   
+    steps:
+    - uses: actions/checkout@v2
     - name: Test with pytest
-      run: |
-        make tests
+      uses: addnab/docker-run-action@v3
+      with:
+        image: fluxrm/flux-core:focal
+        options: -v ${{ github.workspace }}:/workspace -u root
+        run: |
+          cd /workspace
+          echo "Running in ${PWD}"
+          touch test.txt
+          ls
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -r requirements-connector-radical.txt
+          make launcher-scripts
+          make install
+          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') make tests

@@ -4,7 +4,7 @@ PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo 
 
 .PHONY: tests
 tests:
-	PYTHONPATH=$(CWD)/src ${PYTHON} -m pytest
+	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest
 
 
 .PHONY: typecheck
