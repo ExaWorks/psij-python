@@ -24,7 +24,7 @@ class JobAttributes(object):
             such that jobs can be run immediately, without waiting in the queue for resources to
             become available.
         :param custom_attributes: Specifies a dictionary of custom attributes. Implementations of
-            :class:`~psi.j.JobExecutor` define and are responsible for interpreting custom
+            :class:`~psij.JobExecutor` define and are responsible for interpreting custom
             attributes.
         """
         self.duration = duration

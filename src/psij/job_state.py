@@ -28,8 +28,8 @@ class JobState(bytes, Enum):
 
     NEW = (0, 0, 'NEW', False)
     """
-    This is the state of a job immediately after the :class:`~psi.j.Job` object is created and
-    before being submitted to a :class:`~psi.j.JobExecutor`.
+    This is the state of a job immediately after the :class:`~psij.Job` object is created and
+    before being submitted to a :class:`~psij.JobExecutor`.
     """
     QUEUED = (1, 1, 'QUEUED', False)
     """
@@ -49,7 +49,7 @@ class JobState(bytes, Enum):
     whose handling and/or execution by the backend has failed in some way.
     """
     CANCELED = (5, 3, 'CANCELED', True)
-    """Represents a job that was canceled by a call to :func:`~psi.j.Job.cancel()`."""
+    """Represents a job that was canceled by a call to :func:`~psij.Job.cancel()`."""
 
     def is_greater_than(self, other: 'JobState') -> Optional[bool]:
         """

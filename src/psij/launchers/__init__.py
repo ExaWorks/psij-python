@@ -2,7 +2,7 @@
 
 Launcher implementations must be in this package in order for them to be registered automatically.
 Alternatively, you may register a launcher implementation using
-:func:`psi.j.launchers.launcher.Launcher.register_launcher`.
+:func:`psij.launchers.launcher.Launcher.register_launcher`.
 """
 
 from .launcher import Launcher

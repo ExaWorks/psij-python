@@ -2,8 +2,8 @@
 from pathlib import Path
 from typing import Optional
 
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.launchers.script_based_launcher import ScriptBasedLauncher
+from psij.job_executor_config import JobExecutorConfig
+from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 
 class SingleLauncher(ScriptBasedLauncher):

@@ -3,10 +3,10 @@
 from pathlib import Path
 from typing import List, cast, Optional
 
-from psi.j.job import Job
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.launchers.script_based_launcher import ScriptBasedLauncher
-from psi.j.resource_spec import ResourceSpec, ResourceSpecV1
+from psij.job import Job
+from psij.job_executor_config import JobExecutorConfig
+from psij.launchers.script_based_launcher import ScriptBasedLauncher
+from psij.resource_spec import ResourceSpec, ResourceSpecV1
 
 SCRIPT_PATH = Path(__name__).parent / 'scripts' / 'multi_launch.sh'
 

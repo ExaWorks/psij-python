@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Type, Dict
 
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.job import Job
+from psij.job_executor_config import JobExecutorConfig
+from psij.job import Job
 
 
 class Launcher(ABC):
@@ -17,7 +17,7 @@ class Launcher(ABC):
         Base constructors for launchers.
 
         :param config: An optional configuration. If not specified,
-            :attr:`~psi.j.JobExecutorConfig.DEFAULT` is used.
+            :attr:`~psij.JobExecutorConfig.DEFAULT` is used.
         """
         if config is None:
             config = JobExecutorConfig.DEFAULT
@@ -56,7 +56,7 @@ class Launcher(ABC):
         Extracts the launcher error message from the output of this launcher's invocation.
 
         It is understood that the output is such that
-        :func:`~psi.j.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
+        :func:`~psij.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
 
         Parameters
         ----------
@@ -92,7 +92,7 @@ class Launcher(ABC):
         Registers a launcher class.
 
         The registered class cang then be instantiated using
-            :func:`~psi.j.Launcher.get_instance`.
+            :func:`~psij.Launcher.get_instance`.
 
         :param lcls: The launcher class to register.
         """

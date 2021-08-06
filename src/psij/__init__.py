@@ -34,7 +34,7 @@ class _PluginType:
     def __init__(self, name: str, registration_method: Callable[[Type[T]], None]):
         self.name = name
         self.registration_method = registration_method
-        self.package = ['psi', 'j', name]
+        self.package = ['psij', name]
 
 
 TYPES = [_PluginType('executors', JobExecutor.register_executor),
@@ -44,7 +44,7 @@ TYPES = [_PluginType('executors', JobExecutor.register_executor),
 def _load_plugins(path: str, type: _PluginType) -> None:
     for mod in pkgutil.iter_modules(path=[path]):
         if not mod.ispkg and not mod.name[0] == '_':
-            im = importlib.import_module('psi.j.{}.{}'.format(type.name, mod.name))
+            im = importlib.import_module('psij.{}.{}'.format(type.name, mod.name))
             var_name = '__PSI_J_{}__'.format(type.name.upper())
             if hasattr(im, var_name):
                 classes = getattr(im, var_name)

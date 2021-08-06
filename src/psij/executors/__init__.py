@@ -1,4 +1,4 @@
-"""A package containing :class:`psi.j.JobExecutor` implementations."""
+"""A package containing :class:`psij.JobExecutor` implementations."""
 
 from .local import LocalJobExecutor
 from .rp import RPJobExecutor

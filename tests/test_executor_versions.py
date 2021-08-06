@@ -4,7 +4,7 @@
 
 from distutils.version import Version
 
-from psi.j import JobExecutor
+from psij import JobExecutor
 
 
 def test_executor_version(name: str = 'local') -> None:

@@ -42,7 +42,7 @@ print(src_dir + "/")
 
 sys.path.insert(0, src_dir)
 
-import psi
+import psij
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),

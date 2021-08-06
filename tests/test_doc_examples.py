@@ -1,4 +1,4 @@
-import psi.j
+import psij
 
 
 N = 4
@@ -6,11 +6,11 @@ M = 2
 
 
 def test_submit_and_wait_for_n_jobs() -> None:
-    jex = psi.j.JobExecutor.get_instance('local')
+    jex = psij.JobExecutor.get_instance('local')
 
-    def make_job() -> psi.j.Job:
-        job = psi.j.Job()
-        spec = psi.j.JobSpec()
+    def make_job() -> psij.Job:
+        job = psij.Job()
+        spec = psij.JobSpec()
         spec.executable = '/bin/sleep'
         spec.arguments = ['1']
         job.spec = spec
@@ -29,14 +29,14 @@ def test_submit_and_wait_for_n_jobs() -> None:
 def test_run_n_throttle_m() -> None:
     class ThrottledSubmitter:
         def __init__(self) -> None:
-            self.jex = psi.j.JobExecutor.get_instance('local', '>= 0.0.1')
+            self.jex = psij.JobExecutor.get_instance('local', '>= 0.0.1')
             # keep track of completed jobs so that we can submit the rest
             self.jex.set_job_status_callback(self.callback)
             self.count = 0
 
-        def make_job(self) -> psi.j.Job:
-            job = psi.j.Job()
-            spec = psi.j.JobSpec()
+        def make_job(self) -> psij.Job:
+            job = psij.Job()
+            spec = psij.JobSpec()
             spec.executable = '/bin/sleep'
             spec.arguments = ['1']
             job.spec = spec
@@ -55,7 +55,7 @@ def test_run_n_throttle_m() -> None:
             while self.count < M:
                 self.submit_next()
 
-        def callback(self, job: psi.j.Job, status: psi.j.JobStatus) -> None:
+        def callback(self, job: psij.Job, status: psij.JobStatus) -> None:
             if status.final:
                 # a previously submitted job is now done, we have room to
                 # submit another

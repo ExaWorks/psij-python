@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Optional, List, Dict
 
-from psi.j.job_attributes import JobAttributes
-from psi.j.resource_spec import ResourceSpec
+from psij.job_attributes import JobAttributes
+from psij.resource_spec import ResourceSpec
 
 
 class JobSpec:
-    """A class to hold information about the characteristics of a :class:`~psi.j.Job`."""
+    """A class to hold information about the characteristics of a :class:`~psij.Job`."""
 
     def __init__(self, name: Optional[str] = None, executable: Optional[str] = None,
                  arguments: Optional[List[str]] = None, directory: Optional[Path] = None,
@@ -19,7 +19,7 @@ class JobSpec:
         Constructs a `JobSpec` object while allowing its properties to be initialized.
 
         :param name: A name for the job. The name plays no functional role except that
-            :class:`~psi.j.JobExecutor` implementations may attempt to use the name to label the
+            :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
             job as presented by the underlying implementation.
         :param executable: An executable, such as "/bin/date".
         :param arguments: The argument list to be passed to the executable. Unlike with execve(),

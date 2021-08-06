@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class JobExecutorConfig(object):
-    """An abstract configuration class for :class:`~psi.j.JobExecutor` instances."""
+    """An abstract configuration class for :class:`~psij.JobExecutor` instances."""
 
     def __init__(self, launcher_log_file: Optional[Path] = None):
         """
