@@ -66,7 +66,7 @@ class JobExecutor(ABC):
     @property
     def version(self) -> Version:
         """Returns the version of this executor."""
-        return cast(Version, getattr(self.__class__, '__VERSION__'))
+        return cast(Version, getattr(self.__class__, '_VERSION_'))
 
     @abstractmethod
     def submit(self, job: Job) -> None:
