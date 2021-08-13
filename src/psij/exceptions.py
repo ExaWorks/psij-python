@@ -1,4 +1,4 @@
-import psi.j
+import psij
 from typing import Optional
 
 
@@ -28,7 +28,7 @@ class SubmitException(Exception):
     """
     An exception representing job submission issues.
 
-    This exception is thrown when the :func:`~psi.j.JobExecutor.submit` call fails for
+    This exception is thrown when the :func:`~psij.JobExecutor.submit` call fails for
     a reason that is independent of the job that is being submitted.
     """
 
@@ -72,20 +72,20 @@ class UnreachableStateException(Exception):
     """
     Indicates that a job state being waited for cannot be reached.
 
-    This exception is thrown when the :func:`~psi.j.Job.wait` method is called with a set of
+    This exception is thrown when the :func:`~psij.Job.wait` method is called with a set of
     states that cannot be reached by the job when the call is made.
     """
 
-    def __init__(self, status: 'psi.j.JobStatus') -> None:
+    def __init__(self, status: 'psij.JobStatus') -> None:
         """
         Constructs an `UnreachableStateException`.
 
-        :param status: The :class:`~psi.j.JobStatus` that the job was in when
-            :func:`~psi.j.Job.wait` was called and which prevents the desired states to be
+        :param status: The :class:`~psij.JobStatus` that the job was in when
+            :func:`~psij.Job.wait` was called and which prevents the desired states to be
             reached.
         """
         self.status = status
         """
         Returns the job status that has caused an implementation to determine that the desired
-        states passed to the :func:`~psi.j.Job.wait` method cannot be reached.
+        states passed to the :func:`~psij.Job.wait` method cannot be reached.
         """

@@ -1,4 +1,4 @@
-"""This module contains the Flux :class:`~psi.j.JobExecutor`."""
+"""This module contains the Flux :class:`~psij.JobExecutor`."""
 
 from __future__ import annotations
 
@@ -13,9 +13,9 @@ from typing import Any, Optional, Dict, List
 
 from distutils.version import StrictVersion
 
-from psi.j import InvalidJobException
-from psi.j import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes, JobSpec
-from psi.j import JobExecutor, ResourceSpecV1
+from psij import InvalidJobException
+from psij import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes, JobSpec
+from psij import JobExecutor, ResourceSpecV1
 
 logger = logging.getLogger(__name__)
 # logging.basicConfig(level='DEBUG', force=True, filename='flux_connector.log')
@@ -55,7 +55,7 @@ class FluxJobExecutor(JobExecutor):
 
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `FluxJobExecutor` does not have any configuration options.
-        :type config: psi.j.JobExecutorConfig
+        :type config: psij.JobExecutorConfig
         """
         # TODO: url is not passed
         # if not url.startswith('flux://'):
@@ -242,11 +242,11 @@ class FluxJobExecutor(JobExecutor):
         """
         Attaches a job to a process.
 
-        The job must be in the :attr:`~psi.j.JobState.NEW` state.
+        The job must be in the :attr:`~psij.JobState.NEW` state.
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-        obtained through :func:`~psi.j.executors.RPJobExecutor.list` method.
+        obtained through :func:`~psij.executors.RPJobExecutor.list` method.
         """
         raise NotImplementedError()
 

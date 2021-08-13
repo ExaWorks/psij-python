@@ -25,7 +25,7 @@ class BuildLauncherScriptsCommand(Command):
                 self._build_script(file)
 
     def _get_script_dir(self) -> str:
-        return 'src/psi/j/launchers/scripts'
+        return 'src/psij/launchers/scripts'
 
     def _build_script(self, template_path: pathlib.Path) -> None:
         lib_path = template_path.with_name('lib.sh')
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         name='psi-j-python',
         version='0.1',
 
-        description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs) 
+        description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
         specification.''',
 
         author='The ExaWorks Team',
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
         package_data={
             '': ['README.md', 'LICENSE'],
-            'psi': ['j/launchers/scripts/*.sh']
+            'psij': ['launchers/scripts/*.sh']
         },
 
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple
 
-from psi.j.exceptions import InvalidJobException
+from psij.exceptions import InvalidJobException
 
 
 class ResourceSpec(ABC):

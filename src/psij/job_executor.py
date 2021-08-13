@@ -6,10 +6,10 @@ from distutils.versionpredicate import VersionPredicate
 from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
-import psi.j
-from psi.j.job import Job, JobStatusCallback
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.launchers.launcher import Launcher
+import psij
+from psij.job import Job, JobStatusCallback
+from psij.job_executor_config import JobExecutorConfig
+from psij.launchers.launcher import Launcher
 
 
 class _VersionEntry:
@@ -79,17 +79,17 @@ class JobExecutor(ABC):
         has not been successfully sent to the underlying implementation, the job status remains
         unchanged, and no status notifications about the job will be fired.
 
-        :raises ~psi.j.InvalidJobException: Thrown if the job specification cannot be understood.
+        :raises ~psij.InvalidJobException: Thrown if the job specification cannot be understood.
             This exception is fatal in that submitting another job with the exact same details will
-            also fail with an `~psi.j.InvalidJobException`. In principle, the underlying
+            also fail with an `~psij.InvalidJobException`. In principle, the underlying
             implementation / LRM is the entity ultimately responsible for interpreting a
             specification and reporting any errors associated with it. However, in many cases, this
             reporting may come after a significant delay. In the interest of failing fast, library
             implementations should make an effort of validating specifications early and throwing
             this exception as soon as possible if that validation fails.
 
-        :raises ~psi.j.SubmitException: Thrown if the request cannot be sent to the underlying
-            implementation. Unlike `~psi.j.InvalidJobException`, this exception can occur for
+        :raises ~psij.SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation. Unlike `~psij.InvalidJobException`, this exception can occur for
             reasons that are transient.
         """
         pass
@@ -103,8 +103,8 @@ class JobExecutor(ABC):
         communicated to the underlying implementation. The job will then be canceled at the
         discretion of the implementation, which may be at some later time. A successful
         cancelation is reflected in a change of status of the respective job to
-        :attr:`~psi.j.JobState.CANCELED`. User code can synchronously wait until the
-        :attr:`~psi.j.JobState.CANCELED` state is reached using `job.wait(JobState.CANCELED)` or
+        :attr:`~psij.JobState.CANCELED`. User code can synchronously wait until the
+        :attr:`~psij.JobState.CANCELED` state is reached using `job.wait(JobState.CANCELED)` or
         even `job.wait()`, since the latter would wait for all final states, including
         `JobState.CANCELED`. In fact, it is recommended that `job.wait()` be used because it is
         entirely possible for the job to complete before the cancelation is communicated to the
@@ -126,28 +126,28 @@ class JobExecutor(ABC):
         """
         Attaches a job to a native job.
 
-        :param job: A job to attach. The job must be in the :attr:`~psi.j.JobState.NEW` state.
-        :param native_id: The native ID to attach to as returned by :attr:`~psi.j.Job.native_id`.
+        :param job: A job to attach. The job must be in the :attr:`~psij.JobState.NEW` state.
+        :param native_id: The native ID to attach to as returned by :attr:`~psij.Job.native_id`.
         """
         pass
 
     def set_job_status_callback(self,
                                 cb: Union[JobStatusCallback,
-                                          Callable[[Job, 'psi.j.JobStatus'], None]]) -> None:
+                                          Callable[[Job, 'psij.JobStatus'], None]]) -> None:
         """
         Registers a status callback with this executor.
 
-        The callback can either be a subclass of :class:`~psi.j.JobStatusCallback` or a function
-        accepting two arguments: a :class:`~psi.j.Job` and a :class:`~psi.j.JobStatus` and
+        The callback can either be a subclass of :class:`~psij.JobStatusCallback` or a function
+        accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus` and
         returning nothing.
 
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`.
 
-        :param cb: An instance of :class:`~psi.j.JobStatusCallback` or a function with two
-            parameters, job of type :class:`~psi.j.Job` and job_status of type
-            :class:`~psi.j.JobStatus` returning nothing.
+        :param cb: An instance of :class:`~psij.JobStatusCallback` or a function with two
+            parameters, job of type :class:`~psij.Job` and job_status of type
+            :class:`~psij.JobStatus` returning nothing.
         """
         if isinstance(cb, JobStatusCallback):
             self._cb = cb
@@ -171,9 +171,9 @@ class JobExecutor(ABC):
         Returns an instance of a `JobExecutor`.
 
         :param name: The name of the executor to return. This must be one of the values returned
-            by :func:`~psi.j.JobExecutor.get_executor_names`. If the value of the `name` parameter
+            by :func:`~psij.JobExecutor.get_executor_names`. If the value of the `name` parameter
             is not one of the valid values returned by
-            :func:`~psi.j.JobExecutor.get_executor_names`, `ValueError` is raised.
+            :func:`~psij.JobExecutor.get_executor_names`, `ValueError` is raised.
         :param version_constraint: A version constraint for the executor in the form
             '(' <op> <version>[, <op> <version[, ...]] ')', such as "( > 0.0.2, != 0.0.4)".
         :param url: An optional URL to pass to the `JobExecutor` instance.
@@ -204,7 +204,7 @@ class JobExecutor(ABC):
         """
         Registers a `JobExecutor` class.
 
-        The class can then be later instantiated using :func:`~psi.j.JobExecutor.get_instance`.
+        The class can then be later instantiated using :func:`~psij.JobExecutor.get_instance`.
 
         :param ecls: A subclass of `JobExecutor` to register. The class must have the `_NAME_` and
             `_VERSION_` class attributes which define the name and version of the `JobExecutor` and
@@ -248,7 +248,7 @@ class JobExecutor(ABC):
         """
         Returns the names of registered executors.
 
-        Names returned by this method can be passed to :func:`~psi.j.JobExecutor.get_instance` as
+        Names returned by this method can be passed to :func:`~psij.JobExecutor.get_instance` as
         the `name` parameter.
 
         Returns
@@ -267,10 +267,10 @@ class JobExecutor(ABC):
 class _FunctionJobStatusCallback(JobStatusCallback):
     """A JobStatusCallback that wraps a function."""
 
-    def __init__(self, fn: Callable[[Job, 'psi.j.JobStatus'], None]):
+    def __init__(self, fn: Callable[[Job, 'psij.JobStatus'], None]):
         """Initializes a `_FunctionJobStatusCallback`."""
         self.fn = fn
 
-    def job_status_changed(self, job: Job, job_status: 'psi.j.JobStatus') -> None:
-        """See :func:`~psi.j.JobStatusCallback.job_status_changed`."""
+    def job_status_changed(self, job: Job, job_status: 'psij.JobStatus') -> None:
+        """See :func:`~psij.JobStatusCallback.job_status_changed`."""
         self.fn(job, job_status)

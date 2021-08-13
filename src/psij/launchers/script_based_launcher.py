@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Optional, List
 
-from psi.j.launchers.launcher import Launcher
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.job import Job
+from psij.launchers.launcher import Launcher
+from psij.job_executor_config import JobExecutorConfig
+from psij.job import Job
 
 
 def _str(obj: Optional[object]) -> str:
@@ -33,7 +33,7 @@ class ScriptBasedLauncher(Launcher):
     * the pre- and post- launcher scripts, or empty strings if they are not specified
 
     Additional positional arguments to the script can be specified by subclasses by overriding
-    the :func:`~psi.j.launchers.script_based_launcher.ScriptBasedLauncher._get_additional_args`
+    the :func:`~psij.launchers.script_based_launcher.ScriptBasedLauncher._get_additional_args`
     function.
 
     The remaining arguments to the script are the job executable and arguments.
@@ -70,7 +70,7 @@ class ScriptBasedLauncher(Launcher):
             self._log_file = str(config.launcher_log_file)
 
     def get_launch_command(self, job: Job) -> List[str]:
-        """See :func:`~psi.j.launchers.launcher.Launcher.get_launch_command`."""
+        """See :func:`~psij.launchers.launcher.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
@@ -94,9 +94,9 @@ class ScriptBasedLauncher(Launcher):
         return []
 
     def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psi.j.launchers.launcher.Launcher.is_launcher_failure`."""
+        """See :func:`~psij.launchers.launcher.Launcher.is_launcher_failure`."""
         return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psi.j.launchers.launcher.Launcher.get_launcher_failure_message`."""
+        """See :func:`~psij.launchers.launcher.Launcher.get_launcher_failure_message`."""
         return '\n'.join(output.split('\n')[:-1])

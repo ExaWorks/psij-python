@@ -1,4 +1,4 @@
-"""This module contains the local :class:`~psi.j.JobExecutor`."""
+"""This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
 import subprocess
@@ -10,9 +10,9 @@ from typing import Optional, Dict, List, Type, Tuple
 
 import psutil
 
-from psi.j import InvalidJobException, SubmitException, Launcher
-from psi.j import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
-from psi.j import JobExecutor
+from psij import InvalidJobException, SubmitException, Launcher
+from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
+from psij import JobExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -175,20 +175,20 @@ class LocalJobExecutor(JobExecutor):
 
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `LocalJobExecutor` does not have any configuration options.
-        :type config: psi.j.JobExecutorConfig
+        :type config: psij.JobExecutorConfig
         """
         super().__init__(url=url, config=config)
         self._reaper = _ProcessReaper.get_instance()
 
     def submit(self, job: Job) -> None:
         """
-        Submits the specified :class:`~psi.j.Job` to be run locally.
+        Submits the specified :class:`~psij.Job` to be run locally.
 
         Successful return of this method indicates that the job has been started locally and all
         changes in the job status, including failures, are reported using notifications. If the job
-        specification is invalid, an :class:`~psi.j.InvalidJobException` is thrown. If
+        specification is invalid, an :class:`~psij.InvalidJobException` is thrown. If
         the actual submission fails for reasons outside the validity of the job,
-        a :class:`~psi.j.SubmitException` is thrown.
+        a :class:`~psij.SubmitException` is thrown.
 
         :param job: The job to be submitted.
         """
@@ -250,12 +250,12 @@ class LocalJobExecutor(JobExecutor):
         """
         Return a list of ids representing jobs that are running on the underlying implementation.
 
-        Specifically for the `LocalJobExecutor`, this returns a list of `~psi.j.NativeId` objects
+        Specifically for the `LocalJobExecutor`, this returns a list of `~psij.NativeId` objects
         corresponding to the processes running under the current user on the local machine. These
         processes need not correspond to jobs statrted by calling the `submit()` method of an
         instance of a `LocalJobExecutor`.
 
-        :return: The list of `~psi.j.NativeId` objects corresponding to the current user's
+        :return: The list of `~psij.NativeId` objects corresponding to the current user's
             processes running locally.
         """
         my_username = psutil.Process().username()
@@ -266,13 +266,13 @@ class LocalJobExecutor(JobExecutor):
         """
         Attaches a job to a process.
 
-        The job must be in the :attr:`~psi.j.JobState.NEW` state. The exit code of the attached job
+        The job must be in the :attr:`~psij.JobState.NEW` state. The exit code of the attached job
         will not be available upon completion and a zero exit code will always be returned for jobs
         attached by the `LocalJobExecutor`.
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as obtained through
-            :func:`~psi.j.executors.LocalJobExecutor.list` method.
+            :func:`~psij.executors.LocalJobExecutor.list` method.
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')

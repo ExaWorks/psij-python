@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-# This is meant as a simple test file to check if psi/j was installed successfully
+# This is meant as a simple test file to check if psij was installed successfully
 
 import sys
 
-from psi.j import Job, JobExecutor, JobSpec
+from psij import Job, JobExecutor, JobSpec
 
 
 if __name__ == '__main__':

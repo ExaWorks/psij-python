@@ -5,11 +5,11 @@ from datetime import timedelta, datetime
 from typing import Optional, Sequence
 from uuid import uuid4
 
-import psi.j
-from psi.j.exceptions import SubmitException, UnreachableStateException
-from psi.j.job_spec import JobSpec
-from psi.j.job_state import JobState
-from psi.j.job_status import JobStatus
+import psij
+from psij.exceptions import SubmitException, UnreachableStateException
+from psij.job_spec import JobSpec
+from psij.job_state import JobState
+from psij.job_status import JobStatus
 
 logger = logging.getLogger(__name__)
 
@@ -35,22 +35,22 @@ class Job:
         Constructs a `Job` object.
 
         The object can optionally be initialized with the given
-        :class:`~psi.j.JobSpec`. After construction, the job will be in the
-        :attr:`~psi.j.JobState.NEW` state.
+        :class:`~psij.JobSpec`. After construction, the job will be in the
+        :attr:`~psij.JobState.NEW` state.
 
-        :param spec: an optional :class:`~psi.j.JobSpec`
+        :param spec: an optional :class:`~psij.JobSpec`
         """
         self.spec = spec
         """The job specification for this job. A valid job requires a valid specification."""
         self._id = _generate_id()
         self._status = JobStatus(JobState.NEW)
         # need indirect ref to avoid a circular reference
-        self._executor = None  # type: Optional['psi.j.JobExecutor']
+        self._executor = None  # type: Optional['psij.JobExecutor']
         # allow the native ID to be anything and do the string conversion in the getter; there's
         # no point in storing integers as strings.
         self._native_id = None  # type: Optional[object]
         self.status_callback = None  # type: Optional[JobStatusCallback]
-        """Setting this property registers a :class:`~psi.j.JobStatusCallback` with this executor.
+        """Setting this property registers a :class:`~psij.JobStatusCallback` with this executor.
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`."""
@@ -76,7 +76,7 @@ class Job:
         Returns the native ID of this job.
 
         The native ID may not be available until after the job is submitted to a
-        :class:`~psi.j.JobExecutor`.
+        :class:`~psij.JobExecutor`.
         """
         if self._native_id is None:
             return None
@@ -89,7 +89,7 @@ class Job:
         Returns the current status of the job.
 
         It is guaranteed that the status returned by this method is monotonic in time with respect
-        to the partial ordering of :class:`~psi.j.JobStatus` types. That is, if
+        to the partial ordering of :class:`~psij.JobStatus` types. That is, if
         `job_status_1.state` and `job_status_2.state` are comparable and
         `job_status_1.state < job_status_2.state`, then it is impossible for `job_status_2` to be
         returned by a call placed prior to a call that returns `job_status_1` if both calls are
@@ -106,10 +106,10 @@ class Job:
         """
         Cancels this job.
 
-        The job is canceled by calling :func:`~psi.j.JobExecutor.cancel` on the job
+        The job is canceled by calling :func:`~psij.JobExecutor.cancel` on the job
         executor that was used to submit this job.
 
-        :raises psi.j.SubmitException: if the job has not yet been submitted.
+        :raises psij.SubmitException: if the job has not yet been submitted.
         """
         if not self._executor:
             raise SubmitException('Cannot cancel job: not bound to an executor.')
@@ -117,7 +117,7 @@ class Job:
             self._executor.cancel(self)
 
     def _set_status(self, status: JobStatus,
-                    executor: Optional['psi.j.JobExecutor'] = None) -> None:
+                    executor: Optional['psij.JobExecutor'] = None) -> None:
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Job status change {}: {!s} -> {!s}".format(self, self._status.state,
                                                                      status.state))
@@ -138,17 +138,17 @@ class Job:
 
         This method returns either when the job reaches one of the `target_states` or when an
         amount of time indicated by the `timeout` parameter, if specified, passes. Returns the
-        :class:`~psi.j.JobStatus` object that has one of the desired `target_states` or `None` if
+        :class:`~psij.JobStatus` object that has one of the desired `target_states` or `None` if
         the timeout is reached. If none of the states in `target_states` can be reached (such as,
-        for example, because the job has entered the :attr:`~psi.j.JobState.FAILED` state while
-        `target_states` consists of :attr:`~psi.j.JobState.COMPLETED`), this method throws an
-        :class:`~psi.j.UnreachableStateException`.
+        for example, because the job has entered the :attr:`~psij.JobState.FAILED` state while
+        `target_states` consists of :attr:`~psij.JobState.COMPLETED`), this method throws an
+        :class:`~psij.UnreachableStateException`.
 
         :param timeout: An optional timeout after which this method returns even if none of the
             `target_states` was reached. If not specified, wait indefinitely.
         :param target_states: A set of states to wait for. If not specified, wait for any
-            of the :attr:`~psi.j.JobState.final` states.
-        :return: returns the :class:`~psi.j.JobStatus` object that caused the caused this call to
+            of the :attr:`~psij.JobState.final` states.
+        :return: returns the :class:`~psij.JobStatus` object that caused the caused this call to
             complete or `None` if the timeout is specified and reached.
         """
         start = datetime.now()
@@ -198,10 +198,10 @@ class JobStatusCallback(ABC):
         This method is invoked when a status change occurs on a job.
 
         Client code interested in receiving status notifications must implement this method. It is
-        entirely possible that :attr:`psi.j.Job.status` when referenced from the body of this
+        entirely possible that :attr:`psij.Job.status` when referenced from the body of this
         method would return something different from the `status` passed to this callback. This is
         because the status of the job can be updated during the execution of the body of this
-        method and, in particular, before the potential dereference to :attr:`psi.j.Job.status` is
+        method and, in particular, before the potential dereference to :attr:`psij.Job.status` is
         made.
 
         Client code implementing this method must return quickly and cannot be used for lengthy

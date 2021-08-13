@@ -2,8 +2,8 @@
 from pathlib import Path
 from typing import Optional
 
-from psi.j.job_executor_config import JobExecutorConfig
-from psi.j.launchers import MultipleLauncher
+from psij.job_executor_config import JobExecutorConfig
+from psij.launchers import MultipleLauncher
 
 
 class MPILauncher(MultipleLauncher):

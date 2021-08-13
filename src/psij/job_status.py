@@ -1,7 +1,7 @@
 import time as t
 from typing import Optional, Dict
 
-from psi.j.job_state import JobState
+from psij.job_state import JobState
 
 
 class JobStatus(object):
@@ -13,12 +13,12 @@ class JobStatus(object):
         """
         Constructs a `JobStatus` object.
 
-        :param state: The :class:`~psi.j.JobState` of this status.
+        :param state: The :class:`~psij.JobState` of this status.
         :param time: The time, as would be returned by :func:`time.time()` that the transition to
             the new state occurred. If `None`, the current time will be used.
         :param message: An optional message associated with the transition.
         :param exit_code: An optional exit code for the job, if the job has completed.
-        :param metadata: Optional metadata provided by the :class:`~psi.j.JobExecutor`.
+        :param metadata: Optional metadata provided by the :class:`~psij.JobExecutor`.
         """
         self.state = state
         if time is not None:
