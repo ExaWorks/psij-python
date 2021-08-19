@@ -12,3 +12,6 @@ ignore_missing_imports = True
 
 [mypy-flux.*]
 ignore_missing_imports = True
+
+[mypy-pystache.*]
+ignore_missing_imports = True
