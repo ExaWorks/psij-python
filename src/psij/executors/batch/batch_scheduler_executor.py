@@ -489,16 +489,14 @@ class _QueuePollThread(Thread):
         with self._jobs_lock:
             if len(self._jobs) == 0:
                 return
-        logger.info('Polling for %s jobs', len(self._jobs))
+            jobs_copy = dict(self._jobs)
+        logger.info('Polling for %s jobs', len(jobs_copy))
         try:
-            out = self.executor._run_command(self.executor.get_status_command(self._jobs.values()))
+            out = self.executor._run_command(self.executor.get_status_command(jobs_copy.values()))
             logger.debug('Output from qstat: %s', out)
             self._poll_error_count = 0
 
             status_map = self.executor.parse_status_output(out)
-
-            with self._jobs_lock:
-                jobs_copy = dict(self._jobs)
 
             for native_id, job in jobs_copy.items():
                 try:
