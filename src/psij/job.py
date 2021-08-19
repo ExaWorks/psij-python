@@ -83,10 +83,6 @@ class Job(object):
         else:
             return str(self._native_id)
 
-    @native_id.setter
-    def native_id(self, native_id: str) -> None:
-        self._native_id = native_id
-
     @property
     def status(self) -> JobStatus:
         """

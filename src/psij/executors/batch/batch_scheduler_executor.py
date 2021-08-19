@@ -156,7 +156,7 @@ class BatchSchedulerExecutor(JobExecutor):
             logger.debug('Job %s: running submit command', job.id)
             out = self._run_command(self.get_submit_command(job, submit_file_path))
             logger.debug('Job %s: submit command ouput: %s', job.id, out)
-            job.native_id = self.job_id_from_submit_output(out)
+            job._native_id = self.job_id_from_submit_output(out)
             logger.info('Job %s: native id: %s', job.id, job.native_id)
             self._set_job_status(job, JobStatus(JobState.QUEUED,
                                                 metadata={'native_id': job.native_id}))
@@ -210,7 +210,7 @@ class BatchSchedulerExecutor(JobExecutor):
         native_id
             The id of the batch scheduler job to attach to.
         """
-        job.native_id = native_id
+        job._native_id = native_id
         self._queue_poll_thread.register_job(job)
 
     @abstractmethod
