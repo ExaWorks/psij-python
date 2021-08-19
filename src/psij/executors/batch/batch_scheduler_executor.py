@@ -528,7 +528,7 @@ class _QueuePollThread(Thread):
         self._poll_error_count += 1
         if immediate or (self._poll_error_count > self.config.queue_polling_error_threshold):
             self._poll_error_count = 0
-            # pull one job
+            # fail all jobs
             with self._jobs_lock:
                 # We should only poll if there is at least one job, so we should not be in a
                 # situation when we polled and there were no jobs to poll for
@@ -536,9 +536,10 @@ class _QueuePollThread(Thread):
                 # after the last job was processed and removed from self._jobs; in practice,
                 # the code in _poll has the job removal from _jobs as the last possible step
                 assert len(self._jobs) > 0
-                _, job = self._jobs.popitem()
-            status = JobStatus(JobState.FAILED, message=msg)
-            self.executor._set_job_status(job, status)
+                jobs_copy = dict(self._jobs)
+                self._jobs.clear()
+            for job in jobs_copy.values():
+                self.executor._set_job_status(job,  JobStatus(JobState.FAILED, message=msg))
 
     def register_job(self, job: Job) -> None:
         assert job.native_id
