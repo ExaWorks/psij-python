@@ -22,6 +22,8 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
     from this class should be defined, even if empty.
     """
 
+    DEFAULT_WORK_DIRECTORY = Path.home() / '.psij' / 'work'
+
     def __init__(self, launcher_log_file: Optional[Path] = None,
                  work_directory: Optional[Path] = None, queue_polling_interval: int = 30,
                  queue_polling_error_threshold: int = 2,
@@ -44,7 +46,11 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
             Whether to keep submit files and auxiliary job files (exit code and output files) after
             a job has completed.
         """
-        super().__init__(launcher_log_file, work_directory)
+        super().__init__(launcher_log_file)
+        if work_directory:
+            self.work_directory = work_directory
+        else:
+            self.work_directory = BatchSchedulerExecutorConfig.DEFAULT_WORK_DIRECTORY
         self.queue_polling_interval = queue_polling_interval
         self.queue_polling_error_threshold = queue_polling_error_threshold
         self.keep_files = keep_files
