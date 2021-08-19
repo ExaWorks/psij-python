@@ -1,4 +1,5 @@
 import inspect
+import logging
 from abc import ABC, abstractmethod
 from bisect import bisect_left
 from distutils.version import Version
@@ -7,9 +8,13 @@ from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psij
+from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
 from psij.launchers.launcher import Launcher
+
+
+logger = logging.getLogger(__name__)
 
 
 class _VersionEntry:
