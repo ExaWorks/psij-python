@@ -34,8 +34,9 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
             See :func:`~JobExecutorConfig.__init__`.
         work_directory
             A directory where submit scripts and auxiliary job files will be generated.
-            queue_polling_interval : an interval, in seconds, at which the batch scheduler queue
-            will be polled for updates to jobs.
+        queue_polling_interval
+            an interval, in seconds, at which the batch scheduler queue will be polled for updates
+            to jobs.
         queue_polling_error_threshold
             The number of times consecutive queue polls have to fail in order for the executor to
             report them as job failures.
