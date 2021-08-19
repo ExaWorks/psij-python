@@ -119,6 +119,9 @@ class JobExecutor(ABC):
         `job.wait(JobState.CANCELED)` would hang indefinitely.
 
         :param job: The job to be canceled.
+
+        :raises ~psij.SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation.
         """
         pass
 
