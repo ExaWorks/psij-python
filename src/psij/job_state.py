@@ -98,3 +98,33 @@ class JobState(bytes, Enum):
             return bool(self._value_ == other._value_)
         else:
             return False
+
+    def __ne__(self, other: object) -> bool:
+        """Returns false only if `other` represents the same state as this state."""
+        if isinstance(other, JobState):
+            return bool(self._value_ != other._value_)
+        else:
+            return True
+
+    def __bool__(self) -> bool:
+        """All states are consider true-ish."""
+        return True
+
+
+class JobStateOrder:
+    """A class that can be used to reconstruct missing states."""
+
+    @staticmethod
+    def prev(state: JobState) -> Optional[JobState]:
+        """Returns the state previous to the given state.
+
+        The "previous" state is a state that must have occurred immediately prior to this state
+        given the state transition diagram if such a state is unique. Not all states have a
+        previous state. For example, the FAILED state does not have a previous state, since it can
+        be reached from multiple states.
+        """
+        if state == JobState.COMPLETED:
+            return JobState.ACTIVE
+        if state == JobState.ACTIVE:
+            return JobState.QUEUED
+        return None
