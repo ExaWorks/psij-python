@@ -85,9 +85,9 @@ class BatchSchedulerExecutor(JobExecutor):
             }
         }
 
-    The *script directory* is a directory (typically `~/.psij/`) where submit scripts are written;
-    it is also used for auxiliary files, such as the *exit code file* (see below) or the *script
-    output file*.
+    The *script directory* is a directory (typically `~/.psij/work`) where submit scripts are
+    written; it is also used for auxiliary files, such as the *exit code file* (see below) or the
+    *script output file*.
 
     The *launch command* is a list of strings which the script generator should render as the
     command to execute. It wraps the job executable in the proper :class:`~Launcher`.
