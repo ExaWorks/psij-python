@@ -177,7 +177,7 @@ class LocalJobExecutor(JobExecutor):
         :param config: The `LocalJobExecutor` does not have any configuration options.
         :type config: psij.JobExecutorConfig
         """
-        super().__init__(url=url, config=config)
+        super().__init__(url=url, config=config if config else JobExecutorConfig())
         self._reaper = _ProcessReaper.get_instance()
 
     def submit(self, job: Job) -> None:

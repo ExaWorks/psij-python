@@ -43,15 +43,21 @@ class JobExecutor(ABC):
 
     _executors = {}  # type: Dict[str, List[_VersionEntry]]
 
-    def __init__(self, url: Optional[str] = None, config: Optional[JobExecutorConfig] = None):
+    def __init__(self, url: Optional[str] = None,
+                 config: Optional[JobExecutorConfig] = None):
         """
         Initializes this executor using an optional `url` and an optional configuration.
 
         :param url: The URL is a string that a `JobExecutor` implementation can interpret as the
             location of a backend.
-        :param config: An optional configuration specific to each `JobExecutor` implementation.
+        :param config: An configuration specific to each `JobExecutor` implementation. This
+            parameter is marked as optional such that concrete `JobExecutor` classes can be
+            instantiated with no `config` parameter. However, concrete `JobExecutor` classes
+            must pass a default configuration up the inheritance tree and ensure that the
+            `config` parameter of the ABC constructor is non-null.
         """
         self.url = url
+        assert config
         self.config = config
         # _cb is not thread-safe; changing it while jobs are running could lead to badness
         self._cb = None  # type: Optional[JobStatusCallback]
