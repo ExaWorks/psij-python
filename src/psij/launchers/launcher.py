@@ -11,6 +11,7 @@ class Launcher(ABC):
     """An abstract base class for all launchers."""
 
     _launchers = {}  # type: Dict[str, Type[Launcher]]
+    DEFAULT_LAUNCHER_NAME = 'single'
 
     def __init__(self, config: Optional[JobExecutorConfig] = None) -> None:
         """
