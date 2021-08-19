@@ -110,14 +110,13 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
         return ['sbatch', str(submit_file_path.absolute())]
 
-    def get_cancel_command(self, job: Job) -> List[str]:
+    def get_cancel_command(self, native_id: str) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
-        assert job.native_id
-        return ['scancel', job.native_id]
+        return ['scancel', native_id]
 
-    def get_status_command(self, jobs: Collection[Job]) -> List[str]:
+    def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
-        ids = self.join_native_ids(jobs, ',')
+        ids = ','.join(native_ids)
 
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than

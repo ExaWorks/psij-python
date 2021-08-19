@@ -55,12 +55,11 @@ class _TestJobExecutor(BatchSchedulerExecutor):
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
         return [sys.executable, QSUB_PATH, str(submit_file_path.absolute())]
 
-    def get_cancel_command(self, job: Job) -> List[str]:
-        assert job.native_id
-        return [sys.executable, QDEL_PATH, job.native_id]
+    def get_cancel_command(self, native_id: str) -> List[str]:
+        return [sys.executable, QDEL_PATH, native_id]
 
-    def get_status_command(self, jobs: Collection[Job]) -> List[str]:
-        ids = self.join_native_ids(jobs, ',')
+    def get_status_command(self, native_ids: Collection[str]) -> List[str]:
+        ids = ','.join(native_ids)
 
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than

@@ -183,7 +183,7 @@ class BatchSchedulerExecutor(JobExecutor):
         if job.status.state.final:
             return
         try:
-            self._run_command(self.get_cancel_command(job))
+            self._run_command(self.get_cancel_command(job.native_id))
         except subprocess.CalledProcessError as ex:
             if job.status.state.final and not job.status.state == JobState.CANCELED:
                 # assume that the queuing system failed to cancel the job because it was already
@@ -275,25 +275,25 @@ class BatchSchedulerExecutor(JobExecutor):
         pass
 
     @abstractmethod
-    def get_cancel_command(self, job: Job) -> List[str]:
+    def get_cancel_command(self, native_id: str) -> List[str]:
         """Constructs a command to cancel a batch scheduler job.
 
         Concrete implementations of batch scheduler executors must override this method.
 
         Parameters
         ----------
-        job
-            The job being cancelled. The job is reasonably guaranteed to have a valid `native_id`.
+        native_id
+            The native id of the job being cancelled.
 
         Returns
         -------
         A list of strings representing the command and arguments to execute in order to cancel
-        the job, such as, e.g., `['qdel', job.native_id]`.
+        the job, such as, e.g., `['qdel', native_id]`.
         """
         pass
 
     @abstractmethod
-    def get_status_command(self, jobs: Collection[Job]) -> List[str]:
+    def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """Constructs a command to retrieve the status of a list of jobs.
 
         Concrete implementations of batch scheduler executors must override this method. In order
@@ -305,13 +305,12 @@ class BatchSchedulerExecutor(JobExecutor):
         Parameters
         ----------
         jobs
-            A collection of jobs whose status is sought. The jobs are guaranteed to each have
-            a `native_id`.
+            A collection of native ids corresponding to the jobs whose status is sought.
 
         Returns
         -------
         A list of strings representing the command and arguments to execute in order to get the
-        status of `jobs`.
+        status of the jobs.
         """
         pass
 
@@ -333,33 +332,6 @@ class BatchSchedulerExecutor(JobExecutor):
         done by the base `BatchSchedulerExecutor` implementation.
         """
         pass
-
-    def join_native_ids(self, jobs: Collection[Job], separator: str = ' ') -> str:
-        """Constructs a string representing a list of native ids.
-
-        The constructed string consists of `separator`-separated native ids for each job in the
-        job list. In other words, the resulting string will be:
-            `<jobs[0].native_id><separator><jobs[1].native_id><separator>...<jobs[-1].native_id>.
-
-        Parameters
-        ----------
-        jobs
-            The list of jobs.
-        separator
-            A separator to insert between each `native_id`.
-
-        Returns
-        -------
-        A string representing the list of `native_id`s for each job in `jobs` separated by
-        `separator`.
-        """
-        ids = ''
-        for job in jobs:
-            assert job.native_id
-            if ids != '':
-                ids += separator
-            ids += job.native_id
-        return ids
 
     def _create_script_context(self, job: Job) -> Dict[str, object]:
         launcher = self._get_launcher_from_job(job)
@@ -474,7 +446,7 @@ class _QueuePollThread(Thread):
         self.config = config
         self.executor = executor
         # native_id -> job
-        self._jobs = {}  # type: Dict[str, Job]
+        self._jobs = {}  # type: Dict[str, List[Job]]
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()
@@ -492,20 +464,21 @@ class _QueuePollThread(Thread):
             jobs_copy = dict(self._jobs)
         logger.info('Polling for %s jobs', len(jobs_copy))
         try:
-            out = self.executor._run_command(self.executor.get_status_command(jobs_copy.values()))
+            out = self.executor._run_command(self.executor.get_status_command(jobs_copy.keys()))
             logger.debug('Output from qstat: %s', out)
             self._poll_error_count = 0
 
             status_map = self.executor.parse_status_output(out)
 
-            for native_id, job in jobs_copy.items():
+            for native_id, job_list in jobs_copy.items():
                 try:
                     status = self._get_job_status(native_id, status_map)
                 except Exception:
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())
-                self.executor._set_job_status(job, status)
+                for job in job_list:
+                    self.executor._set_job_status(job, status)
                 if status.state.final:
                     with self._jobs_lock:
                         del self._jobs[native_id]
@@ -538,11 +511,15 @@ class _QueuePollThread(Thread):
                 assert len(self._jobs) > 0
                 jobs_copy = dict(self._jobs)
                 self._jobs.clear()
-            for job in jobs_copy.values():
-                self.executor._set_job_status(job,  JobStatus(JobState.FAILED, message=msg))
+            for job_list in jobs_copy.values():
+                for job in job_list:
+                    self.executor._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
 
     def register_job(self, job: Job) -> None:
         assert job.native_id
         logger.info('Job %s: registering', job.id)
         with self._jobs_lock:
-            self._jobs[job.native_id] = job
+            native_id = job.native_id
+            if native_id not in self._jobs:
+                self._jobs[native_id] = [job]
+            self._jobs[job.native_id].append(job)
