@@ -6,6 +6,11 @@ PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo 
 tests:
 	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest
 
+.PHONY: verbose-tests
+verbose-tests:
+	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest --log-format="%(asctime)s %(levelname)s %(message)s" \
+		           --log-date-format="%Y-%m-%d %H:%M:%S" --log-cli-level=DEBUG
+
 
 .PHONY: typecheck
 typecheck:
