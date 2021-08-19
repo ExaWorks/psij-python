@@ -1,0 +1,8 @@
+#!/usr/bin/python3
+import sys
+
+from qlib import *
+
+job_id = sys.argv[1]
+
+update_job(job_id, 'X', None)

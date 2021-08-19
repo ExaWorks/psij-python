@@ -1,0 +1,31 @@
+#!/usr/bin/python3
+import os
+import random
+import subprocess
+import sys
+import time
+
+from qlib import *
+
+job_id = sys.argv[1]
+script = sys.argv[2]
+
+
+logger.info('Running job %s', job_id)
+wait_time = random.randint(1, 10)
+
+logger.info('Queue time for %s is %s', job_id, wait_time)
+#time.sleep(wait_time)
+time.sleep(0.11)
+
+update_job(job_id, 'R', None)
+
+try:
+    env = dict(os.environ)
+    env['PSIJ_BATCH_TEST_JOB_ID'] = job_id
+    proc = subprocess.run(['/bin/bash', script], env=env)
+    logger.info('Job %s completed', job_id)
+    update_job(job_id, 'C', None)
+except Exception as ex:
+    logger.warning('Exception caught running job: %s', ex)
+    update_job(job_id, 'F', str(ex))

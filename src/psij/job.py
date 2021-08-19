@@ -23,7 +23,7 @@ def _generate_id() -> str:
     return str(uuid4())
 
 
-class Job:
+class Job(object):
     """
     This class represents a PSI/J job.
 

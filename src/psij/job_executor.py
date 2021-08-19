@@ -277,6 +277,12 @@ class JobExecutor(ABC):
                 self._launchers[name] = Launcher.get_instance(name, self.config)
             return self._launchers[name]
 
+    def _set_job_status(self, job: Job, status: JobStatus) -> None:
+        try:
+            job._set_status(status, self)
+        except Exception as ex:
+            logger.warning('failed to set status for job %s: %s', job.id, ex)
+
 
 class _FunctionJobStatusCallback(JobStatusCallback):
     """A JobStatusCallback that wraps a function."""
