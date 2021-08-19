@@ -35,7 +35,10 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         launcher_log_file
             See :func:`~JobExecutorConfig.__init__`.
         work_directory
-            A directory where submit scripts and auxiliary job files will be generated.
+            A directory where submit scripts and auxiliary job files will be generated. In a,
+            cluster this directory needs to point to a directory on a shared filesystem. This is so
+            that the exit code file, likely written on a service node, can be accessed by PSI/J,
+            likely running on a head node.
         queue_polling_interval
             an interval, in seconds, at which the batch scheduler queue will be polled for updates
             to jobs.
