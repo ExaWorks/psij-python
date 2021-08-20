@@ -68,6 +68,11 @@
 
 {{/job.spec.attributes}}
 
+{{!since we redirect the output manually, below, tell slurm not to do its own thing, since it
+only results in empty files that are not cleaned up}}
+#SBATCH -e /dev/null
+#SBATCH -o /dev/null
+
 {{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the
 same as for the exit code file.}}
