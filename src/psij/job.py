@@ -119,7 +119,6 @@ class Job(object):
     def _set_status(self, status: JobStatus,
                     executor: Optional['psij.JobExecutor'] = None) -> None:
         with self._status_cv:
-            logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
             crt = self._status.state
             nxt = status.state
             if crt == nxt or crt.is_greater_than(nxt):
@@ -127,6 +126,7 @@ class Job(object):
             prev = JobStateOrder.prev(nxt)
         if prev is not None and prev != crt:
             self._set_status(JobStatus(prev))
+        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
         with self._status_cv:
             if executor:
                 self._executor = executor
