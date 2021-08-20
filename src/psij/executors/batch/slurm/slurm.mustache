@@ -73,7 +73,7 @@ when the directives are evaluated; the reason for using the job id in the first 
 same as for the exit code file.}}
 exec &>> "{{psij.script_dir}}/$SLURM_JOB_ID.out"
 
-{{#psij.launch_command}}{{.}}{{/psij.launch_command}}
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
 echo "$?" > "{{psij.script_dir}}/$SLURM_JOB_ID.ec"
