@@ -4,11 +4,11 @@ PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo 
 
 .PHONY: tests
 tests:
-	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest
+	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest -k local -v
 
 .PHONY: verbose-tests
 verbose-tests:
-	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest --log-format="%(asctime)s %(levelname)s %(message)s" \
+	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest -v --log-format="%(asctime)s %(levelname)s %(message)s" \
 		           --log-date-format="%Y-%m-%d %H:%M:%S" --log-cli-level=DEBUG
 
 
