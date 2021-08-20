@@ -130,10 +130,12 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
         r = {}
-        lines = iter(out.split('\\n'))
+        lines = iter(out.split('\n'))
         # skip header
         lines.__next__()
         for line in lines:
+            if not line:
+                continue
             cols = line.split()
             assert len(cols) == 3
             native_id = cols[0]

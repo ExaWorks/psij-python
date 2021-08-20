@@ -67,8 +67,10 @@ class _TestJobExecutor(BatchSchedulerExecutor):
 
     def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
         r = {}
-        lines = iter(out.split('\\n'))
+        lines = iter(out.split('\n'))
         for line in lines:
+            if not line:
+                continue
             cols = line.split(maxsplit=2)
             native_id = cols[0]
             state = self._get_state(cols[1])
