@@ -32,7 +32,7 @@ def test_simple_job(executor: str) -> None:
 
 
 def test_simple_job_redirect(executor: str) -> None:
-    with TemporaryDirectory() as td:
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'work') as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         exec = JobExecutor.get_instance(executor, config=get_config(executor))
