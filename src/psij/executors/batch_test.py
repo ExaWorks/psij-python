@@ -60,10 +60,6 @@ class _TestJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         ids = ','.join(native_ids)
-
-        # we're not really using job arrays, so this is equivalent to the job ID. However, if
-        # we were to use arrays, this would return one ID for the entire array rather than
-        # listing each element of the array independently
         return [sys.executable, QSTAT_PATH, ids]
 
     def job_id_from_submit_output(self, out: str) -> str:
