@@ -522,4 +522,5 @@ class _QueuePollThread(Thread):
             native_id = job.native_id
             if native_id not in self._jobs:
                 self._jobs[native_id] = [job]
-            self._jobs[job.native_id].append(job)
+            else:
+                self._jobs[job.native_id].append(job)
