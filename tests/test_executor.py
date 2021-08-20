@@ -91,3 +91,16 @@ def test_missing_executable(executor: str) -> None:
         assert status.exit_code != 0
     except SubmitException:
         pass
+
+
+def test_parallel_jobs(executor: str) -> None:
+    spec = JobSpec(executable='/bin/sleep', arguments=['5'])
+    job1 = Job(spec)
+    job2 = Job(spec)
+    exec = JobExecutor.get_instance(executor, config=get_config(executor))
+    exec.submit(job1)
+    exec.submit(job2)
+    status1 = job1.wait()
+    status2 = job2.wait()
+    assert_completed(status1)
+    assert_completed(status2)
