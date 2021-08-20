@@ -19,14 +19,15 @@ class _TestExecutorConfig(BatchSchedulerExecutorConfig):
 
     def __init__(self, launcher_log_file: Optional[Path] = None,
                  work_directory: Optional[Path] = None, queue_polling_interval: int = 1,
-                 queue_polling_error_threshold: int = 2, keep_files: bool = False):
+                 initial_queue_polling_delay: int = 1, queue_polling_error_threshold: int = 2,
+                 keep_files: bool = False):
         """Initializes a `TestExecutorConfig`.
 
         This constructor overrides the constructor for :class:`~BatchSchedulerExecutorConfig` to
         change the `queue_polling_interval` default to 5 seconds.
         """
         super().__init__(launcher_log_file, work_directory, queue_polling_interval,
-                         queue_polling_error_threshold, keep_files)
+                         initial_queue_polling_delay, queue_polling_error_threshold, keep_files)
 
 
 class _TestJobExecutor(BatchSchedulerExecutor):

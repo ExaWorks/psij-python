@@ -26,6 +26,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
 
     def __init__(self, launcher_log_file: Optional[Path] = None,
                  work_directory: Optional[Path] = None, queue_polling_interval: int = 30,
+                 initial_queue_polling_delay: int = 2,
                  queue_polling_error_threshold: int = 2,
                  keep_files: bool = False):
         """Initializes a base batch scheduler executor configuration.
@@ -42,6 +43,10 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         queue_polling_interval
             an interval, in seconds, at which the batch scheduler queue will be polled for updates
             to jobs.
+        initial_queue_polling_delay
+            the time to wait before polling the queue for the first time; for quick tests that only
+            submit a short job that completes nearly instantly or for jobs that fail very quickly,
+            this can dramatically reduce the time taken to get the necessary job status update.
         queue_polling_error_threshold
             The number of times consecutive queue polls have to fail in order for the executor to
             report them as job failures.
@@ -55,6 +60,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         else:
             self.work_directory = BatchSchedulerExecutorConfig.DEFAULT_WORK_DIRECTORY
         self.queue_polling_interval = queue_polling_interval
+        self.initial_queue_polling_delay = initial_queue_polling_delay
         self.queue_polling_error_threshold = queue_polling_error_threshold
         self.keep_files = keep_files
 
@@ -453,6 +459,7 @@ class _QueuePollThread(Thread):
 
     def run(self) -> None:
         logger.debug('Executor %s: queue poll thread started', self.executor)
+        time.sleep(self.config.initial_queue_polling_delay)
         while True:
             self._poll()
             time.sleep(self.config.queue_polling_interval)
