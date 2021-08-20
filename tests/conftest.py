@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# type: ignore
 
 def pytest_addoption(parser):
     parser.addoption('--executors', action='append', default=['local', 'batch-test', 'slurm'],
