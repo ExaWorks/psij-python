@@ -1,6 +1,6 @@
 from distutils.version import StrictVersion
 from pathlib import Path
-from typing import Optional, Collection, List, Dict
+from typing import Optional, Collection, List, Dict, TextIO
 
 from psij import Job, JobStatus, JobState
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
@@ -104,7 +104,11 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
             config = SlurmExecutorConfig()
         super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'slurm'
-                                                  / 'test.mustache')
+                                                  / 'slurm.mustache')
+
+    def generate_submit_script(self, job: Job, context: Dict[str, object],
+                               submit_file: TextIO) -> None:
+        self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
