@@ -15,8 +15,7 @@ logger.info('Running job %s', job_id)
 wait_time = random.randint(1, 10)
 
 logger.info('Queue time for %s is %s', job_id, wait_time)
-#time.sleep(wait_time)
-time.sleep(0.11)
+time.sleep(wait_time)
 
 update_job(job_id, 'R', None)
 
