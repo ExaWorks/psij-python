@@ -65,6 +65,10 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         self.keep_files = keep_files
 
 
+class _InvalidJobStateError(Exception):
+    pass
+
+
 class BatchSchedulerExecutor(JobExecutor):
     """A base class for batch scheduler executors.
 
@@ -191,13 +195,14 @@ class BatchSchedulerExecutor(JobExecutor):
         try:
             self._run_command(self.get_cancel_command(job.native_id))
         except subprocess.CalledProcessError as ex:
-            if job.status.state.final and not job.status.state == JobState.CANCELED:
-                # assume that the queuing system failed to cancel the job because it was already
-                # completed instead of raising an exception; in any event, there is nothing to
-                # gain from canceling a completed job since cancelation is assumed to mean that
-                # the job should not be running any more, a condition already met by the completion
-                return
-            raise SubmitException(ex.output)
+            try:
+                self.process_cancel_command_output(ex.returncode, ex.output)
+            except _InvalidJobStateError:
+                # do nothing; the job has completed anyway
+                pass
+            except SubmitException:
+                # re-raise
+                raise
 
     def attach(self, job: Job, native_id: str) -> None:
         """Attaches a job to a native job.
@@ -295,6 +300,37 @@ class BatchSchedulerExecutor(JobExecutor):
         -------
         A list of strings representing the command and arguments to execute in order to cancel
         the job, such as, e.g., `['qdel', native_id]`.
+        """
+        pass
+
+    @abstractmethod
+    def process_cancel_command_output(self, exit_code: int, out: str) -> None:
+        """Handle output from a failed cancel command.
+
+        The main purpose of this method is to help distinguish between the cancel command
+        failing due to an invalid job state (such as the job having completed before the cancel
+        command was invoked) and other types of errors. Since job state errors are ignored, there
+        are two options:
+            1. Instruct the cancel command to not fail on invalid state errors and have this
+            method always raise a `SubmitException`, since it is only invoked on "other" errors.
+            2. Have the cancel command fail on both invalid state errors and other errors and
+            interpret the output from the cancel command to distinguish between the two and raise
+            the appropriate exception.
+
+        Parameters
+        ----------
+        exit_code
+            The exit code from the cancel command.
+        out
+            The output from the cancel command.
+
+        Raises
+        ------
+        _InvalidJobStateError
+            Raised if the job cancellation has failed because the job was in a completed or failed
+            state at the time when the cancellation command was invoked.
+        SubmitException
+            Raised for all other reasons.
         """
         pass
 

@@ -2,7 +2,7 @@ from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
-from psij import Job, JobStatus, JobState
+from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
     BatchSchedulerExecutorConfig
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
@@ -117,7 +117,11 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
 
     def get_cancel_command(self, native_id: str) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
-        return ['scancel', native_id]
+        return ['scancel', '-Q', native_id]
+
+    def process_cancel_command_output(self, exit_code: int, out: str) -> None:
+        """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
+        raise SubmitException('Failed job cancel job: %s' % out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
