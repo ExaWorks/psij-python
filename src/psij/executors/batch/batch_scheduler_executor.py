@@ -441,8 +441,8 @@ class BatchSchedulerExecutor(JobExecutor):
                     # only read output from submit script if another error message is not
                     # already present
                     status.message = self._read_aux_file(job, '.out')
-            else:
-                self._delete_aux_file(job, '.out')
+                else:
+                    self._delete_aux_file(job, '.out')
 
         except Exception as ex:
             logger.warning('Job %s: failed to read auxiliary files: %s' % (job.id, ex))
@@ -455,16 +455,17 @@ class BatchSchedulerExecutor(JobExecutor):
                 with open(path) as f:
                     return f.read()
             finally:
-                assert isinstance(self.config, BatchSchedulerExecutorConfig)
-                if not self.config.keep_files:
-                    path.unlink()
+                self._delete_aux_file(job, suffix, force=True)
         else:
             return None
 
-    def _delete_aux_file(self, job: Job, suffix: str) -> None:
+    def _delete_aux_file(self, job: Job, suffix: str, force: bool = False) -> None:
+        assert isinstance(self.config, BatchSchedulerExecutorConfig)
+        if self.config.keep_files:
+            return
         assert job.native_id
         path = self.work_directory / (job.native_id + suffix)
-        if path.exists():
+        if force or path.exists():
             path.unlink()
 
     def list(self) -> List[str]:
