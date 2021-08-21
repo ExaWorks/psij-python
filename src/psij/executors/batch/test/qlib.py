@@ -35,7 +35,7 @@ def read_state() -> Dict[str, object]:
         return cast(Dict[str, object], state)
 
 
-def update_job(job_id: str, js: str, error: Optional[str]) -> None:
+def update_job(job_id: str, js: str, error: Optional[str], check: bool = False) -> None:
     """Updates state for a job and commits it to the state file."""
     if error is None:
         error = ''
@@ -43,6 +43,8 @@ def update_job(job_id: str, js: str, error: Optional[str]) -> None:
     with FileLock(str(lock_file.absolute())):
         state = read_state()
         assert isinstance(state['jobs'], Dict)
+        if check and job_id not in state['jobs']:
+            raise ValueError('No such job: %s' % job_id)
         state['jobs'][job_id] = {
             'state': js,
             'error': error,
