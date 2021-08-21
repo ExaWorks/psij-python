@@ -426,7 +426,7 @@ class BatchSchedulerExecutor(JobExecutor):
                 submit_file_path = self.work_directory / (job.id + '.job')
                 submit_file_path.unlink()
         except Exception as ex:
-            logger.warning('Job %s: failed to read auxiliary files: %s' % (job.id, ex))
+            logger.warning('Job %s: failed clean submit script: %s' % (job.id, ex))
 
     def _read_aux_files(self, job: Job, status: JobStatus) -> None:
         try:
