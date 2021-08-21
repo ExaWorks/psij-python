@@ -59,7 +59,7 @@ def test_attach(executor: str) -> None:
 
 
 def test_cancel(executor: str) -> None:
-    job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
+    job = Job(JobSpec(executable='/bin/sleep', arguments=['60']))
     exec = JobExecutor.get_instance(executor, config=get_config(executor))
     exec.submit(job)
     job.wait(target_states=[JobState.ACTIVE])
