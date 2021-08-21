@@ -13,8 +13,10 @@ for INDEX in $(seq 1 1 $_PSI_J_PROCESS_COUNT_); do
 done
 
 for PID in $PIDS ; do
+    set +e
     wait $PID
     _PSI_J_EC=$?
+    set -e
     if [ "$_PSI_J_EC" != "0" ]; then
         log "Pid $PID failed with $_PSI_J_EC"
         _PSI_J_FAILED_EC=$_PSI_J_EC
