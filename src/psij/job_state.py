@@ -127,4 +127,6 @@ class JobStateOrder:
             return JobState.ACTIVE
         if state == JobState.ACTIVE:
             return JobState.QUEUED
+        if state == JobState.QUEUED:
+            return JobState.NEW
         return None
