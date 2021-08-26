@@ -43,7 +43,6 @@ class SagaExecutor(JobExecutor):
     _NAME_ = 'saga'
     _VERSION_ = StrictVersion('0.0.1')
 
-
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
