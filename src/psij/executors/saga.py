@@ -116,6 +116,8 @@ class SagaExecutor(JobExecutor):
         job
             The :class:`~psij.Job` to be submitted.
         """
+
+        assert(self._js)
         # derive SAGA job description and submit it
         job_mapping = _JobMapping(job)
         with self._lock:
@@ -189,6 +191,7 @@ class SagaExecutor(JobExecutor):
 
             # saga job is not known to this executor - re-connect via backend:
             try:
+                assert(self._js)
                 saga_job = self._js.get_job(native_id)
                 job_mapping = _JobMapping(job, saga_job)
                 self._jobs[job.id] = job_mapping
