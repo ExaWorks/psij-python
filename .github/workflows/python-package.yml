@@ -43,7 +43,7 @@ jobs:
           cd /workspace
           echo "Running in ${PWD}"
           sudo apt update
-          sudo apt install openssh-server
+          sudo apt install -y openssh-server openssh-client
           mkdir -p "$HOME/.ssh"
           chmod 0755 "$HOME"
           chmod 0700 "$HOME/.ssh"
