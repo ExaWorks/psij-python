@@ -24,7 +24,7 @@ def test_simple_job_redirect(name: str, url: Optional[str]) -> None:
     with TemporaryDirectory() as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'],
-            stdout_path=outp))
+                          stdout_path=outp))
         jex = JobExecutor.get_instance(name=name, url=url)
         jex.submit(job)
         job.wait()
