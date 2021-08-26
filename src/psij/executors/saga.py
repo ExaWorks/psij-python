@@ -60,6 +60,8 @@ class SagaExecutor(JobExecutor):
 
         self._jobs = dict()  # type: Dict[str, _JobMapping]
         self._lock = RLock()
+
+        self._js = None
         self._js = rs.job.Service(self.url)
         self._cb = None
         atexit.register(self._close)

@@ -1,4 +1,6 @@
 import pytest
+
+from typing import Optional
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -10,7 +12,7 @@ tests = [['local', None],
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_simple_job(name, url) -> None:
+def test_simple_job(name: str, url: Optional[str]) -> None:
     job = Job(JobSpec(executable='/bin/date'))
     jex = JobExecutor.get_instance(name=name, url=url)
     jex.submit(job)
@@ -18,7 +20,7 @@ def test_simple_job(name, url) -> None:
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_simple_job_redirect(name, url) -> None:
+def test_simple_job_redirect(name: str, url: Optional[str]) -> None:
     with TemporaryDirectory() as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'],
@@ -32,7 +34,7 @@ def test_simple_job_redirect(name, url) -> None:
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_attach(name, url) -> None:
+def test_attach(name: str, url: Optional[str]) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
     jex = JobExecutor.get_instance(name=name, url=url)
     jex.submit(job)
@@ -46,7 +48,7 @@ def test_attach(name, url) -> None:
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_cancel(name, url) -> None:
+def test_cancel(name: str, url: Optional[str]) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
     jex = JobExecutor.get_instance(name=name, url=url)
     jex.submit(job)
@@ -58,7 +60,7 @@ def test_cancel(name, url) -> None:
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_failing_job(name, url) -> None:
+def test_failing_job(name: str, url: Optional[str]) -> None:
     job = Job(JobSpec(executable='/bin/false'))
     jex = JobExecutor.get_instance(name=name, url=url)
     jex.submit(job)
@@ -70,7 +72,7 @@ def test_failing_job(name, url) -> None:
 
 
 @pytest.mark.parametrize('name,url', tests)
-def test_missing_executable(name, url) -> None:
+def test_missing_executable(name: str, url: Optional[str]) -> None:
     job = Job(JobSpec(executable='/bin/no_such_file_or_directory'))
     jex = JobExecutor.get_instance(name=name, url=url)
     # we don't know if this will fail with an exception or JobState.FAILED,
