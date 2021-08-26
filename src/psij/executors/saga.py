@@ -9,7 +9,7 @@ import radical.saga as rs
 import radical.saga.job.constants as ct
 import time
 
-from psi.j import JobExecutor, JobExecutorConfig, JobState, JobStatus, Job, \
+from psij import JobExecutor, JobExecutorConfig, JobState, JobStatus, Job, \
     SubmitException, InvalidJobException
 
 logger = logging.getLogger(__name__)
@@ -44,8 +44,6 @@ class SagaExecutor(JobExecutor):
     _VERSION_ = StrictVersion('0.0.1')
 
 
-    assert('job' in dir(rs)), 'incomplete installation'
-
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
@@ -69,6 +67,7 @@ class SagaExecutor(JobExecutor):
     def _close(self) -> None:
         if self._js:
             self._js.close()
+            self._js = None
 
     def __del__(self) -> None:
         """
@@ -98,12 +97,12 @@ class SagaExecutor(JobExecutor):
 
     def submit(self, job: Job) -> None:
         """
-        Submits the specified :class:`~psi.j.Job` to be run using SAGA.
+        Submits the specified :class:`~psij.Job` to be run using SAGA.
 
         Parameters
         ----------
         job
-            The :class:`~psi.j.Job` to be submitted.
+            The :class:`~psij.Job` to be submitted.
         """
         # derive SAGA job description and submit it
         job_mapping = _JobMapping(job)
@@ -120,8 +119,6 @@ class SagaExecutor(JobExecutor):
 
         # TODO: the backend attribute is not standard; why do we need it?
         self._update_job_status(job, JobStatus(JobState.QUEUED, metadata={'backend': self.url}))
-
-        self._update_job_status(job, JobStatus(JobState.ACTIVE))
 
         saga_job.run()
 
@@ -161,35 +158,38 @@ class SagaExecutor(JobExecutor):
             A PSI-J job ID
 
         """
-        # This probably needs to be re-worked. I would assume that the meaning of attach()
-        # here is not to attach to a saga job, but to attach to a scheduler job
 
-        # try to find job in known jobs
-        with self._lock:
-            for job_mapping in self._jobs.values():
-                try:
-                    if job_mapping.jpsi_job.status.metadata:
-                        job_native_id = job_mapping.jpsi_job.status.metadata['native_id']
-                        if job_native_id == native_id:
-                            # TODO: what is the meaning here?
-                            # return job_mapping.jpsi_job
-                            return
-                except KeyError:
-                    pass
-
-        # otherwise re-connect from backend:
         saga_job = None
-        try:
-            saga_job = self._js.get(native_id)
-        except Exception:
-            pass
+        with self._lock:
+            # try to find job in known jobs
+            for job_mapping in self._jobs.values():
+                if job_mapping.jpsi_job.status.metadata:
+                    job_native_id = job_mapping.jpsi_job.status.metadata.get('native_id')
+                    if not job_native_id:
+                        continue
+                    if job_native_id == native_id:
+                        saga_job = job_mapping.saga_job
+                        if not saga_job:
+                            continue
+                        # found the native saga job, attach it to this job
+                        job_mapping = _JobMapping(job, saga_job)
+                        self._jobs[job.id] = job_mapping
+                        break
+
+            # saga job is not known to this executor - re-connect via backend:
+            try:
+                saga_job = self._js.get_job(native_id)
+                job_mapping = _JobMapping(job, saga_job)
+                self._jobs[job.id] = job_mapping
+            except Exception:
+                pass
 
         if not saga_job:
-            # TODO: There is a discussion on the suitability of cancel() throwing a SubmitException.
-            # TODO: that same discussion would apply here
+            # TODO: There is a discussion on the suitability of cancel()
+            #       throwing a SubmitException - same applies here
             raise SubmitException('Unknown native id: "{}'.format(native_id))
 
-        # we found the job - recreate state
+        # we found the job and reconnected to it - update the job state
         state = _STATE_MAP[saga_job.state]
         if state.final:
             self._update_job_status(job, JobStatus(state, exit_code=saga_job.exit_code))
