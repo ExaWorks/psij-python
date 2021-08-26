@@ -12,8 +12,8 @@ tests = [['local', None],
 @pytest.mark.parametrize('name,url', tests)
 def test_simple_job(name, url) -> None:
     job = Job(JobSpec(executable='/bin/date'))
-    exec = JobExecutor.get_instance(name=name, url=url)
-    exec.submit(job)
+    jex = JobExecutor.get_instance(name=name, url=url)
+    jex.submit(job)
     job.wait()
 
 
@@ -21,9 +21,10 @@ def test_simple_job(name, url) -> None:
 def test_simple_job_redirect(name, url) -> None:
     with TemporaryDirectory() as td:
         outp = Path(td, 'stdout.txt')
-        job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
-        exec = JobExecutor.get_instance(name=name, url=url)
-        exec.submit(job)
+        job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'],
+            stdout_path=outp))
+        jex = JobExecutor.get_instance(name=name, url=url)
+        jex.submit(job)
         job.wait()
         f = outp.open("r")
         contents = f.read()
@@ -33,22 +34,22 @@ def test_simple_job_redirect(name, url) -> None:
 @pytest.mark.parametrize('name,url', tests)
 def test_attach(name, url) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
-    exec = JobExecutor.get_instance(name=name, url=url)
-    exec.submit(job)
+    jex = JobExecutor.get_instance(name=name, url=url)
+    jex.submit(job)
     job.wait(target_states=[JobState.ACTIVE])
     native_id = job.native_id
 
     assert native_id is not None
     job2 = Job()
-    exec.attach(job2, native_id)
+    jex.attach(job2, native_id)
     job2.wait()
 
 
 @pytest.mark.parametrize('name,url', tests)
 def test_cancel(name, url) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
-    exec = JobExecutor.get_instance(name=name, url=url)
-    exec.submit(job)
+    jex = JobExecutor.get_instance(name=name, url=url)
+    jex.submit(job)
     job.wait(target_states=[JobState.ACTIVE])
     job.cancel()
     status = job.wait()
@@ -59,8 +60,8 @@ def test_cancel(name, url) -> None:
 @pytest.mark.parametrize('name,url', tests)
 def test_failing_job(name, url) -> None:
     job = Job(JobSpec(executable='/bin/false'))
-    exec = JobExecutor.get_instance(name=name, url=url)
-    exec.submit(job)
+    jex = JobExecutor.get_instance(name=name, url=url)
+    jex.submit(job)
     status = job.wait()
     assert status is not None
     assert status.state == JobState.FAILED
@@ -71,10 +72,11 @@ def test_failing_job(name, url) -> None:
 @pytest.mark.parametrize('name,url', tests)
 def test_missing_executable(name, url) -> None:
     job = Job(JobSpec(executable='/bin/no_such_file_or_directory'))
-    exec = JobExecutor.get_instance(name=name, url=url)
-    # we don't know if this will fail with an exception or JobState.FAILED, so handle both
+    jex = JobExecutor.get_instance(name=name, url=url)
+    # we don't know if this will fail with an exception or JobState.FAILED,
+    # so handle both
     try:
-        exec.submit(job)
+        jex.submit(job)
         status = job.wait()
         assert status is not None
         assert status.state == JobState.FAILED
