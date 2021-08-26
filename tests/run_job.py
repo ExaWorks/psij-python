@@ -18,7 +18,7 @@ if __name__ == '__main__':
         url = sys.argv[2]
 
     jobs = list()
-    job = Job(JobSpec(executable='/bin/sleep', arguments=['3']))
+    job = Job(JobSpec(executable='/bin/date'))
     exec = JobExecutor.get_instance(name=name, url=url)
     exec.submit(job)
     jobs.append(job)

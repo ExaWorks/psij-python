@@ -79,19 +79,29 @@ class SagaExecutor(JobExecutor):
         self._close()
 
     def _state_cb(self, saga_job: rs.job.Job, metric: object, ctx: object) -> bool:
-        jpsi_uid = saga_job._jex_uid
-        jpsi_job = self._get_jpsi_job(jpsi_uid)
-        ec = None
+        jpsi_ids = list()
+        with self._lock:
+            for job_mapping in self._jobs.values():
+                if job_mapping.saga_job and job_mapping.saga_job.id == saga_job.id:
+                    jpsi_ids.append(job_mapping.jpsi_job.id)
 
-        if saga_job.state in [rs.FAILED, rs.DONE]:
-            ec = saga_job.exit_code
+        for jpsi_id in jpsi_ids:
+            jpsi_job = self._get_jpsi_job(jpsi_id)
+            ec = None
 
-        logger.debug('%s --> %s', jpsi_uid, saga_job.state)
+            print('%s: %s - %s' % (jpsi_job.id, saga_job.state, saga_job.id))
+            if not jpsi_job._native_id:
+                jpsi_job._native_id = saga_job.id
 
-        job_status = JobStatus(_STATE_MAP[saga_job.state], time.time(), exit_code=ec)
-        jpsi_job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(jpsi_job, job_status)
+            if saga_job.state in [rs.FAILED, rs.DONE]:
+                ec = saga_job.exit_code
+
+            logger.debug('%s --> %s', jpsi_id, saga_job.state)
+
+            job_status = JobStatus(_STATE_MAP[saga_job.state], time.time(), exit_code=ec)
+            jpsi_job._set_status(job_status, self)
+            if self._cb:
+                self._cb.job_status_changed(jpsi_job, job_status)
 
         return True
 
@@ -112,7 +122,6 @@ class SagaExecutor(JobExecutor):
 
         jd = self._job_2_descr(job)
         saga_job = self._js.create_job(jd)
-        saga_job._jex_uid = job.id
 
         job_mapping.saga_job = saga_job
         saga_job.add_callback(rs.STATE, self._state_cb)
@@ -190,6 +199,7 @@ class SagaExecutor(JobExecutor):
             raise SubmitException('Unknown native id: "{}'.format(native_id))
 
         # we found the job and reconnected to it - update the job state
+        job._native_id = native_id
         state = _STATE_MAP[saga_job.state]
         if state.final:
             self._update_job_status(job, JobStatus(state, exit_code=saga_job.exit_code))
