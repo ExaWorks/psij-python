@@ -4,7 +4,7 @@ PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo 
 
 .PHONY: tests
 tests:
-	PYTHONPATH=$(CWD)/src ${PYTHON} -m pytest
+	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest
 
 
 .PHONY: typecheck
@@ -19,39 +19,24 @@ stylecheck:
 .PHONY: checks
 checks: typecheck stylecheck
 
-
-.PHONY: genautodocs
-genautodocs: 
-	rm -rf docs/.generated
-	mkdir docs/.generated
-	sphinx-apidoc -f -o docs/.generated src/
-	
-
 .PHONY: docs
-docs: genautodocs docs-noauto
-
-
-.PHONY: docs-noauto
-docs-noauto:
+docs:
+	rm -rf docs/.generated
 	sphinx-build -W -b html docs docs/.build/
 
-
-LAUNCHER_SCRIPT_DIR := src/psi/j/launchers/scripts
-LAUNCHER_SCRIPT_TEMPLATES := $(wildcard $(LAUNCHER_SCRIPT_DIR)/*.sht)
-LAUNCHER_SCRIPTS := $(patsubst $(LAUNCHER_SCRIPT_DIR)/%.sht, $(LAUNCHER_SCRIPT_DIR)/%.sh, $(LAUNCHER_SCRIPT_TEMPLATES))
-
+.PHONY: style
+style:
+	autopep8 -i -r src tests
 
 
 .PHONY: launcher-scripts
-launcher-scripts: $(LAUNCHER_SCRIPTS)
-
-$(LAUNCHER_SCRIPT_DIR)/%.sh: $(LAUNCHER_SCRIPT_DIR)/%.sht
-	cpp -P $< $@
+launcher-scripts:
+	$(PYTHON) setup.py launcher_scripts
 
 .PHONY: install
-install: launcher-scripts
+install:
 	$(PYTHON) setup.py install
 
 .PHONY: develop
-develop: launcher-scripts
+develop:
 	$(PYTHON) setup.py develop

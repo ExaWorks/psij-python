@@ -4,6 +4,7 @@ import subprocess
 import sys
 
 import sphinx_rtd_theme
+from sphinx.ext.apidoc import main
 
 needs_sphinx = '1.6'
 
@@ -28,20 +29,37 @@ extensions = [
     'sphinx.ext.autodoc.typehints',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
 ]
 
 autodoc_typehints = "description"
 
 
-src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
+script_dir = os.path.normpath(os.path.dirname(__file__))
+src_dir = os.path.abspath(os.path.join(script_dir, '../src'))
 
 print(src_dir + "/")
 
 sys.path.insert(0, src_dir)
 
-import psi
-
+import psij
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 }
+
+# -- Setup for Sphinx API Docs -----------------------------------------------
+
+# Workaround since sphinx does not automatically run apidoc before a build
+# Copied from https://github.com/readthedocs/readthedocs.org/issues/1139
+
+# run api doc
+def run_apidoc(_):
+    output_path = os.path.join(script_dir, '.generated')
+    print(f"OUTPUT PATH = {output_path}")
+    #exclusions = [os.path.join(src_dir, 'setup.py'),]
+    main(['-f', '-o', output_path, src_dir])
+
+# launch setup
+def setup(app):
+    app.connect('builder-inited', run_apidoc)

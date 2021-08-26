@@ -11,15 +11,15 @@ The PSI/J interface
 .. toctree::
     :maxdepth: 2
 
-    .generated/psi.j
-    
-    
+    .generated/psij
+
+
 Available Executors
 ===================
 
 .. toctree::
-   
-    .generated/psi.j.executors
+
+    .generated/psij.executors
 
 
 .. _launchers:
@@ -28,12 +28,12 @@ Availabel Launchers
 ===================
 .. toctree::
 
-    .generated/psi.j.launchers
+    .generated/psij.launchers
 
 
 API Reference
 =============
 
 .. toctree::
-    
+
     .generated/modules

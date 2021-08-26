@@ -1,4 +1,5 @@
 [mypy]
+mypy_path = $MYPY_CONFIG_FILE_DIR/src/stubs
 
 [mypy-distutils.versionpredicate]
 ignore_missing_imports = True
@@ -7,4 +8,7 @@ ignore_missing_imports = True
 ignore_missing_imports = True
 
 [mypy-radical.*]
+ignore_missing_imports = True
+
+[mypy-flux.*]
 ignore_missing_imports = True

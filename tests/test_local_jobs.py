@@ -1,7 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from psi.j import SubmitException, Job, JobExecutor, JobSpec, JobState
+from psij import SubmitException, Job, JobExecutor, JobSpec, JobState
 
 
 def test_simple_job() -> None:
