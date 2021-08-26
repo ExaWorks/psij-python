@@ -50,6 +50,7 @@ jobs:
           ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
           cat "$HOME/.ssh/id_rsa.pub" >> "$HOME/.ssh/authorized_keys"
           chmod 600 "$HOME/.ssh/authorized_keys"
+          sudo /bin/systemctl restart ssh
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-connector-radical.txt
