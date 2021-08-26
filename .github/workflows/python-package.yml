@@ -42,19 +42,14 @@ jobs:
         run: |
           cd /workspace
           echo "Running in ${PWD}"
-          sudo apt-get install openssh-server
-          sudo systemctl enable ssh
-          sudo systemctl start ssh
+          sudo apt update
+          sudo apt install openssh-server
           mkdir -p "$HOME/.ssh"
           chmod 0755 "$HOME"
           chmod 0700 "$HOME/.ssh"
           ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
           cat "$HOME/.ssh/id_rsa.pub" >> "$HOME/.ssh/authorized_keys"
           chmod 600 "$HOME/.ssh/authorized_keys"
-          echo "NoHostAuthenticationForLocalhost yes" >> ~/.ssh/config
-          sudo systemctl restart ssh
-          touch test.txt
-          ls
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-connector-radical.txt
