@@ -8,7 +8,7 @@ from uuid import uuid4
 import psij
 from psij.exceptions import SubmitException, UnreachableStateException
 from psij.job_spec import JobSpec
-from psij.job_state import JobState
+from psij.job_state import JobState, JobStateOrder
 from psij.job_status import JobStatus
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def _generate_id() -> str:
     return str(uuid4())
 
 
-class Job:
+class Job(object):
     """
     This class represents a PSI/J job.
 
@@ -118,10 +118,15 @@ class Job:
 
     def _set_status(self, status: JobStatus,
                     executor: Optional['psij.JobExecutor'] = None) -> None:
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("Job status change {}: {!s} -> {!s}".format(self, self._status.state,
-                                                                     status.state))
-
+        with self._status_cv:
+            crt = self._status.state
+            nxt = status.state
+            if crt == nxt or crt.is_greater_than(nxt):
+                return
+            prev = JobStateOrder.prev(nxt)
+        if prev is not None and prev != crt:
+            self._set_status(JobStatus(prev))
+        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
         with self._status_cv:
             if executor:
                 self._executor = executor

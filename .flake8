@@ -27,11 +27,20 @@ max-line-length = 100
 # contain a single class. Consequently, module docstrings are mostly
 # redundant.
 
+# W503 - "Line break before binary operator"
+#
+# Well, so "Line break after binary operator" also gives a warning,
+# which means there's no way to break long lines of consecutive
+# binary operators! Welcome to Python.
+#
+# See https://www.python.org/dev/peps/pep-0008/#should-a-line-break-before-or-after-a-binary-operator
+# for a discussion about the issue and why we disable this.
 
-ignore = B902, D401, D100
+ignore = B902, D401, D100, W503
 
 # D103 - Missing docstring in public function
 #
 # Ignore docstrings requirement in tests
 
 per-file-ignores = tests/*:D103
+

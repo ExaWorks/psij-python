@@ -1,0 +1,12 @@
+#!/usr/bin/python3
+import sys
+
+from qlib import *
+
+job_id = sys.argv[1]
+
+try:
+    update_job(job_id, 'X', None, check=True)
+except ValueError:
+    print('No such job: %s' % job_id)
+    exit(16)

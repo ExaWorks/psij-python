@@ -1,4 +1,5 @@
 import inspect
+import logging
 from abc import ABC, abstractmethod
 from bisect import bisect_left
 from distutils.version import Version
@@ -7,9 +8,13 @@ from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psij
+from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
 from psij.launchers.launcher import Launcher
+
+
+logger = logging.getLogger(__name__)
 
 
 class _VersionEntry:
@@ -43,15 +48,21 @@ class JobExecutor(ABC):
 
     _executors = {}  # type: Dict[str, List[_VersionEntry]]
 
-    def __init__(self, url: Optional[str] = None, config: Optional[JobExecutorConfig] = None):
+    def __init__(self, url: Optional[str] = None,
+                 config: Optional[JobExecutorConfig] = None):
         """
         Initializes this executor using an optional `url` and an optional configuration.
 
         :param url: The URL is a string that a `JobExecutor` implementation can interpret as the
             location of a backend.
-        :param config: An optional configuration specific to each `JobExecutor` implementation.
+        :param config: An configuration specific to each `JobExecutor` implementation. This
+            parameter is marked as optional such that concrete `JobExecutor` classes can be
+            instantiated with no `config` parameter. However, concrete `JobExecutor` classes
+            must pass a default configuration up the inheritance tree and ensure that the
+            `config` parameter of the ABC constructor is non-null.
         """
         self.url = url
+        assert config
         self.config = config
         # _cb is not thread-safe; changing it while jobs are running could lead to badness
         self._cb = None  # type: Optional[JobStatusCallback]
@@ -113,6 +124,9 @@ class JobExecutor(ABC):
         `job.wait(JobState.CANCELED)` would hang indefinitely.
 
         :param job: The job to be canceled.
+
+        :raises ~psij.SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation.
         """
         pass
 
@@ -246,7 +260,7 @@ class JobExecutor(ABC):
     @staticmethod
     def get_executor_names() -> Set[str]:
         """
-        Returns the names of registered executors.
+        Returns a set of registered executor names.
 
         Names returned by this method can be passed to :func:`~psij.JobExecutor.get_instance` as
         the `name` parameter.
@@ -262,6 +276,12 @@ class JobExecutor(ABC):
             if name not in self._launchers:
                 self._launchers[name] = Launcher.get_instance(name, self.config)
             return self._launchers[name]
+
+    def _set_job_status(self, job: Job, status: JobStatus) -> None:
+        try:
+            job._set_status(status, self)
+        except Exception as ex:
+            logger.warning('failed to set status for job %s: %s', job.id, ex)
 
 
 class _FunctionJobStatusCallback(JobStatusCallback):

@@ -177,7 +177,7 @@ class LocalJobExecutor(JobExecutor):
         :param config: The `LocalJobExecutor` does not have any configuration options.
         :type config: psij.JobExecutorConfig
         """
-        super().__init__(url=url, config=config)
+        super().__init__(url=url, config=config if config else JobExecutorConfig())
         self._reaper = _ProcessReaper.get_instance()
 
     def submit(self, job: Job) -> None:
@@ -235,7 +235,7 @@ class LocalJobExecutor(JobExecutor):
         elif p.exit_code < 0 and p.kill_flag:
             state = JobState.CANCELED
         else:
-            # We want to capture errors in the launcher scripts. Since, under nomral circumstances,
+            # We want to capture errors in the launcher scripts. Since, under normal circumstances,
             # the exit code of the launcher is the exit code of the job, we must use a different
             # mechanism to distinguish between job errors and launcher errors. So we delegate to
             # the launcher implementation to figure out if the error belongs to the job or not
