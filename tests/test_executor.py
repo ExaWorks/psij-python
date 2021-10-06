@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional
 
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobStatus, JobExecutorConfig
+from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobExecutorConfig
 from psij.executors.slurm import SlurmExecutorConfig
 
 
