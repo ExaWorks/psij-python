@@ -24,13 +24,13 @@ def write_state(state: Dict[str, object]) -> None:
     """Writes queue state to file."""
     logger.debug('writing state %s', state)
     with open(state_file, 'w') as f:
-        f.write(json.dumps(state))
+        json.dump(state, f)
 
 
 def read_state() -> Dict[str, object]:
     """Reads queue state from file."""
     with open(state_file, 'r') as f:
-        state = json.loads(f.read())
+        state = json.load(f)
         logger.debug('read state %s', state)
         return cast(Dict[str, object], state)
 
