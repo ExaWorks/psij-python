@@ -16,7 +16,7 @@ try:
     args = [sys.executable, str(my_dir / 'qrun'), job_id, sys.argv[1]]
     proc = subprocess.Popen(args, stderr=f, stdout=subprocess.DEVNULL, text=True)
     logger.debug('job %s spawned', job_id)
-    time.sleep(0.05)
+    time.sleep(0.5)
     ec = proc.poll()
     if ec is not None:
         msg = 'error launching job; check log for details'
