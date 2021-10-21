@@ -18,6 +18,10 @@ verbose-tests: launcher-scripts
 	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest -v --log-format="%(asctime)s %(levelname)s %(message)s" \
 		           --log-date-format="%Y-%m-%d %H:%M:%S" --log-cli-level=DEBUG
 
+.PHONY: ci-tests
+ci-tests:
+	${PYTHON} tests/ci_runner.py
+
 
 .PHONY: typecheck
 typecheck:
