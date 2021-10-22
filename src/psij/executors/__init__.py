@@ -3,5 +3,6 @@
 from .local import LocalJobExecutor
 from .rp import RPJobExecutor
 from .flux import FluxJobExecutor
+from .lsf import LsfJobExecutor
 
-__all__ = ['LocalJobExecutor', 'RPJobExecutor', 'FluxJobExecutor']
+__all__ = ['LocalJobExecutor', 'RPJobExecutor', 'FluxJobExecutor', 'LsfJobExecutor']
