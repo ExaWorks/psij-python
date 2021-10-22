@@ -26,8 +26,14 @@ class FluxJobExecutor(JobExecutor):
     A job executor that runs jobs via Flux.
     """
 
-    import radical.utils as _ru
-    import flux as _flux
+    try:
+        import radical.utils as _ru
+    except ImportError:
+        _ru = None
+    try:
+        import flux as _flux
+    except ImportError:
+        _flux = None
 
     _NAME_ = 'flux'
     _VERSION_ = StrictVersion('0.0.1')
@@ -60,6 +66,10 @@ class FluxJobExecutor(JobExecutor):
         # TODO: url is not passed
         # if not url.startswith('flux://'):
         #     raise ValueError('expected `flux://` url')
+        if self._flux is None:
+            raise ImportError("required package 'flux' not available")
+        if self._ru is None:
+            raise ImportError("required package 'radical.utils' not available")
 
         super().__init__(url=url, config=config)
 
