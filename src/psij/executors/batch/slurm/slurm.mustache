@@ -47,19 +47,19 @@
 
 {{#job.spec.attributes}}
     {{#duration}}
-#SLURM --time={{#psij.lib.walltime_to_minutes}}{{duration}}{{/psij.lib.walltime_to_minutes}}
+#SBATCH --time={{.}}
     {{/duration}}
 
     {{#queue_name}}
-#SLURM --partition="{{.}}"
+#SBATCH --partition="{{.}}"
     {{/queue_name}}
 
     {{#project_name}}
-#SLURM --account="{{.}}"
+#SBATCH --account="{{.}}"
     {{/project_name}}
 
     {{#reservation_id}}
-#SLURM --reservation="{{.}}"
+#SBATCH --reservation="{{.}}"
     {{/reservation_id}}
 
     {{#custom_attributes.slurm}}
