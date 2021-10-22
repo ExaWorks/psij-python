@@ -251,6 +251,11 @@ class JobExecutor(ABC):
                                                                                         p1, p2))
         existing.insert(index, entry)
 
+    def _update_job_status(self, job: Job, job_status: 'psij.JobStatus') -> None:
+        job._set_status(job_status, self)
+        if self._cb:
+            self._cb.job_status_changed(job, job_status)
+
     @staticmethod
     def _check_cls_attr(ecls: Type['JobExecutor'], attr: str, name: str) -> None:
         if not hasattr(ecls, attr):

@@ -285,11 +285,6 @@ class LocalJobExecutor(JobExecutor):
         self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
         self._update_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
 
-    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)
-
     def _get_launcher_name(self, spec: JobSpec) -> str:
         if spec.launcher is None:
             return 'single'

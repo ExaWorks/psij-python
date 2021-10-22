@@ -31,7 +31,7 @@ jobs:
         make stylecheck
 
   pytest:
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Test with pytest
@@ -42,8 +42,16 @@ jobs:
         run: |
           cd /workspace
           echo "Running in ${PWD}"
-          touch test.txt
-          ls
+          sudo apt update
+          sudo apt install -y openssh-server openssh-client
+          mkdir -p "$HOME/.ssh"
+          chmod 0755 "$HOME"
+          chmod 0700 "$HOME/.ssh"
+          ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
+          cat "$HOME/.ssh/id_rsa.pub" >> "$HOME/.ssh/authorized_keys"
+          chmod 600 "$HOME/.ssh/authorized_keys"
+          ls -la /etc/init.d/
+          sudo /etc/init.d/ssh start
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-connector-radical.txt
