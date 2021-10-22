@@ -389,7 +389,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     def _run_command(self, cmd: List[str]) -> str:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if res.returncode > 0:
+        if res.returncode != 0:
             msg = ''
             if res.stdout:
                 msg += res.stdout
