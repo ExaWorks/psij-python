@@ -1,0 +1,27 @@
+#!/bin/bash
+
+exec &>> "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.out"
+
+{{#job.spec.directory}}
+cd "{{.}}"
+{{/job.spec.directory}}
+
+{{#job.spec.resources}}
+    {{#process_count}}
+export PSIJ_TEST_BATCH_EXEC_COUNT={{.}}
+    {{/process_count}}
+{{/job.spec.resources}}
+
+{{#job.spec.attributes}}
+    {{#project_name}}
+export PSIJ_TEST_BATCH_EXEC_PROJECT="{{.}}"
+    {{/project_name}}
+
+    {{#custom_attributes.test}}
+export {{key}}="{{value}}"
+    {{/custom_attributes.test}}
+{{/job.spec.attributes}}
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+echo "$?" > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"

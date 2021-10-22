@@ -1,0 +1,33 @@
+#!/usr/bin/python3
+import subprocess
+import sys
+import time
+import traceback
+
+from qlib import *
+from filelock import FileLock
+
+
+job_id = get_next_id()
+
+try:
+    f = open(log_file, 'a')
+    args = [sys.executable, str(my_dir / 'qrun'), job_id, sys.argv[1]]
+    proc = subprocess.Popen(args, stderr=f, stdout=subprocess.DEVNULL, text=True)
+    logger.debug('job %s spawned', job_id)
+    time.sleep(0.5)
+    ec = proc.poll()
+    if ec is not None:
+        msg = 'error launching job; check log for details'
+        logger.warning(msg)
+        sys.stderr.write(msg)
+        sys.exit(1)
+    logger.debug('job %s submitted to runner', job_id)
+    update_job(job_id, 'Q', None)
+    print('Submitted job %s' % job_id, flush=True)
+    logger.debug('job %s qsub exiting', job_id)
+    sys.exit(0)
+except Exception as ex:
+    logger.warning('error launching job: %s', ex)
+    traceback.print_exc()
+    sys.exit(2)

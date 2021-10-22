@@ -5,7 +5,7 @@ from psij.job_attributes import JobAttributes
 from psij.resource_spec import ResourceSpec
 
 
-class JobSpec:
+class JobSpec(object):
     """A class to hold information about the characteristics of a :class:`~psij.Job`."""
 
     def __init__(self, name: Optional[str] = None, executable: Optional[str] = None,
