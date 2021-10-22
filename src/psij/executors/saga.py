@@ -55,14 +55,19 @@ class SagaExecutor(JobExecutor):
         config
             Not used.
         """
-        super().__init__(url=url, config=config)
 
         self._jobs = dict()  # type: Dict[str, _JobMapping]
-        self._lock = RLock()
-
         self._js = None
+
+        if not config:
+            config = JobExecutorConfig()
+
+        super().__init__(url=url, config=config)
+
+        self._lock = RLock()
         self._js = rs.job.Service(self.url)
         self._cb = None
+
         atexit.register(self._close)
 
     def _close(self) -> None:
