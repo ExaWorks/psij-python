@@ -61,7 +61,7 @@ class JobSpec(object):
         self.stdout_path = stdout_path
         self.stderr_path = stderr_path
         self.resources = resources
-        self.attributes = attributes
+        self.attributes = attributes if attributes is not None else JobAttributes()
         self.pre_launch = pre_launch
         self.post_launch = post_launch
         self.launcher = launcher
