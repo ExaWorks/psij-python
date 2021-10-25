@@ -93,11 +93,12 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
     for opt in ['maintainer_email', 'executors', 'server_url', 'key', 'max_age']:
         args.append('--' + opt.replace('_', '-'))
         args.append(get_conf(conf, opt))
-    cwd = str(dir / 'code') if clone else '.'
+    cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
-    env['PYTHONPATH'] = os.getcwd() + '/src' + \
+    env['PYTHONPATH'] = str(cwd.absolute() / 'src') + \
                         (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
-    subprocess.run(args, cwd=cwd)
+    subprocess.run([sys.executable, 'setup.py', 'launcher_scripts'], cwd=cwd.absolute(), check=True)
+    subprocess.run(args, cwd=cwd.absolute(), env=env)
 
 
 def get_run_id() -> str:
@@ -116,7 +117,7 @@ def run_tests(conf: Dict[str, str], site_ids: List[str], branches: List[str], cl
             for branch in branches:
                 if clone:
                     checkout(branch, tmpp)
-                with info('Testing branch ' + branch):
+                with info('Testing branch "%s"' % branch):
                     run_branch_tests(conf, tmpp, run_id, clone, site_id, branch)
 
 
@@ -144,6 +145,9 @@ if __name__ == '__main__':
     elif scope == 'fake':
         site_ids = ['"mira.alcf.anl.gov"', '"bw.ncsa.illinois.edu"', '"frontera.tacc.utexas.edu"']
         branches = FAKE_BRANCHES
+        clone = False
+    elif scope == 'local':
+        branches = ['main']
         clone = False
     elif scope == 'tagged':
         raise NotImplementedError('Tagged scope not implemented yet.')
