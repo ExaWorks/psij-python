@@ -8,3 +8,4 @@ mypy >=0.790
 pytest
 flake8
 autopep8
+types-requests
