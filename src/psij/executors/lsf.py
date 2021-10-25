@@ -58,6 +58,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         self, job: Job, context: Dict[str, object], submit_file: TextIO
     ) -> None:
         """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
+        assert(job.spec is not None)
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)
         self.generator.generate_submit_script(job, context, submit_file)
 
@@ -83,14 +84,13 @@ class LsfJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
-        jobids = [str(jobid) for jobid in native_ids]
         return [
             "bjobs",
             "-o",
             "JOBID STAT EXIT_REASON KILL_REASON SUSPEND_REASON",
             "-json",
             "-a",
-            *jobids,
+            *native_ids,
         ]
 
     def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
