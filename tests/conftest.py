@@ -5,6 +5,7 @@ import io
 import json
 import logging
 import os
+import re
 import secrets
 import shutil
 import socket
@@ -69,7 +70,7 @@ def _get_executors(config: Dict[str, str]) -> List[str]:
     processed = []
     for exec_str in execs:
         exec_str = exec_str.strip()
-        comps = exec_str.split(':')
+        comps = re.split(':', exec_str, maxsplit=2)
         execs_t = _translate_executor(config, comps[0])
         if len(execs_t) > 0:
             if len(comps) == 1:
