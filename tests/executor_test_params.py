@@ -1,9 +1,10 @@
+import re
 from typing import Optional
 
 
 class ExecutorTestParams:
     def __init__(self, spec: str) -> None:
-        spec_l = spec.split(':')
+        spec_l = re.split(':', spec, maxsplit=2)
         self.executor = spec_l[0]
         if len(spec_l) > 1:
             self.launcher = spec_l[1]  # type: Optional[str]
