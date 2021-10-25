@@ -25,6 +25,8 @@ from executor_test_params import ExecutorTestParams
 import pytest
 
 
+logger = logging.getLogger(__name__)
+
 
 LOG_FORMATTER = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s\n',
                                   datefmt='%Y-%m-%d %H:%M:%S')
