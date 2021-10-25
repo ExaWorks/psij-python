@@ -23,6 +23,7 @@ from psij import SubmitException, Job, JobExecutor, JobSpec, JobState
 
 
 def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
+    assert job.spec is not None
     job.spec.launcher = ep.launcher
     return JobExecutor.get_instance(ep.executor, url=ep.url)
 
@@ -81,14 +82,13 @@ def test_failing_job(execparams: ExecutorTestParams) -> None:
     assert status.exit_code != 0
 
 
-@pytest.mark.parametrize('name,url', tests)
-def test_missing_executable(name: str, url: Optional[str]) -> None:
+def test_missing_executable(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/no_such_file_or_directory'))
-    jex = JobExecutor.get_instance(name=name, url=url)
+    exec = _get_executor_instance(execparams, job)
     # we don't know if this will fail with an exception or JobState.FAILED,
     # so handle both
     try:
-        jex.submit(job)
+        exec.submit(job)
         status = job.wait()
         assert status is not None
         assert status.state == JobState.FAILED

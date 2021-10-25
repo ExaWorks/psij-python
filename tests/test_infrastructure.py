@@ -1,10 +1,13 @@
 import logging
 import sys
 
+from _pytest.capture import CaptureFixture
+from _pytest.logging import LogCaptureFixture
+
 logger = logging.getLogger('test')
 
 
-def test_capture(capsys, caplog):
+def test_capture(capsys: CaptureFixture[str], caplog: LogCaptureFixture) -> None:
     caplog.set_level(logging.DEBUG)
     print('out')
     print('err', file=sys.stderr)
@@ -17,7 +20,7 @@ def test_capture(capsys, caplog):
     assert magic in caplog.text
 
 
-def test_capture_2():
+def test_capture_2() -> None:
     print('out')
     print('err', file=sys.stderr)
     logger.info('info')

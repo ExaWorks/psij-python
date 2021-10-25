@@ -17,12 +17,15 @@ FAKE_BRANCHES = ['main', 'feature_1', 'feature_x']
 GITHUB_API_ROOT = 'https://api.github.com'
 
 
-def read_line(f: TextIO) -> str:
+def read_line(f: TextIO) -> Optional[str]:
     line = f.readline()
-    if line:
+    if line is not None:
         line = line.strip()
         if len(line) > 0 and line[-1] == '\\':
-            line = line[:-1] + read_line(f)
+            next_line = read_line(f)
+            if next_line is None:
+                raise ValueError('Premature end of file')
+            line = line[:-1] + next_line
         return line
     else:
         return None
