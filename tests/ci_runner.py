@@ -19,11 +19,11 @@ GITHUB_API_ROOT = 'https://api.github.com'
 
 def read_line(f: TextIO) -> Optional[str]:
     line = f.readline()
-    if line is not None:
+    if line:
         line = line.strip()
         if len(line) > 0 and line[-1] == '\\':
             next_line = read_line(f)
-            if next_line is None:
+            if not next_line:
                 raise ValueError('Premature end of file')
             line = line[:-1] + next_line
         return line
