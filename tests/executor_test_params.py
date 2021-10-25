@@ -15,7 +15,7 @@ class ExecutorTestParams:
         else:
             self.url = None
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         if self.launcher is not None:
             if self.url is not None:
                 return '{}:{}:{}'.format(self.executor, self.launcher, self.url)
@@ -26,6 +26,3 @@ class ExecutorTestParams:
                 return '{}::{}'.format(self.executor, self.url)
             else:
                 return '{}'.format(self.executor)
-
-    def __repr__(self) -> str:
-        return self.__str__()
