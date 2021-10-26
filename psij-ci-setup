@@ -1,0 +1,66 @@
+#!/bin/bash
+
+FORCE=0
+
+if [ "$1" == "-f" ]; then
+    FORCE=1
+    shift
+fi
+
+MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+echo
+echo "================================================================"
+echo "This script will install requirements for the PSI/J CI tests and"
+echo "add a cron job to run the tests once a day at some random time. "
+echo "================================================================"
+echo
+
+RESPONSE=""
+
+while [ "$RESPONSE" != "C" ] && [ "$RESPONSE" != "X" ]; do
+
+    echo -n "Would you like to (C)ontinue or E(x)it? "
+    read -n1 RESPONSE
+    echo
+    RESPONSE=${RESPONSE^}
+    
+    if [ "$RESPONSE" == "X" ]; then
+        echo "Operation canceled"
+        exit 1
+    fi
+done
+
+cd "$MYPATH"
+
+pip install --user -r requirements-dev.txt
+
+
+HOUR=`echo $(($RANDOM % 24))`
+MINUTE=`echo $(($RANDOM % 60))`
+MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+if crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null && [ "$FORCE" != "1" ]; then
+    EXISTING=`crontab -l 2>/dev/null | grep "psij-ci-run"`
+    echo
+    echo "================================================================"
+    echo "Error: a crontab for PSI/J tests already exists: "
+    echo ">>> $EXISTING"
+    echo
+    echo "You can edit your crontab with \"crontab -e\" and remove the    "
+    echo "existing entry, then re-run this tool. If you are certain that  "
+    echo "you want to install multiple entries, you can re-run this script"
+    echo "with the \"-f\" flag.                                           "
+    echo "================================================================"
+    exit 2
+else
+    LINE="$MINUTE $HOUR * * * cd $MYPATH && ./psij-ci-run"
+    echo
+    echo "================================================================"
+    echo "The following line will be installed in your crontab:"
+    echo "$LINE"
+    echo "$LINE" | crontab -
+    echo "Setup complete. If you have not already done so, please take    "
+    echo "some time to customize testing.conf.                            "
+    echo "================================================================"
+fi
