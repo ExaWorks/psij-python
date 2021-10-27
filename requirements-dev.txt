@@ -1,3 +1,7 @@
+filelock
+psutil
+pystache
+
 six
 Sphinx
 sphinx_rtd_theme
