@@ -103,16 +103,15 @@ def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
         if config.option.environment.get('has_mpirun'):
             execs.extend(['local:mpi', 'batch-test:mpi'])
         if queue_exec:
-            execs.extend[queue_exec + ':single', queue_exec + ':multiple']
+            execs.extend([queue_exec + ':single', queue_exec + ':multiple'])
             if queue_launcher:
                 execs.append(queue_exec + ':' + queue_launcher)
             else:
                 execs.append(queue_exec)
-
         return execs
     if executor == 'auto_q':
         if config.option.environment.get('has_slurm'):
-            return 'slurm'
+            return ['slurm']
         else:
             # nothing yet
             return []
