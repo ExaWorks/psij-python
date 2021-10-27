@@ -1,6 +1,6 @@
 filelock
 psutil
-pystache
+pystache==0.5.4
 
 six
 Sphinx
