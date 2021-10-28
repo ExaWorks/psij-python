@@ -256,7 +256,8 @@ def _get_id(config):
 
 
 def _run(*args) -> str:
-    process = subprocess.run(args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.run(args, check=True, text=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return process.stdout.strip()
 
 
