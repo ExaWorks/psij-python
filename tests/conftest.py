@@ -197,6 +197,13 @@ def pytest_configure(config):
         _save_or_upload(config, data)
 
 
+def _get_config_env(config, name):
+    if hasattr(config.option, 'environment'):
+        return config.option.environment[name]
+    else:
+        return None
+
+
 def pytest_unconfigure(config):
     data = {
         'module': '_conftest',
@@ -207,8 +214,8 @@ def pytest_unconfigure(config):
         'extras': None,
         'test_start_time': _now(),
         'test_end_time': _now(),
-        'run_id': config.option.environment['run_id'],
-        'branch': config.option.environment['git_branch']
+        'run_id': _get_config_env(config, 'run_id'),
+        'branch': _get_config_env(config, 'git_branch')
     }
     _save_or_upload(config, data)
 
