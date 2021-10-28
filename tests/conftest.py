@@ -93,7 +93,9 @@ def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
     if executor == 'auto':
         execs = ['local:single', 'local:multiple', 'batch-test:single', 'batch-test:multiple']
         if config.option.environment.get('has_saga'):
-            execs.extend(['saga::fork://localhost/', 'saga::ssh://localhost/'])
+            execs.append('saga::fork://localhost/')
+            if config.option.environment.get('can_ssh_to_localhost'):
+                execs.append('saga::ssh://localhost/')
         queue_execs = _translate_executor(config, 'auto_q')
         assert len(queue_execs) in [0, 1]
         queue_exec = None
@@ -304,6 +306,16 @@ def _has_saga():
         return False
 
 
+def _try_run_command(args, timeout=None):
+    try:
+        process = subprocess.run(args, timeout=timeout, text=True,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        logger.debug('Output from {}: {} {}'.format(args, process.stdout, process.stderr))
+        return process.returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
+
+
 def _discover_environment(config):
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -320,6 +332,7 @@ def _discover_environment(config):
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
         env['has_saga'] = _has_saga()
+        env['can_ssh_to_localhost'] = _try_run_command(['ssh', 'localhost', 'true'], timeout=5)
         env['git_branch'] = _get_git_branch(config)
         env['git_last_commit'] = _get_last_commit()
         ahead, behind = _get_commit_diff()
