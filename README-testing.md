@@ -96,3 +96,8 @@ or, using `make`, prefix all options with a double dash ("--"):
 ```bash
     make tests -- --upload-results
 ```
+
+Care must, however, be taken since it is impossible to preserve
+whitespace and certain special characters (such as the double quotes)
+when passing arguments through `make`.
+
