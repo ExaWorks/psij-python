@@ -265,7 +265,7 @@ def _get_git_branch(config) -> str:
     if conf_branch:
         return conf_branch
     else:
-        return _run('git', 'branch', '--show-current')
+        return _run('git', 'rev-parse', '--abbrev-ref', 'HEAD')
 
 
 def _get_last_commit() -> str:
