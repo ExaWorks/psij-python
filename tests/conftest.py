@@ -217,7 +217,9 @@ def pytest_unconfigure(config):
         'run_id': _get_config_env(config, 'run_id'),
         'branch': _get_config_env(config, 'git_branch')
     }
-    _save_or_upload(config, data)
+    if hasattr(config.option, 'environment'):
+        # only upload if we were able to get a basic environment
+        _save_or_upload(config, data)
 
 
 def _cache(file_path, fn):
@@ -314,16 +316,19 @@ def _discover_environment(config):
     key = _get_key(config)
     env['start_time'] = _now()
     env['run_id'] = _get_run_id(config)
-    env['has_slurm'] = shutil.which('sbatch') is not None
-    env['has_mpirun'] = shutil.which('mpirun') is not None
-    env['has_saga'] = _has_saga()
-    env['git_branch'] = _get_git_branch(config)
-    env['git_last_commit'] = _get_last_commit()
-    ahead, behind = _get_commit_diff()
-    env['git_ahead_remote_commit_count'] = ahead
-    env['git_behind_remote_commit_count'] = behind
-    env['git_local_change_summary'] = _get_git_diff_stat()
-    env['git_has_local_changes'] = (env['git_local_change_summary'] != '')
+    try:
+        env['has_slurm'] = shutil.which('sbatch') is not None
+        env['has_mpirun'] = shutil.which('mpirun') is not None
+        env['has_saga'] = _has_saga()
+        env['git_branch'] = _get_git_branch(config)
+        env['git_last_commit'] = _get_last_commit()
+        ahead, behind = _get_commit_diff()
+        env['git_ahead_remote_commit_count'] = ahead
+        env['git_behind_remote_commit_count'] = behind
+        env['git_local_change_summary'] = _get_git_diff_stat()
+        env['git_has_local_changes'] = (env['git_local_change_summary'] != '')
+    except Exception as ex:
+        env['error'] = str(ex)
     config.option.environment = env
     env['computed_executors'] = _get_executors(config)
     return env, key
