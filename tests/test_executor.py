@@ -30,8 +30,8 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
 
 def test_simple_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
-    exec = _get_executor_instance(execparams, job)
-    exec.submit(job)
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
     job.wait()
 
 
@@ -39,8 +39,8 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'work') as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
-        exec = _get_executor_instance(execparams, job)
-        exec.submit(job)
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
         job.wait()
         f = outp.open("r")
         contents = f.read()
@@ -49,21 +49,21 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
 
 def test_attach(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
-    exec = _get_executor_instance(execparams, job)
-    exec.submit(job)
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
     job.wait(target_states=[JobState.ACTIVE, JobState.COMPLETED])
     native_id = job.native_id
 
     assert native_id is not None
     job2 = Job()
-    exec.attach(job2, native_id)
+    ex.attach(job2, native_id)
     job2.wait()
 
 
 def test_cancel(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['60']))
-    exec = _get_executor_instance(execparams, job)
-    exec.submit(job)
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
     job.wait(target_states=[JobState.ACTIVE])
     job.cancel()
     status = job.wait()
@@ -73,8 +73,8 @@ def test_cancel(execparams: ExecutorTestParams) -> None:
 
 def test_failing_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/false'))
-    exec = _get_executor_instance(execparams, job)
-    exec.submit(job)
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
     status = job.wait()
     assert status is not None
     assert status.state == JobState.FAILED
@@ -84,11 +84,11 @@ def test_failing_job(execparams: ExecutorTestParams) -> None:
 
 def test_missing_executable(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/no_such_file_or_directory'))
-    exec = _get_executor_instance(execparams, job)
+    ex = _get_executor_instance(execparams, job)
     # we don't know if this will fail with an exception or JobState.FAILED,
     # so handle both
     try:
-        exec.submit(job)
+        ex.submit(job)
         status = job.wait()
         assert status is not None
         assert status.state == JobState.FAILED
@@ -102,9 +102,9 @@ def test_parallel_jobs(execparams: ExecutorTestParams) -> None:
     spec = JobSpec(executable='/bin/sleep', arguments=['5'])
     job1 = Job(spec)
     job2 = Job(spec)
-    exec = _get_executor_instance(execparams, job1)
-    exec.submit(job1)
-    exec.submit(job2)
+    ex = _get_executor_instance(execparams, job1)
+    ex.submit(job1)
+    ex.submit(job2)
     job1.wait()
     job2.wait()
     assert_completed(job1)

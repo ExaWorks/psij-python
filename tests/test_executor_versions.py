@@ -8,5 +8,5 @@ from psij import JobExecutor
 
 
 def test_executor_version(name: str = 'local') -> None:
-    exec = JobExecutor.get_instance(name)
-    assert isinstance(exec.version, Version)
+    ex = JobExecutor.get_instance(name)
+    assert isinstance(ex.version, Version)
