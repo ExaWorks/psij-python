@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
+    PIP="pip"
+else
+    PIP="pip3"
+fi
+
+
 FORCE=0
 
 if [ "$1" == "-f" ]; then
@@ -33,7 +40,7 @@ done
 
 cd "$MYPATH"
 
-pip install --user -r requirements-dev.txt
+$PIP install --user -r requirements-dev.txt
 
 
 HOUR=`echo $(($RANDOM % 24))`
