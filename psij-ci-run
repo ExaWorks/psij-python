@@ -1,3 +1,9 @@
 #!/bin/bash
 
-python tests/ci_runner.py
+if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
+    PYTHON="python"
+else
+    PYTHON="python3"
+fi
+
+$PYTHON tests/ci_runner.py
