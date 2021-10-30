@@ -347,7 +347,7 @@ def _discover_environment(config):
 
 
 def _now():
-    return datetime.datetime.now().isoformat(' ')
+    return datetime.datetime.now(tz=datetime.timezone.utc).isoformat(' ')
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
