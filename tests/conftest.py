@@ -10,7 +10,6 @@ import secrets
 import shutil
 import socket
 import subprocess
-import tempfile
 import threading
 from functools import partial
 from pathlib import Path
