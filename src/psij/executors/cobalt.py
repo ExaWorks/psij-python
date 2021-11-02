@@ -11,6 +11,8 @@ from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import (
     BatchSchedulerExecutor,
     BatchSchedulerExecutorConfig,
+    UNKNOWN_ERROR,
+    check_status_exit_code,
 )
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
@@ -18,6 +20,7 @@ from psij.executors.batch.script_generator import TemplatedScriptGenerator
 _QSTAT_STATE_REGEX = re.compile(r"(State\s*:\s*)(\w+)", re.IGNORECASE)
 _QSTAT_JOBID_REGEX = re.compile(r"(Jobid\s*:\s*)([0-9]{4,})", re.IGNORECASE)
 _QSUB_REGEX = re.compile(r"\b[0-9]{4,}\b", re.IGNORECASE)
+_QSTAT_COMMAND = "qstat"
 
 
 class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
@@ -76,10 +79,15 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
-        return ["qstat", "-l", "--header=Jobid:State", *native_ids]
+        return [_QSTAT_COMMAND, "-l", "--header=Jobid:State", *native_ids]
 
-    def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
+        # if none of the job ID passed to Cobalt are recognized, qstat returns 1,
+        # but we shouldn't treat that as an error
+        if exit_code != 0 and out == UNKNOWN_ERROR:
+            return {}
+        check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
         job_statuses = {}
         index = 0
         lines = out.split("\n")

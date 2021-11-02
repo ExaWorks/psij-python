@@ -5,7 +5,7 @@ from typing import Optional, Collection, List, Dict, TextIO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig, _InvalidJobStateError
+    BatchSchedulerExecutorConfig, _InvalidJobStateError, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
@@ -72,7 +72,8 @@ class _TestJobExecutor(BatchSchedulerExecutor):
     def job_id_from_submit_output(self, out: str) -> str:
         return out.strip().split()[-1]
 
-    def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
+        check_status_exit_code(QSTAT_PATH, exit_code, out)
         r = {}
         lines = iter(out.split('\n'))
         for line in lines:
