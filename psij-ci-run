@@ -1,5 +1,49 @@
 #!/bin/bash
 
+usage() {
+    cat <<EOF
+Usage: ./psij-ci-run [--help] [--with-conda <conda_env_name>] 
+            [--with-venv <venv_name>]
+    --help          Displays this message
+    --with-conda    Specifies a conda environment to activate before running 
+                    the tests
+    --with-venv     Specifies a virtualenv environment to load before running
+                    the tests
+EOF
+}
+
+failifempty() {
+    if [ "$2" == "" ]; then
+        echo "Missing parameter for $1"
+        usage
+        exit 1
+    fi
+}
+
+while [ "$1" != "" ]; do
+    case "$1" in
+        --with-conda)
+            failifempty "$1" "$2"
+            conda activate "$2"
+            shift 2
+            ;;
+        --with-venv)
+            failifempty "$1" "$2"
+            source "$2/bin/activate"
+            shift 2
+            ;;
+        --help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unrecognized command line option: $1."
+            usage
+            exit 1
+    esac
+done
+
+
 if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
     PYTHON="python"
 else
