@@ -102,7 +102,7 @@ def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
             queue_exec = queue_execs[0]
             queue_launcher = _translate_launcher(config, queue_exec, 'auto_l')
         if config.option.environment.get('has_mpirun'):
-            execs.extend(['local:mpi', 'batch-test:mpi'])
+            execs.extend(['local:mpirun', 'batch-test:mpirun'])
         if queue_exec:
             execs.extend([queue_exec + ':single', queue_exec + ':multiple'])
             if queue_launcher:
