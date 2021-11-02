@@ -89,7 +89,7 @@ else
     echo "================================================================"
     echo "The following line will be installed in your crontab:"
     echo "$LINE"
-    echo "$LINE" | crontab -
+    { crontab -l & echo "$LINE"; } | crontab -
     echo "Setup complete. If you have not already done so, please take    "
     echo "some time to customize testing.conf.                            "
     echo "================================================================"
