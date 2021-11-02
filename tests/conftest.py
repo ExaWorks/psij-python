@@ -315,6 +315,13 @@ def _try_run_command(args, timeout=None):
         return False
 
 
+def _get_env(name: str) -> str:
+    if name in os.environ:
+        return os.environ[name]
+    else:
+        return ''
+
+
 def _discover_environment(config):
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -327,6 +334,8 @@ def _discover_environment(config):
     key = _get_key(config)
     env['start_time'] = _now()
     env['run_id'] = _get_run_id(config)
+    env['in_conda'] = _get_env('CONDA_SHLVL') != '' and _get_env('CONDA_SHLVL') != '0'
+    env['in_venv'] = _get_env('VIRTUAL_ENV') != ''
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
