@@ -4,8 +4,11 @@ from typing import Optional, Collection, List, Dict, TextIO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig
+    BatchSchedulerExecutorConfig, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
+
+
+_SQUEUE_COMMAND = 'squeue'
 
 
 class SlurmExecutorConfig(BatchSchedulerExecutorConfig):
@@ -130,10 +133,11 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than
         # listing each element of the array independently
-        return ['squeue', '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '-j', ids]
+        return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '-j', ids]
 
-    def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
+        check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
         r = {}
         lines = iter(out.split('\n'))
         # skip header
