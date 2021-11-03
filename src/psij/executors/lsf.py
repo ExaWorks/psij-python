@@ -10,6 +10,7 @@ from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import (
     BatchSchedulerExecutor,
     BatchSchedulerExecutorConfig,
+    check_status_exit_code,
 )
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
@@ -18,6 +19,7 @@ _BKILL_FAILURE_REGEX = re.compile(
     r"(no matching job)|(already finished)", re.IGNORECASE
 )
 _BSUB_REGEX = re.compile(r"Job <[0-9]+>", re.IGNORECASE)
+_BJOBS_COMMAND = "bjobs"
 
 
 class LsfExecutorConfig(BatchSchedulerExecutorConfig):
@@ -77,7 +79,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
         """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`.
 
-        Check if the error was raised only because a job
+        Check if the error was raised only because a job already exited.
         """
         if _BKILL_FAILURE_REGEX.search(out) is None:
             raise SubmitException(out)
@@ -85,7 +87,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
         return [
-            "bjobs",
+            _BJOBS_COMMAND,
             "-o",
             "JOBID STAT EXIT_REASON KILL_REASON SUSPEND_REASON",
             "-json",
@@ -93,12 +95,13 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             *native_ids,
         ]
 
-    def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`.
 
         Iterate through the RECORDS entry, grabbing JOBID and STAT entries, as well
         as any state-change reasons if present.
         """
+        check_status_exit_code(_BJOBS_COMMAND, exit_code, out)
         output = json.loads(out)
         status_map = {}
         for entry in output["RECORDS"]:

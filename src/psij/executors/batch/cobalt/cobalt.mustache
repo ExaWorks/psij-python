@@ -1,0 +1,43 @@
+#!/bin/bash
+{{#job.name}}
+#COBALT --jobname={{.}}
+{{/job.name}}
+{{#job.spec.directory}}
+#COBALT --cwd={{.}}
+{{/job.spec.directory}}
+{{#job.spec.resources}}
+    {{#node_count}}
+#COBALT --nodecount={{.}}
+    {{/node_count}}
+    {{#process_count}}
+#COBALT --proccount={{.}}
+    {{/process_count}}
+{{/job.spec.resources}}
+{{#job.spec.attributes}}
+    {{#duration}}
+#COBALT --time={{duration}}
+    {{/duration}}
+    {{#queue_name}}
+#COBALT --queue={{.}}
+    {{/queue_name}}
+    {{#project_name}}
+#COBALT --project={{.}}
+    {{/project_name}}
+    {{#custom_attributes.COBALT}}
+#COBALT --{{key}}="{{value}}"
+    {{/custom_attributes.COBALT}}
+{{/job.spec.attributes}}
+{{!since we redirect the output manually, below, tell COBALT not to do its own thing, since it
+only results in empty files that are not cleaned up}}
+#COBALT -e /dev/null
+#COBALT -o /dev/null
+
+{{!redirect output here instead of through #COBALT directive since COBALT_JOB_ID is not available
+when the directives are evaluated; the reason for using the job id in the first place being the
+same as for the exit code file.}}
+exec &>> "{{psij.script_dir}}/$COBALT_JOBID.out"
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+{{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
+echo "$?" > "{{psij.script_dir}}/$COBALT_JOBID.ec"

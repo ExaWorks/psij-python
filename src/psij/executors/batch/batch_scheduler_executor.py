@@ -12,7 +12,16 @@ from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException,
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
 
 
+UNKNOWN_ERROR = 'PSIJ: Unknown error'
+
 logger = logging.getLogger(__name__)
+
+
+def check_status_exit_code(command: str, exit_code: int, out: str) -> None:
+    """Check if exit_code is nonzero and if so raise a RuntimeError."""
+    if exit_code != 0:
+        raise RuntimeError(f'status command {command!r} exited '
+                           f'with {exit_code} and output {out!r}')
 
 
 class BatchSchedulerExecutorConfig(JobExecutorConfig):
@@ -357,7 +366,7 @@ class BatchSchedulerExecutor(JobExecutor):
         pass
 
     @abstractmethod
-    def parse_status_output(self, out: str) -> Dict[str, JobStatus]:
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """Parses the output of a job status command.
 
         Concrete implementations of batch scheduler executors must override this method. The output
@@ -398,7 +407,7 @@ class BatchSchedulerExecutor(JobExecutor):
                     msg += '\n'
                 msg += res.stderr
             if msg == '':
-                msg = 'Unknown error'
+                msg = UNKNOWN_ERROR
             raise subprocess.CalledProcessError(res.returncode, cmd, output=msg)
         else:
             return res.stdout
@@ -509,11 +518,21 @@ class _QueuePollThread(Thread):
         logger.info('Polling for %s jobs', len(jobs_copy))
         try:
             out = self.executor._run_command(self.executor.get_status_command(jobs_copy.keys()))
-            logger.debug('Output from status command: %s', out)
+        except subprocess.CalledProcessError as ex:
+            out = ex.output
+            exit_code = ex.returncode
+        else:
+            exit_code = 0
             self._poll_error_count = 0
-
-            status_map = self.executor.parse_status_output(out)
-
+        logger.debug('Output from status command: %s', out)
+        try:
+            status_map = self.executor.parse_status_output(exit_code, out)
+        except Exception as ex:
+            self._handle_poll_error(True,
+                                    ex,
+                                    f'Failed to poll for job status: {traceback.format_exc()}')
+            return
+        try:
             for native_id, job_list in jobs_copy.items():
                 try:
                     status = self._get_job_status(native_id, status_map)
@@ -526,13 +545,11 @@ class _QueuePollThread(Thread):
                 if status.state.final:
                     with self._jobs_lock:
                         del self._jobs[native_id]
-        except subprocess.CalledProcessError as ex:
-            self._handle_poll_error(False, ex, 'Failed to poll for job status. '
-                                               'Error from status command: {}'.format(ex.output))
         except Exception as ex:
             msg = traceback.format_exc()
-            self._handle_poll_error(True, ex, 'Failed to poll for job status. '
-                                              'Internal error: {}'.format(msg))
+            self._handle_poll_error(True, ex, 'Error updating job statuses {}'.format(msg))
+
+
 
     def _get_job_status(self, native_id: str, status_map: Dict[str, JobStatus]) -> JobStatus:
         if native_id in status_map:
