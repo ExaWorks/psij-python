@@ -549,8 +549,6 @@ class _QueuePollThread(Thread):
             msg = traceback.format_exc()
             self._handle_poll_error(True, ex, 'Error updating job statuses {}'.format(msg))
 
-
-
     def _get_job_status(self, native_id: str, status_map: Dict[str, JobStatus]) -> JobStatus:
         if native_id in status_map:
             return status_map[native_id]
