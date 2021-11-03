@@ -22,6 +22,7 @@ _QSTAT_JOBID_REGEX = re.compile(r"(Jobid\s*:\s*)([0-9]{4,})", re.IGNORECASE)
 _QSUB_REGEX = re.compile(r"\b[0-9]{4,}\b", re.IGNORECASE)
 _QSTAT_COMMAND = "qstat"
 
+
 class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the Cobalt executor."""
 
