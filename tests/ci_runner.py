@@ -7,7 +7,7 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import IO, Dict, TextIO, List, Optional, Generator
+from typing import Dict, TextIO, List, Optional, Generator
 
 import requests
 
@@ -96,7 +96,7 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
     cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
     env['PYTHONPATH'] = str(cwd.absolute() / 'src') + \
-                        (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
+        (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
     subprocess.run([sys.executable, 'setup.py', 'launcher_scripts'], cwd=cwd.absolute(), check=True)
     subprocess.run(args, cwd=cwd.absolute(), env=env)
 
@@ -128,9 +128,10 @@ def info(msg: str) -> Generator[bool, None, None]:
     try:
         yield True
         print('OK')
-    except:
+    except Exception:
         print('FAILED')
         raise
+
 
 if __name__ == '__main__':
     with info('Reading configuration'):

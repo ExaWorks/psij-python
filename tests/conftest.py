@@ -13,7 +13,7 @@ import subprocess
 import threading
 from functools import partial
 from pathlib import Path
-from typing import Set, Dict, List
+from typing import Dict, List
 
 import requests
 from _pytest._io import TerminalWriter
@@ -31,8 +31,8 @@ logger = logging.getLogger(__name__)
 LOG_FORMATTER = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s\n',
                                   datefmt='%Y-%m-%d %H:%M:%S')
 SETTINGS_DIR = Path.home() / '.psij'
-KEY_FILE =  SETTINGS_DIR / '.key'
-ID_FILE = SETTINGS_DIR  / '.id'
+KEY_FILE = SETTINGS_DIR / '.key'
+ID_FILE = SETTINGS_DIR / '.id'
 RESULTS_ROOT = Path('tests') / 'results'
 
 
@@ -447,5 +447,5 @@ def _upload_report(config, data):
 
     url = config.getoption('server_url')
     resp = requests.post('%s/result' % url, json={'id': env['config']['id'],
-                                                 'key': config.option.key, 'data': data})
+                                                  'key': config.option.key, 'data': data})
     resp.raise_for_status()

@@ -1,12 +1,7 @@
-import pytest
-
-from typing import Optional
 from pathlib import Path
+from psij import SubmitException, Job, JobExecutor, JobSpec, JobState
 from tempfile import TemporaryDirectory
-from typing import Optional
 
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobStatus, JobExecutorConfig
-from psij.executors.slurm import SlurmExecutorConfig
 from executor_test_params import ExecutorTestParams
 
 
@@ -18,8 +13,6 @@ def assert_completed(job: Job) -> None:
         return
     else:
         raise RuntimeError('Unexpected job state: {}'.format(job.status.state))
-
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState
 
 
 def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:

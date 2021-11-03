@@ -3,7 +3,18 @@ from typing import Optional
 
 
 class ExecutorTestParams:
+    """A class holding executor, launcher, url pairs."""
+
     def __init__(self, spec: str) -> None:
+        """
+        Construct a new instance.
+
+        Parameters
+        ----------
+        spec:
+            A string in the format "<executor>[:<launcher>[:<url>]]". If only the executor and the
+            url are specified, the string should be formatted as "<executor>::<url>".
+        """
         spec_l = re.split(':', spec, maxsplit=2)
         self.executor = spec_l[0]
         if len(spec_l) > 1:
@@ -16,6 +27,7 @@ class ExecutorTestParams:
             self.url = None
 
     def __repr__(self) -> str:
+        """Returns a string representation of this object."""
         if self.launcher is not None:
             if self.url is not None:
                 return '{}:{}:{}'.format(self.executor, self.launcher, self.url)
