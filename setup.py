@@ -2,9 +2,9 @@ import distutils
 import io
 import pathlib
 
-from setuptools import setup, find_packages
-from distutils.cmd import Command
-from distutils.command.build import build
+from setuptools import setup, find_packages, Command
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 
 class BuildLauncherScriptsCommand(Command):
@@ -41,9 +41,18 @@ class BuildLauncherScriptsCommand(Command):
                 dest.write(line)
 
 
-class CustomBuildCommand(build):
-    def run(self) -> None:
-        # build launcher scripts first
+class CustomDevelopCommand(develop):
+    """Post-installation for development mode."""
+
+    def run(self):
+        BuildLauncherScriptsCommand(self.distribution).run()
+        super().run()
+
+
+class CustomInstallCommand(install):
+    """Post-installation for installation mode."""
+
+    def run(self):
         BuildLauncherScriptsCommand(self.distribution).run()
         super().run()
 
@@ -89,6 +98,7 @@ if __name__ == '__main__':
 
         cmdclass={
             'launcher_scripts': BuildLauncherScriptsCommand,
-            'build': CustomBuildCommand,
+            'install': CustomInstallCommand,
+            'develop': CustomDevelopCommand,
         },
     )
