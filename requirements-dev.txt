@@ -1,3 +1,7 @@
+filelock
+psutil
+pystache==0.5.4
+
 six
 Sphinx
 sphinx_rtd_theme
@@ -8,3 +12,4 @@ mypy >=0.790
 pytest
 flake8
 autopep8
+types-requests

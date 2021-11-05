@@ -10,13 +10,17 @@ CWD = $(shell pwd)
 PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo "python"; else echo "python3"; fi)
 
 .PHONY: tests
-tests:
+tests: launcher-scripts
 	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest -v $(TESTARGS)
 
 .PHONY: verbose-tests
-verbose-tests:
+verbose-tests: launcher-scripts
 	PYTHONPATH=$(CWD)/src:${PYTHONPATH} ${PYTHON} -m pytest -v --log-format="%(asctime)s %(levelname)s %(message)s" \
 		           --log-date-format="%Y-%m-%d %H:%M:%S" --log-cli-level=DEBUG
+
+.PHONY: ci-tests
+ci-tests:
+	${PYTHON} tests/ci_runner.py
 
 
 .PHONY: typecheck
