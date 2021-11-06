@@ -33,15 +33,15 @@ log "Pre-launch: \"$_PSI_J_PRE_LAUNCH\""
 log "Post-launch: \"$_PSI_J_POST_LAUNCH\""
 
 pre_launch() {
-    if [ "$_PSI_J_PRE_LAUNCH_" != "" ]; then
+    if [ "$_PSI_J_PRE_LAUNCH" != "" ]; then
         log "Running pre-launch"
-        source "$_PSI_J_PRE_LAUNCH_"
+        source "$_PSI_J_PRE_LAUNCH"
     fi
 }
 
 post_launch() {
-    if [ "$_PSI_J_POST_LAUNCH_" != "" ]; then
+    if [ "$_PSI_J_POST_LAUNCH" != "" ]; then
         log "Running post-launch"
-        source "$_PSI_J_POST_LAUNCH_"
+        source "$_PSI_J_POST_LAUNCH"
     fi
 }

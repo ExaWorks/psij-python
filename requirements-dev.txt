@@ -1,7 +1,7 @@
 # Runtime dependencies
 filelock
 psutil
-# pystache
+# pystache>=0.5.4
 https://github.com/ExaWorks/pystache/archive/refs/tags/v0.5.5-ew.tar.gz
 
 # Docs
@@ -16,6 +16,7 @@ mypy >=0.790
 pytest
 flake8
 autopep8
+types-requests
 
 # For SAGA executor
 radical.saga
