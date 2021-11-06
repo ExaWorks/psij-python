@@ -3,11 +3,11 @@
 pre_launch
 
 PIDS=""
-_PSI_J_PROCESS_COUNT_="$1"
+_PSI_J_PROCESS_COUNT="$1"
 shift
-export _PSI_J_PROCESS_COUNT_
+export _PSI_J_PROCESS_COUNT
 
-for INDEX in $(seq 1 1 $_PSI_J_PROCESS_COUNT_); do
+for INDEX in $(seq 1 1 $_PSI_J_PROCESS_COUNT); do
     _PSI_J_PROCESS_INDEX_=$INDEX "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR  <$_PSI_J_STDIN &
     PIDS="$PIDS $!"
 done
