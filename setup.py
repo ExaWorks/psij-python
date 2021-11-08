@@ -4,7 +4,7 @@ import pathlib
 
 from setuptools import setup, find_packages, Command
 from setuptools.command.develop import develop
-from setuptools.command.install import install
+from setuptools.command.build_py import build_py
 
 
 class BuildLauncherScriptsCommand(Command):
@@ -42,15 +42,15 @@ class BuildLauncherScriptsCommand(Command):
 
 
 class CustomDevelopCommand(develop):
-    """Post-installation for development mode."""
+    """Create launcher scripts when building the code for development."""
 
     def run(self):
         BuildLauncherScriptsCommand(self.distribution).run()
         super().run()
 
 
-class CustomInstallCommand(install):
-    """Post-installation for installation mode."""
+class CustomBuildPyCommand(build_py):
+    """Create launcher scripts when building the code for installation."""
 
     def run(self):
         BuildLauncherScriptsCommand(self.distribution).run()
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
         cmdclass={
             'launcher_scripts': BuildLauncherScriptsCommand,
-            'install': CustomInstallCommand,
+            'build_py': CustomBuildPyCommand,
             'develop': CustomDevelopCommand,
         },
     )
