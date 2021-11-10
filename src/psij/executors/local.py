@@ -33,7 +33,11 @@ class _ProcessEntry(ABC):
 
     @abstractmethod
     def kill(self) -> None:
-        pass
+        assert self.process is not None
+        root = psutil.Process(self.process.pid)
+        for proc in root.children(recursive=True):
+            proc.kill()
+        self.process.kill()
 
     @abstractmethod
     def poll(self) -> Tuple[Optional[int], Optional[str]]:
@@ -52,8 +56,7 @@ class _ChildProcessEntry(_ProcessEntry):
         super().__init__(job, executor, launcher)
 
     def kill(self) -> None:
-        assert self.process is not None
-        self.process.kill()
+        super().kill()
 
     def poll(self) -> Tuple[Optional[int], Optional[str]]:
         assert self.process is not None
@@ -73,8 +76,7 @@ class _AttachedProcessEntry(_ProcessEntry):
         self.process = process
 
     def kill(self) -> None:
-        assert self.process
-        self.process.kill()
+        super().kill()
 
     def poll(self) -> Tuple[Optional[int], Optional[str]]:
         try:
