@@ -1,60 +1,4 @@
-import distutils
-import io
-import pathlib
-
-from setuptools import setup, find_packages, Command
-from setuptools.command.develop import develop
-from setuptools.command.install import install
-
-
-class BuildLauncherScriptsCommand(Command):
-
-    description = '''Build the launcher scripts'''
-    user_options = []
-
-    def initialize_options(self) -> None:
-        pass
-
-    def finalize_options(self) -> None:
-        pass
-
-    def run(self) -> None:
-        dir = pathlib.Path(self._get_script_dir()).resolve(strict=True)
-        for file in dir.iterdir():
-            if file.suffix == '.sht':
-                self._build_script(file)
-
-    def _get_script_dir(self) -> str:
-        return 'src/psij/launchers/scripts'
-
-    def _build_script(self, template_path: pathlib.Path) -> None:
-        lib_path = template_path.with_name('lib.sh')
-        dest_path = template_path.with_suffix('.sh')
-
-        with dest_path.open('w') as dest:
-            self._append(dest, lib_path)
-            self._append(dest, template_path)
-
-    def _append(self, dest: io.TextIOBase, src_path: pathlib.Path) -> None:
-        with src_path.open('r') as src:
-            for line in src:
-                dest.write(line)
-
-
-class CustomDevelopCommand(develop):
-    """Post-installation for development mode."""
-
-    def run(self):
-        BuildLauncherScriptsCommand(self.distribution).run()
-        super().run()
-
-
-class CustomInstallCommand(install):
-    """Post-installation for installation mode."""
-
-    def run(self):
-        BuildLauncherScriptsCommand(self.distribution).run()
-        super().run()
+from setuptools import setup, find_packages
 
 
 if __name__ == '__main__':
@@ -94,11 +38,5 @@ if __name__ == '__main__':
 
         install_requires=[
         ],
-        python_requires='>=3.6',
-
-        cmdclass={
-            'launcher_scripts': BuildLauncherScriptsCommand,
-            'install': CustomInstallCommand,
-            'develop': CustomDevelopCommand,
-        },
+        python_requires='>=3.6'
     )

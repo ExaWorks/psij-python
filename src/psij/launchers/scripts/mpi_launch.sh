@@ -1,4 +1,6 @@
-# <lib.sh>
+#!/bin/bash
+
+source $(dirname "$0")/launcher_lib.sh
 
 _PSI_J_PROCESS_COUNT="$1"
 shift

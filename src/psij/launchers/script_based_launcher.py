@@ -1,3 +1,6 @@
+import secrets
+import shutil
+import threading
 from pathlib import Path
 from typing import Optional, List
 
@@ -38,8 +41,9 @@ class ScriptBasedLauncher(Launcher):
 
     The remaining arguments to the script are the job executable and arguments.
 
-    A simple script library is provided in scripts/lib.sh. Its use is optional and it is intended
-    to be included in a main launcher script using a standard C preprocessor. It does the following:
+    A simple script library is provided in scripts/launcher_lib.sh. Its use is optional and it is
+    intended to be included at the beginning of a main launcher script using
+    `source $(dirname "$0")/launcher_lib.sh`. It does the following:
 
     * sets '-e' mode (exit on error)
     * sets the variables _PSI_J_JOB_ID, _PSI_J_LOG_FILE, _PSI_J_PRE_LAUNCH, and
@@ -54,25 +58,72 @@ class ScriptBasedLauncher(Launcher):
     recommended that the stdout and stderr of the job process be redirected to descriptors 3 and 4,
     respectively, such that they can be captured by the entity invoking the launcher rather than
     ending up in a the launcher log file.
+
+    A successful completion of the launcher should be signalled by the launcher by printing the
+    string "_PSI_J_LAUNCHER_DONE" to stdout. The launcher can then exit with the exit code returned
+    by the launched command. This allows executor to distinguish between a non-zero exit code due to
+    application failure or due to a premature launcher failure.
+
+    The actual launcher scripts, as well as the library, are deployed at run-time into the work
+    directory, where submit scripts are also generated. This directory is meant to be accessible
+    by both the node submitting the job as well as the node launching the job.
     """
 
     def __init__(self, script_path: Path, config: Optional[JobExecutorConfig] = None) -> None:
         """
         Initializes this launcher.
 
-        :param script_path: A path to a script that is invoked as described above.
-        :param config: An optional configuration.
+        Parameters
+        ----------
+        script_path
+            A path to a script that is invoked as described above.
+        config
+            An optional configuration.
         """
         super().__init__(config)
         self._script_path = script_path
         self._log_file = ''
         if config and config.launcher_log_file:
             self._log_file = str(config.launcher_log_file)
+        self._lock = threading.RLock()
+        self._deployed = False
+
+    def _ensure_launcher_deployed(self) -> None:
+        with self._lock:
+            if self._deployed:
+                return
+
+            self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
+            self._deploy_file(self._script_path)
+
+    def _deploy_file(self, path: Path) -> None:
+        dst_dir = self.config.work_directory
+        dst_path = dst_dir / path.name
+        if dst_path.exists():
+            return
+        tmp_prefix = secrets.token_hex() + '_'
+        tmp_path = dst_dir / (tmp_prefix + path.name)
+        shutil.copy(path, tmp_path)
+        try:
+            # this appears to use os.rename, although I'd wish pathlib docs would state this
+            # explicitly, since the docs for Path.rename mention nothing of the exceptions thrown
+            tmp_path.rename(dst_path)
+        except FileExistsError:
+            # thrown in Windows if the path already exists, which is fine if the destination is a
+            # file; we were recing another process
+            if dst_path.is_dir():
+                raise
+        except IsADirectoryError:
+            # this is throw in Unix if the destination exists and is a directory; we're not
+            # expecting this
+            raise
 
     def get_launch_command(self, job: Job) -> List[str]:
         """See :func:`~psij.launchers.launcher.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
+
+        self._ensure_launcher_deployed()
 
         args = ['/bin/bash', str(self._script_path), job.id, _str(self._log_file),
                 _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),

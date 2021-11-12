@@ -23,6 +23,7 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
 
 def test_simple_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
+    job.spec.attributes.set_custom_attribute('slurm.test', 'slurm.value')
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
     job.wait()
