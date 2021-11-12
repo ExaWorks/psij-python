@@ -18,7 +18,7 @@ fi
 
 ts() {
     while read LINE; do
-        printf -v TS "%(%F %T%z)T" -1
+        TZ=UTC printf -v TS "%(%F %T)T" -1
         echo "$TS $_PSI_J_JOB_ID $LINE"
     done
 }
@@ -28,7 +28,7 @@ log() {
 }
 exec 3> >(ts >> "$_PSI_J_LOG_FILE")
 
-
+log "Launcher: $0"
 log "Pre-launch: \"$_PSI_J_PRE_LAUNCH\""
 log "Post-launch: \"$_PSI_J_POST_LAUNCH\""
 

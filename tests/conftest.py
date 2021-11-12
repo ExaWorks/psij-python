@@ -11,6 +11,7 @@ import shutil
 import socket
 import subprocess
 import threading
+import time
 from functools import partial
 from pathlib import Path
 from typing import Dict, List
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 LOG_FORMATTER = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s\n',
                                   datefmt='%Y-%m-%d %H:%M:%S')
+LOG_FORMATTER.converter = time.gmtime
 SETTINGS_DIR = Path.home() / '.psij'
 KEY_FILE = SETTINGS_DIR / '.key'
 ID_FILE = SETTINGS_DIR / '.id'
