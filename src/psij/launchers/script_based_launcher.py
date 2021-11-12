@@ -98,6 +98,7 @@ class ScriptBasedLauncher(Launcher):
 
     def _deploy_file(self, path: Path) -> None:
         dst_dir = self.config.work_directory
+        dst_dir.mkdir(parents=True, exist_ok=True)
         dst_path = dst_dir / path.name
         if dst_path.exists():
             return
