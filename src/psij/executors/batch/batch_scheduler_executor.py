@@ -5,7 +5,7 @@ import traceback
 from abc import abstractmethod
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO
+from typing import Optional, List, Dict, Collection, cast, TextIO, Union
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
@@ -22,6 +22,24 @@ def check_status_exit_code(command: str, exit_code: int, out: str) -> None:
     if exit_code != 0:
         raise RuntimeError(f'status command {command!r} exited '
                            f'with {exit_code} and output {out!r}')
+
+
+def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, object]]]]:
+    assert job.spec is not None
+    if not job.spec.attributes or not job.spec.attributes._custom_attributes:
+        return {}
+
+    r = {}  # type: Dict[str, Union[object, List[Dict[str, object]]]]
+
+    for k, v in job.spec.attributes._custom_attributes.items():
+        ks = k.split('.', maxsplit=1)
+        if len(ks) == 2:
+            if ks[0] not in r:
+                r[ks[0]] = []  # type[List[Dict[str, object]]
+            cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
+        else:
+            r[k] = v
+    return r
 
 
 class BatchSchedulerExecutorConfig(JobExecutorConfig):
@@ -388,6 +406,7 @@ class BatchSchedulerExecutor(JobExecutor):
         launcher = self._get_launcher_from_job(job)
         ctx = {
             'job': job,
+            'custom_attributes': _attrs_to_mustache(job),
             'psij': {
                 'lib': FUNCTION_LIBRARY,
                 'launch_command': launcher.get_launch_command(job),
