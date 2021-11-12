@@ -1,3 +1,5 @@
+set -e
+
 _PSI_J_JOB_ID="$1"
 _PSI_J_LOG_FILE="$2"
 _PSI_J_PRE_LAUNCH="$3"
