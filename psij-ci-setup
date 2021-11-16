@@ -1,20 +1,21 @@
 #!/bin/bash
 
+set -e
+
 if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
     PIP="pip"
 else
     PIP="pip3"
 fi
 
+MODE="plain"
 
 if [ "$VIRTUAL_ENV" != "" ]; then
-    VENV=1
-    NOUSER=1
+    MODE="venv"
 fi
 
 if [ "$CONDA_SHLVL" != "" ] && [ "$CONDA_SHLVL" != "0" ]; then
-    CONDA=1
-    NOUSER=1
+    MODE="conda"
 fi
 
 
@@ -31,6 +32,12 @@ echo
 echo "================================================================"
 echo "This script will install requirements for the PSI/J CI tests and"
 echo "add a cron job to run the tests once a day at some random time. "
+echo "                                                                "
+echo "Warning: if you are using a virtual environment or Conda, this  "
+echo "script will set up tests to run inside the current virtual      "
+echo "environment or Conda environment. To avoid unwanted changes to  "
+echo "an existing environment, please exit this script, create a new  "
+echo "environment, then re-run this script.                           "
 echo "================================================================"
 echo
 
@@ -51,11 +58,19 @@ done
 
 cd "$MYPATH"
 
+echo -n "Installing dependencies..."
 
-if [ "$NOUSER" == "1" ]; then
-    $PIP install -r requirements-dev.txt
+if [ "$MODE" != "plain" ]; then
+    OUT=`$PIP install -r requirements-tests.txt 2>&1`
 else
-    $PIP install --user -r requirements-dev.txt
+    OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt 2>&1`
+fi
+
+if [ "$?" != "0" ]; then
+    echo "FAILED"
+    echo $OUT
+else
+    echo "Done"
 fi
 
 
@@ -78,10 +93,11 @@ if crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null && [ "$FORCE" != "1" ]
     exit 2
 else
     LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && ./psij-ci-run"
-    if [ "$VENV" == "1" ]; then
+    
+    if [ "$MODE" == "venv" ]; then
         LINE="$LINE --with-venv \"$VIRTUAL_ENV\""
     fi
-    if [ "$CONDA" == "1" ]; then
+    if [ "$MODE" == "conda" ]; then
         LINE="$LINE --with-conda \"$CONDA_DEFAULT_ENV\""
     fi
     LINE="$LINE >> $MYPATH/testing.log 2>&1"

@@ -20,16 +20,20 @@ failifempty() {
     fi
 }
 
+MODE="plain"
+
 while [ "$1" != "" ]; do
     case "$1" in
         --with-conda)
             failifempty "$1" "$2"
             conda activate "$2"
+            MODE="conda"
             shift 2
             ;;
         --with-venv)
             failifempty "$1" "$2"
             source "$2/bin/activate"
+            MODE="venv"
             shift 2
             ;;
         --help)
@@ -43,11 +47,16 @@ while [ "$1" != "" ]; do
     esac
 done
 
-
 if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
     PYTHON="python"
 else
     PYTHON="python3"
 fi
 
-$PYTHON tests/ci_runner.py
+
+if [ "$MODE" == "plain" ]; then
+    export PYTHONPATH="$PWD/.packages:$PYTHONPATH"
+fi
+
+
+$PYTHON tests/ci_runner.py $MODE
