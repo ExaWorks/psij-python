@@ -66,7 +66,7 @@ def get_core_pr_branches(conf: Dict[str, str]) -> List[str]:
     repo = get_conf(conf, 'repository')
     resp = requests.get('%s/repos/%s/pulls?state=open&per_page=100' % (GITHUB_API_ROOT, repo))
     resp.raise_for_status()
-    branches = []
+    branches = ['main']
     for pr in resp.json():
         if pr['head']['repo']['full_name'] == repo:
             branches.append(pr['head']['ref'])
