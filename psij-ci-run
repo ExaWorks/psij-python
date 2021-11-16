@@ -53,6 +53,9 @@ else
     PYTHON="python3"
 fi
 
+# Ensure latest test runner is there
+git fetch
+git checkout origin/main -- tests/ci_runner.py
 
 if [ "$MODE" == "plain" ]; then
     export PYTHONPATH="$PWD/.packages:$PYTHONPATH"
