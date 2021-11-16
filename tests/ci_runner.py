@@ -49,12 +49,14 @@ def read_conf(fname: str) -> Dict[str, str]:
             line = read_line(f)
     return conf
 
+
 def run(*args: str, cwd: Optional[str] = None) -> None:
-    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False, cwd=cwd, 
-                       text=True)
+    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                       cwd=cwd, text=True)
     if p.returncode != 0:
         print(p.stdout)
         raise subprocess.CalledProcessError(p.returncode, args, output=p.stdout)
+
 
 def get_conf(conf: Dict[str, str], name: str) -> str:
     if name not in conf:
