@@ -1,3 +1,4 @@
+import logging
 import secrets
 import shutil
 import threading
@@ -7,6 +8,9 @@ from typing import Optional, List
 from psij.launchers.launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
 from psij.job import Job
+
+
+logger = logging.getLogger(__name__)
 
 
 def _str(obj: Optional[object]) -> str:
@@ -119,14 +123,17 @@ class ScriptBasedLauncher(Launcher):
             # expecting this
             raise
 
-    def get_launch_command(self, job: Job) -> List[str]:
+    def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
         """See :func:`~psij.launchers.launcher.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
         self._ensure_launcher_deployed()
 
-        args = ['/bin/bash', str(self._script_path), job.id, _str(self._log_file),
+        if log_file is None:
+            log_file = self._log_file
+
+        args = ['/bin/bash', str(self._script_path), job.id, _str(log_file),
                 _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),
                 _path(spec.stdout_path), _path(spec.stderr_path)]
         args += self._get_additional_args(job)

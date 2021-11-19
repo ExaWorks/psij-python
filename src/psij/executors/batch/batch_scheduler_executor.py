@@ -5,7 +5,9 @@ import traceback
 from abc import abstractmethod
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO
+from typing import Optional, List, Dict, Collection, cast, TextIO, Union
+
+from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
@@ -22,6 +24,24 @@ def check_status_exit_code(command: str, exit_code: int, out: str) -> None:
     if exit_code != 0:
         raise RuntimeError(f'status command {command!r} exited '
                            f'with {exit_code} and output {out!r}')
+
+
+def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, object]]]]:
+    assert job.spec is not None
+    if not job.spec.attributes or not job.spec.attributes._custom_attributes:
+        return {}
+
+    r = {}  # type: Dict[str, Union[object, List[Dict[str, object]]]]
+
+    for k, v in job.spec.attributes._custom_attributes.items():
+        ks = k.split('.', maxsplit=1)
+        if len(ks) == 2:
+            if ks[0] not in r:
+                r[ks[0]] = []  # type[List[Dict[str, object]]
+            cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
+        else:
+            r[k] = v
+    return r
 
 
 class BatchSchedulerExecutorConfig(JobExecutorConfig):
@@ -377,11 +397,19 @@ class BatchSchedulerExecutor(JobExecutor):
 
     def _create_script_context(self, job: Job) -> Dict[str, object]:
         launcher = self._get_launcher_from_job(job)
+        if isinstance(launcher, ScriptBasedLauncher) and logger.isEnabledFor(logging.DEBUG):
+            log_file = str((self.work_directory / (job.id + '_launcher.log')).absolute())
+            launch_command = launcher.get_launch_command(job, log_file=log_file)
+        else:
+            launch_command = launcher.get_launch_command(job)
+        logger.debug('Launch command: %s', launch_command)
+
         ctx = {
             'job': job,
+            'custom_attributes': _attrs_to_mustache(job),
             'psij': {
                 'lib': FUNCTION_LIBRARY,
-                'launch_command': launcher.get_launch_command(job),
+                'launch_command': launch_command,
                 'script_dir': str(self.work_directory)
             }
         }
@@ -426,10 +454,18 @@ class BatchSchedulerExecutor(JobExecutor):
                 submit_file_path = self.work_directory / (job.id + '.job')
                 submit_file_path.unlink()
         except Exception as ex:
-            logger.warning('Job %s: failed clean submit script: %s' % (job.id, ex))
+            logger.warning('Job %s: failed clean submit script: %s', job.id, ex)
 
     def _read_aux_files(self, job: Job, status: JobStatus) -> None:
         try:
+            if logger.isEnabledFor(logging.DEBUG):
+                launcher_log = self._read_aux_file(path=self.work_directory
+                                                   / (job.id + '_launcher.log'))
+                if launcher_log is not None:
+                    logger.debug('Job %s: launcher log: %s', job.id, launcher_log)
+            if status.state == JobState.CANCELED:
+                # exit code and other things are not very meaningful for canceled jobs
+                return
             # read exit code and output files
             exit_code_str = self._read_aux_file(job, '.ec')
             if exit_code_str:
@@ -437,6 +473,7 @@ class BatchSchedulerExecutor(JobExecutor):
                 if status.exit_code != 0:
                     status.state = JobState.FAILED
             if status.state == JobState.FAILED:
+
                 if status.message is None:
                     # only read output from submit script if another error message is not
                     # already present
@@ -445,26 +482,35 @@ class BatchSchedulerExecutor(JobExecutor):
                     self._delete_aux_file(job, '.out')
 
         except Exception as ex:
-            logger.warning('Job %s: failed to read auxiliary files: %s' % (job.id, ex))
+            logger.warning('Job %s: failed to read auxiliary files: %s', job.id, ex)
 
-    def _read_aux_file(self, job: Job, suffix: str) -> Optional[str]:
-        assert job.native_id
-        path = self.work_directory / (job.native_id + suffix)
+    def _read_aux_file(self, job: Optional[Job] = None, suffix: Optional[str] = None,
+                       path: Optional[Path] = None) -> Optional[str]:
+        if path is None:
+            assert job
+            assert job.native_id
+            assert suffix
+            path = self.work_directory / (job.native_id + suffix)
+        logger.debug('Attempting to read %s', path)
         if path.exists():
             try:
                 with open(path) as f:
                     return f.read()
             finally:
-                self._delete_aux_file(job, suffix, force=True)
+                self._delete_aux_file(job=job, suffix=suffix, path=path, force=True)
         else:
             return None
 
-    def _delete_aux_file(self, job: Job, suffix: str, force: bool = False) -> None:
+    def _delete_aux_file(self, job: Optional[Job] = None, suffix: Optional[str] = None,
+                         path: Optional[Path] = None, force: bool = False) -> None:
         assert isinstance(self.config, BatchSchedulerExecutorConfig)
         if self.config.keep_files:
             return
-        assert job.native_id
-        path = self.work_directory / (job.native_id + suffix)
+        if path is None:
+            assert job
+            assert job.native_id
+            assert suffix
+            path = self.work_directory / (job.native_id + suffix)
         if force or path.exists():
             path.unlink()
 
