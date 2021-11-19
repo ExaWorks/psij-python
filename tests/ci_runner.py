@@ -15,6 +15,7 @@ import requests
 STABLE_BRANCHES = ['main']
 FAKE_BRANCHES = ['main', 'feature_1', 'feature_x']
 GITHUB_API_ROOT = 'https://api.github.com'
+MODE = 'plain'
 
 
 def read_line(f: TextIO) -> Optional[str]:
@@ -49,6 +50,14 @@ def read_conf(fname: str) -> Dict[str, str]:
     return conf
 
 
+def run(*args: str, cwd: Optional[str] = None) -> None:
+    p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                       cwd=cwd, text=True)
+    if p.returncode != 0:
+        print(p.stdout)
+        raise subprocess.CalledProcessError(p.returncode, args, output=p.stdout)
+
+
 def get_conf(conf: Dict[str, str], name: str) -> str:
     if name not in conf:
         raise KeyError('Missing configuration option "%s"' % name)
@@ -59,7 +68,7 @@ def get_core_pr_branches(conf: Dict[str, str]) -> List[str]:
     repo = get_conf(conf, 'repository')
     resp = requests.get('%s/repos/%s/pulls?state=open&per_page=100' % (GITHUB_API_ROOT, repo))
     resp.raise_for_status()
-    branches = []
+    branches = ['main']
     for pr in resp.json():
         if pr['head']['repo']['full_name'] == repo:
             branches.append(pr['head']['ref'])
@@ -68,12 +77,28 @@ def get_core_pr_branches(conf: Dict[str, str]) -> List[str]:
 
 def do_clone(conf: Dict[str, str], dir: Path) -> None:
     repo = get_conf(conf, 'repository')
-    subprocess.run(['git', 'clone', 'https://github.com/%s.git' % repo, 'code'], check=True,
-                   cwd=str(dir))
+    run('git', 'clone', 'https://github.com/%s.git' % repo, 'code', cwd=str(dir))
 
 
 def checkout(branch: str, dir: Path) -> None:
-    subprocess.run(['git', 'checkout', branch], check=True, cwd=str(dir / 'code'))
+    run('git', 'checkout', branch, cwd=str(dir / 'code'))
+
+
+def get_pip() -> str:
+    if sys.executable[-1] == '3':
+        return 'pip3'
+    else:
+        return 'pip'
+
+
+def install_deps(branch: str, dir: Path) -> None:
+    reqpath = dir / 'code' / 'requirements-tests.txt'
+    if not reqpath.exists():
+        return
+    if MODE == 'plain':
+        run(get_pip(), 'install', '--target', '.packages', '--upgrade', '-r', str(reqpath))
+    else:
+        run(get_pip(), 'install', '--upgrade', '-r', str(reqpath))
 
 
 def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool = True,
@@ -117,6 +142,7 @@ def run_tests(conf: Dict[str, str], site_ids: List[str], branches: List[str], cl
             for branch in branches:
                 if clone:
                     checkout(branch, tmpp)
+                    install_deps(branch, tmpp)
                 with info('Testing branch "%s"' % branch):
                     run_branch_tests(conf, tmpp, run_id, clone, site_id, branch)
 
@@ -134,6 +160,8 @@ def info(msg: str) -> Generator[bool, None, None]:
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        MODE = sys.argv[1]
     with info('Reading configuration'):
         conf = read_conf('testing.conf')
     scope = get_conf(conf, 'scope')
