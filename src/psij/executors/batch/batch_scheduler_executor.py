@@ -51,8 +51,6 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
     from this class should be defined, even if empty.
     """
 
-    DEFAULT_WORK_DIRECTORY = Path.home() / '.psij' / 'work'
-
     def __init__(self, launcher_log_file: Optional[Path] = None,
                  work_directory: Optional[Path] = None, queue_polling_interval: int = 30,
                  initial_queue_polling_delay: int = 2,
@@ -65,10 +63,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         launcher_log_file
             See :func:`~JobExecutorConfig.__init__`.
         work_directory
-            A directory where submit scripts and auxiliary job files will be generated. In a,
-            cluster this directory needs to point to a directory on a shared filesystem. This is so
-            that the exit code file, likely written on a service node, can be accessed by PSI/J,
-            likely running on a head node.
+            See :func:`~JobExecutorConfig.__init__`.
         queue_polling_interval
             an interval, in seconds, at which the batch scheduler queue will be polled for updates
             to jobs.
@@ -83,11 +78,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
             Whether to keep submit files and auxiliary job files (exit code and output files) after
             a job has completed.
         """
-        super().__init__(launcher_log_file)
-        if work_directory:
-            self.work_directory = work_directory
-        else:
-            self.work_directory = BatchSchedulerExecutorConfig.DEFAULT_WORK_DIRECTORY
+        super().__init__(work_directory, launcher_log_file)
         self.queue_polling_interval = queue_polling_interval
         self.initial_queue_polling_delay = initial_queue_polling_delay
         self.queue_polling_error_threshold = queue_polling_error_threshold

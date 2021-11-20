@@ -1,5 +1,3 @@
-#!/bin/bash
-
 set -e
 
 _PSI_J_JOB_ID="$1"

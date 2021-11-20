@@ -122,7 +122,6 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
     env = dict(os.environ)
     env['PYTHONPATH'] = str(cwd.absolute() / 'src') + \
         (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
-    subprocess.run([sys.executable, 'setup.py', 'launcher_scripts'], cwd=cwd.absolute(), check=True)
     subprocess.run(args, cwd=cwd.absolute(), env=env)
 
 
