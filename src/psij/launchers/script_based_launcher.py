@@ -98,14 +98,14 @@ class ScriptBasedLauncher(Launcher):
                 return
 
             self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
-            self._deploy_file(self._script_path)
+            self._deployed_script_path = self._deploy_file(self._script_path)
 
-    def _deploy_file(self, path: Path) -> None:
+    def _deploy_file(self, path: Path) -> Path:
         dst_dir = self.config.work_directory
         dst_dir.mkdir(parents=True, exist_ok=True)
         dst_path = dst_dir / path.name
         if dst_path.exists():
-            return
+            return dst_path
         tmp_prefix = secrets.token_hex() + '_'
         tmp_path = dst_dir / (tmp_prefix + path.name)
         shutil.copy(path, tmp_path)
@@ -113,11 +113,14 @@ class ScriptBasedLauncher(Launcher):
             # this appears to use os.rename, although I'd wish pathlib docs would state this
             # explicitly, since the docs for Path.rename mention nothing of the exceptions thrown
             tmp_path.rename(dst_path)
+            return dst_path
         except FileExistsError:
             # thrown in Windows if the path already exists, which is fine if the destination is a
             # file; we were recing another process
             if dst_path.is_dir():
                 raise
+            else:
+                return dst_path
         except IsADirectoryError:
             # this is throw in Unix if the destination exists and is a directory; we're not
             # expecting this
@@ -133,7 +136,7 @@ class ScriptBasedLauncher(Launcher):
         if log_file is None:
             log_file = self._log_file
 
-        args = ['/bin/bash', str(self._script_path), job.id, _str(log_file),
+        args = ['/bin/bash', str(self._deployed_script_path), job.id, _str(log_file),
                 _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),
                 _path(spec.stdout_path), _path(spec.stderr_path)]
         args += self._get_additional_args(job)
