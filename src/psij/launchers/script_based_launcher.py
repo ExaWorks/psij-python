@@ -116,7 +116,7 @@ class ScriptBasedLauncher(Launcher):
             return dst_path
         except FileExistsError:
             # thrown in Windows if the path already exists, which is fine if the destination is a
-            # file; we were recing another process
+            # file; we were racing another process
             if dst_path.is_dir():
                 raise
             else:
