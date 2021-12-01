@@ -20,6 +20,8 @@ failifempty() {
     fi
 }
 
+source psij-ci-load
+
 MODE="plain"
 
 while [ "$1" != "" ]; do

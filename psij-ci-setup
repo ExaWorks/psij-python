@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source psij-ci-load
+
 if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
     PIP="pip"
 else
@@ -30,6 +32,10 @@ echo
 echo "================================================================"
 echo "This script will install requirements for the PSI/J CI tests and"
 echo "add a cron job to run the tests once a day at some random time. "
+echo "                                                                "
+echo "If you need to set up a special environment, such as loading an "
+echo "environment module please exit this script and add the relevant "
+echo "commands to psij-ci-load.                                       "
 echo "                                                                "
 echo "Warning: if you are using a virtual environment or Conda, this  "
 echo "script will set up tests to run inside the current virtual      "

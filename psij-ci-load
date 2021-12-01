@@ -1,0 +1,3 @@
+# This file can be used to set up an environment before tests are run.
+# For example, one can issue relevant "module load" commands here. The
+# file will then be sourced by both psij-ci-setup and psij-ci-run.
