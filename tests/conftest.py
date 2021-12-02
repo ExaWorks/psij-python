@@ -251,7 +251,7 @@ def _get_key(config):
 def _get_id(config):
     id = config.getoption('id')
     if id == 'hostname':
-        return socket.gethostname()
+        return socket.getfqdn()
     elif id == 'random':
         return _cache(ID_FILE, secrets.token_hex)
     elif id[0] == '"' and id[-1] == '"':
