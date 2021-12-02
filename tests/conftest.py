@@ -342,7 +342,9 @@ def _discover_environment(config):
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
         env['has_saga'] = _has_saga()
-        env['can_ssh_to_localhost'] = _try_run_command(['ssh', 'localhost', 'true'], timeout=5)
+        env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
+                                                        '-oStrictHostKeyChecking=no', 'localhost',
+                                                        'true'], timeout=5)
         env['git_branch'] = _get_git_branch(config)
         env['git_last_commit'] = _get_last_commit()
         ahead, behind = _get_commit_diff()
