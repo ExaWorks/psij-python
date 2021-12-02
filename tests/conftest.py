@@ -14,7 +14,7 @@ import threading
 import time
 from functools import partial
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from _pytest._io import TerminalWriter
@@ -328,8 +328,11 @@ def _get_env(name: str) -> str:
         return ''
 
 
-def _parse_custom_attributes(s: str) -> Dict[str, object]:
-    return json.loads('{' + s + '}')
+def _parse_custom_attributes(s: Optional[str]) -> Dict[str, object]:
+    if s is None:
+        return None
+    else:
+        return json.loads('{' + s + '}')
 
 
 def _discover_environment(config):
