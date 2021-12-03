@@ -271,6 +271,7 @@ for METHOD in "${METHODS[@]}"; do
     echo "$SEQ) ${METHOD_NAMES[$SEQ - 1]} $AVTEXT $RECTEXT"
     SEQ=$((SEQ + 1))
 done
+echo "================================================================"
 
 
 
