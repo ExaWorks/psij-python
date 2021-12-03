@@ -1,5 +1,5 @@
 from pathlib import Path
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState
+from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttributes
 from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
@@ -18,6 +18,7 @@ def assert_completed(job: Job) -> None:
 def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
     assert job.spec is not None
     job.spec.launcher = ep.launcher
+    job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
     return JobExecutor.get_instance(ep.executor, url=ep.url)
 
 

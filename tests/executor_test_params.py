@@ -1,11 +1,11 @@
 import re
-from typing import Optional
+from typing import Optional, Dict
 
 
 class ExecutorTestParams:
     """A class holding executor, launcher, url pairs."""
 
-    def __init__(self, spec: str) -> None:
+    def __init__(self, spec: str, custom_attributes: Optional[Dict[str, object]] = None) -> None:
         """
         Construct a new instance.
 
@@ -25,6 +25,8 @@ class ExecutorTestParams:
             self.url = spec_l[2]  # type: Optional[str]
         else:
             self.url = None
+
+        self.custom_attributes = custom_attributes
 
     def __repr__(self) -> str:
         """Returns a string representation of this object."""

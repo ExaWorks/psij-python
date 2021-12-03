@@ -14,7 +14,7 @@ import threading
 import time
 from functools import partial
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from _pytest._io import TerminalWriter
@@ -63,6 +63,8 @@ def pytest_addoption(parser):
                      help='Externally supplied run ID.')
     parser.addoption('--branch-name-override', action='store', default=None,
                      help='Pretend that the current git branch is this value.')
+    parser.addoption('--custom-attributes', action='store', default=None,
+                     help='A set of custom attributes to pass to jobs.')
 
 
 def _get_executors(config: Dict[str, str]) -> List[str]:
@@ -133,8 +135,10 @@ def _translate_launcher(config: Dict[str, str], exec: str, launcher: str) -> str
 
 def pytest_generate_tests(metafunc):
     if 'execparams' in metafunc.fixturenames:
+
         metafunc.parametrize('execparams',
-                             [ExecutorTestParams(x) for x in _get_executors(metafunc.config)],
+                             [ExecutorTestParams(x, metafunc.config.option.custom_attributes)
+                              for x in _get_executors(metafunc.config)],
                              ids=lambda x: str(x))
 
 
@@ -324,6 +328,13 @@ def _get_env(name: str) -> str:
         return ''
 
 
+def _parse_custom_attributes(s: Optional[str]) -> Dict[str, object]:
+    if s is None:
+        return None
+    else:
+        return json.loads('{' + s + '}')
+
+
 def _discover_environment(config):
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -338,6 +349,8 @@ def _discover_environment(config):
     env['run_id'] = _get_run_id(config)
     env['in_conda'] = _get_env('CONDA_SHLVL') != '' and _get_env('CONDA_SHLVL') != '0'
     env['in_venv'] = _get_env('VIRTUAL_ENV') != ''
+    config.option.custom_attributes = _parse_custom_attributes(
+        config.getoption('custom_attributes'))
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
