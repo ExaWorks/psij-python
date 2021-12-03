@@ -129,7 +129,7 @@ elif which screen >/dev/null 2>&1 ; then
     
     RESPONSE=""
 
-    while [ "$RESPONSE" != "Y" ] && [ "$RESPONSE" != "X" ]; do
+    while [ "$RESPONSE" != "S" ] && [ "$RESPONSE" != "X" ]; do
 
         echo -n "Would you like to start a (S)creen session or E(x)it? "
         read -n1 RESPONSE
