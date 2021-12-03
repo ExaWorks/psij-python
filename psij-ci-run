@@ -3,12 +3,13 @@
 usage() {
     cat <<EOF
 Usage: ./psij-ci-run [--help] [--with-conda <conda_env_name>] 
-            [--with-venv <venv_name>]
+            [--with-venv <venv_name>] [--repeat]
     --help          Displays this message
     --with-conda    Specifies a conda environment to activate before running 
                     the tests
     --with-venv     Specifies a virtualenv environment to load before running
                     the tests
+    --repeat        If specified, run tests every 24 hours in a loop.
 EOF
 }
 
@@ -21,6 +22,7 @@ failifempty() {
 }
 
 MODE="plain"
+REPEAT=0
 
 while [ "$1" != "" ]; do
     case "$1" in
@@ -39,6 +41,10 @@ while [ "$1" != "" ]; do
         --help)
             usage
             exit 0
+            ;;
+        --repeat)
+            REPEAT=1
+            shift
             ;;
         *)
             echo "Unrecognized command line option: $1."
@@ -61,5 +67,15 @@ if [ "$MODE" == "plain" ]; then
     export PYTHONPATH="$PWD/.packages:$PYTHONPATH"
 fi
 
-
-$PYTHON tests/ci_runner.py $MODE
+if [ "$REPEAT" == "1" ]; then
+    CRT_TIME=`date +%s`
+    while true ; do
+        $PYTHON tests/ci_runner.py $MODE
+        CRT_TIME=$((CRT_TIME + 86400))
+        NOW=`date +%s`
+        TO_SLEEP=$((CRT_TIME - NOW))
+        sleep $TO_SLEEP
+    done
+else
+    $PYTHON tests/ci_runner.py $MODE
+fi
