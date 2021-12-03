@@ -19,6 +19,11 @@ running the integration tests and through `cron` (or a similar tool).
 Setting up a Cron testing job
 =============================
 
+Note: If you need to set up an environment module (such as 
+`module load python/cpython-x.y.z`) or something similar, please add the 
+relevant commands to `psij-ci-load`.
+
+
 This is the preferred way of running the tests since it allows the PSI/J
 team to keep a constant eye on the state of the library on various
 resources. To set up the Cron job, you can either use the provided
@@ -29,7 +34,6 @@ script:
 ```
 
 or manually set up the CI runner with Cron or your favorite scheduler.
-
 
 Testing with the CI runner
 ==========================

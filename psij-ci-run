@@ -21,6 +21,8 @@ failifempty() {
     fi
 }
 
+source psij-ci-load
+
 MODE="plain"
 REPEAT=0
 
