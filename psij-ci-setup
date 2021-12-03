@@ -77,35 +77,76 @@ HOUR=`echo $(($RANDOM % 24))`
 MINUTE=`echo $(($RANDOM % 60))`
 MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-if crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null && [ "$FORCE" != "1" ]; then
-    EXISTING=`crontab -l 2>/dev/null | grep "psij-ci-run"`
-    echo
-    echo "================================================================"
-    echo "Error: a crontab for PSI/J tests already exists: "
-    echo ">>> $EXISTING"
-    echo
-    echo "You can edit your crontab with \"crontab -e\" and remove the    "
-    echo "existing entry, then re-run this tool. If you are certain that  "
-    echo "you want to install multiple entries, you can re-run this script"
-    echo "with the \"-f\" flag.                                           "
-    echo "================================================================"
-    exit 2
-else
-    LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && ./psij-ci-run"
+CMD="./psij-ci-run"
+
+if [ "$MODE" == "venv" ]; then
+    CMD="$CMD --with-venv \"$VIRTUAL_ENV\""
+fi
+if [ "$MODE" == "conda" ]; then
+    CMD="$CMD --with-conda \"$CONDA_DEFAULT_ENV\""
+fi
+
+if ps aux | grep -e '^root.*cron' >/dev/null 2>&1 ; then
+    # looks like some cron daemon is running
+
+    if crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null && [ "$FORCE" != "1" ]; then
+        EXISTING=`crontab -l 2>/dev/null | grep "psij-ci-run"`
+        echo
+        echo "================================================================"
+        echo "Error: a crontab for PSI/J tests already exists:                "
+        echo ">>> $EXISTING"
+        echo
+        echo "You can edit your crontab with \"crontab -e\" and remove the    "
+        echo "existing entry, then re-run this tool. If you are certain that  "
+        echo "you want to install multiple entries, you can re-run this script"
+        echo "with the \"-f\" flag.                                           "
+        echo "================================================================"
+        exit 2
+    else
+        CMD="$CMD >> $MYPATH/testing.log 2>&1"
+        LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && $CMD"
     
-    if [ "$MODE" == "venv" ]; then
-        LINE="$LINE --with-venv \"$VIRTUAL_ENV\""
+        echo
+        echo "================================================================"
+        echo "The following line will be installed in your crontab:"
+        echo "$LINE"
+        { crontab -l & echo "$LINE"; } | crontab -
+        echo "Setup complete. If you have not already done so, please take    "
+        echo "some time to customize testing.conf.                            "
+        echo "================================================================"
     fi
-    if [ "$MODE" == "conda" ]; then
-        LINE="$LINE --with-conda \"$CONDA_DEFAULT_ENV\""
-    fi
-    LINE="$LINE >> $MYPATH/testing.log 2>&1"
+elif which screen >/dev/null 2>&1 ; then
+    CMD="$CMD --repeat >> $MYPATH/testing.log 2>&1"
     echo
     echo "================================================================"
-    echo "The following line will be installed in your crontab:"
-    echo "$LINE"
-    { crontab -l & echo "$LINE"; } | crontab -
-    echo "Setup complete. If you have not already done so, please take    "
-    echo "some time to customize testing.conf.                            "
+    echo "It looks like there is no cron daemon running. As an            "
+    echo "alternative, this script can start a GNU Screen session that    "
+    echo "runs the tests once a day, using the following command:         "
+    echo ">>> screen -d -m bash -c \"$CMD\""
+    echo "================================================================"
+    
+    RESPONSE=""
+
+    while [ "$RESPONSE" != "S" ] && [ "$RESPONSE" != "X" ]; do
+
+        echo -n "Would you like to start a (S)creen session or E(x)it? "
+        read -n1 RESPONSE
+        echo
+        RESPONSE=${RESPONSE^}
+    
+        if [ "$RESPONSE" == "X" ]; then
+            echo "Operation canceled"
+            exit 1
+        fi
+    done
+
+    screen -d -m bash -c "$CMD"
+else
+    CMD="$CMD --repeat >> $MYPATH/testing.log 2>&1"
+    echo
+    echo "================================================================"
+    echo "It looks like there is no cron daemon running. Please run the   "
+    echo "following command in the background:                            "
+    echo ">>> $CMD"
     echo "================================================================"
 fi
