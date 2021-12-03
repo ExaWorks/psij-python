@@ -85,8 +85,6 @@ fi
 if [ "$MODE" == "conda" ]; then
     CMD="$CMD --with-conda \"$CONDA_DEFAULT_ENV\""
 fi
-CMD="$CMD >> $MYPATH/testing.log 2>&1"
-
 
 if ps aux | grep -e '^root.*cron' >/dev/null 2>&1 ; then
     # looks like some cron daemon is running
