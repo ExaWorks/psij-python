@@ -122,7 +122,7 @@ elif which screen >/dev/null 2>&1 ; then
     echo "It looks like there is no cron daemon running. As an            "
     echo "alternative, this script can start a GNU Screen session that    "
     echo "runs the tests once a day, using the following command:         "
-    echo ">>> $CMD"
+    echo ">>> screen -d -m $CMD"
     echo "================================================================"
     
     RESPONSE=""
