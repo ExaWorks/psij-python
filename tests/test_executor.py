@@ -37,6 +37,7 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         assert_completed(status)
         f = outp.open("r")
         contents = f.read()
+        f.close()
         assert contents == '_x_'
 
 
