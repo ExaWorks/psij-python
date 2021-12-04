@@ -1,18 +1,15 @@
 from pathlib import Path
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttributes
+from typing import Optional
+
+from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttributes, JobStatus
 from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
 
 
-def assert_completed(job: Job) -> None:
-    if job.status.state == JobState.FAILED:
-        raise RuntimeError('Job (native_id: {}) failed: {}'.format(job.native_id,
-                                                                   job.status.message))
-    elif job.status.state == JobState.COMPLETED:
-        return
-    else:
-        raise RuntimeError('Unexpected job state: {}'.format(job.status.state))
+def assert_completed(status: Optional[JobStatus]) -> None:
+    assert status is not None
+    assert status.state == JobState.COMPLETED
 
 
 def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
@@ -26,7 +23,8 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
-    job.wait()
+    status = job.wait()
+    assert_completed(status)
 
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
@@ -35,7 +33,8 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
-        job.wait()
+        status = job.wait()
+        assert_completed(status)
         f = outp.open("r")
         contents = f.read()
         assert contents == '_x_'
@@ -51,7 +50,8 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     assert native_id is not None
     job2 = Job()
     ex.attach(job2, native_id)
-    job2.wait()
+    status = job2.wait()
+    assert_completed(status)
 
 
 def test_cancel(execparams: ExecutorTestParams) -> None:
@@ -99,7 +99,7 @@ def test_parallel_jobs(execparams: ExecutorTestParams) -> None:
     ex = _get_executor_instance(execparams, job1)
     ex.submit(job1)
     ex.submit(job2)
-    job1.wait()
-    job2.wait()
-    assert_completed(job1)
-    assert_completed(job2)
+    status1 = job1.wait()
+    status2 = job2.wait()
+    assert_completed(status1)
+    assert_completed(status2)
