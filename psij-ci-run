@@ -78,7 +78,9 @@ fi
 if [ "$REPEAT" == "1" ]; then
     CRT_TIME=`date +%s`
     while true ; do
+        echo "`date` Running tests..."
         $PYTHON tests/ci_runner.py $MODE
+        echo "`date` Waiting (CTRL+C to interrupt)..."
         CRT_TIME=$((CRT_TIME + 86400))
         NOW=`date +%s`
         TO_SLEEP=$((CRT_TIME - NOW))
