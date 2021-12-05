@@ -89,6 +89,7 @@ if [ "$REPEAT" == "1" ]; then
 elif [ "$RESCHEDULE" == "1" ]; then
     CMD="./psij-ci-run --reschedule $TIME >> testing.log 2>&1"
     echo "$CMD" | at $TIME
+    $PYTHON tests/ci_runner.py $MODE
 else
     $PYTHON tests/ci_runner.py $MODE
 fi
