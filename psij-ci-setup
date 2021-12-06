@@ -10,6 +10,157 @@ fi
 
 MODE="plain"
 
+existing_error_trailer() {
+    echo "If you are certain that you want to install multiple entries,   "
+    echo "you can re-run this script with the \"-f\" flag.                "
+    echo "================================================================"
+
+}
+
+cron_check() {
+    ps -eo command | awk '{print $1}' | grep cron >/dev/null 2>&1
+    echo $?
+}
+
+
+cron_check_existing() {
+    crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null 2>&1
+}
+
+cron_existing_error() {
+    EXISTING=`crontab -l 2>/dev/null | grep "psij-ci-run"`
+    echo
+    echo "================================================================"
+    echo "Error: a crontab for PSI/J tests already exists:                "
+    echo ">>> $EXISTING"
+    echo
+    echo "You can edit your crontab with \"crontab -e\" and remove the    "
+    echo "existing entry, then re-run this tool.                          "
+    existing_error_trailer
+    exit 2
+}
+
+cron_install() {
+    CMD="$CMD >> testing.log 2>&1"
+    LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && $CMD"
+    echo
+    echo "================================================================"
+    echo "The following line will be installed in your crontab:"
+    echo "$LINE"
+    echo "================================================================"
+    { crontab -l & echo "$LINE"; } | crontab -
+}
+
+at_check() {
+    FLAG_FILE=`mktemp`
+    echo "rm $FLAG_FILE" | at now >/dev/null 2>&1
+    if [ -f "$FLAG_FILE" ]; then
+        echo 0
+        rm $FLAG_FILE
+    else
+        echo 1
+    fi
+}
+
+at_check_existing() {
+    for JOB in `atq`; do
+        JOB_NO=`echo $JOB | awk '{print $1}'`
+        if at -c $JOB_NO | grep psij-ci-run >/dev/null 2>&1; then
+            EXISTING_AT_JOB_NUM=$JOB_NO
+            EXISTING_AT_JOB="$JOB `at -c $JOB_NO | grep psij-ci-run`"
+            return 0
+        fi
+    done
+    return 1
+}
+
+at_existing_error() {
+    echo
+    echo "================================================================"
+    echo "Error: an AT job for PSI/J tests already exists:                "
+    echo ">>> $EXISTING_AT_JOB"
+    echo
+    echo "You can remove this job by running                              "
+    echo "> atrm $EXISTING_AT_JOB_NUM"
+    echo "then re-run this tool.                                          "
+    existing_error_trailer
+    exit 2
+}
+
+at_install() {
+    CMD="$CMD --reschedule $HOUR:$MINUTE >> testing.log 2>&1"
+    echo
+    echo "================================================================"
+    echo "The following will be executed:"
+    echo "> echo \"$CMD\" | at $HOUR:$MINUTE"
+    echo "================================================================"
+    
+    echo "$CMD" | at $HOUR:$MINUTE >/dev/null 2>&1
+}
+
+screen_check() {
+    which screen >/dev/null 2>&1
+    echo $?
+}
+
+screen_check_existing() {
+    EXISTING_SCREEN_JOB=`screen -list | grep psij-ci-run`
+}
+
+screen_existing_error() {
+    echo
+    echo "================================================================"
+    echo "Error: a Screen job for PSI/J tests already exists:             "
+    echo ">>> $EXISTING_SCREEN_JOB"
+    echo
+    echo "You can remove this job by running attaching to the screen      "
+    echo "session and exiting it with CTRL+C and then re-run this tool.   "
+    exitsing_error_trailer
+    exit 2
+}
+
+screen_install() {
+    CMD="$CMD --repeat >> testing.log 2>&1"
+    echo
+    echo "================================================================"
+    echo "WARNING: Screen sessions do not persist across reboots. Please  "
+    echo "check regularly and re-run this script if necessary.            "
+    echo "                                                                "
+    echo "The following will be executed:"
+    echo "> screen -d -m bash -c \"$CMD\""
+    echo "================================================================"
+    screen -d -m bash -c "$CMD"
+}
+
+manual_check() {
+    echo 0
+}
+
+manual_check_existing() {
+    false
+}
+
+manual_existing_error() {
+    true
+}
+
+manual_install() {
+    CMD="$CMD --repeat >> testing.log 2>&1"
+    echo
+    echo "================================================================"
+    echo "Please run the following command in the background:             "
+    echo "> $CMD"
+    echo "================================================================"
+}
+
+completed_msg() {
+    echo
+    echo "================================================================"
+    echo "Setup complete. If you have not already done so, please take    "
+    echo "some time to customize testing.conf.                            "
+    echo "================================================================"
+}
+
 if [ "$VIRTUAL_ENV" != "" ]; then
     MODE="venv"
 fi
@@ -92,67 +243,58 @@ if [ "$MODE" == "conda" ]; then
     CMD="$CMD --with-conda \"$CONDA_DEFAULT_ENV\""
 fi
 
-if ps aux | grep -e '^root.*cron' >/dev/null 2>&1 ; then
-    # looks like some cron daemon is running
+METHODS=(cron at screen manual)
+METHOD_NAMES=(Cron AT Screen manual)
 
-    if crontab -l 2>/dev/null | grep "psij-ci-run" >/dev/null && [ "$FORCE" != "1" ]; then
-        EXISTING=`crontab -l 2>/dev/null | grep "psij-ci-run"`
-        echo
-        echo "================================================================"
-        echo "Error: a crontab for PSI/J tests already exists:                "
-        echo ">>> $EXISTING"
-        echo
-        echo "You can edit your crontab with \"crontab -e\" and remove the    "
-        echo "existing entry, then re-run this tool. If you are certain that  "
-        echo "you want to install multiple entries, you can re-run this script"
-        echo "with the \"-f\" flag.                                           "
-        echo "================================================================"
-        exit 2
+echo
+echo "================================================================"
+echo "Please choose a method to run the tests:                        "
+
+SEQ=1
+FIRST_AVAILABLE=1
+DEFAULT_SEQ=1
+for METHOD in "${METHODS[@]}"; do
+    AVAILABLE=`${METHOD}_check`
+    AVTEXT=""
+    RECTEXT=""
+    
+    if [ "$AVAILABLE" != "0" ]; then
+        AVTEXT="(not detected)"
     else
-        CMD="$CMD >> $MYPATH/testing.log 2>&1"
-        LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && $CMD"
-    
-        echo
-        echo "================================================================"
-        echo "The following line will be installed in your crontab:"
-        echo "$LINE"
-        { crontab -l & echo "$LINE"; } | crontab -
-        echo "Setup complete. If you have not already done so, please take    "
-        echo "some time to customize testing.conf.                            "
-        echo "================================================================"
-    fi
-elif which screen >/dev/null 2>&1 ; then
-    CMD="$CMD --repeat >> $MYPATH/testing.log 2>&1"
-    echo
-    echo "================================================================"
-    echo "It looks like there is no cron daemon running. As an            "
-    echo "alternative, this script can start a GNU Screen session that    "
-    echo "runs the tests once a day, using the following command:         "
-    echo ">>> screen -d -m bash -c \"$CMD\""
-    echo "================================================================"
-    
-    RESPONSE=""
-
-    while [ "$RESPONSE" != "S" ] && [ "$RESPONSE" != "X" ]; do
-
-        echo -n "Would you like to start a (S)creen session or E(x)it? "
-        read -n1 RESPONSE
-        echo
-        RESPONSE=${RESPONSE^}
-    
-        if [ "$RESPONSE" == "X" ]; then
-            echo "Operation canceled"
-            exit 1
+        if [ "$FIRST_AVAILABLE" == "1" ]; then
+            FIRST_AVAILABLE=0
+            RECTEXT="(recommended)"
+            DEFAULT_SEQ=$SEQ
         fi
-    done
+    fi
+    
+    echo "$SEQ) ${METHOD_NAMES[$SEQ - 1]} $AVTEXT $RECTEXT"
+    SEQ=$((SEQ + 1))
+done
+echo "================================================================"
 
-    screen -d -m bash -c "$CMD"
+
+
+while echo "1234X" | grep -v "$RESPONSE" >/dev/null 2>&1 ; do
+
+    echo -n "Method 1-4 ($DEFAULT_SEQ) or E(x)it? "
+    read -n1 RESPONSE
+    RESPONSE=${RESPONSE^}
+    if [ "$RESPONSE" == "" ]; then
+        RESPONSE=$DEFAULT_SEQ
+    fi
+    
+    if [ "$RESPONSE" == "X" ]; then
+        echo "Operation canceled"
+        exit 1
+    fi
+done
+
+
+METHOD="${METHODS[$RESPONSE - 1]}"
+
+if [ "$FORCE" != "1" ] && ${METHOD}_check_existing ; then
+   ${METHOD}_existing_error
 else
-    CMD="$CMD --repeat >> $MYPATH/testing.log 2>&1"
-    echo
-    echo "================================================================"
-    echo "It looks like there is no cron daemon running. Please run the   "
-    echo "following command in the background:                            "
-    echo ">>> $CMD"
-    echo "================================================================"
+    ${METHOD}_install
 fi

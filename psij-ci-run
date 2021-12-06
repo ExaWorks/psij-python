@@ -25,6 +25,7 @@ source psij-ci-load
 
 MODE="plain"
 REPEAT=0
+RESCHEDULE=0
 
 while [ "$1" != "" ]; do
     case "$1" in
@@ -47,6 +48,11 @@ while [ "$1" != "" ]; do
         --repeat)
             REPEAT=1
             shift
+            ;;
+        --reschedule)
+            RESCHEDULE=1
+            TIME="$2"
+            shift 2
             ;;
         *)
             echo "Unrecognized command line option: $1."
@@ -72,12 +78,18 @@ fi
 if [ "$REPEAT" == "1" ]; then
     CRT_TIME=`date +%s`
     while true ; do
+        echo "`date` Running tests..."
         $PYTHON tests/ci_runner.py $MODE
+        echo "`date` Waiting (CTRL+C to interrupt)..."
         CRT_TIME=$((CRT_TIME + 86400))
         NOW=`date +%s`
         TO_SLEEP=$((CRT_TIME - NOW))
         sleep $TO_SLEEP
     done
+elif [ "$RESCHEDULE" == "1" ]; then
+    CMD="./psij-ci-run --reschedule $TIME >> testing.log 2>&1"
+    echo "$CMD" | at $TIME
+    $PYTHON tests/ci_runner.py $MODE
 else
     $PYTHON tests/ci_runner.py $MODE
 fi
