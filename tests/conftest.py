@@ -367,6 +367,7 @@ def _discover_environment(config):
         env['git_has_local_changes'] = (env['git_local_change_summary'] != '')
     except Exception as ex:
         env['error'] = str(ex)
+    print('Env: %s' % env)
     config.option.environment = env
     env['computed_executors'] = _get_executors(config)
     return env, key
