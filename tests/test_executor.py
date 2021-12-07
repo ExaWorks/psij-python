@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -5,6 +6,16 @@ from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttrib
 from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
+
+
+_QUICK_EXECUTORS = set(['local', 'batch-test', 'saga'])
+
+
+def _get_timeout(execparams: ExecutorTestParams) -> Optional[timedelta]:
+    if execparams.executor in _QUICK_EXECUTORS:
+        return timedelta(minutes=10)
+    else:
+        return None
 
 
 def assert_completed(status: Optional[JobStatus]) -> None:
@@ -23,7 +34,7 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
-    status = job.wait()
+    status = job.wait(timeout=_get_timeout(execparams))
     assert_completed(status)
 
 
@@ -33,7 +44,7 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
-        status = job.wait()
+        status = job.wait(timeout=_get_timeout(execparams))
         assert_completed(status)
         f = outp.open("r")
         contents = f.read()
@@ -51,7 +62,7 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     assert native_id is not None
     job2 = Job()
     ex.attach(job2, native_id)
-    status = job2.wait()
+    status = job2.wait(timeout=_get_timeout(execparams))
     assert_completed(status)
 
 
@@ -61,7 +72,7 @@ def test_cancel(execparams: ExecutorTestParams) -> None:
     ex.submit(job)
     job.wait(target_states=[JobState.ACTIVE])
     job.cancel()
-    status = job.wait()
+    status = job.wait(timeout=_get_timeout(execparams))
     assert status is not None
     assert status.state == JobState.CANCELED
 
@@ -70,7 +81,7 @@ def test_failing_job(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/false'))
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
-    status = job.wait()
+    status = job.wait(timeout=_get_timeout(execparams))
     assert status is not None
     assert status.state == JobState.FAILED
     assert status.exit_code is not None
@@ -84,7 +95,7 @@ def test_missing_executable(execparams: ExecutorTestParams) -> None:
     # so handle both
     try:
         ex.submit(job)
-        status = job.wait()
+        status = job.wait(timeout=_get_timeout(execparams))
         assert status is not None
         assert status.state == JobState.FAILED
         assert status.exit_code is not None
