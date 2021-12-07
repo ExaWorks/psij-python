@@ -20,10 +20,16 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
 
 
 def test_simple_job(execparams: ExecutorTestParams) -> None:
-    job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
+    job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher, stderr_path='/tmp/stderr.txt', stdout_path='/tmp/stdout.txt'))
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
     status = job.wait()
+    for fn in ['/tmp/stdout.txt', '/tmp/stderr.txt']:
+        try:
+            with open(fn) as f:
+                print('%s: %s' % (fn, f.read()))
+        except:
+            print('%s error' % fn)
     assert_completed(status)
 
 
