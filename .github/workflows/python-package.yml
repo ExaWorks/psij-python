@@ -57,4 +57,4 @@ jobs:
           pip install -r requirements-connector-radical.txt
           make launcher-scripts
           make install
-          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') make tests
+          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') make tests -- --capture=no
