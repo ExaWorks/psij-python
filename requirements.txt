@@ -1,4 +1,4 @@
 filelock
 psutil
-# pystache>=0.5.4
-https://github.com/ExaWorks/pystache/archive/refs/tags/v0.5.5-ew.tar.gz
+pystache>=0.6.0
+
