@@ -1,2 +1,15 @@
+# Everything that is required to build the docs
 -r requirements.txt
+
+# Executors
+-r requirements-connector-saga.txt
 -r requirements-connector-radical.txt
+
+
+# Docs
+six
+Sphinx
+sphinx_rtd_theme
+sphinx-tabs
+# sphinx-autodoc-typehints
+
