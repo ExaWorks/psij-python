@@ -9,5 +9,12 @@ from .launcher import Launcher
 from .single import SingleLauncher
 from .multiple import MultipleLauncher
 from .mpirun import MPILauncher
+from .srun import SrunLauncher
 
-__all__ = ['Launcher', 'SingleLauncher', 'MultipleLauncher', 'MPILauncher']
+__all__ = [
+    "Launcher",
+    "SingleLauncher",
+    "MultipleLauncher",
+    "MPILauncher",
+    "SrunLauncher",
+]
