@@ -11,6 +11,7 @@ from .multiple import MultipleLauncher
 from .mpirun import MPILauncher
 from .srun import SrunLauncher
 from .jsrun import JsrunLauncher
+from .aprun import AprunLauncher
 
 __all__ = [
     "Launcher",
@@ -19,4 +20,5 @@ __all__ = [
     "MPILauncher",
     "SrunLauncher",
     "JsrunLauncher",
+    "AprunLauncher",
 ]
