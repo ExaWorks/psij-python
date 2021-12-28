@@ -7,9 +7,7 @@ from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
     BatchSchedulerExecutorConfig, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
-# TODO: why is this is a separate constant, unlike eg qdel?
-# should rename it away from SQUEUE anyway because this isn't slurm
-_SQUEUE_COMMAND = 'qstat'
+_QSTAT_COMMAND = 'qstat'
 
 
 class PBSExecutorConfig(BatchSchedulerExecutorConfig):
@@ -24,8 +22,14 @@ class PBSJobExecutor(BatchSchedulerExecutor):
     _NAME_ = 'pbs'
     _VERSION_ = StrictVersion('0.0.1')
 
-    # see https://slurm.schedmd.com/squeue.html
+    # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     _STATE_MAP = {
+        'R': JobState.ACTIVE,
+        'F': JobState.FAILED
+    }
+
+    # see https://slurm.schedmd.com/squeue.html
+    _OLD_SLURM_STATE_MAP_TO_DELETE = {
         'BF': JobState.FAILED,
         'CA': JobState.CANCELED,
         'CD': JobState.COMPLETED,
@@ -53,6 +57,8 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         'S': JobState.ACTIVE
     }
 
+    # BENC: this is not used in PBS impl at the moment
+    # it's part of message processing
     # see https://slurm.schedmd.com/squeue.html
     _REASONS_MAP = {
         'AssociationJobLimit': 'The job\'s association has reached its maximum job count.',
@@ -131,37 +137,39 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
         ids = ','.join(native_ids)
 
-        # we're not really using job arrays, so this is equivalent to the job ID. However, if
-        # we were to use arrays, this would return one ID for the entire array rather than
-        # listing each element of the array independently
-        return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '-j', ids]
+        # -x will include finished jobs
+        return [_QSTAT_COMMAND, '-x'] + list(native_ids)
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
-        check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
+        check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
         r = {}
         lines = iter(out.split('\n'))
-        # skip header
+        # skip header, 2 lines
+        lines.__next__()
         lines.__next__()
         for line in lines:
             if not line:
                 continue
             cols = line.split()
-            assert len(cols) == 3
+            assert len(cols) == 6
             native_id = cols[0]
-            state = self._get_state(cols[1])
-            msg = self._get_message(cols[2]) if state == JobState.FAILED else None
+            state = self._get_state(cols[4])
+            # right now I haven't implemented msg - maybe there's a field in a richer output form.
+            # msg = self._get_message(cols[2]) if state == JobState.FAILED else None
+            msg = "BENC TODO: no message in parse_status_output"
             r[native_id] = JobStatus(state, message=msg)
 
         return r
 
     def _get_state(self, state: str) -> JobState:
-        assert state in PBSJobExecutor._STATE_MAP
+        assert state in PBSJobExecutor._STATE_MAP, f"{state} is not a known state"
         return PBSJobExecutor._STATE_MAP[state]
 
-    def _get_message(self, reason: str) -> str:
-        assert reason in PBSJobExecutor._REASONS_MAP
-        return PBSJobExecutor._REASONS_MAP[reason]
+    # not used
+    # def _get_message(self, reason: str) -> str:
+    #    assert reason in PBSJobExecutor._REASONS_MAP
+    #    return PBSJobExecutor._REASONS_MAP[reason]
 
     def job_id_from_submit_output(self, out: str) -> str:
         """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
