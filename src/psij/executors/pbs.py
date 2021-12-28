@@ -107,8 +107,8 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         if not config:
             config = PBSExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'slurm'
-                                                  / 'slurm.mustache')
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'pbs'
+                                                  / 'pbs.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
                                submit_file: TextIO) -> None:

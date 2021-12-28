@@ -1,0 +1,84 @@
+#!/bin/bash
+
+{{#job.name}}
+#PBS -N="{{.}}"
+{{/job.name}}
+
+{{#job.spec.directory}}
+#SBATCH --chdir="{{.}}"
+{{/job.spec.directory}}
+
+{{#job.spec.inherit_environment}}
+#SBATCH --export=ALL
+{{/job.spec.inherit_environment}}
+{{^job.spec.inherit_environment}}
+#SBATCH --export=NONE
+{{/job.spec.inherit_environment}}
+
+{{#job.spec.resources}}
+    {{#exclusive_node_use}}
+#SBATCH --exclusive
+    {{/exclusive_node_use}}
+
+    {{#node_count}}
+#SBATCH --nodes={{.}}
+    {{/node_count}}
+
+    {{#process_count}}
+#SBATCH --ntasks={{.}}
+    {{/process_count}}
+
+    {{#processes_per_node}}
+#SBATCH --ntasks-per-node={{.}}
+    {{/processes_per_node}}
+
+    {{#gpu_cores_per_process}}
+#SBATCH --gpus_per_task={{.}}
+    {{/gpu_cores_per_process}}
+
+    {{#cpu_cores_per_process}}
+        {{!SLURM has different meanings for 'CPU', depending on the exact allocation plugin being
+        used. The default plugin uses the literal meaning for 'CPU' - physical processor. The
+        consumable resource allocation plugin, on the other hand, equates 'CPU' to a thread (if
+        hyperthreaded CPUs are used) or CPU core (for non-hyperthreaded CPUs).}}
+#SBATCH --cpus_per_task={{.}}
+    {{/cpu_cores_per_process}}
+{{/job.spec.resources}}
+
+{{#job.spec.attributes}}
+    {{#duration}}
+#SBATCH --time={{.}}
+    {{/duration}}
+
+    {{#queue_name}}
+#SBATCH --partition="{{.}}"
+    {{/queue_name}}
+
+    {{#project_name}}
+#SBATCH --account="{{.}}"
+    {{/project_name}}
+
+    {{#reservation_id}}
+#SBATCH --reservation="{{.}}"
+    {{/reservation_id}}
+
+    {{#custom_attributes.pbs}}
+#PBS --{{key}}="{{value}}"
+    {{/custom_attributes.pbs}}
+
+{{/job.spec.attributes}}
+
+{{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
+only results in empty files that are not cleaned up}}
+#PBS -e /dev/null
+#PBS -o /dev/null
+
+{{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
+when the directives are evaluated; the reason for using the job id in the first place being the
+same as for the exit code file.}}
+exec &>> "{{psij.script_dir}}/$PBS_JOBID.out"
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+{{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
+echo "$?" > "{{psij.script_dir}}/$PBS_JOBID.ec"
