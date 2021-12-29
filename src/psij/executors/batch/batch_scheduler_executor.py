@@ -467,11 +467,15 @@ class BatchSchedulerExecutor(JobExecutor):
                 # exit code and other things are not very meaningful for canceled jobs
                 return
             # read exit code and output files
+            logger.warn("BENC: about to look for .ec file")
             exit_code_str = self._read_aux_file(job, '.ec')
             if exit_code_str:
                 status.exit_code = int(exit_code_str)
+                logger.warn("BENC: successfully read EC")
                 if status.exit_code != 0:
                     status.state = JobState.FAILED
+            else:
+                logger.warn("BENC: did not read EC")
             if status.state == JobState.FAILED:
 
                 if status.message is None:
@@ -590,6 +594,7 @@ class _QueuePollThread(Thread):
         if native_id in status_map:
             return status_map[native_id]
         else:
+            logger.warn("BENC: IMPLICIT COMPLETED STATE DUE TO ID NOT IN STATUS_MAP")
             return JobStatus(JobState.COMPLETED)
 
     def _handle_poll_error(self, immediate: bool, ex: Exception, msg: str) -> None:

@@ -4,9 +4,6 @@
 #PBS -N="{{.}}"
 {{/job.name}}
 
-{{#job.spec.directory}}
-#SBATCH --chdir="{{.}}"
-{{/job.spec.directory}}
 
 {{#job.spec.inherit_environment}}
 #SBATCH --export=ALL
@@ -70,8 +67,18 @@
 
 {{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
 only results in empty files that are not cleaned up}}
-#PBS -e /dev/null
-#PBS -o /dev/null
+#PBS -e /home/benc/tmp-e.txt
+#PBS -o /home/benc/tmp-o.txt
+
+echo HELLO from benc
+
+{{#job.spec.directory}}
+echo CHANGING DIRECTORY to "{{.}}"
+cd "{{.}}"
+{{/job.spec.directory}}
+
+echo REDIRECTING OUTPUT TO "{{psij.script_dir}}/$PBS_JOBID.out"
+echo AND RUNNING COMMAND: {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 
 {{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the

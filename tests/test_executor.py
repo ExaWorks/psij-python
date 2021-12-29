@@ -7,6 +7,9 @@ from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 _QUICK_EXECUTORS = set(['local', 'batch-test', 'saga'])
 
@@ -40,16 +43,20 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'work') as td:
+        logger.warn("BENC: entering temporary dir")
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
+        logger.warn("BENC: starting wait")
         status = job.wait(timeout=_get_timeout(execparams))
+        logger.warn("BENC: ending wait")
         assert_completed(status)
         f = outp.open("r")
         contents = f.read()
         f.close()
         assert contents == '_x_'
+        logger.warn("BENC: exited temporary dir")
 
 
 def test_attach(execparams: ExecutorTestParams) -> None:
