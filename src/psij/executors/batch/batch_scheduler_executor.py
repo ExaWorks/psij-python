@@ -445,6 +445,7 @@ class BatchSchedulerExecutor(JobExecutor):
         if status.state.final and job.native_id:
             self._clean_submit_script(job)
             self._read_aux_files(job, status)
+        logger.warning(f"BENC _set_job_status {status}")
         super()._set_job_status(job, status)
 
     def _clean_submit_script(self, job: Job) -> None:
@@ -471,9 +472,13 @@ class BatchSchedulerExecutor(JobExecutor):
             exit_code_str = self._read_aux_file(job, '.ec')
             if exit_code_str:
                 status.exit_code = int(exit_code_str)
-                logger.warn("BENC: successfully read EC")
+                logger.warn(f"BENC: successfully read EC: {status.exit_code}")
                 if status.exit_code != 0:
+                    logger.warning("BENC: setting job status to failed because non-zero EC")
                     status.state = JobState.FAILED
+                else:
+                    logger.warning("BENC: not setting job status because EC is 0")
+
             else:
                 logger.warn("BENC: did not read EC")
             if status.state == JobState.FAILED:
@@ -578,6 +583,7 @@ class _QueuePollThread(Thread):
                 try:
                     status = self._get_job_status(native_id, status_map)
                 except Exception:
+                    logger.warning(f"Got an exception getting job status {traceback.format_exc()}")
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())

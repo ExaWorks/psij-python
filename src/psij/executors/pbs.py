@@ -7,6 +7,8 @@ from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
     BatchSchedulerExecutorConfig, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
+import json
+
 _QSTAT_COMMAND = 'qstat'
 
 
@@ -25,7 +27,7 @@ class PBSJobExecutor(BatchSchedulerExecutor):
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     _STATE_MAP = {
         'R': JobState.ACTIVE,
-        'F': JobState.FAILED
+        'F': JobState.COMPLETED # this happens for failed jobs too, so need to rely on .ec handling for failure detection
     }
 
     # see https://slurm.schedmd.com/squeue.html
@@ -127,7 +129,14 @@ class PBSJobExecutor(BatchSchedulerExecutor):
 
     def get_cancel_command(self, native_id: str) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
-        return ['qdel', '-Q', native_id]
+        # the slurm cancel command had a -Q parameter
+        # which does not report an error if the job is already
+        # completed.
+        # TODO: whats the pbs equivalent of that?
+        # there is -x which also removes job history (so would need to 
+        # check that this doesn't cause implicit COMPLETED states when
+        # maybe it should be cancelled states?)
+        return ['qdel', native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
         """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
@@ -138,32 +147,34 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         ids = ','.join(native_ids)
 
         # -x will include finished jobs
-        return [_QSTAT_COMMAND, '-x'] + list(native_ids)
+        # -f -F json will give json status output that is more mechanically
+        # parseable that the default human readable output. Most importantly,
+        # native job IDs will be full length and so match up with the IDs
+        # returned by qsub. (123.a vs 123.a.domain.foo)
+        return [_QSTAT_COMMAND,  '-f', '-F', 'json', '-x'] + list(native_ids)
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
         check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
         r = {}
-        lines = iter(out.split('\n'))
-        # skip header, 2 lines
-        lines.__next__()
-        lines.__next__()
-        for line in lines:
-            if not line:
-                continue
-            cols = line.split()
-            assert len(cols) == 6
-            native_id = cols[0]
-            state = self._get_state(cols[4])
+
+        report = json.loads(out)
+        jobs = report['Jobs']
+        for native_id in jobs:
+            native_state = jobs[native_id]["job_state"]
+            state = self._get_state(native_state)
+
             # right now I haven't implemented msg - maybe there's a field in a richer output form.
             # msg = self._get_message(cols[2]) if state == JobState.FAILED else None
+            #  - in JSON form there probably is something like "comment" ?
+            # is it ok to use msg the whole time?
             msg = "BENC TODO: no message in parse_status_output"
             r[native_id] = JobStatus(state, message=msg)
 
         return r
 
     def _get_state(self, state: str) -> JobState:
-        assert state in PBSJobExecutor._STATE_MAP, f"{state} is not a known state"
+        assert state in PBSJobExecutor._STATE_MAP, f"PBS state {state} is not known to PSI/J"
         return PBSJobExecutor._STATE_MAP[state]
 
     # not used
