@@ -8,6 +8,7 @@ from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 import json
+import time
 
 _QSTAT_COMMAND = 'qstat'
 
@@ -141,6 +142,13 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
         """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
+
+
+    def cancel(self, job):
+        super().cancel(job)
+        job_status = JobStatus(JobState.CANCELED, time=time.time())
+        self._update_job_status(job, job_status)
+
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
