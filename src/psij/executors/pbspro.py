@@ -12,16 +12,16 @@ import json
 _QSTAT_COMMAND = 'qstat'
 
 
-class PBSExecutorConfig(BatchSchedulerExecutorConfig):
+class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the PBS executor."""
 
     pass
 
 
-class PBSJobExecutor(BatchSchedulerExecutor):
-    """A :proc:`~psij.JobExecutor` for PBS."""
+class PBSProJobExecutor(BatchSchedulerExecutor):
+    """A :proc:`~psij.JobExecutor` for PBS Pro."""
 
-    _NAME_ = 'pbs'
+    _NAME_ = 'pbspro'
     _VERSION_ = StrictVersion('0.0.1')
 
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
@@ -110,13 +110,13 @@ class PBSJobExecutor(BatchSchedulerExecutor):
                                 'scheduler to determine the appropriate reason.'
     }
 
-    def __init__(self, url: Optional[str] = None, config: Optional[PBSExecutorConfig] = None):
-        """Initializes a :proc:`~PBSJobExecutor`."""
+    def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
+        """Initializes a :proc:`~PBSProJobExecutor`."""
         if not config:
-            config = PBSExecutorConfig()
+            config = PBSProExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'pbs'
-                                                  / 'pbs.mustache')
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'pbspro'
+                                                  / 'pbspro.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
                                submit_file: TextIO) -> None:
@@ -174,8 +174,8 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         return r
 
     def _get_state(self, state: str) -> JobState:
-        assert state in PBSJobExecutor._STATE_MAP, f"PBS state {state} is not known to PSI/J"
-        return PBSJobExecutor._STATE_MAP[state]
+        assert state in PBSProJobExecutor._STATE_MAP, f"PBS state {state} is not known to PSI/J"
+        return PBSProJobExecutor._STATE_MAP[state]
 
     # not used
     # def _get_message(self, reason: str) -> str:
@@ -187,4 +187,4 @@ class PBSJobExecutor(BatchSchedulerExecutor):
         return out.strip().split()[-1]
 
 
-__PSI_J_EXECUTORS__ = [PBSJobExecutor]
+__PSI_J_EXECUTORS__ = [PBSProJobExecutor]
