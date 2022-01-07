@@ -1,6 +1,5 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
 
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 import re
@@ -29,9 +28,6 @@ class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
 
 class CobaltJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for the Cobalt Workload Manager."""
-
-    _NAME_ = "cobalt"
-    _VERSION_ = StrictVersion("0.0.1")
 
     # see https://Cobalt.schedmd.com/squeue.html
     _STATE_MAP = {
@@ -112,6 +108,3 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)
-
-
-__PSI_J_EXECUTORS__ = [CobaltJobExecutor]

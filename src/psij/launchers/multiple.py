@@ -19,8 +19,6 @@ class MultipleLauncher(ScriptBasedLauncher):
     executable copies or zero if all invocations of the executable succeed.
     """
 
-    _NAME_ = 'multiple'
-
     def __init__(self, script_path: Path = Path(__file__).parent / 'scripts' / 'multi_launch.sh',
                  config: Optional[JobExecutorConfig] = None):
         """
@@ -44,6 +42,3 @@ class MultipleLauncher(ScriptBasedLauncher):
         else:
             raise ValueError('This launcher cannot handle resource specs with version {}'.
                              format(res.version))
-
-
-__PSI_J_LAUNCHERS__ = [MultipleLauncher]

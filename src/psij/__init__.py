@@ -1,12 +1,13 @@
 """The package containing the jobs module of this PSI implementation."""
-
 import importlib
 import logging
 import os
 import pkgutil
 import sys
-from typing import Callable, Type, TypeVar
+import traceback
+from typing import Callable, TypeVar
 
+from psij._descriptor import _Descriptor
 from .exceptions import SubmitException, InvalidJobException, UnreachableStateException
 from .job import Job, JobStatusCallback
 from .job_attributes import JobAttributes
@@ -31,7 +32,7 @@ T = TypeVar('T')
 
 
 class _PluginType:
-    def __init__(self, name: str, registration_method: Callable[[Type[T]], None]):
+    def __init__(self, name: str, registration_method: Callable[[_Descriptor, str], None]):
         self.name = name
         self.registration_method = registration_method
         self.package = ['psij', name]
@@ -41,26 +42,49 @@ TYPES = [_PluginType('executors', JobExecutor.register_executor),
          _PluginType('launchers', Launcher.register_launcher)]
 
 
-def _load_plugins(path: str, type: _PluginType) -> None:
+def _load_plugins(root: str, path: str, _type: _PluginType) -> None:
     for mod in pkgutil.iter_modules(path=[path]):
         if not mod.ispkg and not mod.name[0] == '_':
-            im = importlib.import_module('psij.{}.{}'.format(type.name, mod.name))
-            var_name = '__PSI_J_{}__'.format(type.name.upper())
-            if hasattr(im, var_name):
-                classes = getattr(im, var_name)
-                logger.debug('Found module "{}" with classes {}'.format(mod.name, classes))
-                for cls in classes:
-                    logger.debug('Registering {}'.format(cls))
-                type.registration_method(cls)
+            modname = 'psij.{}.{}'.format(_type.name, mod.name)
+            logger.debug('Attempting to load %s from %s', modname, path)
+            spec = mod.module_finder.find_spec(modname, None)
+            try:
+                if spec is None:
+                    raise Exception('Could not find module "%s"' % modname)
+                im = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(im)  # type: ignore
+                full_mod_path = spec.origin
+
+                var_name = '__PSI_J_{}__'.format(_type.name.upper())
+                if hasattr(im, var_name):
+                    classes = getattr(im, var_name)
+                    logger.debug('Found module "{}" with classes {}'.format(mod.name, classes))
+                    for cls in classes:
+                        if isinstance(cls, type) and issubclass(cls, JobExecutor):
+                            logger.warning('Not loading old style executor in %s' %
+                                           full_mod_path)
+                        elif isinstance(cls, type) and issubclass(cls, Launcher):
+                            logger.warning('Not loading old style launcher in %s' %
+                                           full_mod_path)
+                        elif isinstance(cls, _Descriptor):
+                            logger.debug('Registering {}'.format(cls))
+                            cls.path = full_mod_path
+                            _type.registration_method(cls, root)
+                        else:
+                            logger.warning('Cannot load plugin. Expected an instance of '
+                                           '_Descriptor in %s' % full_mod_path)
+            except Exception as ex:
+                logger.warning('Could not import %s: %s' % (full_mod_path, ex))
+                traceback.print_exc()
 
 
-def _find_plugins(path: str, type: _PluginType, ix: int) -> None:
+def _find_plugins(root: str, path: str, type: _PluginType, ix: int) -> None:
     if ix == len(type.package):
-        _load_plugins(path, type)
+        _load_plugins(root, path, type)
     else:
         for mod in pkgutil.iter_modules(path=[path]):
             if mod.ispkg and mod.name == type.package[ix]:
-                _find_plugins(path + os.path.sep + mod.name, type, ix + 1)
+                _find_plugins(root, path + os.path.sep + mod.name, type, ix + 1)
 
 
 seen = set()
@@ -70,5 +94,5 @@ for path in sys.path:
         logger.info('Ignoring duplicate entry in sys.path: {}'.format(path))
         continue
     seen.add(path)
-    for type in TYPES:
-        _find_plugins(path, type, 0)
+    for _type in TYPES:
+        _find_plugins(path, path, _type, 0)

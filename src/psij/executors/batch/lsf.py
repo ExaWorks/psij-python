@@ -1,6 +1,5 @@
 """Defines the LsfJobExecutor class and its config class."""
 
-from distutils.version import StrictVersion
 from pathlib import Path
 import re
 import json
@@ -28,9 +27,6 @@ class LsfExecutorConfig(BatchSchedulerExecutorConfig):
 
 class LsfJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for the LSF Workload Manager."""
-
-    _NAME_ = "lsf"
-    _VERSION_ = StrictVersion("0.0.1")
 
     # see https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bjobs-description
     _STATE_MAP = {
@@ -122,6 +118,3 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)[5:-1]
-
-
-__PSI_J_EXECUTORS__ = [LsfJobExecutor]

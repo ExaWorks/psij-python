@@ -5,8 +5,6 @@ import logging
 
 from typing import Any, Optional, List, Tuple, Dict
 
-from distutils.version import StrictVersion
-
 from psij import InvalidJobException, SubmitException
 from psij import Job, JobExecutorConfig, JobState, JobStatus, JobSpec
 from psij import JobExecutor
@@ -20,9 +18,6 @@ class RPJobExecutor(JobExecutor):
     """
 
     import radical.pilot as _rp
-
-    _NAME_ = 'rp'
-    _VERSION_ = StrictVersion('0.0.1')
 
     _state_map = {_rp.NEW: JobState.NEW,
                   _rp.TMGR_STAGING_INPUT_PENDING: JobState.QUEUED,
@@ -194,6 +189,3 @@ class RPJobExecutor(JobExecutor):
         job._set_status(job_status, self)
         if self._cb:
             self._cb.job_status_changed(job, job_status)
-
-
-__PSI_J_EXECUTORS__ = [RPJobExecutor]

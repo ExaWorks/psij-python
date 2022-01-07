@@ -11,8 +11,6 @@ from functools import partial
 
 from typing import Any, Optional, Dict, List
 
-from distutils.version import StrictVersion
-
 from psij import InvalidJobException
 from psij import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes, JobSpec
 from psij import JobExecutor, ResourceSpecV1
@@ -25,9 +23,6 @@ class FluxJobExecutor(JobExecutor):
     """
     A job executor that runs jobs via Flux.
     """
-
-    _NAME_ = 'flux'
-    _VERSION_ = StrictVersion('0.0.1')
 
     # map flux states to jpsi states.
     _state_map = {'NEW': JobState.QUEUED,
@@ -256,6 +251,3 @@ class FluxJobExecutor(JobExecutor):
         job._set_status(job_status, self)
         if self._cb:
             self._cb.job_status_changed(job, job_status)
-
-
-__PSI_J_EXECUTORS__ = [FluxJobExecutor]

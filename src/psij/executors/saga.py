@@ -3,8 +3,6 @@ import logging
 from threading import RLock
 from typing import Optional, Dict, List
 
-from distutils.version import StrictVersion
-
 import radical.saga as rs
 import radical.saga.job.constants as ct
 import time
@@ -39,9 +37,6 @@ class SagaExecutor(JobExecutor):
     For details about SAGA, see https://en.wikipedia.org/wiki/Simple_API_for_Grid_Applications
     and related links.
     """
-
-    _NAME_ = 'saga'
-    _VERSION_ = StrictVersion('0.0.1')
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
@@ -251,6 +246,3 @@ class SagaExecutor(JobExecutor):
 
         if saga_job.state not in rs.FINAL:
             saga_job.cancel()
-
-
-__PSI_J_EXECUTORS__ = [SagaExecutor]
