@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class RPJobExecutor(JobExecutor):
-    """
-    A job executor that runs jobs via radical.pilot.
-    """
+    """A job executor that runs jobs via radical.pilot."""
 
     import radical.pilot as _rp
 
@@ -155,13 +153,13 @@ class RPJobExecutor(JobExecutor):
         self._tmgr.cancel_tasks(uids=task.uid)
 
     def list(self) -> List[str]:
-        """
+        """See :func:`~JobExecutor.list`.
+
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case RP task IDs.
 
         :return: The list of known tasks.
         """
-
         return [str(uid) for uid in self._tmgr.list_tasks()]
 
     def attach(self, job: Job, native_id: str) -> None:
@@ -174,7 +172,6 @@ class RPJobExecutor(JobExecutor):
         :param native_id: The native ID of the process to attached to, as
             obtained through :func:`~psij.executors.RPJobExecutor.list` method.
         """
-
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
 

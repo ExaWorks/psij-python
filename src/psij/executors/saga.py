@@ -50,7 +50,6 @@ class SagaExecutor(JobExecutor):
         config
             Not used.
         """
-
         self._jobs = dict()  # type: Dict[str, _JobMapping]
         self._js = None
 
@@ -115,7 +114,6 @@ class SagaExecutor(JobExecutor):
         job
             The :class:`~psij.Job` to be submitted.
         """
-
         assert(self._js)
         # derive SAGA job description and submit it
         job_mapping = _JobMapping(job)
@@ -170,7 +168,6 @@ class SagaExecutor(JobExecutor):
             A PSI-J job ID
 
         """
-
         saga_job = None
         with self._lock:
             # try to find job in known jobs
