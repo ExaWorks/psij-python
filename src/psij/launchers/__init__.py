@@ -9,5 +9,16 @@ from .launcher import Launcher
 from .single import SingleLauncher
 from .multiple import MultipleLauncher
 from .mpirun import MPILauncher
+from .srun import SrunLauncher
+from .jsrun import JsrunLauncher
+from .aprun import AprunLauncher
 
-__all__ = ['Launcher', 'SingleLauncher', 'MultipleLauncher', 'MPILauncher']
+__all__ = [
+    "Launcher",
+    "SingleLauncher",
+    "MultipleLauncher",
+    "MPILauncher",
+    "SrunLauncher",
+    "JsrunLauncher",
+    "AprunLauncher",
+]
