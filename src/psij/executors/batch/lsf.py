@@ -49,7 +49,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             config = LsfExecutorConfig()
         super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(
-            config, Path(__file__).parent / "batch" / "lsf" / "lsf.mustache"
+            config, Path(__file__).parent / "lsf" / "lsf.mustache"
         )
 
     def generate_submit_script(

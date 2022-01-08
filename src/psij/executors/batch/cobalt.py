@@ -46,7 +46,7 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
             config = CobaltExecutorConfig()
         super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(
-            config, Path(__file__).parent / "batch" / "cobalt" / "cobalt.mustache"
+            config, Path(__file__).parent / "cobalt" / "cobalt.mustache"
         )
 
     def generate_submit_script(
