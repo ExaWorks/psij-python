@@ -96,7 +96,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
             # msg = self._get_message(cols[2]) if state == JobState.FAILED else None
             #  - in JSON form there probably is something like "comment" ?
             # is it ok to use msg the whole time?
-            msg = "BENC TODO: no message in parse_status_output"
+            msg = jobs[native_id]["comment"]
             r[native_id] = JobStatus(state, message=msg)
 
         return r
