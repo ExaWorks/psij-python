@@ -11,3 +11,12 @@ __PSI_J_EXECUTORS__ = [
     _Descriptor(name='_never_loads', version=StrictVersion('0.0.1'),
                 cls='psij.executors._never_loads_executor.NeverLoadsExecutor')
 ]
+
+__PSI_J_LAUNCHERS__ = [
+    _Descriptor(name='single', version=StrictVersion('0.0.1'),
+                cls='psij.launchers.single.SingleLauncher'),
+    _Descriptor(name='multiple', version=StrictVersion('0.0.1'),
+                cls='psij.launchers.multiple.MultipleLauncher'),
+    _Descriptor(name='mpirun', version=StrictVersion('0.0.1'),
+                cls='psij.launchers.mpirun.MPILauncher'),
+]

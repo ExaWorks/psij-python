@@ -35,56 +35,51 @@ class _PluginType:
     def __init__(self, name: str, registration_method: Callable[[_Descriptor, str], None]):
         self.name = name
         self.registration_method = registration_method
-        self.package = ['psij', name]
+        self.package = ['psij-descriptors']
 
 
 TYPES = [_PluginType('executors', JobExecutor.register_executor),
          _PluginType('launchers', Launcher.register_launcher)]
 
 
-def _load_plugins(root: str, path: str, _type: _PluginType) -> None:
-    for mod in pkgutil.iter_modules(path=[path]):
-        if not mod.ispkg and not mod.name[0] == '_':
-            modname = 'psij.{}.{}'.format(_type.name, mod.name)
-            logger.debug('Attempting to load %s from %s', modname, path)
-            spec = mod.module_finder.find_spec(modname, None)
-            try:
-                if spec is None:
-                    raise Exception('Could not find module "%s"' % modname)
-                im = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(im)  # type: ignore
-                full_mod_path = spec.origin
+def _load_plugins(root: str, full_path: str, mod: pkgutil.ModuleInfo, _type: _PluginType) -> None:
+    if not mod.ispkg and not mod.name[0] == '_':
+        logger.debug('Attempting to load %s from %s', mod.name, path)
+        spec = mod.module_finder.find_spec(mod.name, None)
+        try:
+            if spec is None:
+                raise Exception('Could not find module "%s"' % mod.name)
+            im = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(im)  # type: ignore
+            full_mod_path = spec.origin
 
-                var_name = '__PSI_J_{}__'.format(_type.name.upper())
-                if hasattr(im, var_name):
-                    classes = getattr(im, var_name)
-                    logger.debug('Found module "{}" with classes {}'.format(mod.name, classes))
-                    for cls in classes:
-                        if isinstance(cls, type) and issubclass(cls, JobExecutor):
-                            logger.warning('Not loading old style executor in %s' %
-                                           full_mod_path)
-                        elif isinstance(cls, type) and issubclass(cls, Launcher):
-                            logger.warning('Not loading old style launcher in %s' %
-                                           full_mod_path)
-                        elif isinstance(cls, _Descriptor):
-                            logger.debug('Registering {}'.format(cls))
-                            cls.path = full_mod_path
-                            _type.registration_method(cls, root)
-                        else:
-                            logger.warning('Cannot load plugin. Expected an instance of '
-                                           '_Descriptor in %s' % full_mod_path)
-            except Exception as ex:
-                logger.warning('Could not import %s: %s' % (full_mod_path, ex))
-                traceback.print_exc()
+            var_name = '__PSI_J_{}__'.format(_type.name.upper())
+            if hasattr(im, var_name):
+                classes = getattr(im, var_name)
+                logger.debug('Found module "{}" with classes {}'.format(mod.name, classes))
+                for cls in classes:
+                    if isinstance(cls, type) and issubclass(cls, JobExecutor):
+                        logger.warning('Not loading old style executor in %s' %
+                                       full_mod_path)
+                    elif isinstance(cls, type) and issubclass(cls, Launcher):
+                        logger.warning('Not loading old style launcher in %s' %
+                                       full_mod_path)
+                    elif isinstance(cls, _Descriptor):
+                        logger.debug('Registering {}'.format(cls))
+                        cls.path = full_mod_path
+                        _type.registration_method(cls, root)
+                    else:
+                        logger.warning('Cannot load plugin. Expected an instance of '
+                                       '_Descriptor in %s' % full_mod_path)
+        except Exception as ex:
+            logger.warning('Could not import %s: %s' % (full_mod_path, ex))
+            traceback.print_exc()
 
 
-def _find_plugins(root: str, path: str, type: _PluginType, ix: int) -> None:
-    if ix == len(type.package):
-        _load_plugins(root, path, type)
-    else:
-        for mod in pkgutil.iter_modules(path=[path]):
-            if mod.ispkg and mod.name == type.package[ix]:
-                _find_plugins(root, path + os.path.sep + mod.name, type, ix + 1)
+def _find_plugins(root: str, path: str, type: _PluginType) -> None:
+    full_path = '/'.join([path] + type.package)
+    for mod in pkgutil.iter_modules(path=[full_path]):
+        _load_plugins(root, full_path, mod, type)
 
 
 seen = set()
@@ -95,4 +90,4 @@ for path in sys.path:
         continue
     seen.add(path)
     for _type in TYPES:
-        _find_plugins(path, path, _type, 0)
+        _find_plugins(path, path, _type)
