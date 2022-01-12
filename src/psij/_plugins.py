@@ -56,10 +56,7 @@ def _register_plugin(desc: _Descriptor, root_path: str, type: str,
         cls = getattr(mod, cls_name)
     except Exception as ex:
         s = str(ex)
-        if 'does_not_exist' not in s:
-            # there is a class used for testing that would print a warning message every time
-            # psij was imported; intercept that message and avoid logging it
-            logger.warning(s)
+        logger.info(s)
         exc = ex
 
     if desc.name not in store:
