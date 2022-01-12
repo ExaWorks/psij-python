@@ -1,5 +1,4 @@
 import importlib
-import inspect
 import logging
 from bisect import bisect_left
 from distutils.versionpredicate import VersionPredicate
@@ -15,7 +14,7 @@ def _getfile(o: Optional[Union[Type[Any], ModuleType]]) -> str:
     if o is None:
         return ''
     else:
-        return inspect.getfile(o)
+        return o.__psij_file__  # type: ignore
 
 
 def _split_cls_name(cls: str) -> Tuple[str, str]:
@@ -54,6 +53,7 @@ def _register_plugin(desc: _Descriptor, root_path: str, type: str,
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)  # type: ignore
         cls = getattr(mod, cls_name)
+        cls.__psij_file__ = mod_path
     except Exception as ex:
         s = str(ex)
         logger.info(s)
