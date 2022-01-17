@@ -25,7 +25,8 @@ class _VersionEntry(Generic[T]):
             return 1
 
     def __eq__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
+        if not isinstance(other, _VersionEntry):
+            return False
         return self.version == other.version
 
     def __lt__(self, other: object) -> bool:
