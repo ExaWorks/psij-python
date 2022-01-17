@@ -46,4 +46,4 @@ class _Descriptor(object):
         self.path = path
 
     def __repr__(self) -> str:
-        return '_Descriptor[name=%s, path=%s]' % (self.name, self.path)
+        return '_Descriptor(name=%s, path=%s)' % (self.name, self.path)
