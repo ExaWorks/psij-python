@@ -8,8 +8,6 @@ else
     PIP="pip3"
 fi
 
-MODE="plain"
-
 existing_error_trailer() {
     echo "If you are certain that you want to install multiple entries,   "
     echo "you can re-run this script with the \"-f\" flag.                "
@@ -161,14 +159,6 @@ completed_msg() {
     echo "================================================================"
 }
 
-if [ "$VIRTUAL_ENV" != "" ]; then
-    MODE="venv"
-fi
-
-if [ "$CONDA_SHLVL" != "" ] && [ "$CONDA_SHLVL" != "0" ]; then
-    MODE="conda"
-fi
-
 
 FORCE=0
 
@@ -215,11 +205,7 @@ cd "$MYPATH"
 
 echo -n "Installing dependencies..."
 
-if [ "$MODE" != "plain" ]; then
-    OUT=`$PIP install -r requirements-tests.txt 2>&1`
-else
-    OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt 2>&1`
-fi
+OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt 2>&1`
 
 if [ "$?" != "0" ]; then
     echo "FAILED"
@@ -235,13 +221,6 @@ MINUTE=`echo $(($RANDOM % 60))`
 MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 CMD="./psij-ci-run"
-
-if [ "$MODE" == "venv" ]; then
-    CMD="$CMD --with-venv \"$VIRTUAL_ENV\""
-fi
-if [ "$MODE" == "conda" ]; then
-    CMD="$CMD --with-conda \"$CONDA_DEFAULT_ENV\""
-fi
 
 METHODS=(cron at screen manual)
 METHOD_NAMES=(Cron AT Screen manual)
