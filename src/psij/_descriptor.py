@@ -30,11 +30,13 @@ class _VersionEntry(Generic[T]):
         return self.version == other.version
 
     def __lt__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
+        if not isinstance(other, _VersionEntry):
+            return NotImplemented
         return self.version < other.version
 
     def __gt__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
+        if not isinstance(other, _VersionEntry):
+            return NotImplemented
         return self.version > other.version
 
 
