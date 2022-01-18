@@ -27,8 +27,10 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     _STATE_MAP = {
+        'Q': JobState.QUEUED,
         'R': JobState.ACTIVE,
-        'F': JobState.COMPLETED # this happens for failed jobs too, so need to rely on .ec handling for failure detection
+        'F': JobState.COMPLETED, # this happens for failed jobs too, so need to rely on .ec handling for failure detection
+        'E': JobState.COMPLETED # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
     }
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):

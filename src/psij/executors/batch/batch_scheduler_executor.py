@@ -480,7 +480,8 @@ class BatchSchedulerExecutor(JobExecutor):
                     logger.warning("BENC: not setting job status because EC is 0")
 
             else:
-                logger.warn("BENC: did not read EC")
+                logger.warn("BENC: did not (could not?) read EC - not making EC based status change")
+
             if status.state == JobState.FAILED:
 
                 if status.message is None:
