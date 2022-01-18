@@ -30,7 +30,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         'Q': JobState.QUEUED,
         'R': JobState.ACTIVE,
         'F': JobState.COMPLETED, # this happens for failed jobs too, so need to rely on .ec handling for failure detection
-        'E': JobState.COMPLETED # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
+        'E': JobState.ACTIVE # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
     }
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
@@ -91,14 +91,25 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         report = json.loads(out)
         jobs = report['Jobs']
         for native_id in jobs:
-            native_state = jobs[native_id]["job_state"]
+            job_report = jobs[native_id]
+            native_state = job_report["job_state"]
             state = self._get_state(native_state)
+
+            # elaborate on the native state if its a completion state, trying to
+            # find further evidence of success or failure.
+            # for example in my current failure mode on ALCF, I'm seeing
+            #             "Exit_status":-2,
+            # so whats the "success value" for that? I'll assume 0.
+
+            if state == JobState.COMPLETED:
+                if 'Exit_status' in job_report and job_report['Exit_status'] != 0:
+                    state = JobState.FAILED
 
             # right now I haven't implemented msg - maybe there's a field in a richer output form.
             # msg = self._get_message(cols[2]) if state == JobState.FAILED else None
             #  - in JSON form there probably is something like "comment" ?
             # is it ok to use msg the whole time?
-            msg = jobs[native_id]["comment"]
+            msg = job_report["comment"]
             r[native_id] = JobStatus(state, message=msg)
 
         return r
