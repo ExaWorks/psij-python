@@ -20,7 +20,7 @@ if __name__ == '__main__':
         ],
 
 
-        packages=find_packages(where='src'),
+        packages=find_packages(where='src') + ['psij-descriptors'],
         package_dir={'': 'src'},
 
         package_data={

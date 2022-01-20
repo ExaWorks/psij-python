@@ -5,8 +5,6 @@ import logging
 
 from typing import Any, Optional, List, Tuple, Dict
 
-from distutils.version import StrictVersion
-
 from psij import InvalidJobException, SubmitException
 from psij import Job, JobExecutorConfig, JobState, JobStatus, JobSpec
 from psij import JobExecutor
@@ -15,14 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class RPJobExecutor(JobExecutor):
-    """
-    A job executor that runs jobs via radical.pilot.
-    """
+    """A job executor that runs jobs via radical.pilot."""
 
     import radical.pilot as _rp
-
-    _NAME_ = 'rp'
-    _VERSION_ = StrictVersion('0.0.1')
 
     _state_map = {_rp.NEW: JobState.NEW,
                   _rp.TMGR_STAGING_INPUT_PENDING: JobState.QUEUED,
@@ -160,13 +153,13 @@ class RPJobExecutor(JobExecutor):
         self._tmgr.cancel_tasks(uids=task.uid)
 
     def list(self) -> List[str]:
-        """
+        """See :func:`~JobExecutor.list`.
+
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case RP task IDs.
 
         :return: The list of known tasks.
         """
-
         return [str(uid) for uid in self._tmgr.list_tasks()]
 
     def attach(self, job: Job, native_id: str) -> None:
@@ -179,7 +172,6 @@ class RPJobExecutor(JobExecutor):
         :param native_id: The native ID of the process to attached to, as
             obtained through :func:`~psij.executors.RPJobExecutor.list` method.
         """
-
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
 
@@ -194,6 +186,3 @@ class RPJobExecutor(JobExecutor):
         job._set_status(job_status, self)
         if self._cb:
             self._cb.job_status_changed(job, job_status)
-
-
-__PSI_J_EXECUTORS__ = [RPJobExecutor]

@@ -10,14 +10,10 @@ from psij.launchers import MultipleLauncher
 class AprunLauncher(MultipleLauncher):
     """Launches a job using Cobalt's `aprun`."""
 
-    _NAME_ = 'aprun'
-
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         """
         Initializes this launcher using an optional configuration.
+
         :param config: An optional configuration.
         """
         super().__init__(Path(__file__).parent / 'scripts' / 'aprun_launch.sh', config)
-
-
-__PSI_J_LAUNCHERS__ = [AprunLauncher]

@@ -1,15 +1,14 @@
 """A package containing :class:`psij.JobExecutor` implementations."""
 
 from .local import LocalJobExecutor
-from .rp import RPJobExecutor
-from .flux import FluxJobExecutor
-from .lsf import LsfJobExecutor
-from .cobalt import CobaltJobExecutor
+from .batch.cobalt import CobaltJobExecutor
+from .batch.lsf import LsfJobExecutor
+from .batch.slurm import SlurmJobExecutor
+
 
 __all__ = [
     'LocalJobExecutor',
-    'RPJobExecutor',
-    'FluxJobExecutor',
     'LsfJobExecutor',
-    'CobaltJobExecutor'
+    'CobaltJobExecutor',
+    'SlurmJobExecutor'
 ]

@@ -105,7 +105,8 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
                      site_id: Optional[str] = None, fake_branch_name: Optional[str] = None) -> None:
     # it would be nice if this could be run through make; however, gnu make cannot preserve
     # spaces or quotes in arguments
-    args = [sys.executable, '-m', 'pytest', '-v', '--upload-results', '--run-id', run_id]
+    args = ['tests/branch_test_wrapper.sh', sys.executable, '-m', 'pytest', '-v',
+            '--upload-results', '--run-id', run_id]
     if site_id:
         args.append('--id')
         args.append(site_id)

@@ -1,8 +1,10 @@
 """This module contains the core classes of the launchers infrastructure."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, Type, Dict
+from typing import Optional, List, Dict
 
+from psij._descriptor import _Descriptor, _VersionEntry
+from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_executor_config import JobExecutorConfig
 from psij.job import Job
 
@@ -10,7 +12,7 @@ from psij.job import Job
 class Launcher(ABC):
     """An abstract base class for all launchers."""
 
-    _launchers = {}  # type: Dict[str, Type[Launcher]]
+    _launchers = {}  # type: Dict[str, List[_VersionEntry['Launcher']]]
     DEFAULT_LAUNCHER_NAME = 'single'
 
     def __init__(self, config: Optional[JobExecutorConfig] = None) -> None:
@@ -72,7 +74,8 @@ class Launcher(ABC):
         pass
 
     @staticmethod
-    def get_instance(name: str, config: Optional[JobExecutorConfig] = None) -> 'Launcher':
+    def get_instance(name: str, version_constraint: Optional[str] = None,
+                     config: Optional[JobExecutorConfig] = None) -> 'Launcher':
         """
         Returns an instance of a launcher optionally configured using a certain configuration.
 
@@ -82,22 +85,35 @@ class Launcher(ABC):
         :param config: An optional configuration.
         :return: A launcher instance.
         """
-        if name not in Launcher._launchers:
-            raise ValueError('No such launcher: "{}"'.format(name))
-        lcls = Launcher._launchers[name]
-        return lcls(config=config)
+        selected = _get_plugin_class(name, version_constraint, 'launcher', Launcher._launchers)
+
+        assert selected.ecls is not None
+        assert issubclass(selected.ecls, Launcher)
+        setattr(selected.ecls, '_NAME_', name)
+        setattr(selected.ecls, '_VERSION_', selected.version)
+        instance = selected.ecls(config=config)
+        return instance
 
     @staticmethod
-    def register_launcher(lcls: Type['Launcher']) -> None:
+    def register_launcher(desc: _Descriptor, root: str) -> None:
         """
         Registers a launcher class.
 
-        The registered class cang then be instantiated using
-            :func:`~psij.Launcher.get_instance`.
+        The registered class can then be instantiated using :func:`~psij.Launcher.get_instance`.
 
-        :param lcls: The launcher class to register.
+        Parameters
+        ----------
+        desc
+            A :class:`~psij._descriptor._Descriptor` with information about the launcher to
+            register.
+        root
+            A filesystem path under which the implementation of the launcher is to be loaded from.
+            Launchers from other locations, even if under the correct package, will not be
+            registered by this method. If a launcher implementation is only available under a
+            different root path, this method will throw an exception.
         """
-        if not hasattr(lcls, '_NAME_'):
-            raise ValueError('Class is missing the launcher name attribute, "_NAME_"')
-        name = getattr(lcls, '_NAME_')
-        Launcher._launchers[name] = lcls
+        _register_plugin(desc, root, 'launcher', Launcher._launchers)
+
+    @staticmethod
+    def _print_plugin_status() -> None:
+        _print_plugin_status(Launcher._launchers, 'launcher')

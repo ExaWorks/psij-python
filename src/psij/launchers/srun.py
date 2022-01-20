@@ -18,6 +18,3 @@ class SrunLauncher(MultipleLauncher):
         :param config: An optional configuration.
         """
         super().__init__(Path(__file__).parent / 'scripts' / 'srun_launch.sh', config)
-
-
-__PSI_J_LAUNCHERS__ = [SrunLauncher]

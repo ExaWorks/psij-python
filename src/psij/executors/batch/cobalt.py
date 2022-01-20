@@ -1,6 +1,5 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
 
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 import re
@@ -30,9 +29,6 @@ class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
 class CobaltJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for the Cobalt Workload Manager."""
 
-    _NAME_ = "cobalt"
-    _VERSION_ = StrictVersion("0.0.1")
-
     # see https://Cobalt.schedmd.com/squeue.html
     _STATE_MAP = {
         "starting": JobState.ACTIVE,
@@ -50,7 +46,7 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
             config = CobaltExecutorConfig()
         super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(
-            config, Path(__file__).parent / "batch" / "cobalt" / "cobalt.mustache"
+            config, Path(__file__).parent / "cobalt" / "cobalt.mustache"
         )
 
     def generate_submit_script(
@@ -112,6 +108,3 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)
-
-
-__PSI_J_EXECUTORS__ = [CobaltJobExecutor]

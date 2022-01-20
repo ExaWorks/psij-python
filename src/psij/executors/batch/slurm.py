@@ -1,4 +1,3 @@
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -19,9 +18,6 @@ class SlurmExecutorConfig(BatchSchedulerExecutorConfig):
 
 class SlurmJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for the Slurm Workload Manager."""
-
-    _NAME_ = 'slurm'
-    _VERSION_ = StrictVersion('0.0.1')
 
     # see https://slurm.schedmd.com/squeue.html
     _STATE_MAP = {
@@ -106,7 +102,7 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         if not config:
             config = SlurmExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'slurm'
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'slurm'
                                                   / 'slurm.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
@@ -165,6 +161,3 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     def job_id_from_submit_output(self, out: str) -> str:
         """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
-
-
-__PSI_J_EXECUTORS__ = [SlurmJobExecutor]

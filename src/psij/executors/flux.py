@@ -11,8 +11,6 @@ from functools import partial
 
 from typing import Any, Optional, Dict, List
 
-from distutils.version import StrictVersion
-
 from psij import InvalidJobException
 from psij import Job, JobExecutorConfig, JobState, JobStatus, JobAttributes, JobSpec
 from psij import JobExecutor, ResourceSpecV1
@@ -22,12 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class FluxJobExecutor(JobExecutor):
-    """
-    A job executor that runs jobs via Flux.
-    """
-
-    _NAME_ = 'flux'
-    _VERSION_ = StrictVersion('0.0.1')
+    """A job executor that runs jobs via Flux."""
 
     # map flux states to jpsi states.
     _state_map = {'NEW': JobState.QUEUED,
@@ -135,7 +128,7 @@ class FluxJobExecutor(JobExecutor):
         self._update_job_status(jpsi_job, job_status)
 
     def submit(self, job: Job) -> None:
-
+        """See :func:`~JobExecutor.submit`."""
         with self._lock:
 
             # derive Flux job spec and submit them
@@ -216,7 +209,7 @@ class FluxJobExecutor(JobExecutor):
         return flux_spec
 
     def cancel(self, job: Job) -> None:
-
+        """See :func:`~JobExecutor.cancel`."""
         flux_fut = self._jobs[job.id][1]
         flux_fut.cancel()
 
@@ -228,13 +221,13 @@ class FluxJobExecutor(JobExecutor):
         self._update_job_status(job, job_status)
 
     def list(self) -> List[str]:
-        """
+        """See :func:`~JobExecutor.submit`.
+
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case Flux job IDs.
 
         :return: The list of known tasks.
         """
-
         with self._lock:
             ret = self._flux.job.job_list(self._fh)
             return [x['id'] for x in ret]
@@ -256,6 +249,3 @@ class FluxJobExecutor(JobExecutor):
         job._set_status(job_status, self)
         if self._cb:
             self._cb.job_status_changed(job, job_status)
-
-
-__PSI_J_EXECUTORS__ = [FluxJobExecutor]

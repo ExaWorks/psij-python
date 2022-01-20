@@ -5,7 +5,6 @@ import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
-from distutils.version import StrictVersion
 from typing import Optional, Dict, List, Type, Tuple
 
 import psutil
@@ -167,9 +166,6 @@ class LocalJobExecutor(JobExecutor):
     of the actual exit code.
     """
 
-    _NAME_ = 'local'
-    _VERSION_ = StrictVersion('0.0.1')
-
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
@@ -292,6 +288,3 @@ class LocalJobExecutor(JobExecutor):
             return 'single'
         else:
             return spec.launcher
-
-
-__PSI_J_EXECUTORS__ = [LocalJobExecutor]
