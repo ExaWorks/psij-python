@@ -58,7 +58,6 @@ fi
 git fetch
 git checkout origin/main -- tests/ci_runner.py
 
-export PYTHONPATH="$PWD/.packages:$PYTHONPATH"
 
 if [ "$REPEAT" == "1" ]; then
     CRT_TIME=`date +%s`
