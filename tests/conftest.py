@@ -10,6 +10,7 @@ import secrets
 import shutil
 import socket
 import subprocess
+import sys
 import threading
 import time
 from functools import partial
@@ -335,6 +336,20 @@ def _parse_custom_attributes(s: Optional[str]) -> Dict[str, object]:
         return json.loads('{' + s + '}')
 
 
+def _strip_home(path: List[str]) -> List[str]:
+    # remove explicit references to home directories and replace with "~/"
+    home = os.path.realpath(os.path.expanduser('~'))
+    if home[-1] == '/':
+        home = home[:-1]
+    r = []
+    for p in path:
+        p = os.path.realpath(p)
+        if p.startswith(home):
+            p = '~' + p[len(home):]
+        r.append(p)
+    return r
+
+
 def _discover_environment(config):
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -342,6 +357,7 @@ def _discover_environment(config):
     conf = {}
     env['config'] = conf
     conf['id'] = _get_id(config)
+    conf['pythonpath'] = _strip_home(sys.path)
     conf['executors'] = config.getoption('executors')
     conf['maintainer_email'] = config.getoption('maintainer_email')
     key = _get_key(config)
