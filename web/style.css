@@ -1,0 +1,150 @@
+body #psij-app .v-application, .v-application .text-h5, .v-application {
+    font-family: "Gill Sans", sans-serif !important;
+    background-color: #ffffff;
+}
+
+.v-app-bar {
+    background-color: var(--color-bg-inv-1) !important;
+}
+
+.v-app-bar .v-tab {
+    color: var(--color-fg-inv) !important;
+}
+
+.v-tabs-slider {
+    background-color: var(--color-sel-inv-1) !important;
+}
+
+
+.psi-j-font {
+    font-family: "Saira", sans-serif;
+}
+
+.psi-j-font::before {
+    content: "\00a0";
+}
+
+.psi-j-font::after {
+    content: "\00a0";
+}
+
+
+.logo {
+    font-size: 18pt;
+}
+
+.v-tabs .v-tab {
+    font-size: 13pt;
+    font-family: "Gill Sans", sans-serif;
+    text-transform: none;
+}
+
+#top-spacer {
+    height: 36pt;
+}
+
+#main-banner {
+    padding: 16pt;
+    width: 100%;
+    background-color: var(--color-bg-inv-2);
+    color: var(--color-fg-inf);
+}
+
+.banner-title {
+    width: 280pt;
+    font-size: 24pt;
+}
+
+#big-puzzle {
+    width: 240pt;
+}
+
+#secondary-banner {
+    padding: 16pt;
+    width: 100%;
+    color: var(--color-fg-norm-1);
+}
+
+#secondary-banner, #secondary-banner * {
+    background-color: var(--color-bg-norm-1);
+    color: var(--color-fg-norm-2);
+}
+
+#tertiary-banner {
+    padding: 16pt;
+    width: 100%;
+    color: var(--color-fg-norm-1);
+}
+
+#tertiary-banner, #tertiary-banner * {
+    background-color: var(--color-bg-norm-2);
+    color: var(--color-fg-norm-2);
+}
+
+.v-card__title.text-h5 {
+    word-break: normal !important;
+    font-size: 18pt !important;
+    margin-bottom: 6pt;
+    line-height: 1.2;
+}
+
+#main-content {
+    margin: 24pt;
+    margin-bottom: 120pt;
+}
+
+.v-footer {
+    margin-top: 32pt;
+}
+
+.v-footer .v-card, .v-footer .v-card * {
+    background-color: rgba(0, 0, 0, 0.0) !important;
+}
+
+ul.no-bullet {
+    list-style-type: none;
+}
+
+.v-footer a {
+    text-decoration: none;
+    color: var(--color-fg-norm-1) !important;
+}
+
+.v-footer a:hover {
+    color: var(--color-link) !important;
+}
+
+.v-card {
+    max-width: 500pt;
+}
+
+.v-card__subtitle {
+    font-size: 13pt;
+}
+
+ul {
+    margin-top: 6pt;
+}
+
+.page-start {
+    margin-top: 16pt;
+}
+
+p {
+    margin-top: 8pt;
+}
+
+.theme--light.v-application code.hljs {
+    color: #eee;
+    background: #383838;
+    padding: 2pt;
+    margin: 2pt;
+    padding-left: 16pt;
+    border-radius: 4pt;
+}
+
+pre {
+    margin: 0pt;
+    padding: 0pt;
+    min-height: 0pt;
+}
