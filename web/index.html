@@ -252,6 +252,7 @@ $ git clone https://github.com/ExaWorks/psi-j-python.git
               set(val) {
                   window.location.hash = "#" + val;
                   this.maintabs2 = val;
+                  window.setTimeout(hljs.highlightAll, 100);
               }
           }
       }
