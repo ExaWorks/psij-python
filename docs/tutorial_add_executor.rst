@@ -43,13 +43,128 @@ We're going to create three source files in this directory structure:
 
 * ``psij-descriptors/pbspro_descriptor.py`` - this file describes the PBS Pro provider to the PSI/J core, so that it can make it available to users
 
-The bulk of the what needs to happen goes in ``pbspro.py``.
+First, we'll build a skeleton that won't work, and see that it doesn't work in the test suite. Then we'll build up to the full functionality.
 
-``pbspro.py`` should contain a subclass of BatchSchedulerExecutor, with methods defined to implement the following three activities:
+Assumptions:
 
-* submitting a job
+* you have the psij python package installed already and are able to run whatever basic verification we think is necessary
+
+* you are able to submit to PBS Pro on a local system (don't worry if you don't have this and are just following along to understand what's happening - just pretend...)
+
+add the project directory to the python path directory:
+
+export PYTHONPATH=$(pwd):$PYTHONPATH
+
+create a simple BatchSchedulerExecutor subclass that does nothing, in `psijpbs/pbspro.py`:
+
+from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
+
+class PBSProJobExecutor(BatchSchedulerExecutor):
+    pass
+
+and create a descriptor file to tell psi/j about this, ``psij-descriptors/pbspro.py``
+
+from distutils.version import StrictVersion
+
+from psij._descriptor import _Descriptor
+
+
+__PSI_J_EXECUTORS__ = [_Descriptor(name='pbspro', version=StrictVersion('0.0.1'),
+                                   cls='psijpbs.pbspro.PBSProJobExecutor')]
+
+../tutorial-play/psij-descriptors/pbspro.py lines 1-8/8 (END)
+
+
+Now, run the test suite - it should fail with an error reporting that the resource manager specific methods of BatchSchedulerExecutor have not been implemented:
+
+PYTHONPATH=$PWD/src:../wheverever/project/ pytest 'tests/test_executor.py::test_simple_job' --executors=pbspro
+
+NB for us: this is an ugly command line... `make test` doesn't quite do what I want... what's the best way?
+
+TypeError: Can't instantiate abstract class PBSProJobExecutor with abstract methods generate_submit_script, get_cancel_command, get_status_command, get_submit_command, job_id_from_submit_output, parse_status_output, process_cancel_command_output
+
+That error message tells us what we need to implement. There are three broad pieces of functionality:
+
+* submitting a job:
+
+generate_submit_script
+get_submit_command
+job_id_from_submit_output
 
 * cancelling a job
 
+get_cancel_command
+process_cancel_command_output
+
 * requesting job status
+
+get_status_command
+parse_status_output
+
+
+Let's implement all of these with stubs that return NotImplementedError that we will then flesh out::
+
+  class PBSProJobExecutor(BatchSchedulerExecutor):
+
+   def generate_submit_script(*args, **kwargs):
+        raise NotImplementedError
+
+    def get_submit_command(*args, **kwargs):
+        raise NotImplementedError
+
+    def job_id_from_submit_output(*args, **kwargs):
+        raise NotImplementedError
+
+    def get_cancel_command(*args, **kwargs):
+        raise NotImplementedError
+
+    def process_cancel_command_output(*args, **kwargs):
+        raise NotImplementedError
+
+    def get_status_command(*args, **kwargs):
+        raise NotImplementedError
+
+    def parse_status_output(*args, **kwargs):
+        raise NotImplementedError
+
+Now running the same pytest command will give a different error - further along into attempting to submit a job:
+
+... ::
+
+  >       assert config
+  E       AssertionError
+
+which is something to do with configurations...
+
+turns out this __init__ gets a bit upset with an optional config and maybe that will get fixed in the codebase.
+
+But for now, if no config is supplied, we need to generate a config. For now, we're not going ot have a
+PBS-specific configuration, so we'll just use the existing BatchJobExecutorConfig class.
+
+Define a new __init__ method that will define a default configuration::
+
+  from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutorConfig
+
+  ...
+
+    def __init__(self, *, url, config):
+        if config is None:
+            config = BatchSchedulerExecutorConfig()
+        super().__init__(url=url, config=config)
+
+
+If we need to add in any PBS specific configuration options - this is where we're going to do it.
+
+URL is a "very import, you can ignore" parameter. Ignore it.
+
+Running pytest again, we get as far as seeing PSI/J is trying to do submit-related stuff::
+
+    def generate_submit_script(*args, **kwargs):
+ >       raise NotImplementedError
+ E       NotImplementedError
+
+ ../tutorial-play/psijpbs/pbspro.py:13: NotImplementedError
+
+implementing submission
+=======================
 
