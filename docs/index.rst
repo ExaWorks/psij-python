@@ -13,6 +13,8 @@ The PSI/J interface
 
     .generated/psij
 
+    tutorial_add_executor.rst
+
 
 Available Executors
 ===================
