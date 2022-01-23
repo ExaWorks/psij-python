@@ -65,18 +65,13 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         work_directory
             See :func:`~JobExecutorConfig.__init__`.
         queue_polling_interval
-            an interval, in seconds, at which the batch scheduler queue will be polled for updates
-            to jobs.
+            an interval, in seconds, at which the batch scheduler queue will be polled for updates to jobs.
         initial_queue_polling_delay
-            the time to wait before polling the queue for the first time; for quick tests that only
-            submit a short job that completes nearly instantly or for jobs that fail very quickly,
-            this can dramatically reduce the time taken to get the necessary job status update.
+            the time to wait before polling the queue for the first time; for quick tests that only submit a short job that completes nearly instantly or for jobs that fail very quickly, this can dramatically reduce the time taken to get the necessary job status update.
         queue_polling_error_threshold
-            The number of times consecutive queue polls have to fail in order for the executor to
-            report them as job failures.
+            The number of times consecutive queue polls have to fail in order for the executor to report them as job failures.
         keep_files
-            Whether to keep submit files and auxiliary job files (exit code and output files) after
-            a job has completed.
+            Whether to keep submit files and auxiliary job files (exit code and output files) after a job has completed.
         """
         super().__init__(work_directory, launcher_log_file)
         self.queue_polling_interval = queue_polling_interval
@@ -106,14 +101,7 @@ class BatchSchedulerExecutor(JobExecutor):
     contents of the submit script are to be written, the parameters to
     :func:`~generate_submit_script` are the :class:`~Job` that is being submitted and a `context`,
     which is a dictionary with the following structure:
-        {
-            'job': <the job being submitted>
-            'psij': {
-                'lib': <dict; function library>,
-                'launch_command': <str; launch command>,
-                'script_dir': <str; directory where the submit script is generated>
-            }
-        }
+    XXXX DOESNT COMPILE - ELIDE FOR NOW XXXX
 
     The *script directory* is a directory (typically `~/.psij/work`) where submit scripts are
     written; it is also used for auxiliary files, such as the *exit code file* (see below) or the
@@ -330,12 +318,7 @@ class BatchSchedulerExecutor(JobExecutor):
         The main purpose of this method is to help distinguish between the cancel command
         failing due to an invalid job state (such as the job having completed before the cancel
         command was invoked) and other types of errors. Since job state errors are ignored, there
-        are two options:
-            1. Instruct the cancel command to not fail on invalid state errors and have this
-            method always raise a `SubmitException`, since it is only invoked on "other" errors.
-            2. Have the cancel command fail on both invalid state errors and other errors and
-            interpret the output from the cancel command to distinguish between the two and raise
-            the appropriate exception.
+        are two options: 1. Instruct the cancel command to not fail on invalid state errors and have this method always raise a XXX, since it is only invoked on "other" errors.  2. Have the cancel command fail on both invalid state errors and other errors and interpret the output from the cancel command to distinguish between the two and raise the appropriate exception.
 
         Parameters
         ----------
@@ -349,7 +332,7 @@ class BatchSchedulerExecutor(JobExecutor):
         _InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
-        SubmitException
+        XXXX
             Raised for all other reasons.
         """
         pass
