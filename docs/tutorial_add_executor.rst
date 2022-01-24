@@ -1,6 +1,11 @@
 Adding an executor
 ==================
 
+Hello and welcome to my draft of a "write a batch executor" tutorial.
+
+This text is written in part as a structure for a tutorial, and in part as commentary on what is awkward in psi/j from my user-programmer perspective. Part of tidying the text involves changing PSI/J to make this text nicer, rather than this document being purely *descriptive* of the psi/j core code.
+
+
 terminology questions: are these consistent with other docs and usage?
 
 local resource manager - i'm pulling from globus toolkit 2 terminology here
@@ -246,8 +251,8 @@ In the PBS Pro case, as shown in the example above, that is pretty straightforwa
 
 That's enough to get jobs submitted using PSI/J, but not enough to run the test - instead it will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising NotImplementedError.
 
-Implementing status calls
-=========================
+Implementing status
+===================
 
 PSI/J needs to ask the local resource manager for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
@@ -316,3 +321,75 @@ Here is an implementation for ``parse_status_output``, as well as a helper dicti
 This implementation uses a helper, :py:meth:`check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`JobState` via the ``_STATE_MAP`` dictionary.
 
 With these status methods in place, the ``pytest`` command from before should execute to completion.
+
+We still haven't implemented the cancel methods, though. That will be reveal by running a broader range of tests::
+
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest 'tests' --executors=pbspro
+
+which should give this error (amongst others -- this commandline formation is ugly and I'd like it to work more along the lines of `make test`)::
+
+    FAILED tests/test_executor.py::test_cancel[pbspro] - NotImplementedError
+
+Implementing cancel
+===================
+
+The two methods to implement for cancellation follow the same pattern as for submission and status:
+
+* :py:meth:`get_cancel_command` - this should form a command for cancelling a job.
+* :py:meth:`process_cancel_command_output` - this should interpret the output from the cancel command.
+
+It looks like you don't actually need to implement process_cancel_command_output beyond the stub we already have, to make the abstract class mechanism happy. Maybe that's something that should change in psi/j?
+
+Here's an implementation of `get_cancel_command`::
+
+    def get_cancel_command(self, native_id: str) -> List[str]:
+        return ['qdel', native_id]
+
+That's enough to tell PBS Pro how to cancel a job, but it isn't enough for PSI/J to know that a job was actually cancelled: the JobState from `parse_status_output` will still return a state of COMPLETED, when we actually want CANCELED. That's because the existing job marks a job as COMPLETED whenever it reaches PBS Pro state `F` - no matter how the job finished.
+
+So here's an updated `parse_status_output` which checks the ``Exit_status`` field in the qstat JSON to see if it exited with status code 265 - that means that the job was killed with signal 9. and if so, marks the job as CANCELED instead of completed::
+
+    def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
+        check_status_exit_code('qstat', exit_code, out)
+        r = {}
+
+        report = json.loads(out)
+        jobs = report['Jobs']
+
+        for native_id in jobs:
+            job_report = jobs[native_id]
+            native_state = job_report["job_state"]
+            state = _STATE_MAP[native_state]
+
+            if state == JobState.COMPLETED:
+                if 'Exit_status' in job_report and job_report['Exit_status'] == 265:
+                    state = JobState.CANCELED
+
+            msg = job_report["comment"]
+            r[native_id] = JobStatus(state, message=msg)
+
+        return r
+
+
+This isn't necessarily the right thing to do: some PBS installs will use 128+9 = 137 to represent this instead of 256 + 9 = 265, according to the PBS documentation.
+
+
+
+What's missing?
+===============
+
+The biggest thing that was omitted was in the mustache template. A :py:class:`Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples. (maybe a job spec URL reference here too?)
+
+The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns job in a different state, this will break. So make sure you deal with all the states of your local resource manager, not just a few that seem obvious.
+
+The test suite doesn't seem to contain a test for jobs failing in a particular way with broken PBS: they should go into FAILED state, not COMPLETED state, with some similar check to the CANCELED state check. Probably the test suite should get a test for that - I've hit this problem elsewhere, when jobs don't run enough to make a ``.ec`` file (because PBS was locally broken). I'm not sure how to test that as it's a bit pbs specific?
+
+How to distribute your executor
+===============================
+
+If you want to share your executor with others, here are two ways:
+
+i) you can make a python package and distribute that as an add-on without needing to interact with the psi/j project
+
+ii) you can make a pull request against the psi/j repo - link to contributing text file?
+
