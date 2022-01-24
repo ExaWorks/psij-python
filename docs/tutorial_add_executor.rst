@@ -91,15 +91,16 @@ generate_submit_script
 get_submit_command
 job_id_from_submit_output
 
+* requesting job status
+
+get_status_command
+parse_status_output
+
 * cancelling a job
 
 get_cancel_command
 process_cancel_command_output
 
-* requesting job status
-
-get_status_command
-parse_status_output
 
 
 Let's implement all of these with stubs that return NotImplementedError that we will then flesh out::
@@ -248,5 +249,70 @@ That's enough to get jobs submitted using PSI/J, but not enough to run the test 
 Implementing status calls
 =========================
 
+PSI/J needs to ask the local resource manager for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
+* :py:meth:`get_status_command` - like ``get_submit_command``, this will return a local resource manager specific commandline, this time to output job status.
 
+* :py:meth:`parse_status_output` - this will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
+
+Here's an implementation for ``get_status_command``::
+
+    from typing import Collection
+
+    def get_status_command(self, native_ids: Collection[str]) -> List[str]:
+        ids = ','.join(native_ids)
+        return ['qstat',  '-f', '-F', 'json', '-x'] + list(native_ids)
+
+This constructs a command line which looks something like this::
+
+    qstat -f -F json -x 2154.edtb-01.mcp.alcf.anl.gov
+
+The parameters change the default behaviour of ``qstat`` to something more useful for parsing: ``-f`` asks for full output, with `-x` including information for completed jobs (which is normally suppressed) and ``-F json`` asking for the output to be formatted as JSON (rather than a default text tabular view).
+
+This JSON output, which is passed to ``parse_status_output`` looks something like this (with a lot of detail removed)::
+
+ {
+    "pbs_version":"2022.0.0.20211103141832",
+    "Jobs":{
+        "2154.edtb-01.mcp.alcf.anl.gov":{
+            "job_state":"F",
+            "comment":"Job run at Mon Jan 24 at 08:39 on (edtb-01[0]:ncpus=1) and finished",
+            "Exit_status":0,
+        }
+    }
+ }
+
+Here is an implementation for ``parse_status_output``, as well as a helper dictionary ``_STATE_MAP``::
+
+    import json
+    from psij import JobState, JobStatus
+    from psij.executors.batch.batch_scheduler_executor import check_status_exit_code
+
+    _STATE_MAP = {
+        'Q': JobState.QUEUED,
+        'R': JobState.ACTIVE,
+        'F': JobState.COMPLETED
+    }
+
+    class PBSProJobExecutor: ...
+
+        def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
+            check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
+            r = {}
+
+            report = json.loads(out)
+            jobs = report['Jobs']
+            for native_id in jobs:
+                native_state = jobs[native_id]["job_state"]
+                state = _STATE_MAP(native_state)
+
+                msg = jobs[native_id]["comment"]
+                r[native_id] = JobStatus(state, message=msg)
+
+            return r
+
+``parse_status_output`` is given both the stdout and the exit code of ``qstat`` and must either transcribe that into a dictionary of :py:class:`JobStatus` objects describing the state of each job, or raise an exception.
+
+This implementation uses a helper, :py:meth:`check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`JobState` via the ``_STATE_MAP`` dictionary.
+
+With these status methods in place, the ``pytest`` command from before should execute to completion.
