@@ -221,11 +221,32 @@ TODO: put in a simple template that is enough to submit but without the many man
 
 Next, the test will fail because ``get_submit_command`` is missing. This method is going to give a command line to run to submit the tempate-generated submit file. In PBS, that submission happens by running a command like this::
 
-    qsub myscript.sub
+    > qsub c.submit
+    2152.edtb-01.mcp.alcf.anl.gov
+
 
 Here's an implementation of ``get_submit_command`` that will make a command like this::
 
+    from typing import List
+
+
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
         return ['qsub', str(submit_file_path.absolute())]
+
+The implementation so far is enough to get jobs to run in PBS, but not enough for PSI/J to make sense of what it has submitted.
+
+The final step in submission is implementing ``job_id_from_submit_output``. This interprets the output of the submit command to find the local resource manager's job ID for the newly created job.
+
+In the PBS Pro case, as shown in the example above, that is pretty straightforward: the entire output is the job ID::
+
+    def job_id_from_submit_output(self, out: str) -> str:
+        return out.strip()
+
+
+That's enough to get jobs submitted using PSI/J, but not enough to run the test - instead it will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising NotImplementedError.
+
+Implementing status calls
+=========================
+
 
 
