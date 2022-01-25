@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
         install_requires=[
         ],
-        python_requires='>=3.6'
+        python_requires='>=3.7'
     )
