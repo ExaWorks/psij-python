@@ -105,7 +105,8 @@ class BatchSchedulerExecutor(JobExecutor):
     that of :func:`~generate_submit_script`. Besides an opened file which points to where the
     contents of the submit script are to be written, the parameters to
     :func:`~generate_submit_script` are the :class:`~Job` that is being submitted and a `context`,
-    which is a dictionary with the following structure:
+    which is a dictionary with the following structure::
+
         {
             'job': <the job being submitted>
             'psij': {
@@ -331,11 +332,14 @@ class BatchSchedulerExecutor(JobExecutor):
         failing due to an invalid job state (such as the job having completed before the cancel
         command was invoked) and other types of errors. Since job state errors are ignored, there
         are two options:
-            1. Instruct the cancel command to not fail on invalid state errors and have this
-            method always raise a `SubmitException`, since it is only invoked on "other" errors.
-            2. Have the cancel command fail on both invalid state errors and other errors and
-            interpret the output from the cancel command to distinguish between the two and raise
-            the appropriate exception.
+
+        1. Instruct the cancel command to not fail on invalid state errors and have this
+        method always raise a :class:`psij.SubmitException`, since it is only invoked on
+        "other" errors.
+
+        2. Have the cancel command fail on both invalid state errors and other errors and
+        interpret the output from the cancel command to distinguish between the two and raise
+        the appropriate exception.
 
         Parameters
         ----------
@@ -349,7 +353,7 @@ class BatchSchedulerExecutor(JobExecutor):
         _InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
-        SubmitException
+        psij.SubmitException
             Raised for all other reasons.
         """
         pass
