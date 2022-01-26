@@ -30,7 +30,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?id=2">
         <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
     </head>
@@ -381,7 +381,7 @@ $ python setup.py install
                 console.log("Change theme " + name);
                 var css = $("head").children(":last");
                 $("head").children(":first").attr({
-                    href: name + ".css"
+                    href: name + ".css?id=2"
                 });
                 console.log("Bar color: " + getComputedStyle(document.querySelector(':root')).getPropertyValue('--color-bg-inv-1'));
             },
