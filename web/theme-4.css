@@ -1,12 +1,14 @@
 :root {
-    --color-bg-inv-1: #425066;
-    --color-fg-inv: #e0e0e0;
+    --color-global-bg: #ffffff;
+    --color-bg-inv-1: #302718;
+    --color-fg-inv-1: #e0e0e0;
+    --color-fg-inv-2: #202020;
     --color-fg-norm-1: #202020;
     --color-fg-norm-2: #404040;
     --color-sel-inv-1: #000000;
-    --color-bg-inv-2: #ff6f00;
-    --color-bg-norm-1: #f0f0f0;
-    --color-bg-norm-2: #f0f0f0;
+    --color-bg-inv-2: #c7ab59;
+    --color-bg-norm-1: #ded2a8;
+    --color-bg-norm-2: #ffffff;
     --color-link: #6080ff;
-    --color-fg-lines: #e0e0e0;
+    --color-fg-lines: #699e3c;
 }

@@ -4,7 +4,7 @@
 
 body #psij-app .v-application, .v-application .text-h5, .v-application {
     font-family: var(--main-font), sans-serif !important;
-    background-color: #ffffff;
+    background-color: var(--color-global-bg);
 }
 
 body .v-application a {
@@ -12,16 +12,20 @@ body .v-application a {
     text-decoration: none;
 }
 
+.v-window-item {
+    background-color: var(--color-global-bg) !important;
+}
+
 .v-app-bar {
     background-color: var(--color-bg-inv-1) !important;
 }
 
 .v-app-bar .v-tab {
-    color: var(--color-fg-inv) !important;
+    color: var(--color-fg-inv-1) !important;
 }
 
 .v-tabs-slider {
-    background-color: var(--color-sel-inv-1) !important;
+    background-color: var(--color-fg-lines) !important;
 }
 
 .v-app-bar .gh-link {
@@ -65,7 +69,7 @@ body .v-application a {
     padding: 16pt;
     width: 100%;
     background-color: var(--color-bg-inv-2);
-    color: var(--color-fg-inv);
+    color: var(--color-fg-inv-2);
 }
 
 .banner-title {
@@ -85,13 +89,13 @@ body .v-application a {
 
 #secondary-banner, #secondary-banner * {
     background-color: var(--color-bg-norm-1);
-    color: var(--color-fg-norm-2);
+    color: var(--color-fg-norm-1);
 }
 
 #tertiary-banner {
     padding: 16pt;
     width: 100%;
-    color: var(--color-fg-norm-1);
+    color: var(--color-fg-norm-2);
 }
 
 #tertiary-banner, #tertiary-banner * {
@@ -109,6 +113,7 @@ body .v-application a {
 #main-content {
     margin: 24pt;
     margin-bottom: 120pt;
+    background-color: var(--color-global-bg);
 }
 
 .v-footer {
@@ -183,4 +188,5 @@ pre {
     display: block;
     height: 196pt;
     clear: both;
+    background-color: var(--color-global-bg);
 }
