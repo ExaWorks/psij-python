@@ -30,7 +30,9 @@ If you have conda installed you might want to start from a fresh environment:
 - job executioner, e.g. slurm in this example
 
 1. Create a file *my-worklfow.py* and copy and paste the code below:
-    ```
+
+```python
+
 import psij
 
 jex = psij.JobExecutor.get_instance('slurm')
@@ -51,5 +53,5 @@ for i in range(N):
 
 for i in range(N):
     jobs[i].wait()
-  
+    </code>
 ```
