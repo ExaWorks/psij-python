@@ -25,9 +25,11 @@ If you have conda installed you might want to start from a fresh environment:
 
 ## Hello world
 
-### Requirements
+**Requirements**
 - python3.7
 - job executioner, e.g. slurm in this example
+
+**Steps**
 
 1. Create a file *my-worklfow.py* and copy and paste the code below:
 
@@ -36,6 +38,8 @@ If you have conda installed you might want to start from a fresh environment:
 import psij
 
 jex = psij.JobExecutor.get_instance('slurm')
+
+N=1 # number of jobs to run
 
 def make_job():
     job = psij.Job()
@@ -55,3 +59,7 @@ for i in range(N):
     jobs[i].wait()
     </code>
 ```
+2. In this example the number of jobs is 1. Set *N* to the number of jobs you want to run and save file.
+
+3. `python my-workflow.py`
+ 
