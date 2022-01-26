@@ -41,6 +41,12 @@ docs:
 	rm -rf docs/.generated
 	sphinx-build -W -b html docs docs/.build/
 
+
+.PHONY: web-docs
+web-docs:
+	rm -rf docs/.generated
+	sphinx-build -W -b html -D html_theme='cloud' docs docs/.web-build/
+
 .PHONY: style
 style:
 	autopep8 -i -r src tests

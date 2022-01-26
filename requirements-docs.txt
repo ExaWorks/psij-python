@@ -11,5 +11,7 @@ six
 Sphinx
 sphinx_rtd_theme
 sphinx-tabs
-# sphinx-autodoc-typehints
 
+# For the web version of the docs
+cloud_sptheme
+# sphinx-autodoc-typehints
