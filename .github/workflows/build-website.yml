@@ -1,6 +1,8 @@
 name: build-website
 
-on: push
+on:
+  push:
+    branches: [ main, web_site ]
 
 jobs:
   publish:
