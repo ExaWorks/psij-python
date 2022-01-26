@@ -411,6 +411,7 @@ $ python setup.py install
                     window.location.hash = "#" + val;
                     this.maintabs2 = val;
                     crttab = val;
+                    window.setTimeout(function() {resizeDocsFrame(false)}, 1000);
                 }
             }
         }
@@ -419,25 +420,24 @@ $ python setup.py install
 
     crttab = window.location.hash ? window.location.hash.substr(1) : "index";
 
-    function resizeDocsFrame(repeat) {
-        if (typeof repeat == "undefined") {
-            repeat = true;
-        }
+    function resizeDocsFrame() {
         if (crttab == "docs") {
             var frame = document.getElementById("docs-frame");
             if (frame && frame.contentWindow && frame.contentWindow.document && frame.contentWindow.document.body) {
                 frame.style.height = (frame.contentWindow.document.body.offsetHeight + 180) + 'px';
             }
         }
-        if (repeat) {
-            window.setTimeout(resizeDocsFrame, 1000);
-        }
     };
 
-    window.setTimeout(resizeDocsFrame, 1000);
-
     $("#docs-frame").on("load", function() {
-        window.setTimeout(function () {resizeDocsFrame(false)}, 100);
+        resizeDocsFrame(false);
+        var hash = window.docs.location.hash;
+        if (hash) {
+            var anchor = window.docs.document.getElementById(hash.substr(1));
+            if (anchor) {
+                anchor.scrollIntoView();
+            }
+        }
 
         var html = document.getElementsByTagName("html")[0];
         var body = document.getElementsByTagName("body")[0];
