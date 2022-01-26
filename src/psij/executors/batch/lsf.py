@@ -26,7 +26,7 @@ class LsfExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class LsfJobExecutor(BatchSchedulerExecutor):
-    """A :proc:`~psij.JobExecutor` for the LSF Workload Manager."""
+    """A :class:`~psij.JobExecutor` for the LSF Workload Manager."""
 
     # see https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bjobs-description
     _STATE_MAP = {
@@ -44,7 +44,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str], config: Optional[LsfExecutorConfig] = None):
-        """Initializes a :proc:`~LsfJobExecutor`."""
+        """Initializes a :class:`~LsfJobExecutor`."""
         if not config:
             config = LsfExecutorConfig()
         super().__init__(config=config)
@@ -55,17 +55,17 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     def generate_submit_script(
         self, job: Job, context: Dict[str, object], submit_file: TextIO
     ) -> None:
-        """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
+        """See :meth:`~BatchSchedulerExecutor.generate_submit_script`."""
         assert(job.spec is not None)
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)
         self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_submit_command`."""
         return ["bsub", str(submit_file_path.absolute())]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_cancel_command`.
+        """See :meth:`~BatchSchedulerExecutor.get_cancel_command`.
 
         ``bkill`` will exit with an error set if the job does not exist
         or has already finished.
@@ -73,7 +73,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         return ["bkill", native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`.
+        """See :meth:`~BatchSchedulerExecutor.process_cancel_command_output`.
 
         Check if the error was raised only because a job already exited.
         """
@@ -81,7 +81,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             raise SubmitException(out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_status_command`."""
         return [
             _BJOBS_COMMAND,
             "-o",
@@ -92,7 +92,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         ]
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :proc:`~BatchSchedulerExecutor.parse_status_output`.
+        """See :meth:`~BatchSchedulerExecutor.parse_status_output`.
 
         Iterate through the RECORDS entry, grabbing JOBID and STAT entries, as well
         as any state-change reasons if present.
@@ -113,7 +113,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         return status_map
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         match = _BSUB_REGEX.search(out)
         if match is None:
             raise SubmitException(out)

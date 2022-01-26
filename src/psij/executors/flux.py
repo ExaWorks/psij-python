@@ -240,7 +240,7 @@ class FluxJobExecutor(JobExecutor):
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-        obtained through :func:`~psij.executors.RPJobExecutor.list` method.
+          obtained through :func:`~psij.executors.RPJobExecutor.list` method.
         """
         raise NotImplementedError()
 
