@@ -24,3 +24,32 @@ If you have conda installed you might want to start from a fresh environment:
 
 
 ## Hello world
+
+### Requirements
+- python3.7
+- job executioner, e.g. slurm in this example
+
+1. Create a file *my-worklfow.py* and copy and paste the code below:
+    ```
+import psij
+
+jex = psij.JobExecutor.get_instance('slurm')
+
+def make_job():
+    job = psij.Job()
+    spec = psij.JobSpec()
+    spec.executable = '/bin/sleep'
+    spec.arguments = ['10']
+    job.spec = spec
+    return job
+
+jobs = []
+for i in range(N):
+    job = make_job()
+    jobs.append(job)
+    jex.submit(job)
+
+for i in range(N):
+    jobs[i].wait()
+  
+```
