@@ -57,7 +57,7 @@ for i in range(N):
 
 for i in range(N):
     jobs[i].wait()
-    </code>
+    
 ```
 2. In this example the number of jobs is 1. Set *N* to the number of jobs you want to run and save file.
 
