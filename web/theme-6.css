@@ -1,12 +1,12 @@
 :root {
-    --color-bg-inv-1: #1A5F7A;
-    --color-fg-inv: #e0e0e0;
+    --color-bg-inv-1: #CFEFFF;
+    --color-fg-inv: #202020;
     --color-fg-norm-1: #202020;
     --color-fg-norm-2: #404040;
     --color-sel-inv-1: #000000;
-    --color-bg-inv-2: #086E7D;
-    --color-bg-norm-1: #FFC900;
-    --color-bg-norm-2: #FFF89A;
+    --color-bg-inv-2: #7C99AC;
+    --color-bg-norm-1: #92A9BD;
+    --color-bg-norm-2: #D3DEDC;
     --color-link: #6080ff;
     --color-fg-lines: #e0e0e0;
 }
