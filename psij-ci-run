@@ -55,7 +55,7 @@ else
 fi
 
 # Ensure latest test runner is there
-git fetch
+git fetch https://github.com/ExaWorks/psi-j-python.git
 git checkout origin/main -- tests/ci_runner.py
 
 
