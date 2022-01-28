@@ -16,7 +16,7 @@ fi
 
 ts() {
     while read LINE; do
-        TZ=UTC printf -v TS "%(%F %T)T" -1
+        TZ=UTC TS=`date '+%Y-%m-%d %H:%M:%S'`
         echo "$TS $_PSI_J_JOB_ID $LINE"
     done
 }
