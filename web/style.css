@@ -2,7 +2,7 @@
     --main-font: "Gill Sans";
 }
 
-body #psij-app .v-application, .v-application .text-h5, .v-application {
+body #psij-app .v-application, .v-application .text-h5, .v-application, #psij-app .v-window {
     font-family: var(--main-font), sans-serif !important;
     background-color: var(--color-global-bg);
 }

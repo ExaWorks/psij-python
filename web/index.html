@@ -9,8 +9,6 @@
 
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Saira:wght@300&display=swap" rel="stylesheet">
 
-        <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans&family=Cabin&family=Merriweather+Sans&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Outfit&family=PT+Sans&family=PT+Sans+Caption&family=Poppins&family=Raleway&family=Readex+Pro&family=Rubik&family=Source+Sans+Pro&family=Work+Sans&display=swap" rel="stylesheet">
-
 
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
@@ -44,7 +42,6 @@
                         <v-tab href="#resources" key="resources">Resources</v-tab>
                         <v-tab href="#about" key="about">About</v-tab>
                     </v-tabs>
-                    <v-select :items="fonts" filled flat solo label="Select Font" dense @change="changeFont"></v-select>
                     <v-select :items="themes" filled flat solo label="Select theme" dense @change="changeTheme"></v-select>
                     <div class="gh-link">
                         <a href="https://github.com/ExaWorks/psi-j-python"><img height="24pt" src="images/GitHub_Logo.png"/></a>
@@ -365,8 +362,7 @@ $ python setup.py install
         el: '#psij-app',
         vuetify: new Vuetify(),
         data: {
-            themes: ["theme-1", "theme-2", "theme-3", "theme-4", "theme-5", "theme-6", "theme-7", "theme-8"],
-            fonts: ["Gill Sans", "Roboto", "Open Sans", "Montserrat", "Alegreya Sans", "Cabin", "Merriweather Sans", "Noto Sans", "Outfit", "PT Sans", "PT Sans Caption", "Poppins", "Raleway", "Readex Pro", "Rubik", "Source Sans Pro", "Work Sans"],
+            themes: ["theme-1", "theme-3"],
             maintabs2: "index",
             tabChanged: function (name) {
                 console.log("Tab changed to " + name);
@@ -382,10 +378,6 @@ $ python setup.py install
                     href: name + ".css?id=2"
                 });
                 console.log("Bar color: " + getComputedStyle(document.querySelector(':root')).getPropertyValue('--color-bg-inv-1'));
-            },
-            changeFont: function(name) {
-                console.log("Change font " + name);
-                document.querySelector(':root').style.setProperty("--main-font", name);
             }
         },
         computed: {

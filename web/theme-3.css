@@ -10,18 +10,20 @@
     --color-bg-norm-2: #ffffff;
     --color-link: #6080ff;
     --color-fg-lines: #fe7000;
+    --color-global-bg: #ffffff;
 }
 
 #psij-app .v-card {
     border-radius: 4pt;
     background-color: #f8f8f8;
-    box-shadow: 0pt 0pt 1pt #ff3000 !important;
+    box-shadow: 0pt 0pt 1pt #8080ff !important;
 }
 
 #psij-app .v-card.v-card--flat {
     box-shadow: none !important;
 }
 
-#secondary-banner .v-card, .v-card__title, .v-card__text {
+#secondary-banner .v-card, .v-card__title, .v-card__text,
+#secondary-banner .v-card *, #tertiary-banner .v-card * {
     background-color: #f8f8f8 !important;
 }
