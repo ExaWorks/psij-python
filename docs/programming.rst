@@ -41,7 +41,7 @@ The core API contains the central components of PSI/J. The core API classes are 
 Executors
 ~~~~~~~~~
 
-Executors are concrete implementations of mechanisms that execute jobs. To get an instance of a specific executor, call :meth:`JobExecutor.get_instance(<name>) <psij.job_executor.JobExecutor.get_instance>`, with `<name>` being one of the installed executor names. Executors can be installed from multiple sources, so the precise list of executors avaiable to a specific installation of the PSI/J Python library can vary. In order to get a list of available executors, you can run, in a terminal:
+Executors are concrete implementations of mechanisms that execute jobs. To get an instance of a specific executor, call :meth:`JobExecutor.get_instance(name) <psij.job_executor.JobExecutor.get_instance>`, with ``name`` being one of the installed executor names. Executors can be installed from multiple sources, so the precise list of executors avaiable to a specific installation of the PSI/J Python library can vary. In order to get a list of available executors, you can run, in a terminal:
 
 .. code-block:: shell
 
@@ -77,7 +77,7 @@ The executor implementations provided by this version of PSI/J Python are:
 Launchers
 ~~~~~~~~~
 
-Launchers are mechanisms to start the actual jobs on batch schedulers once a set of nodes has been allocated for the job. In essence, launchers are wrappers around the job executable which can provide additional features, such as setting up an MPI environment, starting a copy of the job executable on each allocated node, etc. To get a launcher instance, call :meth:`Launcher.get_instance(<name>) <psij.launchers.launcher.Launcher.get_instance>` with `name` being the name of a launcher. Like job executors, above, launchers are plugins and can come from various places. To obtain a list of launchers, you can run:
+Launchers are mechanisms to start the actual jobs on batch schedulers once a set of nodes has been allocated for the job. In essence, launchers are wrappers around the job executable which can provide additional features, such as setting up an MPI environment, starting a copy of the job executable on each allocated node, etc. To get a launcher instance, call :meth:`Launcher.get_instance(name) <psij.launchers.launcher.Launcher.get_instance>` with ``name`` being the name of a launcher. Like job executors, above, launchers are plugins and can come from various places. To obtain a list of launchers, you can run:
 
 .. code-block:: shell
 
@@ -86,13 +86,13 @@ Launchers are mechanisms to start the actual jobs on batch schedulers once a set
 The PSI/J Python library comes with a core set of launchers, which are:
 
 :class:`aprun <psij.launchers.aprun.AprunLauncher>`
-    Launches jobs using `Cobalt's <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_ `aprun`.
+    Launches jobs using `Cobalt's <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_ ``aprun``.
 
 :class:`jsrun <psij.launchers.jsrun.JsrunLauncher>`
-    Starts jobs using `jsrun` provided by the `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_.
+    Starts jobs using ``jsrun`` provided by the `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_.
 
 :class:`mpirun <psij.launchers.mpirun.MPILauncher>`
-    Launches jobs using `mpirun`, which is a tool provided by `MPI <https://www.mpi-forum.org/>`_ implementations, such as `Open MPI <https://www.open-mpi.org/>`_.
+    Launches jobs using ``mpirun``, which is a tool provided by `MPI <https://www.mpi-forum.org/>`_ implementations, such as `Open MPI <https://www.open-mpi.org/>`_.
 
 :class:`multiple <psij.launchers.multiple.MultipleLauncher>`
     Starts multiple identical instances of the same process on the same machine.
@@ -101,7 +101,7 @@ The PSI/J Python library comes with a core set of launchers, which are:
     Starts a single instance of the job executable locally. This is the default launcher, which is used if nothing is explicitly specified.
 
 :class:`srun <psij.launchers.srun.SrunLauncher>`
-    Starts job using `srun`, which is part of the `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.
+    Starts job using ``srun``, which is part of the `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.
 
 
 API Reference
