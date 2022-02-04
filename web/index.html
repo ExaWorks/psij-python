@@ -83,7 +83,10 @@
                     </v-card-title>
 
                     <v-card-text>
-                        Use a unified API to enable your HPC application to run virtually anywhere. <span class="psi-j-font">PSI/J</span> automatically translates abstract job specifications into concrete scripts and commands to send to the scheduler. <span class="psi-j-font">PSI/J</span> is tested on a wide variety of clusters.
+                        Use a unified API to enable your HPC application to run virtually anywhere. 
+                        <span class="psi-j-font">PSI/J</span> automatically translates abstract job 
+                        specifications into concrete scripts and commands to send to the scheduler. 
+                        <span class="psi-j-font">PSI/J</span> is tested on a wide variety of clusters.
                     </v-card-text>
               </v-card>
             </v-col>
@@ -101,7 +104,9 @@
                     </v-card-title>
 
                     <v-card-text>
-                        There is no need to wait for infrequent deployment cycles. The HPC world tends to be rather dynamic and the ability to quickly integrate changes prompted by experimental changes in the cluster environment is essential.
+                        There is no need to wait for infrequent deployment cycles. The HPC world 
+                        tends to be rather dynamic and the ability to quickly integrate changes 
+                        prompted by experimental changes in the cluster environment is essential.
                     </v-card-text>
               </v-card>
             </v-col>
@@ -112,7 +117,11 @@
                     </v-card-title>
 
                     <v-card-text>
-                        Let's be realistic. It is virtually impossible for a single entity to provide stable and tested adapters to all clusters and schedulers. That is why <span class="psi-j-font">PSI/J</span> enables and encourages community contributions to scheduler adapters, testbeds, and specific cluster knowledge.
+                        Let's be realistic. It is virtually impossible for a single entity to 
+                        provide stable and tested adapters to all clusters and schedulers. That is 
+                        why <span class="psi-j-font">PSI/J</span> enables and encourages community 
+                        contributions to scheduler adapters, testbeds, and specific cluster 
+                        knowledge.
                     </v-card-text>
               </v-card>
             </v-col>
@@ -124,7 +133,10 @@
                     </v-card-title>
 
                     <v-card-text>
-                        The design of <span class="psi-j-font">PSI/J</span> is based on a number of libraries used by state of the art HPC workflow applications that the <span class="psi-j-font">PSI/J</span> team has worked on. Its architectural foundations have been tested at extreme scales and in diverse environments.
+                        The design of <span class="psi-j-font">PSI/J</span> is based on a number of 
+                        libraries used by state of the art HPC workflow applications that the 
+                        <span class="psi-j-font">PSI/J</span> team has worked on. Its architectural 
+                        foundations have been tested at extreme scales and in diverse environments.
                     </v-card-text>
               </v-card>
             </v-col>
@@ -248,7 +260,10 @@ $ python setup.py install
                     </v-card>
 
                     <v-card flat>
-                        The <a href="https://testing.exaworks.org">site status dashboard</a> shows current and past test results for the Python binding of <span class="psi-j-font">PSI/J</span> on all sites on which test results are reported.
+                        The <a href="https://testing.exaworks.org">site status dashboard</a> shows 
+                        current and past test results for the Python binding of 
+                        <span class="psi-j-font">PSI/J</span> on all sites on which test results 
+                        are reported.
                     </v-card>
 
                 </v-card-text>
@@ -261,7 +276,9 @@ $ python setup.py install
 
                 <v-card-text class="d-flex flex-row mb-6">
                     <v-card flat>
-                        We use <a href="http://slack.com">Slack</a> for various conversations about both the <span class="psi-j-font">PSI/J</span> specification and the Python binding. [We should probably add a user-oriented channel and link to it]
+                        We use <a href="http://slack.com">Slack</a> for various conversations about 
+                        both the <span class="psi-j-font">PSI/J</span> specification and the Python 
+                        binding. [We should probably add a user-oriented channel and link to it]
                     </v-card>
 
                     <v-card flat>
@@ -295,7 +312,18 @@ $ python setup.py install
                 </v-card-title>
 
                 <v-card-text>
-                    The <a href="exaworks.org">ExaWorks</a> project is a community-led project under the umbrella of the <a href="exascaleproject.org">Exascale Computing Project</a> which brings together a number of high level HPC tools developed by the members of ExaWorks. We noticed that most of these projects, as well as many of the community projects implemented a software layer/library to interact with HPC schedulers in order to insulate the core functionality from the details of how things are specified for each scheduler. We also noticed that the respective libraries mostly covered schedulers running on resources that each team had access to. We figured that we could use our combined knowledge to design a single API/library for this goal, a library that would be tested on all resources that all ExaWorks teams have access to. We could then share this API and library so that all high level HPC tools could benefit from it.
+                    The <a href="exaworks.org">ExaWorks</a> project is a community-led project 
+                    under the umbrella of the <a href="exascaleproject.org">Exascale Computing 
+                    Project</a> which brings together a number of high level HPC tools developed 
+                    by the members of ExaWorks. We noticed that most of these projects, as well as 
+                    many of the community projects implemented a software layer/library to interact 
+                    with HPC schedulers in order to insulate the core functionality from the 
+                    details of how things are specified for each scheduler. We also noticed that 
+                    the respective libraries mostly covered schedulers running on resources that 
+                    each team had access to. We figured that we could use our combined knowledge to 
+                    design a single API/library for this goal, a library that would be tested on all 
+                    resources that all ExaWorks teams have access to. We could then share this API 
+                    and library so that all high level HPC tools could benefit from it.
                 </v-card-text>
             </v-card>
 
@@ -305,7 +333,25 @@ $ python setup.py install
                 </v-card-title>
 
                 <v-card-text>
-                     A major factor contributing to the difficulties in maintaining HPC software tools is that access to HPC resources is generally limited to a small number of clusters local to each team. Additionally, HPC resources tend to vary widely depending on the institution that maintains them. Consequently, the chances that software that is tested on resources that a HPC tool development team has access to will encounter problems on other HPC resources is fairly high. As mentioned above, a first step in addressing this problem is by pooling the teams' respective resources for testing purposes. However, <span class="psi-j-font">PSI/J</span> takes it a step further by exposing an infrastructure that allows any user <span class="psi-j-font">PSI/J</span> user to easily contribute test results to the <span class="psi-j-font">PSI/J</span>, and do so automatically. This is a mutually beneficial relationship: the <span class="psi-j-font">PSI/J</span> community at large gains a certain level of assurance that <span class="psi-j-font">PSI/J</span> functions correctly on a wide range of resources, while users contributing tests have a mechanism to ensure that the <span class="psi-j-font">PSI/J</span> team is aware of potential problems specific to their resources and can address them, thus ensuring that <span class="psi-j-font">PSI/J</span> continues to function correctly on specific resources.
+                     A major factor contributing to the difficulties in maintaining HPC software 
+                     tools is that access to HPC resources is generally limited to a small number 
+                     of clusters local to each team. Additionally, HPC resources tend to vary 
+                     widely depending on the institution that maintains them. Consequently, the 
+                     chances that software that is tested on resources that a HPC tool development 
+                     team has access to will encounter problems on other HPC resources is fairly 
+                     high. As mentioned above, a first step in addressing this problem is by 
+                     pooling the teams' respective resources for testing purposes. However, 
+                     <span class="psi-j-font">PSI/J</span> takes it a step further by exposing an 
+                     infrastructure that allows any user <span class="psi-j-font">PSI/J</span> user 
+                     to easily contribute test results to the <span class="psi-j-font">PSI/J</span>, 
+                     and do so automatically. This is a mutually beneficial relationship: the 
+                     <span class="psi-j-font">PSI/J</span> community at large gains a certain level 
+                     of assurance that <span class="psi-j-font">PSI/J</span> functions correctly on 
+                     a wide range of resources, while users contributing tests have a mechanism to 
+                     ensure that the <span class="psi-j-font">PSI/J</span> team is aware of 
+                     potential problems specific to their resources and can address them, thus 
+                     ensuring that <span class="psi-j-font">PSI/J</span> continues to function 
+                     correctly on specific resources.
                 </v-card-text>
             </v-card>
 
@@ -318,15 +364,33 @@ $ python setup.py install
                     SAGA
                 </v-card-subtitle>
                 <v-card-text>
-                    SAGA — an <a href="http://dx.doi.org/10.1016/j.softx.2015.03.001">OGF standard</a> — abstracts away the specificity of diverse queue systems, offering a consistent representation of jobs and of the capabilities required to submit them to the resources. <a href="https://github.com/radical-cybertools/radical.saga">RADICAL-SAGA</a> implements a subset of the SAGA standard, exposing a homogeneous programming interface to the batch systems of HPC and HTC resources, enabling job submissions and file transfers across resources. RADICAL-SAGA is used by <a href="https://github.com/radical-cybertools/radical.pilot">RADICAL-Pilot</a> to acquire resources and staging data to and from HPC platforms. <span class="psi-j-font">PSI/J</span> will replace RADICAL-SAGA, offering streamlined capabilities and a modern implementation.
+                    SAGA &mdash; an <a href="http://dx.doi.org/10.1016/j.softx.2015.03.001">OGF 
+                    standard</a> &mdash; abstracts away the specificity of diverse queue systems, 
+                    offering a consistent representation of jobs and of the capabilities required 
+                    to submit them to the resources. 
+                    <a href="https://github.com/radical-cybertools/radical.saga">RADICAL-SAGA</a> 
+                    implements a subset of the SAGA standard, exposing a homogeneous programming 
+                    interface to the batch systems of HPC and HTC resources, enabling job 
+                    submissions and file transfers across resources. RADICAL-SAGA is used by 
+                    <a href="https://github.com/radical-cybertools/radical.pilot">RADICAL-Pilot</a> 
+                    to acquire resources and staging data to and from HPC platforms. 
+                    <span class="psi-j-font">PSI/J</span> will replace RADICAL-SAGA, offering 
+                    streamlined capabilities and a modern implementation.
                 </v-card-text>
 
                 <v-card-subtitle>
                     Java CoG Kit
                 </v-card-subtitle>
                 <v-card-text>
-                    The <span class="psi-j-font">PSI/J</span> API is in no small part inspired by the Java CoG Kit <a href="https://ieeexplore.ieee.org/document/1271452">Abstraction API</a>.
-                    The <a href="swift-lang.org">Swift</a> workflow system made extensive use of and improved on the Java Cog Kit Abstraction API. While the original Swift (Swift/K) is not maintained any more, its two spiritual successors, <a href="http://swift-lang.org/Swift-T/">Swift/T</a> and <a href="https://parsl-project.org/">Parsl</a> are.
+                    The <span class="psi-j-font">PSI/J</span> API is in no small part inspired by 
+                    the Java CoG Kit 
+                    <a href="https://ieeexplore.ieee.org/document/1271452">Abstraction API</a>.
+                    
+                    The <a href="swift-lang.org">Swift</a> workflow system made extensive use of 
+                    and improved on the Java Cog Kit Abstraction API. While the original Swift 
+                    (Swift/K) is not maintained any more, its two spiritual successors, 
+                    <a href="http://swift-lang.org/Swift-T/">Swift/T</a> and 
+                    <a href="https://parsl-project.org/">Parsl</a> are.
                 </v-card-text>
             </v-card>
         </v-col>
