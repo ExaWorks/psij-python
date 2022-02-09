@@ -22,9 +22,6 @@ class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
 class PBSProJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for PBS Pro."""
 
-    _NAME_ = 'pbspro'
-    _VERSION_ = StrictVersion('0.0.1')
-
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     _STATE_MAP = {
         'Q': JobState.QUEUED,
@@ -38,7 +35,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         if not config:
             config = PBSProExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'pbspro'
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbspro'
                                                   / 'pbspro.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
