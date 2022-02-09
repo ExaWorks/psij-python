@@ -73,19 +73,6 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
-
-    def cancel(self, job):
-        """TODO: I wonder if there is a race condition here: qdel makes a job
-        go to FAILED status, rather than a different cancelled state.
-        This method attempts to get a final CANCELED state in before a status
-        poll decides the job is FAILED. But I think that's probably a race
-        condition betweeen this code and a separately executing poll loop.
-        Maybe there is richer status information available in the job JSON.
-        """
-        super().cancel(job)
-        job_status = JobStatus(JobState.CANCELED, time=time.time())
-        self._update_job_status(job, job_status)
-
     # Status methods
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
@@ -112,9 +99,10 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
             state = self._get_state(native_state)
 
             if state == JobState.COMPLETED:
-                if 'Exit_status' in job_report and job_report['Exit_status'] != 0:
+                if 'Exit_status' in job_report and job_report['Exit_status'] == 265:
+                    state = JobState.CANCELED
+                elif 'Exit_status' in job_report and job_report['Exit_status'] != 0:
                     state = JobState.FAILED
-                # TODO perhaps there is some cancel related signal here too
 
             msg = job_report["comment"]
             r[native_id] = JobStatus(state, message=msg)
