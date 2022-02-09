@@ -1,4 +1,3 @@
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -8,17 +7,23 @@ from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 import json
-import time
 
 _QSTAT_COMMAND = 'qstat'
 
 _STATE_MAP = {
-        'Q': JobState.QUEUED,
-        'R': JobState.ACTIVE,
-        'F': JobState.COMPLETED, # this happens for failed jobs too, so need to rely on .ec handling for failure detection
-        'E': JobState.ACTIVE # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
-    }
+    'Q': JobState.QUEUED,
+    'R': JobState.ACTIVE,
 
+    'F': JobState.COMPLETED,  # This happens for failed jobs too, so
+                              # need to rely on richer JSON status codes
+                              # and .ec file handling for failure detection
+
+    'E': JobState.ACTIVE      # This state could ambiguously be either the
+                              # very end of being ACTIVE or the very
+                              # beginning of being COMPLETED. This mapping
+                              # treats it as ACTIVE because not all final
+                              # job information has appeared in JSON yet.
+}
 
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
@@ -64,7 +69,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         # which does not report an error if the job is already
         # completed.
         # TODO: whats the pbs equivalent of that?
-        # there is -x which also removes job history (so would need to 
+        # there is -x which also removes job history (so would need to
         # check that this doesn't cause implicit COMPLETED states when
         # maybe it should be cancelled states?)
         return ['qdel', native_id]
@@ -77,14 +82,13 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
-        ids = ','.join(native_ids)
 
         # -x will include finished jobs
         # -f -F json will give json status output that is more mechanically
         # parseable that the default human readable output. Most importantly,
         # native job IDs will be full length and so match up with the IDs
         # returned by qsub. (123.a vs 123.a.domain.foo)
-        return [_QSTAT_COMMAND,  '-f', '-F', 'json', '-x'] + list(native_ids)
+        return [_QSTAT_COMMAND, '-f', '-F', 'json', '-x'] + list(native_ids)
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
