@@ -12,6 +12,14 @@ import time
 
 _QSTAT_COMMAND = 'qstat'
 
+_STATE_MAP = {
+        'Q': JobState.QUEUED,
+        'R': JobState.ACTIVE,
+        'F': JobState.COMPLETED, # this happens for failed jobs too, so need to rely on .ec handling for failure detection
+        'E': JobState.ACTIVE # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
+    }
+
+
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the PBS executor.
@@ -25,13 +33,6 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     """A :proc:`~psij.JobExecutor` for PBS Pro."""
 
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
-    _STATE_MAP = {
-        'Q': JobState.QUEUED,
-        'R': JobState.ACTIVE,
-        'F': JobState.COMPLETED, # this happens for failed jobs too, so need to rely on .ec handling for failure detection
-        'E': JobState.ACTIVE # exiting after running - TODO: unclear to me if this is finished enough to regard as completed, or if it shoudl still be active? parsl treats it as completed.
-    }
-
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
         """Initializes a :proc:`~PBSProJobExecutor`."""
         if not config:
@@ -114,8 +115,8 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         return r
 
     def _get_state(self, state: str) -> JobState:
-        assert state in PBSProJobExecutor._STATE_MAP, f"PBS state {state} is not known to PSI/J"
-        return PBSProJobExecutor._STATE_MAP[state]
+        assert state in _STATE_MAP, f"PBS state {state} is not known to PSI/J"
+        return _STATE_MAP[state]
 
     # not used
     # def _get_message(self, reason: str) -> str:
