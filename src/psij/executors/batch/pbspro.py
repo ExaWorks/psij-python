@@ -37,7 +37,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         """Initializes a :proc:`~PBSProJobExecutor`."""
         if not config:
             config = PBSProExecutorConfig()
-        super().__init__(config=config)
+        super().__init__(url=url, config=config)
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbspro'
                                                   / 'pbspro.mustache')
 
