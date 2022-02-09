@@ -160,7 +160,7 @@ class Job(object):
         if not timeout:
             timeout = LARGE_TIMEOUT
         end = start + timeout
-        logger.warn(f"BENC: waiting for {self}")
+        logger.warning(f"BENC: waiting for {self}")
         while True:
             with self._status_cv:
                 status = self.status

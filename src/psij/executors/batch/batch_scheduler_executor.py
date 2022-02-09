@@ -472,11 +472,11 @@ class BatchSchedulerExecutor(JobExecutor):
                 # exit code and other things are not very meaningful for canceled jobs
                 return
             # read exit code and output files
-            logger.warn("BENC: about to look for .ec file")
+            logger.warning("BENC: about to look for .ec file")
             exit_code_str = self._read_aux_file(job, '.ec')
             if exit_code_str:
                 status.exit_code = int(exit_code_str)
-                logger.warn(f"BENC: successfully read EC: {status.exit_code}")
+                logger.warning(f"BENC: successfully read EC: {status.exit_code}")
                 if status.exit_code != 0:
                     logger.warning("BENC: setting job status to failed because non-zero EC")
                     status.state = JobState.FAILED
@@ -484,7 +484,7 @@ class BatchSchedulerExecutor(JobExecutor):
                     logger.warning("BENC: not setting job status because EC is 0")
 
             else:
-                logger.warn("BENC: did not (could not?) read EC - not making EC based status change")
+                logger.warning("BENC: did not (could not?) read EC - not making EC based status change")
 
             if status.state == JobState.FAILED:
 
