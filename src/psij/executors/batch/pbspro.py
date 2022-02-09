@@ -56,6 +56,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
 
+    # Cancel methods
 
     def get_cancel_command(self, native_id: str) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
@@ -74,10 +75,18 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
 
     def cancel(self, job):
+        """TODO: I wonder if there is a race condition here: qdel makes a job
+        go to FAILED status, rather than a different cancelled state.
+        This method attempts to get a final CANCELED state in before a status
+        poll decides the job is FAILED. But I think that's probably a race
+        condition betweeen this code and a separately executing poll loop.
+        Maybe there is richer status information available in the job JSON.
+        """
         super().cancel(job)
         job_status = JobStatus(JobState.CANCELED, time=time.time())
         self._update_job_status(job, job_status)
 
+    # Status methods
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
@@ -102,20 +111,11 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
             native_state = job_report["job_state"]
             state = self._get_state(native_state)
 
-            # elaborate on the native state if its a completion state, trying to
-            # find further evidence of success or failure.
-            # for example in my current failure mode on ALCF, I'm seeing
-            #             "Exit_status":-2,
-            # so whats the "success value" for that? I'll assume 0.
-
             if state == JobState.COMPLETED:
                 if 'Exit_status' in job_report and job_report['Exit_status'] != 0:
                     state = JobState.FAILED
+                # TODO perhaps there is some cancel related signal here too
 
-            # right now I haven't implemented msg - maybe there's a field in a richer output form.
-            # msg = self._get_message(cols[2]) if state == JobState.FAILED else None
-            #  - in JSON form there probably is something like "comment" ?
-            # is it ok to use msg the whole time?
             msg = job_report["comment"]
             r[native_id] = JobStatus(state, message=msg)
 
@@ -124,9 +124,3 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     def _get_state(self, state: str) -> JobState:
         assert state in _STATE_MAP, f"PBS state {state} is not known to PSI/J"
         return _STATE_MAP[state]
-
-    # not used
-    # def _get_message(self, reason: str) -> str:
-    #    assert reason in PBSJobExecutor._REASONS_MAP
-    #    return PBSJobExecutor._REASONS_MAP[reason]
-
