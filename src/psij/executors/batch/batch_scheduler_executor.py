@@ -476,7 +476,6 @@ class BatchSchedulerExecutor(JobExecutor):
                 status.exit_code = int(exit_code_str)
                 if status.exit_code != 0:
                     status.state = JobState.FAILED
-
             if status.state == JobState.FAILED:
 
                 if status.message is None:
