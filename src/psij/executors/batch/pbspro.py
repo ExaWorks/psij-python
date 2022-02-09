@@ -126,6 +126,3 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     def job_id_from_submit_output(self, out: str) -> str:
         """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
-
-
-__PSI_J_EXECUTORS__ = [PBSProJobExecutor]
