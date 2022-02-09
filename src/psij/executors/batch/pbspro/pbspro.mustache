@@ -5,6 +5,10 @@
 {{/job.name}}
 
 {{#job.spec.attributes}}
+    {{#duration}}
+#PBS -l walltime={{.}}
+# BENC: unclear what the syntax is here for times... its always a mess
+    {{/duration}}
     {{#custom_attributes.pbs}}
 #PBS --{{key}}="{{value}}"
     {{/custom_attributes.pbs}}
