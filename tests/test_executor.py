@@ -48,20 +48,16 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'work') as td:
-        logger.warning("BENC: entering temporary dir")
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
-        logger.warning("BENC: starting wait")
         status = job.wait(timeout=_get_timeout(execparams))
-        logger.warning("BENC: ending wait")
         assert_completed(status)
         f = outp.open("r")
         contents = f.read()
         f.close()
         assert contents == '_x_'
-        logger.warning("BENC: exited temporary dir")
 
 
 def test_attach(execparams: ExecutorTestParams) -> None:

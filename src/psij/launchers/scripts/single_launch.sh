@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo BENC Overrides in single launcher
 source $(dirname "$0")/launcher_lib.sh
 
 pre_launch
