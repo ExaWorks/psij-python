@@ -3,14 +3,10 @@ from pathlib import Path
 from typing import Optional
 
 from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttributes, JobStatus
-from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutorConfig
 from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 _QUICK_EXECUTORS = set(['local', 'batch-test', 'saga'])
 
@@ -31,11 +27,7 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
     assert job.spec is not None
     job.spec.launcher = ep.launcher
     job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
-    # BENC: how does this work with parameterisation by name in tests? keep_files is only a parameter for *some* executors...
-    # most immediately i care about this for tests, but on a deeper level, how does it affect things when I'm running inside some other code and talking about executors by name rather than by python construction? (i.e. pytest as a "sample application doing normal sample application things". the parsl story is clear here: construct using Python, don't try to build your own config language on top. but i don't think that's whats happening in psij (c.f. mini language for specifying both executor and launcher)
-    # TODO: write an issue about that
-    job_executor_config = BatchSchedulerExecutorConfig(keep_files=True)
-    return JobExecutor.get_instance(ep.executor, url=ep.url, config=job_executor_config)
+    return JobExecutor.get_instance(ep.executor, url=ep.url)
 
 
 def test_simple_job(execparams: ExecutorTestParams) -> None:
