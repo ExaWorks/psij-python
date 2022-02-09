@@ -4,8 +4,6 @@ source $(dirname "$0")/launcher_lib.sh
 
 pre_launch
 
-echo _PSI_J_STDOUT = $_PSI_J_STDOUT
-echo _PSI_J_STDERR = $_PSI_J_STDERR
 set +e
 "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR  <$_PSI_J_STDIN
 _PSI_J_EC=$?
