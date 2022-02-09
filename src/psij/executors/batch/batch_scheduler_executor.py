@@ -579,7 +579,6 @@ class _QueuePollThread(Thread):
                 try:
                     status = self._get_job_status(native_id, status_map)
                 except Exception:
-                    logger.warning(f"Got an exception getting job status {traceback.format_exc()}")
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())
