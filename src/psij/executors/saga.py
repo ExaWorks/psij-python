@@ -3,8 +3,6 @@ import logging
 from threading import RLock
 from typing import Optional, Dict, List
 
-from distutils.version import StrictVersion
-
 import radical.saga as rs
 import radical.saga.job.constants as ct
 import time
@@ -40,9 +38,6 @@ class SagaExecutor(JobExecutor):
     and related links.
     """
 
-    _NAME_ = 'saga'
-    _VERSION_ = StrictVersion('0.0.1')
-
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
@@ -55,7 +50,6 @@ class SagaExecutor(JobExecutor):
         config
             Not used.
         """
-
         self._jobs = dict()  # type: Dict[str, _JobMapping]
         self._js = None
 
@@ -120,7 +114,6 @@ class SagaExecutor(JobExecutor):
         job
             The :class:`~psij.Job` to be submitted.
         """
-
         assert(self._js)
         # derive SAGA job description and submit it
         job_mapping = _JobMapping(job)
@@ -175,7 +168,6 @@ class SagaExecutor(JobExecutor):
             A PSI-J job ID
 
         """
-
         saga_job = None
         with self._lock:
             # try to find job in known jobs
@@ -251,6 +243,3 @@ class SagaExecutor(JobExecutor):
 
         if saga_job.state not in rs.FINAL:
             saga_job.cancel()
-
-
-__PSI_J_EXECUTORS__ = [SagaExecutor]

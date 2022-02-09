@@ -105,7 +105,8 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
                      site_id: Optional[str] = None, fake_branch_name: Optional[str] = None) -> None:
     # it would be nice if this could be run through make; however, gnu make cannot preserve
     # spaces or quotes in arguments
-    args = [sys.executable, '-m', 'pytest', '-v', '--upload-results', '--run-id', run_id]
+    args = ['tests/branch_test_wrapper.sh', sys.executable, '-m', 'pytest', '-v',
+            '--upload-results', '--run-id', run_id]
     if site_id:
         args.append('--id')
         args.append(site_id)
@@ -117,13 +118,21 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
         args.append(fake_branch_name)
     for opt in ['maintainer_email', 'executors', 'server_url', 'key', 'max_age',
                 'custom_attributes']:
-        args.append('--' + opt.replace('_', '-'))
-        args.append(get_conf(conf, opt))
+        try:
+            val = get_conf(conf, opt)
+            args.append('--' + opt.replace('_', '-'))
+            args.append(val)
+        except KeyError:
+            # sometimes options get added; when they do, they could prevent
+            # old test cycles from working, if their configs don't contain
+            # the new options
+            pass
     cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
-    env['PYTHONPATH'] = str(cwd.absolute() / 'src') + \
-        (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
-    subprocess.run(args, cwd=cwd.absolute(), env=env)
+    env['PYTHONPATH'] = str(Path('.').resolve() / '.packages') \
+        + ':' + str(cwd.resolve() / 'src') \
+        + (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
+    subprocess.run(args, cwd=cwd.resolve(), env=env)
 
 
 def get_run_id() -> str:

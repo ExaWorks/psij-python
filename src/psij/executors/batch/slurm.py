@@ -1,4 +1,3 @@
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -18,10 +17,7 @@ class SlurmExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class SlurmJobExecutor(BatchSchedulerExecutor):
-    """A :proc:`~psij.JobExecutor` for the Slurm Workload Manager."""
-
-    _NAME_ = 'slurm'
-    _VERSION_ = StrictVersion('0.0.1')
+    """A :class:`~psij.JobExecutor` for the Slurm Workload Manager."""
 
     # see https://slurm.schedmd.com/squeue.html
     _STATE_MAP = {
@@ -102,32 +98,32 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str] = None, config: Optional[SlurmExecutorConfig] = None):
-        """Initializes a :proc:`~SlurmJobExecutor`."""
+        """Initializes a :class:`~SlurmJobExecutor`."""
         if not config:
             config = SlurmExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'slurm'
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'slurm'
                                                   / 'slurm.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
                                submit_file: TextIO) -> None:
-        """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
+        """See :meth:`~BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_submit_command`."""
         return ['sbatch', str(submit_file_path.absolute())]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_cancel_command`."""
         return ['scancel', '-Q', native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
+        """See :meth:`~BatchSchedulerExecutor.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_status_command`."""
         ids = ','.join(native_ids)
 
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
@@ -136,7 +132,7 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '-j', ids]
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
+        """See :meth:`~BatchSchedulerExecutor.parse_status_output`."""
         check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
         r = {}
         lines = iter(out.split('\n'))
@@ -163,8 +159,5 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         return SlurmJobExecutor._REASONS_MAP[reason]
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
-
-
-__PSI_J_EXECUTORS__ = [SlurmJobExecutor]

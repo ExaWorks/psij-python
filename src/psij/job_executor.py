@@ -1,13 +1,12 @@
-import inspect
 import logging
 from abc import ABC, abstractmethod
-from bisect import bisect_left
 from distutils.version import Version
-from distutils.versionpredicate import VersionPredicate
 from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psij
+from psij._descriptor import _Descriptor, _VersionEntry
+from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
@@ -17,36 +16,10 @@ from psij.launchers.launcher import Launcher
 logger = logging.getLogger(__name__)
 
 
-class _VersionEntry:
-    def __init__(self, version: Version, ecls: Type['JobExecutor']) -> None:
-        self.version = version
-        self.ecls = ecls
-
-    def __cmp__(self, other: '_VersionEntry') -> int:
-        if self.version == other.version:
-            return 0
-        elif self.version < other.version:
-            return -1
-        else:
-            return 1
-
-    def __eq__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
-        return self.version == other.version
-
-    def __lt__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
-        return self.version < other.version
-
-    def __gt__(self, other: object) -> bool:
-        assert isinstance(other, _VersionEntry)
-        return self.version > other.version
-
-
 class JobExecutor(ABC):
     """This is an abstract base class for all JobExecutor implementations."""
 
-    _executors = {}  # type: Dict[str, List[_VersionEntry]]
+    _executors = {}  # type: Dict[str, List[_VersionEntry['JobExecutor']]]
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None):
@@ -72,6 +45,11 @@ class JobExecutor(ABC):
     @property
     def name(self) -> str:
         """Returns the name of this executor."""
+        # The _NAME_ class attribute is set by the instantiation mechanism. This is only done to
+        # avoid name duplication/matching issues (name defined by the descriptor vs. name defined
+        # statically by a pre-set _NAME_attribute), but is not otherwise necessary to do so. In
+        # other words, one could very well return a static value here and ensure that the
+        # descriptor has the same name for this class.
         return cast(str, getattr(self.__class__, '_NAME_'))
 
     @property
@@ -195,61 +173,38 @@ class JobExecutor(ABC):
         :return: A JobExecutor.
         """
         # might want to cache these instances if url and config match
-        if name not in JobExecutor._executors:
-            raise ValueError('No such executor "{}"'.format(name))
-        versions = JobExecutor._executors[name]
-        ecls = None  # type: Optional[Type[JobExecutor]]
-        if version_constraint:
-            pred = VersionPredicate('x(' + version_constraint + ')')
-            for entry in reversed(versions):
-                if pred.satisfied_by(entry.version):
-                    ecls = entry.ecls
-        else:
-            ecls = versions[-1].ecls
+        selected = _get_plugin_class(name, version_constraint, 'executor', JobExecutor._executors)
 
-        if ecls is None:
-            raise ValueError('No executor "{}" found to satisfy "{}"'.format(name,
-                                                                             version_constraint))
-        else:
-            return ecls(url=url, config=config)
+        assert selected.ecls is not None
+        assert issubclass(selected.ecls, JobExecutor)
+        setattr(selected.ecls, '_NAME_', name)
+        setattr(selected.ecls, '_VERSION_', selected.version)
+        instance = selected.ecls(url=url, config=config)
+        return instance
 
     @staticmethod
-    def register_executor(ecls: Type['JobExecutor']) -> None:
+    def register_executor(desc: _Descriptor, root: str) -> None:
         """
-        Registers a `JobExecutor` class.
+        Registers a `JobExecutor` class through a :class:`~psij._descriptor._Descriptor`.
 
         The class can then be later instantiated using :func:`~psij.JobExecutor.get_instance`.
 
-        :param ecls: A subclass of `JobExecutor` to register. The class must have the `_NAME_` and
-            `_VERSION_` class attributes which define the name and version of the `JobExecutor` and
-            should match the values returned by the `name` and `version` properties of instances
-            of `ecls`.
+        Parameters
+        ----------
+        desc
+            A :class:`~psij._descriptor._Descriptor` with information about the executor to
+            be registered.
+        root
+            A filesystem path under which the implementation of the executor is to be loaded from.
+            Executors from other locations, even if under the correct package, will not be
+            registered by this method. If an executor implementation is only available under a
+            different root path, this method will throw an exception.
         """
-        # mypy uses the base class to infer that some arguments are missing; however, the actual
-        # executors are such that they allow nullary construction
-        JobExecutor._check_cls_attr(ecls, '_NAME_', 'name')
-        JobExecutor._check_cls_attr(ecls, '_VERSION_', 'version')
+        _register_plugin(desc, root, 'executor', JobExecutor._executors)
 
-        name = cast(str, getattr(ecls, '_NAME_'))
-        version = cast(Version, getattr(ecls, '_VERSION_'))
-
-        if name not in JobExecutor._executors:
-            JobExecutor._executors[name] = []
-        existing = JobExecutor._executors[name]
-        entry = _VersionEntry(version, ecls)
-        # check if an executor with this version already exists
-        index = bisect_left(existing, entry)
-        if index != len(existing) and existing[index].version == version:
-            p1 = inspect.getfile(existing[index].ecls)
-            p2 = inspect.getfile(ecls)
-            if p1 == p2:
-                # can happen if PYTHONPATH has, e.g., a/, a/b/, so ignore silently
-                return
-            raise ValueError(('An executor by the name "{}" with version {} is already '
-                              'registered. Existing path: {}; current path: {}').format(name,
-                                                                                        version,
-                                                                                        p1, p2))
-        existing.insert(index, entry)
+    @staticmethod
+    def _print_plugin_status() -> None:
+        _print_plugin_status(JobExecutor._executors, 'executor')
 
     def _update_job_status(self, job: Job, job_status: 'psij.JobStatus') -> None:
         job._set_status(job_status, self)
@@ -276,10 +231,12 @@ class JobExecutor(ABC):
         """
         return set(JobExecutor._executors.keys())
 
-    def _get_launcher(self, name: str) -> Launcher:
+    def _get_launcher(self, name: str, version_constraint: Optional[str] = None) -> Launcher:
         with self._launchers_lock:
             if name not in self._launchers:
-                self._launchers[name] = Launcher.get_instance(name, self.config)
+                self._launchers[name] = Launcher.get_instance(name,
+                                                              version_constraint=version_constraint,
+                                                              config=self.config)
             return self._launchers[name]
 
     def _set_job_status(self, job: Job, status: JobStatus) -> None:

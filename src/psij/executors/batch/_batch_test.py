@@ -1,5 +1,4 @@
 import sys
-from distutils.version import StrictVersion
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -9,9 +8,9 @@ from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
-QSUB_PATH = str(Path(__file__).parent / 'batch' / 'test' / 'qsub')
-QSTAT_PATH = str(Path(__file__).parent / 'batch' / 'test' / 'qstat')
-QDEL_PATH = str(Path(__file__).parent / 'batch' / 'test' / 'qdel')
+QSUB_PATH = str(Path(__file__).parent / 'test' / 'qsub')
+QSTAT_PATH = str(Path(__file__).parent / 'test' / 'qstat')
+QDEL_PATH = str(Path(__file__).parent / 'test' / 'qdel')
 
 
 class _TestExecutorConfig(BatchSchedulerExecutorConfig):
@@ -31,9 +30,6 @@ class _TestExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class _TestJobExecutor(BatchSchedulerExecutor):
-    _NAME_ = 'batch-test'
-    _VERSION_ = StrictVersion('0.0.1')
-
     _STATE_MAP = {
         'F': JobState.FAILED,
         'X': JobState.CANCELED,
@@ -46,7 +42,7 @@ class _TestJobExecutor(BatchSchedulerExecutor):
         if not config:
             config = _TestExecutorConfig()
         super().__init__(config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'batch' / 'test'
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'test'
                                                   / 'test.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
@@ -89,6 +85,3 @@ class _TestJobExecutor(BatchSchedulerExecutor):
     def _get_state(self, state: str) -> JobState:
         assert state in _TestJobExecutor._STATE_MAP
         return _TestJobExecutor._STATE_MAP[state]
-
-
-__PSI_J_EXECUTORS__ = [_TestJobExecutor]
