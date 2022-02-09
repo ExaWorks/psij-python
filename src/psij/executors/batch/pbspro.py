@@ -41,6 +41,8 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbspro'
                                                   / 'pbspro.mustache')
 
+    # Submit methods
+
     def generate_submit_script(self, job: Job, context: Dict[str, object],
                                submit_file: TextIO) -> None:
         """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
@@ -49,6 +51,11 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
         return ['qsub', str(submit_file_path.absolute())]
+
+    def job_id_from_submit_output(self, out: str) -> str:
+        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
+        return out.strip().split()[-1]
+
 
     def get_cancel_command(self, native_id: str) -> List[str]:
         """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
@@ -123,6 +130,3 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     #    assert reason in PBSJobExecutor._REASONS_MAP
     #    return PBSJobExecutor._REASONS_MAP[reason]
 
-    def job_id_from_submit_output(self, out: str) -> str:
-        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
-        return out.strip().split()[-1]
