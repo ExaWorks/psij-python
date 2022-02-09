@@ -25,7 +25,7 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -r requirements-connector-radical.txt
-    - name: Lint with flake8
+    - name: Typecheck and stylecheck
       run: |
         make typecheck
         make stylecheck
