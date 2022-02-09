@@ -4,6 +4,10 @@
 #PBS -N="{{.}}"
 {{/job.name}}
 
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+
 {{#job.spec.attributes}}
     {{#duration}}
 #PBS -l walltime={{.}}
