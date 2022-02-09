@@ -14,7 +14,9 @@ _QSTAT_COMMAND = 'qstat'
 
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
-    """A configuration class for the PBS executor."""
+    """A configuration class for the PBS executor.
+    This doesn't have any fields in addition to BatchSchedulerExecutorCOnfig,
+    but it is expected that some will appear during further development."""
 
     pass
 
