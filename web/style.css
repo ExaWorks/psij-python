@@ -1,6 +1,19 @@
-body #psij-app .v-application, .v-application .text-h5, .v-application {
-    font-family: "Gill Sans", sans-serif !important;
-    background-color: #ffffff;
+:root {
+    --main-font: "Gill Sans";
+}
+
+body #psij-app .v-application, .v-application .text-h5, .v-application, #psij-app .v-window {
+    font-family: var(--main-font), sans-serif !important;
+    background-color: var(--color-global-bg);
+}
+
+body .v-application a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+.v-window-item {
+    background-color: var(--color-global-bg) !important;
 }
 
 .v-app-bar {
@@ -8,11 +21,15 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
 }
 
 .v-app-bar .v-tab {
-    color: var(--color-fg-inv) !important;
+    color: var(--color-fg-inv-1) !important;
 }
 
 .v-tabs-slider {
-    background-color: var(--color-sel-inv-1) !important;
+    background-color: var(--color-fg-lines) !important;
+}
+
+.v-app-bar .gh-link {
+    margin-top: 4pt;
 }
 
 
@@ -20,11 +37,16 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
     font-family: "Saira", sans-serif;
 }
 
-.psi-j-font::before {
+.text-h5 .psi-j-font::before {
     content: "\00a0";
 }
 
-.psi-j-font::after {
+.psi-j-font.flushleft::before {
+    content: "";
+}
+
+
+.text-h5 .psi-j-font::after {
     content: "\00a0";
 }
 
@@ -35,7 +57,7 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
 
 .v-tabs .v-tab {
     font-size: 13pt;
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif !important;
     text-transform: none;
 }
 
@@ -47,7 +69,7 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
     padding: 16pt;
     width: 100%;
     background-color: var(--color-bg-inv-2);
-    color: var(--color-fg-inf);
+    color: var(--color-fg-inv-2);
 }
 
 .banner-title {
@@ -67,13 +89,13 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
 
 #secondary-banner, #secondary-banner * {
     background-color: var(--color-bg-norm-1);
-    color: var(--color-fg-norm-2);
+    color: var(--color-fg-norm-1);
 }
 
 #tertiary-banner {
     padding: 16pt;
     width: 100%;
-    color: var(--color-fg-norm-1);
+    color: var(--color-fg-norm-2);
 }
 
 #tertiary-banner, #tertiary-banner * {
@@ -91,6 +113,7 @@ body #psij-app .v-application, .v-application .text-h5, .v-application {
 #main-content {
     margin: 24pt;
     margin-bottom: 120pt;
+    background-color: var(--color-global-bg);
 }
 
 .v-footer {
@@ -119,6 +142,10 @@ ul.no-bullet {
 }
 
 .v-card__subtitle {
+    font-size: 15pt;
+}
+
+.v-card__text {
     font-size: 13pt;
 }
 
@@ -147,4 +174,19 @@ pre {
     margin: 0pt;
     padding: 0pt;
     min-height: 0pt;
+}
+
+#docs-frame {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: none;
+}
+
+.bottom-spacer {
+    display: block;
+    height: 196pt;
+    clear: both;
+    background-color: var(--color-global-bg);
 }
