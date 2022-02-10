@@ -27,7 +27,7 @@ class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class CobaltJobExecutor(BatchSchedulerExecutor):
-    """A `~psij.JobExecutor` for the Cobalt Workload Manager."""
+    """A :proc:`~psij.JobExecutor` for the Cobalt Workload Manager."""
 
     # see https://Cobalt.schedmd.com/squeue.html
     _STATE_MAP = {
@@ -41,7 +41,7 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
     def __init__(
         self, url: Optional[str] = None, config: Optional[CobaltExecutorConfig] = None
     ):
-        """Initializes a `~CobaltJobExecutor`."""
+        """Initializes a :proc:`~CobaltJobExecutor`."""
         if not config:
             config = CobaltExecutorConfig()
         super().__init__(config=config)
@@ -52,21 +52,21 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
     def generate_submit_script(
         self, job: Job, context: Dict[str, object], submit_file: TextIO
     ) -> None:
-        """See `~BatchSchedulerExecutor.generate_submit_script`."""
+        """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See `~BatchSchedulerExecutor.get_submit_command`."""
+        """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
         str_path = str(submit_file_path.absolute())
         os.chmod(str_path, os.stat(str_path).st_mode | stat.S_IEXEC)
         return ["qsub", str_path]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See `~BatchSchedulerExecutor.get_cancel_command`."""
+        """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
         return ["qdel", native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See `~BatchSchedulerExecutor.process_cancel_command_output`.
+        """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`.
 
         This should be unnecessary because `qdel` only seems to fail on
         non-integer job IDs.
@@ -74,11 +74,11 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         raise SubmitException("Failed job cancel job: %s" % out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See `~BatchSchedulerExecutor.get_status_command`."""
+        """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
         return [_QSTAT_COMMAND, "-l", "--header=Jobid:State", *native_ids]
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See `~BatchSchedulerExecutor.parse_status_output`."""
+        """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
         # if none of the job ID passed to Cobalt are recognized, qstat returns 1,
         # but we shouldn't treat that as an error
         if exit_code != 0 and out == UNKNOWN_ERROR:
@@ -103,7 +103,7 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         return job_statuses
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See `~BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         match = _QSUB_REGEX.search(out)
         if match is None:
             raise SubmitException(out)
