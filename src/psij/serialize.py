@@ -18,6 +18,17 @@ class Export(object):
         else:
             return self._name
 
+    def envelope(self, type=None) -> dict :
+        
+        envelope={
+            'version' : 0.1 ,
+            'type' : type ,
+            'data' : None
+        }
+        
+        return envelope
+        
+        
 
     def to_dict(self,obj) -> dict :
         
@@ -29,6 +40,26 @@ class Export(object):
             sys.exit("Can't create dict, type " + type(obj).__name__ + " not supported" )
 
         return new_dict
+    
+    def export(self, obj=None, dest=None) -> bool :
+        
+        if not dest :
+            sys.exit("Cannot export, missing destinstion file")
+        if not obj :
+            sys.exit("Cannot export, missing object")
+        
+        source_type = type(obj).__name__
+        d = self.to_dict(obj)
+        
+        envelope = self.envelope(type=source_type)
+        envelope['data'] = d
+        
+        import json
+        with open(dest, 'w', encoding='utf-8') as f:
+            json.dump(envelope, f, ensure_ascii=False, indent=4)
+        
+        return True
+        
     
 
 class Import() :
