@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, List, Dict, Type, Any
+from typing import Optional, List, Dict, Type, Object
 from psij.job_spec import JobSpec
 from psij.job_attributes import JobAttributes
 import sys
@@ -8,7 +8,7 @@ import json
 class Export(object):
     """A class for exporting psij data types."""
 
-    def __init__(self) : 
+    def __init__(self) -> Any : 
         self.version = ''
         self.name = ''
 
@@ -25,7 +25,7 @@ class Export(object):
         
         
 
-    def to_dict(self,obj) -> dict :
+    def to_dict(self, obj: object ) -> dict :
         
         new_dict = {}
         
@@ -60,7 +60,7 @@ class Export(object):
 class Import() :
     
     
-    def _dict2spec(self,d) -> Type[JobSpec] :
+    def _dict2spec(self,d) -> object :
         
         # Initial spec object
         spec = JobSpec()
@@ -92,14 +92,14 @@ class Import() :
         print(spec)
         return spec
     
-    def from_dict(self,hash, target_type=None) -> Any :
+    def from_dict(self ,hash: dict , target_type=None) -> object :
         
         if  target_type == "JobSpec" :
             return(self._dict2spec(hash))
         else:
             sys.exit("Can't create dict,  type " + target_type  + " not supported" )
 
-    def load(self, src=None) -> Any :
+    def load(self, src=None) -> object :
         
         if not src :
             sys.exit("Cannot import, missing source file")
