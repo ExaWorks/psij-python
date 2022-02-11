@@ -3,6 +3,7 @@ from typing import Optional, List, Dict
 from psij.job_spec import JobSpec
 from psij.job_attributes import JobAttributes
 import sys
+import json
 
 class Export(object):
     """A class for exporting psij data types."""
@@ -104,6 +105,18 @@ class Import() :
         else:
             sys.exit("Can't create dict,  type " + target_type  + " not supported" )
 
-     
+    def load(self, src=None) :
+        
+        if not src :
+            sys.exit("Cannot import, missing source file")
+        
+        
+        envelope=None   
+        with open(src, 'r', encoding='utf-8') as f:
+            envelope = json.load(f)
+        
+        obj = self.from_dict(envelope['data'] , target_type=envelope['type'])
+        
+        return obj 
         
         
