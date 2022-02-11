@@ -8,16 +8,10 @@ import json
 class Export(object):
     """A class for exporting psij data types."""
 
-    def __init__(self) : self.version = ''
+    def __init__(self) : 
+        self.version = ''
+        self.name = ''
 
-
-    @property
-    def name(self) -> Optional[str]:
-        """Returns the name of the job."""
-        if self._name is None:
-            return self.executable
-        else:
-            return self._name
 
     def envelope(self, type=None) -> dict :
         
