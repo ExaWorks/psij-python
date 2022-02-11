@@ -5,9 +5,9 @@ import sys
 def path_object_to_full_path( obj : Optional[object] ) -> str :
     p = None
     if obj :
-        if isinstance(obj, str): :
+        if isinstance(obj, str):
             p = obj
-        elif isinstance(obj, PosixPath): :
+        elif isinstance(obj, PosixPath):
             p = obj.as_posix()
         else :
             print(type(obj))
