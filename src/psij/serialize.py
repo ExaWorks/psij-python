@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict , Any
 from psij.job_spec import JobSpec
 from psij.job_attributes import JobAttributes
 import sys
@@ -13,7 +13,9 @@ class Export(object):
         self.name = ''
 
 
-    def envelope(self, type : Optional[str] = None) -> dict :
+    def envelope(self, type : Optional[str] = None) -> Dict[str,Any] :
+        
+        envelope : Dict[str,Any]
         
         envelope={
             'version' : 0.1 ,
@@ -25,7 +27,7 @@ class Export(object):
         
         
 
-    def to_dict(self, obj: object ) -> dict :
+    def to_dict(self, obj: object ) -> Dict[str,Any] :
         
         new_dict = {}
         
@@ -59,7 +61,7 @@ class Export(object):
 class Import() :
     
     
-    def _dict2spec(self,d) -> object :
+    def _dict2spec(self, d : Dict[str,Any]) -> object :
         
         # Initial spec object
         spec = JobSpec()
@@ -85,20 +87,20 @@ class Import() :
             ja.duration = attributes['duration']
             ja.queue_name = attributes['queue_name']
             ja.reservation_id = attributes['reservation_id']
-            ja.custom_attributes = attributes['custom_attributes']
+            ja._custom_attributes = attributes['custom_attributes']
             
             spec.attributes = ja
         print(spec)
         return spec
     
-    def from_dict(self ,hash: dict , target_type=None) -> object :
+    def from_dict(self , hash: Dict[str,Any] , target_type : Optional[str] =None) -> object :
         
         if  target_type == "JobSpec" :
             return(self._dict2spec(hash))
         else:
-            sys.exit("Can't create dict,  type " + target_type  + " not supported" )
+            sys.exit("Can't create dict,  type " + str(target_type)  + " not supported" )
 
-    def load(self, src=None) -> object :
+    def load(self, src : Optional[str] = None) -> object :
         
         if not src :
             sys.exit("Cannot import, missing source file")
