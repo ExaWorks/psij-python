@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, List, Dict, Type, Object
+from typing import Optional, List, Dict
 from psij.job_spec import JobSpec
 from psij.job_attributes import JobAttributes
 import sys
@@ -8,12 +8,12 @@ import json
 class Export(object):
     """A class for exporting psij data types."""
 
-    def __init__(self) -> Any : 
+    def __init__(self) -> None : 
         self.version = ''
         self.name = ''
 
 
-    def envelope(self, type=None) -> dict :
+    def envelope(self, type : Optional[str] = None) -> dict :
         
         envelope={
             'version' : 0.1 ,
@@ -29,14 +29,14 @@ class Export(object):
         
         new_dict = {}
         
-        if  type(obj).__name__ in ["JobSpec"] :
+        if  isinstance(obj, JobSpec) :
             new_dict = obj.to_dict
         else:
             sys.exit("Can't create dict, type " + type(obj).__name__ + " not supported" )
 
         return new_dict
     
-    def export(self, obj=None, dest=None) -> bool :
+    def export(self, obj : Optional[object] = None, dest : Optional[str] = None) -> bool :
         
         if not dest :
             sys.exit("Cannot export, missing destinstion file")
@@ -49,7 +49,6 @@ class Export(object):
         envelope = self.envelope(type=source_type)
         envelope['data'] = d
         
-        import json
         with open(dest, 'w', encoding='utf-8') as f:
             json.dump(envelope, f, ensure_ascii=False, indent=4)
         
