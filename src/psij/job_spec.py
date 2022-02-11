@@ -81,14 +81,14 @@ class JobSpec(object):
         else:
             return self._name
 
-
-    def _init_job_spec_dict(self) -> dict :
+    @property
+    def _init_job_spec_dict(self) -> Dict[str,Any] :
         """Returns jobspec structure as dict"""
          
         # convention : 
         #  - if expected value is a string then the dict is initialized with an empty string
         # - if the expected value is an object than the key is initialzied with None
-        job_spec = {}
+        job_spec : Dict[str,Any] 
         job_spec = { 
                     'name': '', 
                     'executable' : '',
@@ -106,9 +106,9 @@ class JobSpec(object):
         return job_spec
 
     @property
-    def to_dict(self) -> dict :
+    def to_dict(self) -> Dict[str,Any]  :
         
-        d = self._init_job_spec_dict()
+        d = self._init_job_spec_dict
     
         # Map properties to keys
         d['name'] = self.name
@@ -137,7 +137,7 @@ class JobSpec(object):
                     d['attributes'][k] = str(v)
                 elif k == "_custom_attributes" :
                     if v :
-                        for ck,cv in self.attributes._custom_attributes.items() :
+                        for ck,cv in v.items() :
                             if not type(cv).__name__ in ['str' , 'list' , 'dict' , 'NoneType' , 'bool' , 'int'] :
                                 sys.stderr.write("Unsupported type " +  type(cv).__name__  + " in JobAttributes.custom_attributes for key " + ck + ", skipping\n")
                             else :
