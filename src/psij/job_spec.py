@@ -1,5 +1,6 @@
+import sys
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Type, Any
 
 from psij.job_attributes import JobAttributes
 from psij.resource_spec import ResourceSpec
