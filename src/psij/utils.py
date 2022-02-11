@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any, Type
 import sys
 
-def path_object_to_full_path( obj ) -> str :
+def path_object_to_full_path( obj : Optional[object] ) -> str :
     p = None
     if obj :
         if type(obj).__name__ == "str" :
