@@ -88,7 +88,7 @@ class JobSpec(object):
         # convention : 
         #  - if expected value is a string then the dict is initialized with an empty string
         # - if the expected value is an object than the key is initialzied with None
-        
+        job_spec = {}
         job_spec = { 
                     'name': '', 
                     'executable' : '',
@@ -137,7 +137,7 @@ class JobSpec(object):
                     d['attributes'][k] = str(v)
                 elif k == "_custom_attributes" :
                     if v :
-                        for ck,cv in obj.attributes._custom_attributes.items() :
+                        for ck,cv in self.attributes._custom_attributes.items() :
                             if not type(cv).__name__ in ['str' , 'list' , 'dict' , 'NoneType' , 'bool' , 'int'] :
                                 sys.stderr.write("Unsupported type " +  type(cv).__name__  + " in JobAttributes.custom_attributes for key " + ck + ", skipping\n")
                             else :
