@@ -4,6 +4,8 @@ from typing import Optional, List, Dict
 from psij.job_attributes import JobAttributes
 from psij.resource_spec import ResourceSpec
 
+from psij.utils import path_object_to_full_path as o2p  
+
 
 class JobSpec(object):
     """A class to hold information about the characteristics of a :class:`~psij.Job`."""
@@ -77,3 +79,71 @@ class JobSpec(object):
             return self.executable
         else:
             return self._name
+
+
+    def _init_job_spec_dict(self) -> dict :
+        """Returns jobspec structure as dict"""
+         
+        # convention : 
+        #  - if expected value is a string then the dict is initialized with an empty string
+        # - if the expected value is an object than the key is initialzied with None
+        
+        job_spec = { 
+                    'name': '', 
+                    'executable' : '',
+                    'arguments': [] , 
+                    'directory' : None,
+                    'inherit_environment': True,
+                    'environment': {} , 
+                    'stdin_path': None,
+                    'stdout_path': None,
+                    'stderr_path':  None,
+                    'resources': None,
+                    'attributes': None  
+        }
+        
+        return job_spec
+
+    @property
+    def to_dict(self) -> dict :
+        
+        d = self._init_job_spec_dict()
+    
+        # Map properties to keys
+        d['name'] = self.name
+        d['executable'] = self.executable
+        d['arguments'] = self.arguments
+        d['directory'] = o2p(self.directory)
+        d['inherit_environment'] = self.inherit_environment
+        d['environment'] = self.environment
+        d['stdin_path'] = o2p(self.stdin_path)
+        d['stdout_path'] = o2p(self.stdout_path)
+        d['stderr_path'] = o2p(self.stderr_path)
+        d['resources'] = self.resources
+    
+        # Handle attributes property
+        if self.attributes :
+            d['attributes'] = {
+                                'duration' : '' ,
+                                'queue_name' : '' ,
+                                'project_name' : '',
+                                'reservation_id' : '',
+                                'custom_attributes' : {} ,
+            }
+            for k,v in self.attributes.__dict__.items() : 
+                print(k,v)
+                if k in [  'duration' , 'queue_name' , 'project_name' , 'reservation_id'] :
+                    d['attributes'][k] = str(v)
+                elif k == "_custom_attributes" :
+                    if v :
+                        for ck,cv in obj.attributes._custom_attributes.items() :
+                            if not type(cv).__name__ in ['str' , 'list' , 'dict' , 'NoneType' , 'bool' , 'int'] :
+                                sys.stderr.write("Unsupported type " +  type(cv).__name__  + " in JobAttributes.custom_attributes for key " + ck + ", skipping\n")
+                            else :
+                                d['attributes']['custom_attributes'][ck] = cv 
+                else :
+                    sys.stderr.write("Unsupported attribute " + k + ", skipping attribute\n")    
+        else:
+            d['attributes'] = None
+            
+        return d 
