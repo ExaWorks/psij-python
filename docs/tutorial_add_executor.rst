@@ -380,7 +380,7 @@ What's missing?
 
 The biggest thing that was omitted was in the mustache template. A :py:class:`Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples. (maybe a job spec URL reference here too?)
 
-The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns job in a different state, this will break. So make sure you deal with all the states of your local resource manager, not just a few that seem obvious.
+The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your local resource manager, not just a few that seem obvious.
 
 The test suite doesn't seem to contain a test for jobs failing in a particular way with broken PBS: they should go into FAILED state, not COMPLETED state, with some similar check to the CANCELED state check. Probably the test suite should get a test for that - I've hit this problem elsewhere, when jobs don't run enough to make a ``.ec`` file (because PBS was locally broken). I'm not sure how to test that as it's a bit pbs specific?
 
