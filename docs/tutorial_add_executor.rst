@@ -52,7 +52,7 @@ First, we'll build a skeleton that won't work, and see that it doesn't work in t
 
 Assumptions:
 
-* you have the psij python package installed already and are able to run whatever basic verification we think is necessary
+* you have the psij-python package installed already and are able to run whatever basic verification you think is necessary
 
 * you are able to submit to PBS Pro on a local system (don't worry if you don't have this and are just following along to understand what's happening - just pretend...)
 
