@@ -29,7 +29,7 @@ For many systems, the :class:`psij.executors.batch.BatchSchedulerExecutor` subcl
 
 The batch scheduler executor is based around a model where interactions with a local resource manager happen via command line invocations. For example, with SLURM, commands are sbatch to submit a request for an allocation and squeue to discover allocation status.
 
-To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how form the comand lines necessary to submit a request for an allocation and to get allocation status.
+To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status.
 
 Here's an example of doing that to add support for the PBS Pro local resource manager to PSI/J.
 
