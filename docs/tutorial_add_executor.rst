@@ -322,7 +322,7 @@ This implementation uses a helper, :py:meth:`check_status_exit_code`, which will
 
 With these status methods in place, the ``pytest`` command from before should execute to completion.
 
-We still haven't implemented the cancel methods, though. That will be reveal by running a broader range of tests::
+We still haven't implemented the cancel methods, though. That will be revealed by running a broader range of tests::
 
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest 'tests' --executors=pbspro
 
