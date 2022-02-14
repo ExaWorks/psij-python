@@ -144,7 +144,7 @@ which is something to do with configurations...
 
 turns out this __init__ gets a bit upset with an optional config and maybe that will get fixed in the codebase.
 
-But for now, if no config is supplied, we need to generate a config. For now, we're not going ot have a
+But for now, if no config is supplied, we need to generate a config. For now, we're not going to have a
 PBS-specific configuration, so we'll just use the existing BatchJobExecutorConfig class.
 
 Define a new __init__ method that will define a default configuration::
