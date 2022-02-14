@@ -161,7 +161,7 @@ Define a new __init__ method that will define a default configuration::
 
 If we need to add in any PBS specific configuration options - this is where we're going to do it.
 
-URL is a "very import, you can ignore" parameter. Ignore it.
+URL is a "very important, you can ignore" parameter. Ignore it.
 
 Running pytest again, we get as far as seeing PSI/J is trying to do submit-related stuff::
 
