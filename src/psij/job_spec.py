@@ -137,8 +137,17 @@ class JobSpec(object):
                 elif k == "_custom_attributes":
                     if v:
                         for ck, cv in v.items():
-                            if not type(cv).__name__ in ['str', 'list', 'dict', 'NoneType', 'bool', 'int']:
-                                sys.stderr.write("Unsupported type " + type(cv).__name__ + " in JobAttributes.custom_attributes for key " + ck + ", skipping\n")
+                            if not type(cv).__name__ in ['str',
+                                                         'list',
+                                                         'dict',
+                                                         'NoneType',
+                                                         'bool',
+                                                         'int']:
+                                sys.stderr.write("Unsupported type "
+                                                 + type(cv).__name__
+                                                 + " in JobAttributes.custom_attributes for key "
+                                                 + ck
+                                                 + ", skipping\n")
                             else:
                                 d['attributes']['custom_attributes'][ck] = cv
                 else:
