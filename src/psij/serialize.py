@@ -71,9 +71,12 @@ class Import():
         spec.directory = Path(d['directory']) if ('directory' in d) and d['directory'] else None
         spec.inherit_environment = d['inherit_environment']
         spec.environment = d['environment']
-        spec.stdin_path = Path(d['stdin_path']) if ('stdin_path' in d) and d['stdin_path'] else None
-        spec.stdout_path = Path(d['stdout_path']) if ('stdout_path' in d) and d['stdout_path'] else None
-        spec.stderr_path = Path(d['stderr_path']) if ('stderr_path' in d) and d['stderr_path'] else None
+        spec.stdin_path = Path(d['stdin_path']) if (
+            'stdin_path' in d) and d['stdin_path'] else None
+        spec.stdout_path = Path(d['stdout_path']) if (
+            'stdout_path' in d) and d['stdout_path'] else None
+        spec.stderr_path = Path(d['stderr_path']) if (
+            'stderr_path' in d) and d['stderr_path'] else None
         spec.resources = d['resources']
 
         # Handle attributes property
