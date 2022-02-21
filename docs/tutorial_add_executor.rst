@@ -255,32 +255,32 @@ Next, the test will fail because ``get_submit_command`` is missing. This method 
     2152.edtb-01.mcp.alcf.anl.gov
 
 
-Here's an implementation of ``get_submit_command`` that will make a command like this::
+Here's an implementation of ``get_submit_command`` that will make such a command::
 
     from typing import List
-
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
         return ['qsub', str(submit_file_path.absolute())]
 
 The implementation so far is enough to get jobs to run in PBS, but not enough for PSI/J to make sense of what it has submitted.
 
-The final step in submission is implementing ``job_id_from_submit_output``. This interprets the output of the submit command to find the local resource manager's job ID for the newly created job.
+The final step in submission is implementing ``job_id_from_submit_output``. This interprets the output of the submit command to find the batch schedulers's job ID for the newly created job.
 
-In the PBS Pro case, as shown in the example above, that is pretty straightforward: the entire output is the job ID::
+In the PBS Pro case, as shown in the example above, that is pretty straightforward. The entire output is the job ID::
 
     def job_id_from_submit_output(self, out: str) -> str:
         return out.strip()
 
 
-That's enough to get jobs submitted using PSI/J, but not enough to run the test - instead it will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising NotImplementedError.
+That's enough to get jobs submitted using PSI/J, but not enough to run the test suite. Instead, the test suite will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising NotImplementedError.
+
 
 Implementing status
 ===================
 
-PSI/J needs to ask the local resource manager for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
+PSI/J needs to ask the batch scheduler for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
-* :py:meth:`get_status_command` - like ``get_submit_command``, this will return a local resource manager specific commandline, this time to output job status.
+* :py:meth:`get_status_command` - like ``get_submit_command``, this should return a batch scheduler specific commandline, this time to output job status.
 
 * :py:meth:`parse_status_output` - this will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
 
@@ -402,11 +402,9 @@ This isn't necessarily the right thing to do: some PBS installs will use 128+9 =
 What's missing?
 ===============
 
-The biggest thing that was omitted was in the mustache template. A :py:class:`Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples. (maybe a job spec URL reference here too?)
+The biggest thing that was omitted was in the mustache template. A :py:class:`Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples.
 
-The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your local resource manager, not just a few that seem obvious.
-
-The test suite doesn't seem to contain a test for jobs failing in a particular way with broken PBS: they should go into FAILED state, not COMPLETED state, with some similar check to the CANCELED state check. Probably the test suite should get a test for that - I've hit this problem elsewhere, when jobs don't run enough to make a ``.ec`` file (because PBS was locally broken). I'm not sure how to test that as it's a bit pbs specific?
+The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your batch scheduler, not just a few that seem obvious.
 
 How to distribute your executor
 ===============================
@@ -415,5 +413,5 @@ If you want to share your executor with others, here are two ways:
 
 i) you can make a python package and distribute that as an add-on without needing to interact with the psi/j project
 
-ii) you can make a pull request against the psi/j repo - link to contributing text file?
+ii) you can make a pull request against the psi/j repo
 
