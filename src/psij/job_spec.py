@@ -21,7 +21,7 @@ class JobSpec(object):
         Constructs a `JobSpec` object while allowing its properties to be initialized.
 
        :param name: A name for the job. The name plays no functional role except that
-           :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
+            :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
             job as presented by the underlying implementation.
        :param executable: An executable, such as "/bin/date".
        :param arguments: The argument list to be passed to the executable. Unlike with execve(),
