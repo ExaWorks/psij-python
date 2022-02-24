@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source psij-ci-load
-
 if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
     PIP="pip"
 else
