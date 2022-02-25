@@ -1,6 +1,6 @@
 import psij
-from psij.serialize import Export
-from psij.serialize import Import
+from psij import Export
+from psij import Import
 
 
 jex = psij.JobExecutor.get_instance('slurm')
