@@ -1,6 +1,10 @@
 # Scripts
 
-- psij-console
+This directory contains helper scripts and the console for PSIJ.
+
+## psij-console
+
+The console takes an exported JobSpec document and either validates or executes it.
 
 
 ```
