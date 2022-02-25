@@ -15,18 +15,26 @@ _QSTAT_COMMAND = 'qstat'
 # See https://www.altair.com/pdfs/pbsworks/PBSReferenceGuide2021.1.pdf
 # page 361, section 8.1 "Job States"
 _STATE_MAP = {
-    'Q': JobState.QUEUED,
-    'R': JobState.ACTIVE,
-
-    'F': JobState.COMPLETED,  # This happens for failed jobs too, so
-                              # need to rely on richer JSON status codes
-                              # and .ec file handling for failure detection
-
-    'E': JobState.ACTIVE      # This state could ambiguously be either the
+    'B': JobState.ACTIVE,     # Begun - this is only used for job arrays
+    'E': JobState.ACTIVE,     # Ending - This state could ambiguously be either the
                               # very end of being ACTIVE or the very
                               # beginning of being COMPLETED. This mapping
                               # treats it as ACTIVE because not all final
                               # job information has appeared in JSON yet.
+    'F': JobState.COMPLETED,  # Finished - This happens for failed jobs too, so
+                              # need to rely on richer JSON status codes
+                              # and .ec file handling for failure detection
+
+    'H': JobState.QUEUED,     # Held
+    'M': JobState.QUEUED,     # Moved
+    'Q': JobState.QUEUED,     # Queued
+    'R': JobState.ACTIVE,     # Running
+    'S': JobState.QUEUED,     # Suspended
+    'T': JobState.QUEUED,     # Transitioning to/from a server
+    'U': JobState.QUEUED,     # User-suspend - job is suspended due to workstation
+                              # becoming busy
+    'W': JobState.QUEUED,     # Waiting for scheduled start time/stagein
+    'X': JobState.COMPLETED   # subjob is eXpired
 }
 
 
@@ -41,7 +49,6 @@ class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
 class PBSProJobExecutor(BatchSchedulerExecutor):
     """A :class:`~psij.JobExecutor` for PBS Pro."""
 
-    # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
         """Initializes a :class:`~PBSProJobExecutor`."""
         if not config:
