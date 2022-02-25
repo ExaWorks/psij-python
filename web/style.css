@@ -1,0 +1,192 @@
+:root {
+    --main-font: "Gill Sans";
+}
+
+body #psij-app .v-application, .v-application .text-h5, .v-application, #psij-app .v-window {
+    font-family: var(--main-font), sans-serif !important;
+    background-color: var(--color-global-bg);
+}
+
+body .v-application a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+.v-window-item {
+    background-color: var(--color-global-bg) !important;
+}
+
+.v-app-bar {
+    background-color: var(--color-bg-inv-1) !important;
+}
+
+.v-app-bar .v-tab {
+    color: var(--color-fg-inv-1) !important;
+}
+
+.v-tabs-slider {
+    background-color: var(--color-fg-lines) !important;
+}
+
+.v-app-bar .gh-link {
+    margin-top: 4pt;
+}
+
+
+.psi-j-font {
+    font-family: "Saira", sans-serif;
+}
+
+.text-h5 .psi-j-font::before {
+    content: "\00a0";
+}
+
+.psi-j-font.flushleft::before {
+    content: "";
+}
+
+
+.text-h5 .psi-j-font::after {
+    content: "\00a0";
+}
+
+
+.logo {
+    font-size: 18pt;
+}
+
+.v-tabs .v-tab {
+    font-size: 13pt;
+    font-family: var(--main-font), sans-serif !important;
+    text-transform: none;
+}
+
+#top-spacer {
+    height: 36pt;
+}
+
+#main-banner {
+    padding: 16pt;
+    width: 100%;
+    background-color: var(--color-bg-inv-2);
+    color: var(--color-fg-inv-2);
+}
+
+.banner-title {
+    width: 280pt;
+    font-size: 24pt;
+}
+
+#big-puzzle {
+    width: 240pt;
+}
+
+#secondary-banner {
+    padding: 16pt;
+    width: 100%;
+    color: var(--color-fg-norm-1);
+}
+
+#secondary-banner, #secondary-banner * {
+    background-color: var(--color-bg-norm-1);
+    color: var(--color-fg-norm-1);
+}
+
+#tertiary-banner {
+    padding: 16pt;
+    width: 100%;
+    color: var(--color-fg-norm-2);
+}
+
+#tertiary-banner, #tertiary-banner * {
+    background-color: var(--color-bg-norm-2);
+    color: var(--color-fg-norm-2);
+}
+
+.v-card__title.text-h5 {
+    word-break: normal !important;
+    font-size: 18pt !important;
+    margin-bottom: 6pt;
+    line-height: 1.2;
+}
+
+#main-content {
+    margin: 24pt;
+    margin-bottom: 120pt;
+    background-color: var(--color-global-bg);
+}
+
+.v-footer {
+    margin-top: 32pt;
+}
+
+.v-footer .v-card, .v-footer .v-card * {
+    background-color: rgba(0, 0, 0, 0.0) !important;
+}
+
+ul.no-bullet {
+    list-style-type: none;
+}
+
+.v-footer a {
+    text-decoration: none;
+    color: var(--color-fg-norm-1) !important;
+}
+
+.v-footer a:hover {
+    color: var(--color-link) !important;
+}
+
+.v-card {
+    max-width: 500pt;
+}
+
+.v-card__subtitle {
+    font-size: 15pt;
+}
+
+.v-card__text {
+    font-size: 13pt;
+}
+
+ul {
+    margin-top: 6pt;
+}
+
+.page-start {
+    margin-top: 16pt;
+}
+
+p {
+    margin-top: 8pt;
+}
+
+.theme--light.v-application code.hljs {
+    color: #eee;
+    background: #383838;
+    padding: 2pt;
+    margin: 2pt;
+    padding-left: 16pt;
+    border-radius: 4pt;
+}
+
+pre {
+    margin: 0pt;
+    padding: 0pt;
+    min-height: 0pt;
+}
+
+#docs-frame {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: none;
+}
+
+.bottom-spacer {
+    display: block;
+    height: 196pt;
+    clear: both;
+    background-color: var(--color-global-bg);
+}
