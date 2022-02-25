@@ -35,11 +35,11 @@ class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class PBSProJobExecutor(BatchSchedulerExecutor):
-    """A :proc:`~psij.JobExecutor` for PBS Pro."""
+    """A :class:`~psij.JobExecutor` for PBS Pro."""
 
     # TODO: find a comprehensive list of possible states. at least look in parsls state map.
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
-        """Initializes a :proc:`~PBSProJobExecutor`."""
+        """Initializes a :class:`~PBSProJobExecutor`."""
         if not config:
             config = PBSProExecutorConfig()
         super().__init__(url=url, config=config)
@@ -50,21 +50,21 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
                                submit_file: TextIO) -> None:
-        """See :proc:`~BatchSchedulerExecutor.generate_submit_script`."""
+        """See :meth:`~BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_submit_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_submit_command`."""
         return ['qsub', str(submit_file_path.absolute())]
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :proc:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
 
     # Cancel methods
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_cancel_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_cancel_command`."""
         # the slurm cancel command had a -Q parameter
         # which does not report an error if the job is already
         # completed.
@@ -75,13 +75,13 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         return ['qdel', native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :proc:`~BatchSchedulerExecutor.process_cancel_command_output`."""
+        """See :meth:`~BatchSchedulerExecutor.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
     # Status methods
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :proc:`~BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~BatchSchedulerExecutor.get_status_command`."""
 
         # -x will include finished jobs
         # -f -F json will give json status output that is more mechanically
@@ -91,7 +91,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         return [_QSTAT_COMMAND, '-f', '-F', 'json', '-x'] + list(native_ids)
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :proc:`~BatchSchedulerExecutor.parse_status_output`."""
+        """See :meth:`~BatchSchedulerExecutor.parse_status_output`."""
         check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
         r = {}
 
