@@ -87,19 +87,19 @@ That error message tells us what we need to implement. There are three broad pie
 
 * submitting a job::
 
-  generate_submit_script
-  get_submit_command
-  job_id_from_submit_output
+    generate_submit_script
+    get_submit_command
+    job_id_from_submit_output
 
 * requesting job status::
 
-  get_status_command
-  parse_status_output
+    get_status_command
+    parse_status_output
 
 * cancelling a job::
 
-  get_cancel_command
-  process_cancel_command_output
+    get_cancel_command
+    process_cancel_command_output
 
 
 Let's implement all of these with stubs that return NotImplementedError that we will then flesh out::
