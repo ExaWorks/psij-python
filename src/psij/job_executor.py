@@ -5,7 +5,7 @@ from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psij
-from psij._descriptor import _Descriptor, _VersionEntry
+from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback
@@ -183,16 +183,16 @@ class JobExecutor(ABC):
         return instance
 
     @staticmethod
-    def register_executor(desc: _Descriptor, root: str) -> None:
+    def register_executor(desc: Descriptor, root: str) -> None:
         """
-        Registers a `JobExecutor` class through a :class:`~psij._descriptor._Descriptor`.
+        Registers a `JobExecutor` class through a :class:`~psij.descriptor.Descriptor`.
 
         The class can then be later instantiated using :func:`~psij.JobExecutor.get_instance`.
 
         Parameters
         ----------
         desc
-            A :class:`~psij._descriptor._Descriptor` with information about the executor to
+            A :class:`~psij.descriptor.Descriptor` with information about the executor to
             be registered.
         root
             A filesystem path under which the implementation of the executor is to be loaded from.
