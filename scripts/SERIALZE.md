@@ -4,7 +4,7 @@ This example is in Python and based on the hello world example from the Quick-St
 
 Code snippet for exporting a JobSpec as json:
 ```
-from psij.serialize import Export
+from psij import Export
 
 e = Export()
 ...
@@ -19,7 +19,7 @@ python ./psij-consol.py run --job-executor slurm --number-of-jobs 10 jobSpec.jso
 
 In addition a job can be imported and submitted using the import functionality of PSIJ:
 ```
-from psij.serialize import Import
+from psij import Import
 i = Import()
 job = psij.Job()
 spec = i.load(src="jobSpec.json")
