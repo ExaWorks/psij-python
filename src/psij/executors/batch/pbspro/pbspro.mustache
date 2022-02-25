@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: job.spec.resources
+# TODO: job.spec.attributes
+
 {{#job.name}}
 #PBS -N="{{.}}"
 {{/job.name}}
@@ -11,7 +14,7 @@
 {{#job.spec.attributes}}
     {{#duration}}
 #PBS -l walltime={{.}}
-# BENC: unclear what the syntax is here for times... its always a mess
+# TODO: unclear what the syntax is here for times... its always a mess
     {{/duration}}
     {{#custom_attributes.pbs}}
 #PBS --{{key}}="{{value}}"
@@ -24,10 +27,9 @@ only results in empty files that are not cleaned up}}
 #PBS -e /dev/null
 #PBS -o /dev/null
 
-# TODO: compare with the slurm template: there are many SBATCH lines that I've deleted above,
-# instead of converting into the equivalent #PBS lines.
-# I should review all of those and see which make sense for PBS, which should be dropped,
-# which are part of the slurm job spect not the general job spec, etc
+{{#job.spec.environment}}
+export {{key}}="{{value}}"  # TODO: escaping of value
+{{/job.spec.environment}}
 
 {{#job.spec.directory}}
 cd "{{.}}"
