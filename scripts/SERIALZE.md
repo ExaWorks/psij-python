@@ -19,6 +19,7 @@ python ./psij-consol.py run --job-executor slurm --number-of-jobs 10 jobSpec.jso
 
 In addition a job can be imported and submitted using the import functionality of PSIJ:
 ```
+from psij.serialize import Import
 i = Import()
 job = psij.Job()
 spec = i.load(src="jobSpec.json")
