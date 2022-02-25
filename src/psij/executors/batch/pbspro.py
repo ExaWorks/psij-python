@@ -10,6 +10,10 @@ import json
 
 _QSTAT_COMMAND = 'qstat'
 
+# This table maps PBS Pro state codes to the corresponding PSI/J
+# JobState.
+# See https://www.altair.com/pdfs/pbsworks/PBSReferenceGuide2021.1.pdf
+# page 361, section 8.1 "Job States"
 _STATE_MAP = {
     'Q': JobState.QUEUED,
     'R': JobState.ACTIVE,
