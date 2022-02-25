@@ -6,7 +6,7 @@ from psij import JobSpec
 import sys
 import os
 import argparse
-from serialize import Import
+from psij import Import
 
 
 
