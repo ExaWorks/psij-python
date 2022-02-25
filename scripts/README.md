@@ -1,6 +1,6 @@
 # Scripts
 
-This directory contains helper scripts and the console for PSIJ.
+This directory contains examples, helper scripts and the console for PSIJ.
 
 ## psij-console
 
