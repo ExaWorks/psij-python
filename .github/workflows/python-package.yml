@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, 3.10]
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -r requirements-connector-radical.txt
-    - name: Lint with flake8
+    - name: Typecheck and stylecheck
       run: |
         make typecheck
         make stylecheck

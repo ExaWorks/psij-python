@@ -27,7 +27,8 @@ if __name__ == '__main__':
             '': ['README.md', 'LICENSE'],
             'psij.launchers.scripts': [ '*.sh' ],
             'psij.executors.batch.test': [ 'qdel', 'qstat', 'qsub', 'qrun' ],
-            'psij.executors.batch': [ '**/*.mustache' ]
+            'psij.executors.batch': [ '**/*.mustache' ],
+            'psij': ["py.typed"]
         },
 
 
@@ -38,5 +39,5 @@ if __name__ == '__main__':
 
         install_requires=[
         ],
-        python_requires='>=3.6'
+        python_requires='>=3.7'
     )

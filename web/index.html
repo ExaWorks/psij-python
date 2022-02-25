@@ -42,7 +42,7 @@
                         <v-tab href="#resources" key="resources">Resources</v-tab>
                         <v-tab href="#about" key="about">About</v-tab>
                     </v-tabs>
-                    <v-select :items="themes" filled flat solo label="Select theme" dense @change="changeTheme"></v-select>
+                    <!--<v-select :items="themes" filled flat solo label="Select theme" dense @change="changeTheme"></v-select>-->
                     <div class="gh-link">
                         <a href="https://github.com/ExaWorks/psi-j-python"><img height="24pt" src="images/GitHub_Logo.png"/></a>
                     </div>
@@ -480,7 +480,13 @@ $ python setup.py install
         if (crttab == "docs") {
             var frame = document.getElementById("docs-frame");
             if (frame && frame.contentWindow && frame.contentWindow.document && frame.contentWindow.document.body) {
-                frame.style.height = (frame.contentWindow.document.body.offsetHeight + 180) + 'px';
+                var fdoc = frame.contentWindow.document;
+
+                frame.style.height = (fdoc.body.offsetHeight + 180) + 'px';
+
+                $(fdoc).find("a.reference.external").each(function() {
+                    $(this).attr("target", "_parent");
+                });
             }
         }
     };
