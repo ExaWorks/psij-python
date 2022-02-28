@@ -6,7 +6,7 @@ import pkgutil
 import sys
 from typing import Callable, TypeVar
 
-from psij._descriptor import _Descriptor
+from psij.descriptor import Descriptor
 from .exceptions import SubmitException, InvalidJobException, UnreachableStateException
 from .job import Job, JobStatusCallback
 from .job_attributes import JobAttributes
@@ -31,7 +31,7 @@ T = TypeVar('T')
 
 
 class _PluginType:
-    def __init__(self, name: str, registration_method: Callable[[_Descriptor, str], None]):
+    def __init__(self, name: str, registration_method: Callable[[Descriptor, str], None]):
         self.name = name
         self.registration_method = registration_method
 
@@ -67,13 +67,13 @@ def _load_plugins(root: str, full_path: str, mod: pkgutil.ModuleInfo) -> None:
                     elif isinstance(cls, type) and issubclass(cls, Launcher):
                         logger.warning('Not loading old style launcher in %s' %
                                        full_mod_path)
-                    elif isinstance(cls, _Descriptor):
+                    elif isinstance(cls, Descriptor):
                         logger.debug('Registering {}'.format(cls))
                         cls.path = full_mod_path
                         _type.registration_method(cls, root)
                     else:
                         logger.warning('Cannot load plugin. Expected an instance of '
-                                       '_Descriptor in %s' % full_mod_path)
+                                       'Descriptor in %s' % full_mod_path)
     except Exception as ex:
         logger.warning('Could not import %s: %s' % (full_mod_path, ex))
         logger.debug(ex, exc_info=True)

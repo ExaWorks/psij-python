@@ -2,13 +2,8 @@
 
 usage() {
     cat <<EOF
-Usage: ./psij-ci-run [--help] [--with-conda <conda_env_name>] 
-            [--with-venv <venv_name>] [--repeat]
+Usage: ./psij-ci-run [--help] [--repeat]
     --help          Displays this message
-    --with-conda    Specifies a conda environment to activate before running 
-                    the tests
-    --with-venv     Specifies a virtualenv environment to load before running
-                    the tests
     --repeat        If specified, run tests every 24 hours in a loop.
 EOF
 }

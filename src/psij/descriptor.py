@@ -40,7 +40,7 @@ class _VersionEntry(Generic[T]):
         return self.version > other.version
 
 
-class _Descriptor(object):
+class Descriptor(object):
     def __init__(self, name: str, version: StrictVersion, cls: str, path: Optional[str] = None):
         self.name = name
         self.version = version
@@ -48,4 +48,4 @@ class _Descriptor(object):
         self.path = path
 
     def __repr__(self) -> str:
-        return '_Descriptor(name=%s, path=%s)' % (self.name, self.path)
+        return 'Descriptor(name=%s, path=%s)' % (self.name, self.path)
