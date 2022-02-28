@@ -2,6 +2,9 @@ from setuptools import setup, find_packages
 
 
 if __name__ == '__main__':
+    with open('requirements.txt') as f:
+        install_requires = f.readlines()
+
     setup(
         name='psi-j-python',
         version='0.1',
@@ -37,7 +40,6 @@ if __name__ == '__main__':
         entry_points={
         },
 
-        install_requires=[
-        ],
+        install_requires=install_requires,
         python_requires='>=3.7'
     )
