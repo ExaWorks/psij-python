@@ -40,7 +40,7 @@ _STATE_MAP = {
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the PBS executor.
-    This doesn't have any fields in addition to BatchSchedulerExecutorCOnfig,
+    This doesn't have any fields in addition to BatchSchedulerExecutorConfig,
     but it is expected that some will appear during further development."""
 
     pass
