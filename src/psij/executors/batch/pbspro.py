@@ -40,8 +40,10 @@ _STATE_MAP = {
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the PBS executor.
+
     This doesn't have any fields in addition to BatchSchedulerExecutorConfig,
-    but it is expected that some will appear during further development."""
+    but it is expected that some will appear during further development.
+    """
 
     pass
 
@@ -93,7 +95,6 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :meth:`~BatchSchedulerExecutor.get_status_command`."""
-
         # -x will include finished jobs
         # -f -F json will give json status output that is more mechanically
         # parseable that the default human readable output. Most importantly,
