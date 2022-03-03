@@ -42,7 +42,7 @@ class _VersionEntry(Generic[T]):
 
 class Descriptor(object):
     """
-    This class is used to enable PSI/J to discover and register executors and/or launchers.
+    This class is used to enable PSI/J to discover and register executors and/or launchers
 
     Executors wanting to register with PSI/J must place an instance of this class in a global
     module list named `__PSI_J_EXECUTORS__` or `__PSI_J_LAUNCHERS__` in a module placed in the
