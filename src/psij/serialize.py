@@ -6,16 +6,17 @@ import sys
 import json
 
 
+# TODO: fix dosctrings
 class Export(object):
-
     """A class for exporting psij data types."""
 
     def __init__(self) -> None:
+        """Initializes an export object."""
         self.version = ''
         self.name = ''
 
     def envelope(self, type: Optional[str] = None) -> Dict[str, Any]:
-
+        """TODO."""
         envelope: Dict[str, Any]
 
         envelope = {
@@ -27,7 +28,7 @@ class Export(object):
         return envelope
 
     def to_dict(self, obj: object) -> Dict[str, Any]:
-
+        """Returns a dictionary representation of an object."""
         new_dict = {}
 
         if isinstance(obj, JobSpec):
@@ -38,7 +39,7 @@ class Export(object):
         return new_dict
 
     def export(self, obj: Optional[object] = None, dest: Optional[str] = None) -> bool:
-
+        """Serializes an object to a file."""
         if not dest:
             sys.exit("Cannot export, missing destinstion file")
         if not obj:
@@ -57,9 +58,10 @@ class Export(object):
 
 
 class Import():
+    """A class for importing psij data types."""
 
     def _dict2spec(self, d: Dict[str, Any]) -> object:
-
+        """Read a JobSpec from a dicttionary."""
         # Initial spec object
         spec = JobSpec()
 
@@ -94,14 +96,14 @@ class Import():
         return spec
 
     def from_dict(self, hash: Dict[str, Any], target_type: Optional[str] = None) -> object:
-
+        """Reads an object from a dict."""
         if target_type == "JobSpec":
             return(self._dict2spec(hash))
         else:
             sys.exit("Can't create dict,  type " + str(target_type) + " not supported")
 
     def load(self, src: Optional[str] = None) -> object:
-
+        """Loads an object from a file."""
         if not src:
             sys.exit("Cannot import, missing source file")
 
