@@ -9,8 +9,7 @@ class JobState(bytes, Enum):
     The possible states are: `NEW`, `QUEUED`, `ACTIVE`, `COMPLETED`, `FAILED`, and `CANCELED`.
     """
 
-    def __new__(cls, index: int, order: int, name: str, final: bool) -> 'JobState':
-        # noqa: D102
+    def __new__(cls, index: int, order: int, name: str, final: bool) -> 'JobState':  # noqa: D102
         # This is used internally to allow enum initialization with multiple parameters
         obj = bytes.__new__(cls)  # type: 'JobState'
         obj._value_ = index
@@ -19,8 +18,7 @@ class JobState(bytes, Enum):
         obj._final = final
         return obj
 
-    def __init__(self, *args: object) -> None:
-        # noqa: D107
+    def __init__(self, *args: object) -> None:  # noqa: D107
         # this is only here to declare the types of the properties
         self._order = self._order  # type: int
         self._name = self._name  # type: str
