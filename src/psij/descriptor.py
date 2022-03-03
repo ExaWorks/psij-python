@@ -50,6 +50,7 @@ class Descriptor(object):
     launcher, a python file should be created inside a `psij-descriptors` package, such as:
 
     .. code-block:: none
+
         <project_root>/
             src/
                 psij-descriptors/
@@ -58,6 +59,7 @@ class Descriptor(object):
     The contents of `descriptors_for_project.py` could then be as follows:
 
     .. code-block:: python
+
         from distutils.version import StrictVersion
         from psij.descriptor import Descriptor
 
