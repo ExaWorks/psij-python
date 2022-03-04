@@ -93,7 +93,7 @@ class Descriptor(object):
             the executor or launcher using this name. That is, the executor or launcher represented
             by this descriptor will be available for instantiation using either
             :meth:`~psij.job_executor.JobExecutor.get_instance` or
-            :meth:`~psij.launchers.launcher.Launcher.get_instance`
+            :meth:`~psij.launcher.Launcher.get_instance`
         version:
             The version of the executor/launcher. Multiple versions can be registered under a
             single name.

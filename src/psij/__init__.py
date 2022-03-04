@@ -15,7 +15,7 @@ from .job_executor_config import JobExecutorConfig
 from .job_spec import JobSpec
 from .job_state import JobState
 from .job_status import JobStatus
-from .launchers.launcher import Launcher
+from .launcher import Launcher
 from .resource_spec import ResourceSpec, ResourceSpecV1
 
 
