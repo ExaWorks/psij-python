@@ -1,4 +1,6 @@
 import os
+from typing import List, Tuple
+
 import pkg_resources
 import subprocess
 import sys
@@ -68,3 +70,21 @@ def run_apidoc(_):
 # launch setup
 def setup(app):
     app.connect('builder-inited', run_apidoc)
+
+
+# The following is a hack to allow returns in numpy style doctstrings to
+# not duplicate the return type specified by the normal type hints.
+# This was taken from https://github.com/svenevs/elba
+# It was submitted as a patch to the napoleon extension. Unfortunately,
+# it was rejected by the maintainers of napoleon
+# (see https://github.com/sphinx-doc/sphinx/issues/7077).
+def _consume_returns_section(self) -> List[Tuple[str, str, List[str]]]:
+    self._consume_empty()
+    desc_lines = []
+    while not self._is_section_break():
+        desc_lines.append(next(self._line_iter))
+
+    return [("", "", desc_lines)]
+
+from sphinx.ext.napoleon.docstring import NumpyDocstring
+NumpyDocstring._consume_returns_section = _consume_returns_section
