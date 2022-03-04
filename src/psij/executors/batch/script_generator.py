@@ -11,9 +11,9 @@ from .escape_functions import bash_escape
 class SubmitScriptGenerator(ABC):
     """A base class representing a submit script generator.
 
-    A submit script generator is used to render a :class:`~Job` (together with all its properties,
-    including :class:`~JobSpec`, :class:`~ResourceSpec`, etc.) into a submit script specific to
-    a certain batch scheduler.
+    A submit script generator is used to render a :class:`~psij.Job` (together with all its
+    properties, including :class:`~psij.JobSpec`, :class:`~psij.ResourceSpec`, etc.) into a submit
+    script specific to a certain batch scheduler.
     """
 
     def __init__(self, config: JobExecutorConfig) -> None:
@@ -34,7 +34,7 @@ class SubmitScriptGenerator(ABC):
 
         Concerete implementations of submit script generators must implement this method. Its
         purpose is to generate the content of the submit script. For an extensive explanation of
-        the mechanism behind this process, see :class:`~BatchSchedulerExecutor`.
+        the mechanism behind this process, see :class:`~.BatchSchedulerExecutor`.
 
         Parameters
         ----------
@@ -42,7 +42,7 @@ class SubmitScriptGenerator(ABC):
             The job for which the submit script is to be generated.
         context
             A dictionary containing information about the context in which the job is being
-            submitted. For details, see :class:`~BatchSchedulerExecutor`.
+            submitted. For details, see :class:`~.BatchSchedulerExecutor`.
         out
             An opened file-like object to which the contents of the submit script should be
             written.

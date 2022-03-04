@@ -48,7 +48,8 @@ class Launcher(ABC):
 
         Returns
         -------
-            Returns `True` if the output
+        Returns `True` if the output of the launcher indicates that it has exited with a
+        non-zero exit code due to an error occurring in the launcher.
 
         """
         pass
@@ -68,8 +69,8 @@ class Launcher(ABC):
 
         Returns
         -------
-            A string representing the part of the launcher output that describes the launcher
-            error.
+        A string representing the part of the launcher output that describes the launcher
+        error.
         """
         pass
 

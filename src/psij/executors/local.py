@@ -160,7 +160,7 @@ class _ProcessReaper(threading.Thread):
 
 class LocalJobExecutor(JobExecutor):
     """
-    A job executor that runs jobs locally using :func:`popen`.
+    A job executor that runs jobs locally using :class:`subprocess.Popen`.
 
     Limitations: in Linux, attached jobs always appear to complete with a zero exit code regardless
     of the actual exit code.
