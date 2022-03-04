@@ -28,7 +28,7 @@ class MultipleLauncher(ScriptBasedLauncher):
         """
         super().__init__(script_path=script_path, config=config)
 
-    def _get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: Job) -> List[str]:
         spec = job.spec
         assert spec is not None
         return [str(self._get_count(spec.resources))]
