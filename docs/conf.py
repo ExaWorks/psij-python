@@ -30,11 +30,11 @@ nitpick_ignore = [
 
 # Setup Sphinx extensions (and associated variables)
 extensions = [
+    'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.autodoc.typehints',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
 ]
 
 autodoc_typehints = "description"
