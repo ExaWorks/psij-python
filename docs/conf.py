@@ -23,6 +23,10 @@ autoclass_content = 'both'
 add_module_names = False
 python_use_unqualified_type_names = True
 autodoc_mock_imports = ['flux']
+nitpick_ignore = [
+    ('py:class', 'distutils.version.StrictVersion'),
+    ('py:class', 'distutils.version.Version')
+]
 
 # Setup Sphinx extensions (and associated variables)
 extensions = [
