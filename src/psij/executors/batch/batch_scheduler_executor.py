@@ -85,7 +85,9 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         self.keep_files = keep_files
 
 
-class _InvalidJobStateError(Exception):
+class InvalidJobStateError(Exception):
+    """An exception that signals that a job cannot be cancelled due to it being already done."""
+
     pass
 
 
@@ -218,7 +220,7 @@ class BatchSchedulerExecutor(JobExecutor):
         except subprocess.CalledProcessError as ex:
             try:
                 self.process_cancel_command_output(ex.returncode, ex.output)
-            except _InvalidJobStateError:
+            except InvalidJobStateError:
                 # do nothing; the job has completed anyway
                 pass
             except SubmitException:
@@ -350,7 +352,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
         Raises
         ------
-        _InvalidJobStateError
+        InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
         psij.SubmitException

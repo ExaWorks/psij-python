@@ -4,7 +4,7 @@ from typing import Optional, Collection, List, Dict, TextIO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig, _InvalidJobStateError, check_status_exit_code
+    BatchSchedulerExecutorConfig, InvalidJobStateError, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
@@ -57,7 +57,7 @@ class _TestJobExecutor(BatchSchedulerExecutor):
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
         if exit_code == 16:
-            raise _InvalidJobStateError()
+            raise InvalidJobStateError()
         else:
             raise SubmitException(out)
 
