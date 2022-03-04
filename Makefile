@@ -39,6 +39,7 @@ checks: typecheck stylecheck
 .PHONY: docs
 docs:
 	rm -rf docs/.generated
+	rm -rf docs/.build
 	sphinx-build --keep-going -n -W -b html docs docs/.build/
 
 
