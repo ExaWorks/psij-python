@@ -3,9 +3,7 @@ from psij.descriptor import Descriptor
 
 __PSI_J_EXECUTORS__ = [
     Descriptor(name='local', version=StrictVersion('0.0.1'),
-               cls='psij.executors.local.LocalJobExecutor'),
-    Descriptor(name='batch-test', version=StrictVersion('0.0.1'),
-               cls='psij.executors.batch._batch_test._TestJobExecutor')
+               cls='psij.executors.local.LocalJobExecutor')
 ]
 
 __PSI_J_LAUNCHERS__ = [
