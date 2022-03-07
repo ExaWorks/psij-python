@@ -2,10 +2,6 @@ from setuptools import setup, find_packages
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    
-=======
->>>>>>> main
     with open('requirements.txt') as f:
         install_requires = f.readlines()
 
