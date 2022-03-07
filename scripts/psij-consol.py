@@ -32,6 +32,7 @@ execute_parser.add_argument("-j",
 execute_parser.add_argument("-n", 
                             "--number-of-jobs",
                             dest = "jobs",
+                            type = int,
                             default=1,
                             help="Number of jobs to submit"
                             )
