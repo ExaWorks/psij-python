@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict
 
-from psij._descriptor import _Descriptor, _VersionEntry
+from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_executor_config import JobExecutorConfig
 from psij.job import Job
@@ -95,7 +95,7 @@ class Launcher(ABC):
         return instance
 
     @staticmethod
-    def register_launcher(desc: _Descriptor, root: str) -> None:
+    def register_launcher(desc: Descriptor, root: str) -> None:
         """
         Registers a launcher class.
 
@@ -104,7 +104,7 @@ class Launcher(ABC):
         Parameters
         ----------
         desc
-            A :class:`~psij._descriptor._Descriptor` with information about the launcher to
+            A :class:`~psij.descriptor.Descriptor` with information about the launcher to
             register.
         root
             A filesystem path under which the implementation of the launcher is to be loaded from.

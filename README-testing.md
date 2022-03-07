@@ -16,24 +16,28 @@ How to run tests
 There are a number of ways to run tests. Invoking `pytest` directly,
 running the integration tests and through `cron` (or a similar tool).
 
-Setting up a Cron testing job
-=============================
-
-Note: If you need to set up an environment module (such as 
-`module load python/cpython-x.y.z`) or something similar, please add the 
-relevant commands to `psij-ci-load`.
-
+Setting up an automated testing job
+===================================
 
 This is the preferred way of running the tests since it allows the PSI/J
 team to keep a constant eye on the state of the library on various
-resources. To set up the Cron job, you can either use the provided
-script:
+resources. To set up the Cron job (or an alternative method), you can either 
+use the provided setup script:
 
 ```bash
     ./psij-ci-setup
 ```
 
 or manually set up the CI runner with Cron or your favorite scheduler.
+
+Note: If you need to set up an environment module (such as 
+`module load python/cpython-x.y.z`) or something similar, such as
+loading a conda or virtual environment, please add the relevant commands to
+`psij-ci-load`, which is sourced before tests are run by `psij-ci-run`. If the
+setup script is run under a venv or Conda, it will attempt to detect this and 
+ask whether the relevant environment activation commands should be added to 
+`psij-ci-load`. However, not all circumstances can be reliably detected and 
+you may need to manually edit `psij-ci-load`.
 
 Testing with the CI runner
 ==========================

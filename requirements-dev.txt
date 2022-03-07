@@ -9,6 +9,7 @@
 mypy >=0.931
 pytest >= 6.2.0
 flake8
+flake8-docstrings
 autopep8
 types-requests
 

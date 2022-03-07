@@ -2,7 +2,10 @@ from setuptools import setup, find_packages
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     
+=======
+>>>>>>> main
     with open('requirements.txt') as f:
         install_requires = f.readlines()
 
@@ -41,8 +44,6 @@ if __name__ == '__main__':
         entry_points={
         },
 
-   
-
-
+        install_requires=install_requires,
         python_requires='>=3.7'
     )
