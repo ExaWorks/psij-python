@@ -133,7 +133,10 @@ class JobSpec(object):
             }
             for k, v in self.attributes.__dict__.items():
                 if k in ['duration', 'queue_name', 'project_name', 'reservation_id']:
-                    d['attributes'][k] = str(v)
+                    if v:
+                        d['attributes'][k] = str(v)
+                    else:
+                        d['attributes'][k] = v
                 elif k == "_custom_attributes":
                     if v:
                         for ck, cv in v.items():
@@ -148,6 +151,9 @@ class JobSpec(object):
                                                  + " in JobAttributes.custom_attributes for key "
                                                  + ck
                                                  + ", skipping\n")
+                        else:
+                            if ck:
+                                d['attributes']['custom_attributes'][ck] = str(cv)
                             else:
                                 d['attributes']['custom_attributes'][ck] = cv
                 else:
