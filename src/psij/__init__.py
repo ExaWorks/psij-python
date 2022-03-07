@@ -18,7 +18,6 @@ from .job_status import JobStatus
 from .launchers.launcher import Launcher
 from .resource_spec import ResourceSpec, ResourceSpecV1
 from .serialize import Export, Import
-# from .utils import path_object_to_full_path
 
 
 __all__ = [
