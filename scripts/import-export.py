@@ -3,7 +3,7 @@ from psij import Export
 from psij import Import
 
 
-jex = psij.JobExecutor.get_instance('slurm')
+jex = psij.JobExecutor.get_instance('local')
 
 N=1 # number of jobs to run
 
@@ -21,14 +21,14 @@ def make_job():
 e = Export()
 for i in range(N):
     job = make_job()
-    e.export(obj=spec , dest="jobSpec." + str(i) + ".json")
+    e.export(obj=job.spec , dest="jobSpec." + str(i) + ".json")
     
 # Import Job and submit
-i = Import()
+imp = Import()
 jobs = []    
 for i in range(N):    
     job = psij.Job()
-    spec = i.load(src="jobSpec." + str(i) + ".json")
+    spec = imp.load(src="jobSpec." + str(i) + ".json")
     job.spec = spec
     jobs.append(job)
     jex.submit(job)
