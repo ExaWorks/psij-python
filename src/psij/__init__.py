@@ -17,14 +17,14 @@ from .job_state import JobState
 from .job_status import JobStatus
 from .launchers.launcher import Launcher
 from .resource_spec import ResourceSpec, ResourceSpecV1
-from .serialize import Export, Import 
+from .serialize import Export, Import
 # from .utils import path_object_to_full_path
 
 
 __all__ = [
     'JobExecutor', 'JobExecutorConfig', 'Job', 'JobStatusCallback', 'JobSpec', 'JobAttributes',
     'JobStatus', 'JobState', 'ResourceSpec', 'ResourceSpecV1', 'Launcher', 'SubmitException',
-    'InvalidJobException', 'UnreachableStateException' , 'Export' , 'Import'
+    'InvalidJobException', 'UnreachableStateException', 'Export', 'Import'
 ]
 
 logger = logging.getLogger(__name__)
