@@ -34,7 +34,6 @@ if __name__ == '__main__':
             'psij': ["py.typed"]
         },
 
-        install_requires=install_requires,
         scripts=[],
 
         entry_points={
