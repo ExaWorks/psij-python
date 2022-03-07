@@ -10,7 +10,7 @@ from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_sta
 from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
-from psij.launcher import Launcher
+from psij.job_launcher import Launcher
 
 
 logger = logging.getLogger(__name__)

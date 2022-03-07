@@ -12,10 +12,10 @@ from .job import Job, JobStatusCallback
 from .job_attributes import JobAttributes
 from .job_executor import JobExecutor
 from .job_executor_config import JobExecutorConfig
+from .job_launcher import Launcher
 from .job_spec import JobSpec
 from .job_state import JobState
 from .job_status import JobStatus
-from .launcher import Launcher
 from .resource_spec import ResourceSpec, ResourceSpecV1
 
 
