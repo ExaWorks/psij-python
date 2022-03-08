@@ -20,14 +20,15 @@ execute_parser.add_argument("file", help="JobSpec file")
 execute_parser.add_argument("-j", 
                             "--job-executor",
                             dest = "executor",
-                            choices = ["cobalt"
-                                       , "local"
-                                       , "batch-test"
-                                       , "flux"
-                                       , "lsf"
-                                       , "rp"
-                                       , "saga"
-                                       , "slurm"],
+                            choices = [ "cobalt",
+                                        "local",
+                                        "batch-test",
+                                        "flux",
+                                        "lsf",
+                                        "rp",
+                                        "saga",
+                                        "slurm"
+                                        ],
                             )
 execute_parser.add_argument("-n", 
                             "--number-of-jobs",
