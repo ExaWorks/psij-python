@@ -20,6 +20,7 @@ execute_parser.add_argument("file", help="JobSpec file")
 execute_parser.add_argument("-j", 
                             "--job-executor",
                             dest = "executor",
+                            required=True,
                             choices = [ "cobalt",
                                         "local",
                                         "batch-test",
