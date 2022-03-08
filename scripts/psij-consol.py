@@ -58,32 +58,35 @@ args = parser.parse_args()
 i = Import()
 
 if args.command == 'validate':
-    print("Validating " + args.file)
+    if args.verbose:
+        print("Validating " + args.file)
     job_spec = i.load(args.file)
     
     if job_spec and  isinstance(job_spec, JobSpec):
         print("File ok")
     else:
         sys.exit("Not a valid file, could not import " + args.file)
-else:
+elif args.command == "run":
     
     if not args.executor:
         sys.exit("Missing argument executor")
     
-    print("Importing " + args.file)
+    if args.verbose:
+        print("Importing " + args.file)
     job_spec = i.load(args.file)
     if not (job_spec and  isinstance(job_spec, JobSpec)):
         sys.exit("Something wrong with JobSpec")
         
-        
-    print("Initializing job executor")
+    if args.verbose:    
+        print("Initializing job executor")
     jex = psij.JobExecutor.get_instance(args.executor)
     if not (jex and isinstance(jex, JobExecutor)):
         sys.exit("Panic, can't initialize " + args.executor)    
         
         
     number_of_jobs = args.jobs
-    print("Submitting " + str(number_of_jobs) + " job(s)")
+    if args.verbose:
+        print("Submitting " + str(number_of_jobs) + " job(s)")
     
     jobs = [] # list of created jobs
     for i in range(number_of_jobs):
@@ -92,6 +95,11 @@ else:
         jobs.append(job)
         jex.submit(job)
     
-    print("Waiting for jobs to finish")
+    if args.verbose:
+        print("Waiting for jobs to finish")
     for i in range(number_of_jobs):
         jobs[i].wait()
+else:
+    # Should never be here
+    sys.stderr.write("Missig command. Use --help for more information.\n")
+    parser.print_help(sys.stderr)
