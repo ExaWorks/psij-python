@@ -76,14 +76,21 @@ elif args.command == "run":
     job_spec = i.load(args.file)
     if not (job_spec and  isinstance(job_spec, JobSpec)):
         sys.exit("Something wrong with JobSpec")
-        
+    
+    # Get job executor    
     if args.verbose:    
         print("Initializing job executor")
-    jex = psij.JobExecutor.get_instance(args.executor)
-    if not (jex and isinstance(jex, JobExecutor)):
-        sys.exit("Panic, can't initialize " + args.executor)    
-        
-        
+    
+    jex = None
+    
+    try:    
+        jex = psij.JobExecutor.get_instance(args.executor)
+    except ValueError as err:
+        sys.exit(f"Panic, {err}") 
+    except BaseException as err:
+        sys.exit(f"Unexpected: {err}, {type(err)}")
+
+    # Submit jobs      
     number_of_jobs = args.jobs
     if args.verbose:
         print("Submitting " + str(number_of_jobs) + " job(s)")
