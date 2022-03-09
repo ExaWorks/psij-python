@@ -16,11 +16,7 @@ subparser = parser.add_subparsers(dest="command", help='Subcommands')
 validate_parser = subparser.add_parser("validate", help='validate JobSpec file')
 validate_parser.add_argument("file", help="JobSpec file")
 execute_parser = subparser.add_parser("run", help='execute JobSpec file')
-execute_parser.add_argument("file", help="JobSpec file")
-execute_parser.add_argument("-j", 
-                            "--job-executor",
-                            dest = "executor",
-                            required=True,
+execute_parser.add_argument( "executor",
                             choices = [ "cobalt",
                                         "local",
                                         "batch-test",
@@ -31,12 +27,13 @@ execute_parser.add_argument("-j",
                                         "slurm"
                                         ],
                             )
+execute_parser.add_argument("file", help="JobSpec file")
 execute_parser.add_argument("-n", 
                             "--number-of-jobs",
                             dest = "jobs",
                             type = int,
                             default=1,
-                            help="Number of jobs to submit"
+                            help="Number of jobs to submit, default 1"
                             )
 
 parser.add_argument("-v", "--verbose",
