@@ -29,7 +29,7 @@ The core API contains the central components of PSI/J. The core API classes are 
 :class:`~psij.job_executor.JobExecutor`
     The base class for a concrete method of executing a job, such as Slurm, or PBS.
 
-:class:`~psij.launchers.launcher.Launcher`
+:class:`~psij.job_launcher.Launcher`
     A base class representing a method of actually launching a job once resources are allocated for it, such as `mpirun`, `srun`, etc.
 
 :py:mod:`~psij.exceptions`
@@ -77,7 +77,7 @@ The executor implementations provided by this version of PSI/J Python are:
 Launchers
 ~~~~~~~~~
 
-Launchers are mechanisms to start the actual jobs on batch schedulers once a set of nodes has been allocated for the job. In essence, launchers are wrappers around the job executable which can provide additional features, such as setting up an MPI environment, starting a copy of the job executable on each allocated node, etc. To get a launcher instance, call :meth:`Launcher.get_instance(name) <psij.launchers.launcher.Launcher.get_instance>` with ``name`` being the name of a launcher. Like job executors, above, launchers are plugins and can come from various places. To obtain a list of launchers, you can run:
+Launchers are mechanisms to start the actual jobs on batch schedulers once a set of nodes has been allocated for the job. In essence, launchers are wrappers around the job executable which can provide additional features, such as setting up an MPI environment, starting a copy of the job executable on each allocated node, etc. To get a launcher instance, call :meth:`Launcher.get_instance(name) <psij.job_launcher.Launcher.get_instance>` with ``name`` being the name of a launcher. Like job executors, above, launchers are plugins and can come from various places. To obtain a list of launchers, you can run:
 
 .. code-block:: shell
 

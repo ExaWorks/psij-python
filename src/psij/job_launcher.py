@@ -59,7 +59,7 @@ class Launcher(ABC):
         Extracts the launcher error message from the output of this launcher's invocation.
 
         It is understood that the output is such that
-        :func:`~psij.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
+        :func:`~psij.job_launcher.Launcher.is_launcher_failure` returns `True` on it.
 
         Parameters
         ----------
