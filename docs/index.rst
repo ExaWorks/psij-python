@@ -11,3 +11,4 @@ This is a Python library that contains the core implementation of  `the PSI/J sp
     testing
     programming
     contributing
+    tutorial_add_executor

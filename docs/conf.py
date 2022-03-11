@@ -22,6 +22,7 @@ html_favicon = 'favicon.ico'
 autoclass_content = 'both'
 add_module_names = False
 python_use_unqualified_type_names = True
+autodoc_mock_imports = ['flux']
 
 # Setup Sphinx extensions (and associated variables)
 extensions = [

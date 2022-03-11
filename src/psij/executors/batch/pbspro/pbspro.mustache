@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# TODO: job.spec.resources
+# TODO: job.spec.attributes
+
+{{#job.name}}
+#PBS -N="{{.}}"
+{{/job.name}}
+
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+
+{{#job.spec.attributes}}
+    {{#duration}}
+#PBS -l walltime={{.}}
+# TODO: unclear what the syntax is here for times... its always a mess
+    {{/duration}}
+    {{#custom_attributes.pbs}}
+#PBS --{{key}}="{{value}}"
+    {{/custom_attributes.pbs}}
+
+{{/job.spec.attributes}}
+
+{{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
+only results in empty files that are not cleaned up}}
+#PBS -e /dev/null
+#PBS -o /dev/null
+
+{{#job.spec.environment}}
+export {{key}}="{{value}}"  # TODO: escaping of value
+{{/job.spec.environment}}
+
+{{#job.spec.directory}}
+cd "{{.}}"
+{{/job.spec.directory}}
+
+exec &>> "{{psij.script_dir}}/$PBS_JOBID.out"
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+{{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
+echo "$?" > "{{psij.script_dir}}/$PBS_JOBID.ec"

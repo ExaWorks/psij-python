@@ -118,6 +118,8 @@ def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
     if executor == 'auto_q':
         if config.option.environment.get('has_slurm'):
             return ['slurm']
+        elif config.option.environment.get('has_flux'):
+            return ['flux']
         else:
             # nothing yet
             return []
@@ -312,6 +314,15 @@ def _has_saga():
         return False
 
 
+def _has_flux():
+    try:
+        import flux
+        flux.Flux()
+    except Exception:
+        return False
+    return True
+
+
 def _try_run_command(args, timeout=None):
     try:
         process = subprocess.run(args, timeout=timeout, text=True,
@@ -370,6 +381,7 @@ def _discover_environment(config):
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
+        env['has_flux'] = _has_flux()
         env['has_saga'] = _has_saga()
         env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
                                                         '-oStrictHostKeyChecking=no', 'localhost',

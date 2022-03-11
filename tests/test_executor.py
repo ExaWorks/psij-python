@@ -98,8 +98,8 @@ def test_missing_executable(execparams: ExecutorTestParams) -> None:
         status = job.wait(timeout=_get_timeout(execparams))
         assert status is not None
         assert status.state == JobState.FAILED
-        assert status.exit_code is not None
-        assert status.exit_code != 0
+        if status.exit_code is not None:
+            assert status.exit_code != 0
     except SubmitException:
         pass
 

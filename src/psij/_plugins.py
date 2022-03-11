@@ -5,7 +5,7 @@ from distutils.versionpredicate import VersionPredicate
 from types import ModuleType
 from typing import Tuple, Dict, List, Union, Type, Any, Optional, TypeVar
 
-from psij._descriptor import _Descriptor, _VersionEntry
+from psij.descriptor import Descriptor, _VersionEntry
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +25,10 @@ def _split_cls_name(cls: str) -> Tuple[str, str]:
 T = TypeVar('T')
 
 
-def _register_plugin(desc: _Descriptor, root_path: str, type: str,
+def _register_plugin(desc: Descriptor, root_path: str, type: str,
                      store: Dict[str, List[_VersionEntry[T]]]) -> None:
     """
-    Registers a class with a certain base class through a :class:`~psij._Descriptor`.
+    Registers a class with a certain base class through a :class:`~psij.Descriptor`.
 
     This is used internally to dynamically find and register :class:`~psij.JobExecutor` and
     :class:`~psij.Launcher` classes.
