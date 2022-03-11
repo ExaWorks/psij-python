@@ -9,4 +9,4 @@ PSI/J is an abstraction layer over cluster schedulers to write scheduler agnosti
 
 1. [Quick start guide](QuickStart.md) 
 2. [Setting up tests](README-testing.md)
-3. [How to contribute] (CONTRIBUTING.md)
+3. [How to contribute](CONTRIBUTING.md)
