@@ -12,9 +12,9 @@ job = make_job()
 e.export(obj=job.spec , dest="jobSpec.json")
 ```
 
-The command line example below shows how to run and submit an exported job 10 times using slurm.
+The command line example below shows how to run and submit an exported job with slurm as job executor.
 ```
-python ./psij-consol.py run --job-executor slurm --number-of-jobs 10 jobSpec.json
+python ./psijcli.py run slurm jobSpec.json
 ```
 
 In addition a job can be imported and submitted using the import functionality of PSIJ:

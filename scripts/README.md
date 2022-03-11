@@ -8,7 +8,7 @@ The console takes an exported JobSpec document and either validates or executes 
 
 
 ```
-usage: psij-consol [-h] [-v] [--debug] {validate,run} ...
+usage: psijcli [-h] [-v] [--debug] {validate,run} ...
 
 positional arguments:
   {validate,run}  Subcommands
