@@ -92,7 +92,7 @@ class Import():
             ja._custom_attributes = attributes['custom_attributes']
 
             spec.attributes = ja
-        print(spec)
+
         return spec
 
     def from_dict(self, hash: Dict[str, Any], target_type: Optional[str] = None) -> object:
