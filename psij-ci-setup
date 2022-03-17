@@ -45,74 +45,8 @@ cron_install() {
     echo "$LINE"
     echo "================================================================"
     { crontab -l & echo "$LINE"; } | crontab -
-
-    if [ "$VIRTUAL_ENV" != "" ]; then
-        maybe_add_to_load "virtual" "$VIRTUAL_ENV" \
-            "source \"$VIRTUAL_ENV/bin/activate\"" "/bin/activate"
-    fi
-    if [ "$CONDA_SHLVL" != "" ] && [ "$CONDA_SHLVL" != "0" ]; then
-        maybe_add_to_load "conda" "$CONDA_DEFAULT_ENV" \
-            "activate \"$CONDA_DEFAULT_ENV\"" "activate "
-    fi
-}
-
-maybe_add_to_load() {
-    LABEL="$1"
-    ID="$2"
-    TO_ADD="$3"
-    TO_CHECK="$4"
-    # check if psij-ci-load contains TO_CHECK, but not the actual TO_ADD.
-    # the idea being that we want /to/add/TO_CHECK to be fine if already added,
-    # but /something/else/TO_CHECK to trigger an error
-
-    CONFLICTING=`cat ./psij-ci-load | sed 's/#[^!].*$//' | grep "$TO_CHECK" 2>/dev/null`
-    C_COUNT=`echo -n "$CONFLICTING" | grep -c ""`
-    if [ "$C_COUNT" == "0" ]; then
-        # continue to asking
-        :
-    elif [ "$C_COUNT" == "1" ]; then
-        OUT=`echo "$CONFLICTING" | grep "$TO_ADD"`
-        if echo "$CONFLICTING" | grep "$TO_ADD" >/dev/null; then
-            # we're good, the line is already there
-            return 0
-        else
-            echo
-            echo "================================================================"
-            echo "Warning!                                                        "
-            echo "You appear to be running under a $LABEL environment:            "
-            echo "    $ID                                                         "
-            echo "Your psij-ci-load contains a different $LABEL environment:      "
-            echo "    $CONFLICTING                                                "
-            echo "Please manually edit psij-ci-load and resolve the conflict. If  "
-            echo "you are setting up tests under multiple environments, please do "
-            echo "so in a different directory for each environment.               "
-            echo "================================================================"
-            echo
-            exit 1
-        fi
-    fi
-
-    echo
-    echo "================================================================"
-    echo "You appear to be running under a $LABEL environment.            "
-    echo "Would you like for the following to be automatically added to   "
-    echo "psij-ci-load?                                                   "
-    echo "    $TO_ADD                                                     "
-    echo
-    while [ "$RESPONSE" != "A" ] && [ "$RESPONSE" != "X" ]; do
-
-        echo -n "(A)dd or E(x)it? "
-        read -n1 RESPONSE
-        echo
-        RESPONSE=${RESPONSE^}
-
-        if [ "$RESPONSE" == "X" ]; then
-            exit 0
-        elif [ "$RESPONSE" == "A" ]; then
-            echo "$TO_ADD" >> ./psij-ci-load
-            return 0
-        fi
-    done
+    
+    env | egrep -v "^(BASH_VERSINFO|DISPLAY|EUID|GROUPS|SHELLOPTS|TERM|UID|_)=" >psij-ci-env
 }
 
 at_check() {
