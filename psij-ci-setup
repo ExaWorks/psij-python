@@ -46,7 +46,7 @@ cron_install() {
     echo "================================================================"
     { crontab -l & echo "$LINE"; } | crontab -
     
-    env | egrep -v "^(BASH_VERSINFO|DISPLAY|EUID|GROUPS|SHELLOPTS|TERM|UID|_)=" >psij-ci-env
+    declare -x | egrep -v "^declare -x (BASH_VERSINFO|DISPLAY|EUID|GROUPS|SHELLOPTS|TERM|UID|_)=" >psij-ci-env
 }
 
 at_check() {
