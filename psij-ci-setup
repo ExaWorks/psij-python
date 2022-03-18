@@ -15,7 +15,10 @@ existing_error_trailer() {
 
 cron_check() {
     ps -eo command | awk '{print $1}' | grep cron >/dev/null 2>&1
-    echo $?
+    S1=$?
+    crontab -l 2>&1 | grep "not allowed" >/dev/null 2>&1
+    S2=$?
+    echo "$(($S1 || ! $S2))"
 }
 
 
