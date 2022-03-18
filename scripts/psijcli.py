@@ -11,7 +11,7 @@ from psij import Import
 
 
 
-parser = argparse.ArgumentParser(prog='psij-consol')
+parser = argparse.ArgumentParser(prog='psijcli')
 subparser = parser.add_subparsers(dest="command", help='Subcommands')
 validate_parser = subparser.add_parser("validate", help='validate JobSpec file')
 validate_parser.add_argument("file", help="JobSpec file")
