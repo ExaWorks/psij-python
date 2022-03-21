@@ -34,7 +34,6 @@ if __name__ == '__main__':
             'psij': ["py.typed"]
         },
 
-
         scripts=[],
 
         entry_points={

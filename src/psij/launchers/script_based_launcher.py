@@ -5,7 +5,7 @@ import threading
 from pathlib import Path
 from typing import Optional, List
 
-from psij.launcher import Launcher
+from psij.job_launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
 from psij.job import Job
 
@@ -126,7 +126,7 @@ class ScriptBasedLauncher(Launcher):
             raise
 
     def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
-        """See :func:`~psij.launcher.Launcher.get_launch_command`."""
+        """See :func:`~psij.job_launcher.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
@@ -155,9 +155,9 @@ class ScriptBasedLauncher(Launcher):
         return []
 
     def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.launcher.Launcher.is_launcher_failure`."""
+        """See :func:`~psij.job_launcher.Launcher.is_launcher_failure`."""
         return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.launcher.Launcher.get_launcher_failure_message`."""
+        """See :func:`~psij.job_launcher.Launcher.get_launcher_failure_message`."""
         return '\n'.join(output.split('\n')[:-1])
