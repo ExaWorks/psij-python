@@ -29,6 +29,9 @@ jobs:
       run: |
         make typecheck
         make stylecheck
+    - name: Build docs
+      run: |
+        make docs
 
   pytest:
     runs-on: ubuntu-latest

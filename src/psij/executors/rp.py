@@ -153,7 +153,7 @@ class RPJobExecutor(JobExecutor):
         self._tmgr.cancel_tasks(uids=task.uid)
 
     def list(self) -> List[str]:
-        """See :func:`~JobExecutor.list`.
+        """See :func:`~psij.job_executor.JobExecutor.list`.
 
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case RP task IDs.
@@ -166,11 +166,11 @@ class RPJobExecutor(JobExecutor):
         """
         Attaches a job to a process.
 
-        The job must be in the :attr:`~psij.JobState.NEW` state.
+        The job must be in the :attr:`~psij.job_state.JobState.NEW` state.
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-            obtained through :func:`~psij.executors.RPJobExecutor.list` method.
+            obtained through :func:`~list` method.
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')

@@ -117,7 +117,7 @@ class FluxJobExecutor(JobExecutor):
         self._futures[job] = fut
 
     def submit(self, job: Job) -> None:
-        """See :func:`~JobExecutor.submit`."""
+        """See :func:`~psij.job_executor.JobExecutor.submit`."""
         assert job.spec
         assert job.spec.attributes
         if isinstance(job.spec.resources, ResourceSpecV1):
@@ -157,13 +157,13 @@ class FluxJobExecutor(JobExecutor):
         self._add_flux_callbacks(job, fut)
 
     def cancel(self, job: Job) -> None:
-        """See :func:`~JobExecutor.cancel`."""
+        """See :func:`~psij.job_executor.JobExecutor.cancel`."""
         fut = self._futures[job]
         if not fut.cancel():
             flux.job.cancel_async(self._fh, fut.jobid())
 
     def list(self) -> List[str]:
-        """See :func:`~JobExecutor.submit`.
+        """See :func:`~psij.job_executor.JobExecutor.list`.
 
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case Flux job IDs.
@@ -180,7 +180,7 @@ class FluxJobExecutor(JobExecutor):
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-          obtained through :func:`~psij.executors.RPJobExecutor.list` method.
+          obtained through :func:`~psij.executors.flux.FluxJobExecutor.list` method.
         """
         self._add_flux_callbacks(job, self._flux_executor.attach(native_id))
 

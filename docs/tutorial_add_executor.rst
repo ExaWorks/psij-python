@@ -21,7 +21,7 @@ such a batch scheduler, so that it can provide a common interface to application
 A PSI/J executor needs to implement the abstract methods defined on the :class:`psij.job_executor.JobExecutor` base class.
 The documentation for that class has reference material for each of the methods that won't be repeated here.
 
-For batch scheduler systems, the :class:`psij.executors.batch.BatchSchedulerExecutor` subclass provides further useful structure to help implement JobExecutor.
+For batch scheduler systems, the :class:`.BatchSchedulerExecutor` subclass provides further useful structure to help implement JobExecutor.
 This tutorial will focus on using BatchSchedulerExecutor as a base, rather than implementing JobExecutor directly.
 
 The batch scheduler executor is based around a model where interactions with a local resource manager happen via command line invocations.
@@ -183,7 +183,7 @@ which can be used later when cancelling a job or getting job status.
 
 So let's implement those.
 
-In line with other PSI/J executors, we're going to delegate script generation to a template based helper. So add a line to initialise a :py:class:`TemplatedScriptGenerator` in the
+In line with other PSI/J executors, we're going to delegate script generation to a template based helper. So add a line to initialise a :py:class:`.TemplatedScriptGenerator` in the
 executor initializer, pointing at a (as yet non-existent) template file, and replace ``generate_submit_script`` with a delegated call to `TemplatedScriptGenerator`::
 
     from pathlib import Path
@@ -212,7 +212,7 @@ Now the test will fail with an error like this, because that template doesn't ex
     E       FileNotFoundError: [Errno 2] No such file or directory: '/home/you/project/psijpbs/pbspro.mustache'
 
 
-Here is a very simple template for PBS, lacking a lot of features. A full template should use all of the fields in the supplied :py:class:`Job` object, as well as any executor-specific parameters supplied in the ``config`` parameter to ``__init__``::
+Here is a very simple template for PBS, lacking a lot of features. A full template should use all of the fields in the supplied :py:class:`psij.Job` object, as well as any executor-specific parameters supplied in the ``config`` parameter to ``__init__``::
 
   #!/bin/bash
 
@@ -280,9 +280,9 @@ Implementing status
 
 PSI/J needs to ask the batch scheduler for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
-* :py:meth:`get_status_command` - like ``get_submit_command``, this should return a batch scheduler specific commandline, this time to output job status.
+* :py:meth:`.BatchSchedulerExecutor.get_status_command` - like ``get_submit_command``, this should return a batch scheduler specific commandline, this time to output job status.
 
-* :py:meth:`parse_status_output` - this will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
+* :py:meth:`.BatchSchedulerExecutor.parse_status_output` - this will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
 
 Here's an implementation for ``get_status_command``::
 
@@ -340,9 +340,9 @@ Here is an implementation for ``parse_status_output``, as well as a helper dicti
 
             return r
 
-``parse_status_output`` is given both the stdout and the exit code of ``qstat`` and must either transcribe that into a dictionary of :py:class:`JobStatus` objects describing the state of each job, or raise an exception.
+``parse_status_output`` is given both the stdout and the exit code of ``qstat`` and must either transcribe that into a dictionary of :py:class:`psij.JobStatus` objects describing the state of each job, or raise an exception.
 
-This implementation uses a helper, :py:meth:`check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`JobState` via the ``_STATE_MAP`` dictionary.
+This implementation uses a helper, :py:meth:`psij.executors.batch.batch_scheduler_executor.check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``psij.JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`psij.JobState` via the ``_STATE_MAP`` dictionary.
 
 With these status methods in place, the ``pytest`` command from before should execute to completion.
 
@@ -359,8 +359,8 @@ Implementing cancel
 
 The two methods to implement for cancellation follow the same pattern as for submission and status:
 
-* :py:meth:`get_cancel_command` - this should form a command for cancelling a job.
-* :py:meth:`process_cancel_command_output` - this should interpret the output from the cancel command.
+* :py:meth:`.BatchSchedulerExecutor.get_cancel_command` - this should form a command for cancelling a job.
+* :py:meth:`.BatchSchedulerExecutor.process_cancel_command_output` - this should interpret the output from the cancel command.
 
 It looks like you don't actually need to implement process_cancel_command_output beyond the stub we already have, to make the abstract class mechanism happy. Maybe that's something that should change in psi/j?
 
@@ -402,7 +402,7 @@ This isn't necessarily the right thing to do: some PBS installs will use 128+9 =
 What's missing?
 ===============
 
-The biggest thing that was omitted was in the mustache template. A :py:class:`Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples.
+The biggest thing that was omitted was in the mustache template. A :py:class:`psij.Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples.
 
 The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your batch scheduler, not just a few that seem obvious.
 

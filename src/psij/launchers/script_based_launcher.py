@@ -40,8 +40,7 @@ class ScriptBasedLauncher(Launcher):
     * the pre- and post- launcher scripts, or empty strings if they are not specified
 
     Additional positional arguments to the script can be specified by subclasses by overriding
-    the :func:`~psij.launchers.script_based_launcher.ScriptBasedLauncher._get_additional_args`
-    function.
+    the :meth:`~.get_additional_args` method.
 
     The remaining arguments to the script are the job executable and arguments.
 
@@ -139,7 +138,7 @@ class ScriptBasedLauncher(Launcher):
         args = ['/bin/bash', str(self._deployed_script_path), job.id, _str(log_file),
                 _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),
                 _path(spec.stdout_path), _path(spec.stderr_path)]
-        args += self._get_additional_args(job)
+        args += self.get_additional_args(job)
         assert spec.executable is not None
         args += [spec.executable]
         if spec.arguments is not None:
@@ -147,7 +146,7 @@ class ScriptBasedLauncher(Launcher):
 
         return args
 
-    def _get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: Job) -> List[str]:
         """
         Returns any additional arguments, after first mandatory four, to be passed to the script.
 

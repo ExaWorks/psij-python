@@ -81,13 +81,12 @@ class Descriptor(object):
     `psij.executors.local.LocalJobExecutor`.
     """
 
-    def __init__(self, name: str, version: StrictVersion, cls: str):
+    def __init__(self, name: str, version: StrictVersion, cls: str) -> None:
         """
         Initializes a descriptor.
 
         Parameters
-        ==========
-
+        ----------
         name
             The name of the executor or launcher. The automatic registration system will register
             the executor or launcher using this name. That is, the executor or launcher represented

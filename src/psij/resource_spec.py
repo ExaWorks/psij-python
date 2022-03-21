@@ -79,8 +79,8 @@ class ResourceSpecV1(ResourceSpec):
         """
         Returns or calculates a node count.
 
-        If the :attr:`node_count` property is specified, this method returns it. If not, a node
-        count is calculated from the :attr:`process_count` and :attr:`processes_per_node`.
+        If the `node_count` property is specified, this method returns it. If not, a node
+        count is calculated from `process_count` and `processes_per_node`.
 
         :return: An integer value with the specified or calculated node count.
         """
@@ -95,10 +95,10 @@ class ResourceSpecV1(ResourceSpec):
         """
         Returns or calculates a process count.
 
-        If the :attr:`process_count` property is specified, this method returns it, otherwise it
+        If the `process_count` property is specified, this method returns it, otherwise it
         returns 1.
 
-        :return: An integer value with either the value of :attr:`process_count` or one if the
+        :return: An integer value with either the value of `process_count` or one if the
             former is not specified.
         """
         self._check_constraints()
