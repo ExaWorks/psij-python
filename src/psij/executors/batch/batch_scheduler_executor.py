@@ -566,6 +566,11 @@ class _QueuePollThread(Thread):
         except subprocess.CalledProcessError as ex:
             out = ex.output
             exit_code = ex.returncode
+        except Exception as ex:
+            self._handle_poll_error(True,
+                                    ex,
+                                    f'Failed to poll for job status: {traceback.format_exc()}')
+            return
         else:
             exit_code = 0
             self._poll_error_count = 0
@@ -573,7 +578,7 @@ class _QueuePollThread(Thread):
         try:
             status_map = self.executor.parse_status_output(exit_code, out)
         except Exception as ex:
-            self._handle_poll_error(True,
+            self._handle_poll_error(False,
                                     ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
