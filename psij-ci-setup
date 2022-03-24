@@ -47,7 +47,7 @@ cron_install() {
     echo "The following line will be installed in your crontab:"
     echo "$LINE"
     echo "================================================================"
-    { crontab -l & echo "$LINE"; } | crontab -
+    { crontab -l && echo "$LINE"; } | crontab -
     
     declare -x | egrep -v "^declare -x (BASH_VERSINFO|DISPLAY|EUID|GROUPS|SHELLOPTS|TERM|UID|_)=" >psij-ci-env
 }
