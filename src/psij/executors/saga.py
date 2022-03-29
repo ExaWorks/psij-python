@@ -99,9 +99,7 @@ class SagaExecutor(JobExecutor):
             logger.debug('%s --> %s', jpsi_id, saga_job.state)
 
             job_status = JobStatus(_STATE_MAP[saga_job.state], time.time(), exit_code=ec)
-            jpsi_job._set_status(job_status, self)
-            if self._cb:
-                self._cb.job_status_changed(jpsi_job, job_status)
+            self._set_job_status(jpsi_job, job_status)
 
         return True
 
@@ -119,7 +117,7 @@ class SagaExecutor(JobExecutor):
         job_mapping = _JobMapping(job)
         with self._lock:
             self._jobs[job.id] = job_mapping
-        job._executor = self
+        job.executor = self
 
         jd = self._job_2_descr(job)
         saga_job = self._js.create_job(jd)
@@ -128,7 +126,7 @@ class SagaExecutor(JobExecutor):
         saga_job.add_callback(rs.STATE, self._state_cb)
 
         # TODO: the backend attribute is not standard; why do we need it?
-        self._update_job_status(job, JobStatus(JobState.QUEUED, metadata={'backend': self.url}))
+        self._set_job_status(job, JobStatus(JobState.QUEUED, metadata={'backend': self.url}))
 
         saga_job.run()
 
@@ -169,6 +167,7 @@ class SagaExecutor(JobExecutor):
 
         """
         saga_job = None
+        job.executor = self
         with self._lock:
             # try to find job in known jobs
             for job_mapping in self._jobs.values():
@@ -203,9 +202,9 @@ class SagaExecutor(JobExecutor):
         job._native_id = native_id
         state = _STATE_MAP[saga_job.state]
         if state.final:
-            self._update_job_status(job, JobStatus(state, exit_code=saga_job.exit_code))
+            self._set_job_status(job, JobStatus(state, exit_code=saga_job.exit_code))
         else:
-            self._update_job_status(job, JobStatus(state))
+            self._set_job_status(job, JobStatus(state))
 
     def _job_2_descr(self, job: Job) -> rs.job.Description:
         spec = job.spec

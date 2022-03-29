@@ -181,6 +181,7 @@ class BatchSchedulerExecutor(JobExecutor):
         self._ensure_work_dir()
         assert (job.spec)
 
+        job.executor = self
         context = self._create_script_context(job)
 
         # assumes job ids are unique
@@ -247,6 +248,7 @@ class BatchSchedulerExecutor(JobExecutor):
             The id of the batch scheduler job to attach to.
         """
         job._native_id = native_id
+        job.executor = self
         self._queue_poll_thread.register_job(job)
 
     @abstractmethod

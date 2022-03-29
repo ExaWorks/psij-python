@@ -206,11 +206,6 @@ class JobExecutor(ABC):
     def _print_plugin_status() -> None:
         _print_plugin_status(JobExecutor._executors, 'executor')
 
-    def _update_job_status(self, job: Job, job_status: 'psij.JobStatus') -> None:
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)
-
     @staticmethod
     def _check_cls_attr(ecls: Type['JobExecutor'], attr: str, name: str) -> None:
         if not hasattr(ecls, attr):
@@ -241,9 +236,16 @@ class JobExecutor(ABC):
 
     def _set_job_status(self, job: Job, status: JobStatus) -> None:
         try:
-            job._set_status(status, self)
+            job.status = status
         except Exception as ex:
-            logger.warning('failed to set status for job %s: %s', job.id, ex)
+            logger.warning('Failed to set status for job %s: %s', job.id, ex)
+
+    def _notify_callback(self, job: Job, status: JobStatus) -> None:
+        if self._cb:
+            try:
+                self._cb.job_status_changed(job, status)
+            except Exception as ex:
+                logger.warning('Job status callback for %s threw an exception: %s', job.id, ex)
 
 
 class _FunctionJobStatusCallback(JobStatusCallback):
