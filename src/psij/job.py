@@ -45,7 +45,7 @@ class Job(object):
         self._id = _generate_id()
         self._status = JobStatus(JobState.NEW)
         # need indirect ref to avoid a circular reference
-        self._executor = None  # type: Optional['psij.JobExecutor']
+        self.executor = None  # type: Optional['psij.JobExecutor']
         # allow the native ID to be anything and do the string conversion in the getter; there's
         # no point in storing integers as strings.
         self._native_id = None  # type: Optional[object]
@@ -102,6 +102,26 @@ class Job(object):
         """
         return self._status
 
+    @status.setter
+    def status(self, status: JobStatus) -> None:
+        with self._status_cv:
+            crt = self._status.state
+            nxt = status.state
+            if crt == nxt or crt.is_greater_than(nxt):
+                return
+            prev = JobStateOrder.prev(nxt)
+        if prev is not None and prev != crt:
+            self.status = JobStatus(prev)
+        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
+        with self._status_cv:
+            self._status = status
+            self._status_cv.notify_all()
+
+        if self.status_callback:
+            self.status_callback.job_status_changed(self, status)
+        if self.executor:
+            self.executor._notify_callback(self, status)
+
     def cancel(self) -> None:
         """
         Cancels this job.
@@ -111,30 +131,10 @@ class Job(object):
 
         :raises psij.SubmitException: if the job has not yet been submitted.
         """
-        if not self._executor:
+        if not self.executor:
             raise SubmitException('Cannot cancel job: not bound to an executor.')
         else:
-            self._executor.cancel(self)
-
-    def _set_status(self, status: JobStatus,
-                    executor: Optional['psij.JobExecutor'] = None) -> None:
-        with self._status_cv:
-            crt = self._status.state
-            nxt = status.state
-            if crt == nxt or crt.is_greater_than(nxt):
-                return
-            prev = JobStateOrder.prev(nxt)
-        if prev is not None and prev != crt:
-            self._set_status(JobStatus(prev))
-        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
-        with self._status_cv:
-            if executor:
-                self._executor = executor
-            self._status = status
-            self._status_cv.notify_all()
-
-        if self.status_callback:
-            self.status_callback.job_status_changed(self, status)
+            self.executor.cancel(self)
 
     def wait(self, timeout: Optional[timedelta] = None,
              target_states: Optional[Sequence[JobState]] = None) -> Optional[JobStatus]:
@@ -163,7 +163,7 @@ class Job(object):
 
         while True:
             with self._status_cv:
-                status = self.status
+                status = self._status
                 state = status.state
                 if target_states:
                     if state in target_states:
@@ -191,7 +191,7 @@ class Job(object):
     def __str__(self) -> str:
         """Returns a string representation of this job."""
         return 'Job[id={}, nativeId={}, executor={}, status={}]'.format(self._id, self._native_id,
-                                                                        self._executor, self.status)
+                                                                        self.executor, self.status)
 
 
 class JobStatusCallback(ABC):

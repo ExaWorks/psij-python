@@ -87,7 +87,7 @@ class RPJobExecutor(JobExecutor):
 
         status = JobStatus(new_state, time=time.time(),
                            metadata=metadata)
-        self._update_job_status(jpsi_job, status)
+        self._set_job_status(jpsi_job, status)
 
     def submit(self, job: Job) -> None:
         """
@@ -106,6 +106,7 @@ class RPJobExecutor(JobExecutor):
         if not spec:
             raise InvalidJobException('Missing specification')
 
+        job.executor = self
         try:
             td = self._job_2_descr(job)
             task = self._tmgr.submit_tasks(td)
@@ -142,7 +143,7 @@ class RPJobExecutor(JobExecutor):
         """
         with job._status_cv:
             if job.status.state == JobState.NEW:
-                job._set_status(JobStatus(JobState.CANCELED))
+                self._set_job_status(job, JobStatus(JobState.CANCELED))
                 return
 
         if job.id not in self._tasks:
@@ -175,14 +176,10 @@ class RPJobExecutor(JobExecutor):
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
 
+        job.executor = self
+
         task = self._tmgr.get_tasks(uids=[native_id])[0]
         self._tasks[job.id] = (job, task)
 
         state = self._state_map[task.state]
-        self._update_job_status(job, JobStatus(state, time=time.time()))
-
-    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
-
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)
+        self._set_job_status(job, JobStatus(state, time=time.time()))
