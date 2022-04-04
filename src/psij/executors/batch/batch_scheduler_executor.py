@@ -51,10 +51,10 @@ def _env_to_mustache(job: Job) -> List[Dict[str, str]]:
     if not job.spec.environment:
         return []
 
-    l = []
+    r = []
     for k, v in job.spec.environment.items():
-        l.append({'name': k, 'value': bash_escape(v)})
-    return l
+        r.append({'name': k, 'value': bash_escape(v)})
+    return r
 
 
 class BatchSchedulerExecutorConfig(JobExecutorConfig):
