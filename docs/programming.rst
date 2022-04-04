@@ -54,7 +54,7 @@ Executors
 
 Executors are concrete implementations of mechanisms that execute jobs.
 To get an instance of a specific executor, call
-:meth:`JobExecutor.get_instance(name) <psij.job_executor.JobExecutor.get_instance>`, 
+:meth:`JobExecutor.get_instance(name) <psij.job_executor.JobExecutor.get_instance>`,
 with ``name`` being one of the installed executor names. Executors can be
 installed from multiple sources, so the precise list of executors
 avaiable to a specific installation of the PSI/J Python library can vary.
@@ -70,8 +70,8 @@ The executor implementations provided by this version of PSI/J Python
 are:
 
 :class:`cobalt <psij.executors.batch.cobalt.CobaltJobExecutor>`
-    A job executor that can interact with the 
-    `Cobalt HPC Job Scheduler <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_, 
+    A job executor that can interact with the
+    `Cobalt HPC Job Scheduler <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_,
     which is used by `Argonne's <www.anl.gov>`_ `ALCF <www.alcf.anl.gov>`_ systems.
 
 :class:`flux <psij.executors.flux.FluxJobExecutor>`
@@ -81,20 +81,15 @@ are:
     A job executor that runs jobs locally by forking a subprocess.
 
 :class:`lsf <psij.executors.batch.lsf.LsfJobExecutor>`
-    An implementation of a job executor for the 
+    An implementation of a job executor for the
     `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_.
 
 :class:`rp <psij.executors.rp.RPJobExecutor>`
     Job executor for the `RADICAL Pilot system
     <https://radical-cybertools.github.io/radical-pilot/>`_.
 
-:class:`saga <psij.executors.saga.SagaExecutor>`
-    An executor that delegates job execution to the 
-    `RADICAL-SAGA <https://radical-cybertools.github.io/saga-python/index.html>`_
-    library.
-
 :class:`slurm <psij.executors.batch.slurm.SlurmJobExecutor>`
-    An executor for the 
+    An executor for the
     `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.
 
 
@@ -108,7 +103,7 @@ once a set of nodes has been allocated for the job. In essence, launchers
 are wrappers around the job executable which can provide additional
 features, such as setting up an MPI environment, starting a copy of the
 job executable on each allocated node, etc. To get a launcher instance,
-call :meth:`Launcher.get_instance(name) <psij.launcher.Launcher.get_instance>` 
+call :meth:`Launcher.get_instance(name) <psij.launcher.Launcher.get_instance>`
 with ``name`` being the name of a launcher. Like job executors, above,
 launchers are plugins and can come from various places. To obtain a list
 of launchers, you can run:
@@ -120,16 +115,16 @@ of launchers, you can run:
 The PSI/J Python library comes with a core set of launchers, which are:
 
 :class:`aprun <psij.launchers.aprun.AprunLauncher>`
-    Launches jobs using 
+    Launches jobs using
     `Cobalt's <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_ ``aprun``.
 
 :class:`jsrun <psij.launchers.jsrun.JsrunLauncher>`
-    Starts jobs using ``jsrun`` provided by the 
+    Starts jobs using ``jsrun`` provided by the
     `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_.
 
 :class:`mpirun <psij.launchers.mpirun.MPILauncher>`
-    Launches jobs using ``mpirun``, which is a tool provided by 
-    `MPI <https://www.mpi-forum.org/>`_ implementations, such as 
+    Launches jobs using ``mpirun``, which is a tool provided by
+    `MPI <https://www.mpi-forum.org/>`_ implementations, such as
     `Open MPI <https://www.open-mpi.org/>`_.
 
 :class:`multiple <psij.launchers.multiple.MultipleLauncher>`
@@ -141,7 +136,7 @@ The PSI/J Python library comes with a core set of launchers, which are:
     default launcher, which is used if nothing is explicitly specified.
 
 :class:`srun <psij.launchers.srun.SrunLauncher>`
-    Starts job using ``srun``, which is part of the 
+    Starts job using ``srun``, which is part of the
     `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.
 
 

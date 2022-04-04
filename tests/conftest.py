@@ -96,10 +96,6 @@ def _get_executors(config: Dict[str, str]) -> List[str]:
 def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
     if executor == 'auto':
         execs = ['local:single', 'local:multiple', 'batch-test:single', 'batch-test:multiple']
-        if config.option.environment.get('has_saga'):
-            execs.append('saga::fork://localhost/')
-            if config.option.environment.get('can_ssh_to_localhost'):
-                execs.append('saga::ssh://localhost/')
         queue_execs = _translate_executor(config, 'auto_q')
         assert len(queue_execs) in [0, 1]
         queue_exec = None
@@ -303,17 +299,6 @@ def _get_run_id(config):
     return run_id
 
 
-def _has_saga():
-    # try to instantiate SAGA executor
-    try:
-        from psij.executors.saga import SagaExecutor
-        SagaExecutor()
-        return True
-    except Exception as ex:
-        logger.info(ex)
-        return False
-
-
 def _has_flux():
     try:
         import flux
@@ -382,7 +367,6 @@ def _discover_environment(config):
         env['has_slurm'] = shutil.which('sbatch') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
         env['has_flux'] = _has_flux()
-        env['has_saga'] = _has_saga()
         env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
                                                         '-oStrictHostKeyChecking=no', 'localhost',
                                                         'true'], timeout=5)
