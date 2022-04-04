@@ -11,6 +11,10 @@ from executor_test_params import ExecutorTestParams
 _QUICK_EXECUTORS = set(['local', 'batch-test'])
 
 
+def _make_test_dir() -> None:
+    (Path.home() / '.psij' / 'test').mkdir(parents=True, exist_ok=True)
+
+
 def _get_timeout(execparams: ExecutorTestParams) -> Optional[timedelta]:
     if execparams.executor in _QUICK_EXECUTORS:
         return timedelta(minutes=10)
@@ -39,7 +43,8 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
 
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
-    with TemporaryDirectory(dir=Path.home() / '.psij' / 'work') as td:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
@@ -115,3 +120,19 @@ def test_parallel_jobs(execparams: ExecutorTestParams) -> None:
     status2 = job2.wait(timeout=_get_timeout(execparams))
     assert_completed(status1)
     assert_completed(status2)
+
+
+def test_env_var(execparams: ExecutorTestParams) -> None:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
+        outp = Path(td, 'stdout.txt')
+        job = Job(JobSpec(executable='/bin/bash', arguments=['-c', 'echo -n $TEST_VAR'], stdout_path=outp))
+        job.spec.environment = {'TEST_VAR': '_y_'}
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
+        status = job.wait(timeout=_get_timeout(execparams))
+        assert_completed(status)
+        f = outp.open("r")
+        contents = f.read()
+        f.close()
+        assert contents == '_y_'

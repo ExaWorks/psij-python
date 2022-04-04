@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import time
 import traceback
@@ -7,6 +8,7 @@ from pathlib import Path
 from threading import Thread, RLock
 from typing import Optional, List, Dict, Collection, cast, TextIO, Union
 
+from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
@@ -42,6 +44,17 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
         else:
             r[k] = v
     return r
+
+
+def _env_to_mustache(job: Job) -> List[Dict[str, str]]:
+    assert job.spec is not None
+    if not job.spec.environment:
+        return []
+
+    l = []
+    for k, v in job.spec.environment.items():
+        l.append({'name': k, 'value': bash_escape(v)})
+    return l
 
 
 class BatchSchedulerExecutorConfig(JobExecutorConfig):
@@ -83,6 +96,8 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         self.initial_queue_polling_delay = initial_queue_polling_delay
         self.queue_polling_error_threshold = queue_polling_error_threshold
         self.keep_files = keep_files
+        if 'PSIJ_BATCH_KEEP_FILES' in os.environ:
+            self.keep_files = True
 
 
 class InvalidJobStateError(Exception):
@@ -417,6 +432,7 @@ class BatchSchedulerExecutor(JobExecutor):
         ctx = {
             'job': job,
             'custom_attributes': _attrs_to_mustache(job),
+            'env': _env_to_mustache(job),
             'psij': {
                 'lib': FUNCTION_LIBRARY,
                 'launch_command': launch_command,
