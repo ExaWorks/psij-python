@@ -1,3 +1,0 @@
-# For SAGA executor
-radical.saga >= 1.8.0
-radical.utils
