@@ -54,7 +54,7 @@ Prerequisites:
 
 
 A not-implemented stub
-======================
+----------------------
 
 Add the project directory to the python path directory::
 
@@ -164,7 +164,7 @@ Running pytest again, we get as far as seeing PSI/J is trying to do submit-relat
  ../tutorial-play/psijpbs/pbspro.py:13: NotImplementedError
 
 Implementing job submission
-===========================
+---------------------------
 
 To implement submission, we need to implement these three methods:
 
@@ -192,7 +192,7 @@ executor initializer, pointing at a (as yet non-existent) template file, and rep
     from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
-    class PBSProJobExecutor(BatchSchedulerExecutor): 
+    class PBSProJobExecutor(BatchSchedulerExecutor):
 
     ...
 
@@ -276,7 +276,7 @@ That's enough to get jobs submitted using PSI/J, but not enough to run the test 
 
 
 Implementing status
-===================
+-------------------
 
 PSI/J needs to ask the batch scheduler for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
@@ -355,7 +355,7 @@ which should give this error (amongst others -- this commandline formation is ug
     FAILED tests/test_executor.py::test_cancel[pbspro] - NotImplementedError
 
 Implementing cancel
-===================
+-------------------
 
 The two methods to implement for cancellation follow the same pattern as for submission and status:
 
@@ -400,14 +400,14 @@ This isn't necessarily the right thing to do: some PBS installs will use 128+9 =
 
 
 What's missing?
-===============
+---------------
 
 The biggest thing that was omitted was in the mustache template. A :py:class:`psij.Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples.
 
 The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your batch scheduler, not just a few that seem obvious.
 
 How to distribute your executor
-===============================
+-------------------------------
 
 If you want to share your executor with others, here are two ways:
 
