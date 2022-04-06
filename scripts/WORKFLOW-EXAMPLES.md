@@ -1,6 +1,10 @@
 # Workflow examples
 
-## PDF to Cloud Image
+1. [PDF to Wordcloud](#pdf-to-wordcloud-image)
+2. [Executing a singularity container](#executing-a-singularity-conatiner)
+3. [Submitting a MPI job](#executing-an-mpi-job)
+
+## PDF to Wordcloud Image
 
 Input: PDF
 Output: png
@@ -95,7 +99,7 @@ RUN pip install wordcloud
 
 ## Executing a singularity conatiner
 
-We will run the PDF2Wordcloud example in a container. We will use the docker conatiner described above and execute it with singularity.
+We will run the PDF2Wordcloud example in a container. We will use the docker conatiner described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all requiered singularity options.
 
 ```
 import os
@@ -194,6 +198,11 @@ for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingul
     jex.submit(j)
     j.wait()
 ```
+
+## Executing an MPI job
+
+In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psi-j-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpi"`.
+
 
 
 <!-- ## Environmental COVID Workflow
