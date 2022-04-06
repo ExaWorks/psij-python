@@ -10,7 +10,7 @@ PSI/J to communicate with specific job schedulers, such as Slurm or LSF.
 .. toctree::
     :maxdepth: 2
 
-    installation
+    getting_started
     programming
     contributing
     tutorial_add_executor
