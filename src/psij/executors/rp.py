@@ -87,7 +87,7 @@ class RPJobExecutor(JobExecutor):
 
         status = JobStatus(new_state, time=time.time(),
                            metadata=metadata)
-        self._update_job_status(jpsi_job, status)
+        self._set_job_status(jpsi_job, status)
 
     def submit(self, job: Job) -> None:
         """
@@ -106,6 +106,7 @@ class RPJobExecutor(JobExecutor):
         if not spec:
             raise InvalidJobException('Missing specification')
 
+        job.executor = self
         try:
             td = self._job_2_descr(job)
             task = self._tmgr.submit_tasks(td)
@@ -142,7 +143,7 @@ class RPJobExecutor(JobExecutor):
         """
         with job._status_cv:
             if job.status.state == JobState.NEW:
-                job._set_status(JobStatus(JobState.CANCELED))
+                self._set_job_status(job, JobStatus(JobState.CANCELED))
                 return
 
         if job.id not in self._tasks:
@@ -153,7 +154,7 @@ class RPJobExecutor(JobExecutor):
         self._tmgr.cancel_tasks(uids=task.uid)
 
     def list(self) -> List[str]:
-        """See :func:`~JobExecutor.list`.
+        """See :func:`~psij.job_executor.JobExecutor.list`.
 
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case RP task IDs.
@@ -166,23 +167,19 @@ class RPJobExecutor(JobExecutor):
         """
         Attaches a job to a process.
 
-        The job must be in the :attr:`~psij.JobState.NEW` state.
+        The job must be in the :attr:`~psij.job_state.JobState.NEW` state.
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-            obtained through :func:`~psij.executors.RPJobExecutor.list` method.
+            obtained through :func:`~list` method.
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
+
+        job.executor = self
 
         task = self._tmgr.get_tasks(uids=[native_id])[0]
         self._tasks[job.id] = (job, task)
 
         state = self._state_map[task.state]
-        self._update_job_status(job, JobStatus(state, time=time.time()))
-
-    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
-
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)
+        self._set_job_status(job, JobStatus(state, time=time.time()))

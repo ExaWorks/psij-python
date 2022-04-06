@@ -28,7 +28,9 @@ class MultipleLauncher(ScriptBasedLauncher):
         """
         super().__init__(script_path=script_path, config=config)
 
-    def _get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: Job) -> List[str]:
+        """See \
+        :func:`~psij.launchers.script_based_launcher.ScriptBasedLauncher.get_additional_args`."""
         spec = job.spec
         assert spec is not None
         return [str(self._get_count(spec.resources))]

@@ -1,3 +1,2 @@
 -r requirements.txt
--r requirements-connector-saga.txt
 -r requirements-connector-radical.txt

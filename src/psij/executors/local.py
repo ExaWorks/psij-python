@@ -160,7 +160,7 @@ class _ProcessReaper(threading.Thread):
 
 class LocalJobExecutor(JobExecutor):
     """
-    A job executor that runs jobs locally using :func:`popen`.
+    A job executor that runs jobs locally using :class:`subprocess.Popen`.
 
     Limitations: in Linux, attached jobs always appear to complete with a zero exit code regardless
     of the actual exit code.
@@ -193,6 +193,7 @@ class LocalJobExecutor(JobExecutor):
         spec = job.spec
         if not spec:
             raise InvalidJobException('Missing specification')
+        job.executor = self
 
         p = _ChildProcessEntry(job, self, self._get_launcher(self._get_launcher_name(spec)))
         assert p.launcher
@@ -207,9 +208,9 @@ class LocalJobExecutor(JobExecutor):
                                          close_fds=True, cwd=spec.directory, env=_get_env(spec))
             self._reaper.register(p)
             job._native_id = p.process.pid
-            self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
-                                                   metadata={'nativeId': job._native_id}))
-            self._update_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
+            self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
+                                                metadata={'nativeId': job._native_id}))
+            self._set_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
         except Exception as ex:
             raise SubmitException('Failed to submit job', exception=ex)
 
@@ -219,10 +220,7 @@ class LocalJobExecutor(JobExecutor):
 
         :param job: The job to cancel.
         """
-        with job._status_cv:
-            if job.status.state == JobState.NEW:
-                job._set_status(JobStatus(JobState.CANCELED))
-                return
+        self._set_job_status(job, JobStatus(JobState.CANCELED))
         self._reaper.cancel(job)
 
     def _process_done(self, p: _ProcessEntry) -> None:
@@ -241,8 +239,8 @@ class LocalJobExecutor(JobExecutor):
                 message = p.launcher.get_launcher_failure_message(p.out)
             state = JobState.FAILED
 
-        self._update_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
-                                                 message=message))
+        self._set_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
+                                              message=message))
 
     def list(self) -> List[str]:
         """
@@ -274,14 +272,15 @@ class LocalJobExecutor(JobExecutor):
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
+        job.executor = self
         pid = int(native_id)
 
         self._reaper.register(_AttachedProcessEntry(job, psutil.Process(pid), self))
         # We assume that the native_id above is a PID that was obtained at some point using
         # list(). If so, the process is either still running or has completed. Either way, we must
         # bring it up to ACTIVE state
-        self._update_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
-        self._update_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
+        self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
+        self._set_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
 
     def _get_launcher_name(self, spec: JobSpec) -> str:
         if spec.launcher is None:

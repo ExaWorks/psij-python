@@ -69,7 +69,7 @@ class FluxJobExecutor(JobExecutor):
         """
         job._native_id = fut.jobid()
         job_status = JobStatus(JobState.QUEUED, time=time.time())
-        self._update_job_status(job, job_status)
+        self._set_job_status(job, job_status)
 
     def _event_cb(self, job: Job, fut: flux.job.FluxExecutorFuture, evt: Any) -> None:
         """Callback triggered when Flux job logs an event.
@@ -79,7 +79,7 @@ class FluxJobExecutor(JobExecutor):
         jpsi_state = self._event_map[evt.name]
         metadata = copy.deepcopy(evt.context)
         job_status = JobStatus(jpsi_state, time=time.time(), metadata=metadata)
-        self._update_job_status(job, job_status)
+        self._set_job_status(job, job_status)
 
     def _done_cb(self, job: Job, fut: flux.job.FluxExecutorFuture) -> None:
         """Callback triggered when Flux job completes.
@@ -103,7 +103,7 @@ class FluxJobExecutor(JobExecutor):
                 status = JobStatus(
                     JobState.FAILED, time=time.time(), exit_code=returncode
                 )
-        self._update_job_status(job, status)
+        self._set_job_status(job, status)
         # remove future from cache
         del self._futures[job]
 
@@ -117,9 +117,10 @@ class FluxJobExecutor(JobExecutor):
         self._futures[job] = fut
 
     def submit(self, job: Job) -> None:
-        """See :func:`~JobExecutor.submit`."""
+        """See :func:`~psij.job_executor.JobExecutor.submit`."""
         assert job.spec
         assert job.spec.attributes
+        job.executor = self
         if isinstance(job.spec.resources, ResourceSpecV1):
             resources = job.spec.resources
         elif isinstance(job.spec.resources, ResourceSpec):
@@ -157,13 +158,13 @@ class FluxJobExecutor(JobExecutor):
         self._add_flux_callbacks(job, fut)
 
     def cancel(self, job: Job) -> None:
-        """See :func:`~JobExecutor.cancel`."""
+        """See :func:`~psij.job_executor.JobExecutor.cancel`."""
         fut = self._futures[job]
         if not fut.cancel():
             flux.job.cancel_async(self._fh, fut.jobid())
 
     def list(self) -> List[str]:
-        """See :func:`~JobExecutor.submit`.
+        """See :func:`~psij.job_executor.JobExecutor.list`.
 
         Return a list of ids representing jobs that are running on the
         underlying implementation - in this case Flux job IDs.
@@ -180,11 +181,7 @@ class FluxJobExecutor(JobExecutor):
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-          obtained through :func:`~psij.executors.RPJobExecutor.list` method.
+          obtained through :func:`~psij.executors.flux.FluxJobExecutor.list` method.
         """
+        job.executor = self
         self._add_flux_callbacks(job, self._flux_executor.attach(native_id))
-
-    def _update_job_status(self, job: Job, job_status: JobStatus) -> None:
-        job._set_status(job_status, self)
-        if self._cb:
-            self._cb.job_status_changed(job, job_status)

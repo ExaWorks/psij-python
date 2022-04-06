@@ -5,7 +5,7 @@ import threading
 from pathlib import Path
 from typing import Optional, List
 
-from psij.launchers.launcher import Launcher
+from psij.job_launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
 from psij.job import Job
 
@@ -40,8 +40,7 @@ class ScriptBasedLauncher(Launcher):
     * the pre- and post- launcher scripts, or empty strings if they are not specified
 
     Additional positional arguments to the script can be specified by subclasses by overriding
-    the :func:`~psij.launchers.script_based_launcher.ScriptBasedLauncher._get_additional_args`
-    function.
+    the :meth:`~.get_additional_args` method.
 
     The remaining arguments to the script are the job executable and arguments.
 
@@ -127,7 +126,7 @@ class ScriptBasedLauncher(Launcher):
             raise
 
     def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
-        """See :func:`~psij.launchers.launcher.Launcher.get_launch_command`."""
+        """See :func:`~psij.job_launcher.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
@@ -139,7 +138,7 @@ class ScriptBasedLauncher(Launcher):
         args = ['/bin/bash', str(self._deployed_script_path), job.id, _str(log_file),
                 _str(spec.pre_launch), _str(spec.post_launch), _path(spec.stdin_path),
                 _path(spec.stdout_path), _path(spec.stderr_path)]
-        args += self._get_additional_args(job)
+        args += self.get_additional_args(job)
         assert spec.executable is not None
         args += [spec.executable]
         if spec.arguments is not None:
@@ -147,7 +146,7 @@ class ScriptBasedLauncher(Launcher):
 
         return args
 
-    def _get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: Job) -> List[str]:
         """
         Returns any additional arguments, after first mandatory four, to be passed to the script.
 
@@ -156,9 +155,9 @@ class ScriptBasedLauncher(Launcher):
         return []
 
     def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.launchers.launcher.Launcher.is_launcher_failure`."""
+        """See :func:`~psij.job_launcher.Launcher.is_launcher_failure`."""
         return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.launchers.launcher.Launcher.get_launcher_failure_message`."""
+        """See :func:`~psij.job_launcher.Launcher.get_launcher_failure_message`."""
         return '\n'.join(output.split('\n')[:-1])

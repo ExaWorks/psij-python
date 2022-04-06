@@ -48,7 +48,8 @@ class Launcher(ABC):
 
         Returns
         -------
-            Returns `True` if the output
+        Returns `True` if the output of the launcher indicates that it has exited with a
+        non-zero exit code due to an error occurring in the launcher.
 
         """
         pass
@@ -59,7 +60,7 @@ class Launcher(ABC):
         Extracts the launcher error message from the output of this launcher's invocation.
 
         It is understood that the output is such that
-        :func:`~psij.laucnhers.launcher.Launcher.is_launcher_failure` returns `True` on it.
+        :func:`~psij.launcher.Launcher.is_launcher_failure` returns `True` on it.
 
         Parameters
         ----------
@@ -68,8 +69,8 @@ class Launcher(ABC):
 
         Returns
         -------
-            A string representing the part of the launcher output that describes the launcher
-            error.
+        A string representing the part of the launcher output that describes the launcher
+        error.
         """
         pass
 

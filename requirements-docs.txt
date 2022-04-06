@@ -2,7 +2,6 @@
 -r requirements.txt
 
 # Executors
--r requirements-connector-saga.txt
 -r requirements-connector-radical.txt
 
 

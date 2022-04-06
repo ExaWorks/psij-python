@@ -81,19 +81,18 @@ class Descriptor(object):
     `psij.executors.local.LocalJobExecutor`.
     """
 
-    def __init__(self, name: str, version: StrictVersion, cls: str):
+    def __init__(self, name: str, version: StrictVersion, cls: str) -> None:
         """
         Initializes a descriptor.
 
         Parameters
-        ==========
-
+        ----------
         name
             The name of the executor or launcher. The automatic registration system will register
             the executor or launcher using this name. That is, the executor or launcher represented
             by this descriptor will be available for instantiation using either
             :meth:`~psij.job_executor.JobExecutor.get_instance` or
-            :meth:`~psij.launchers.launcher.Launcher.get_instance`
+            :meth:`~psij.job_launcher.Launcher.get_instance`
         version:
             The version of the executor/launcher. Multiple versions can be registered under a
             single name.

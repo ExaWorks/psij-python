@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 from executor_test_params import ExecutorTestParams
 
 
-_QUICK_EXECUTORS = set(['local', 'batch-test', 'saga'])
+_QUICK_EXECUTORS = set(['local', 'batch-test'])
 
 
 def _get_timeout(execparams: ExecutorTestParams) -> Optional[timedelta]:

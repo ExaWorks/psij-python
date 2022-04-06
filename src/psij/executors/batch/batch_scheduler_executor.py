@@ -61,9 +61,9 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         Parameters
         ----------
         launcher_log_file
-            See :func:`~JobExecutorConfig.__init__`.
+            See :class:`~psij.JobExecutorConfig`.
         work_directory
-            See :func:`~JobExecutorConfig.__init__`.
+            See :class:`~psij.JobExecutorConfig`.
         queue_polling_interval
             an interval, in seconds, at which the batch scheduler queue will be polled for updates
             to jobs.
@@ -85,27 +85,29 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         self.keep_files = keep_files
 
 
-class _InvalidJobStateError(Exception):
+class InvalidJobStateError(Exception):
+    """An exception that signals that a job cannot be cancelled due to it being already done."""
+
     pass
 
 
 class BatchSchedulerExecutor(JobExecutor):
     """A base class for batch scheduler executors.
 
-    This class implements a generic :class:`~JobExecutor` that interacts with batch schedulers.
+    This class implements a generic :class:`~psij.JobExecutor` that interacts with batch schedulers.
     There are two main components to the executor: job submission and queue polling. Submission
     is implemented by generating a submit script which is then fed to the queuing system submit
     command.
 
     The submit script is generated using a :func:`~generate_submit_script`. An implementation of
     this functionality based on Mustache/Pystache (see https://mustache.github.io/ and
-    https://pypi.org/project/pystache/) exists in :class:`~TemplatedScriptGenerator`. This class
+    https://pypi.org/project/pystache/) exists in :class:`~.TemplatedScriptGenerator`. This class
     can be instantiated by concrete implementations of a batch scheduler executor and the submit
     script generation can be delegated to that instance, which has a method whose signature matches
     that of :func:`~generate_submit_script`. Besides an opened file which points to where the
     contents of the submit script are to be written, the parameters to
-    :func:`~generate_submit_script` are the :class:`~Job` that is being submitted and a `context`,
-    which is a dictionary with the following structure::
+    :func:`~generate_submit_script` are the :class:`~psij.Job` that is being submitted and a
+    `context`, which is a dictionary with the following structure::
 
         {
             'job': <the job being submitted>
@@ -121,15 +123,17 @@ class BatchSchedulerExecutor(JobExecutor):
     *script output file*.
 
     The *launch command* is a list of strings which the script generator should render as the
-    command to execute. It wraps the job executable in the proper :class:`~Launcher`.
+    command to execute. It wraps the job executable in the proper :class:`~psij.Launcher`.
 
     The function library is a dictionary mapping function names to functions for all public
-    functions in the :mod:`~template_function_library` module.
+    functions in the :mod:`~.template_function_library` module.
 
     The submit script *must* perform two essential actions:
+
         1. redirect the output of the executable part of the script to the *script output file*,
         which is a file in `<script_dir>` named `<native_id>.out`, where `<native_id>` is the id
         given to the job by the queuing system.
+
         2. store the exit code of the launch command in the *exit code file* named
         `<native_id>.ec`, also inside `<script_dir>`.
 
@@ -172,11 +176,12 @@ class BatchSchedulerExecutor(JobExecutor):
         self.work_directory.mkdir(parents=True, exist_ok=True)
 
     def submit(self, job: Job) -> None:
-        """See :func:`~JobExecutor.submit`."""
+        """See :func:`~psij.JobExecutor.submit`."""
         logger.info('Job %s: submitting', job.id)
         self._ensure_work_dir()
         assert (job.spec)
 
+        job.executor = self
         context = self._create_script_context(job)
 
         # assumes job ids are unique
@@ -207,7 +212,7 @@ class BatchSchedulerExecutor(JobExecutor):
         """Cancels a job if it has not otherwise completed.
 
         A command is constructed using :func:`~get_cancel_command` and executed in order to cancel
-        the job. Also see :func:`~JobExecutor.cancel`.
+        the job. Also see :func:`~psij.JobExecutor.cancel`.
         """
         if job.native_id is None:
             raise SubmitException('Job does not have a native ID.')
@@ -218,7 +223,7 @@ class BatchSchedulerExecutor(JobExecutor):
         except subprocess.CalledProcessError as ex:
             try:
                 self.process_cancel_command_output(ex.returncode, ex.output)
-            except _InvalidJobStateError:
+            except InvalidJobStateError:
                 # do nothing; the job has completed anyway
                 pass
             except SubmitException:
@@ -243,6 +248,7 @@ class BatchSchedulerExecutor(JobExecutor):
             The id of the batch scheduler job to attach to.
         """
         job._native_id = native_id
+        job.executor = self
         self._queue_poll_thread.register_job(job)
 
     @abstractmethod
@@ -350,7 +356,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
         Raises
         ------
-        _InvalidJobStateError
+        InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
         psij.SubmitException
@@ -393,9 +399,9 @@ class BatchSchedulerExecutor(JobExecutor):
             The string output of the status command as prescribed by :func:`~get_status_command`.
         Returns
         -------
-        A dictionary mapping native job ids to :class:`~JobStatus` objects. The implementation of
-        this method need not process the *exit code file* or the *script output file* since it is
-        done by the base `BatchSchedulerExecutor` implementation.
+        A dictionary mapping native job ids to :class:`~psij.JobStatus` objects. The
+        implementation of this method need not process the *exit code file* or the *script
+        output file* since it is done by the base `BatchSchedulerExecutor` implementation.
         """
         pass
 
@@ -521,7 +527,7 @@ class BatchSchedulerExecutor(JobExecutor):
     def list(self) -> List[str]:
         """Returns a list of jobs known to the underlying implementation.
 
-        See :func:`~JobExecutor.list`.
+        See :func:`~psij.JobExecutor.list`.
         The returned list is a list of `native_id` strings representing jobs known to the
         underlying batch scheduler implementation, whether submitted through this executor or not.
         Implementations are encouraged to restrict the results to jobs accessible by the current
@@ -562,6 +568,11 @@ class _QueuePollThread(Thread):
         except subprocess.CalledProcessError as ex:
             out = ex.output
             exit_code = ex.returncode
+        except Exception as ex:
+            self._handle_poll_error(True,
+                                    ex,
+                                    f'Failed to poll for job status: {traceback.format_exc()}')
+            return
         else:
             exit_code = 0
             self._poll_error_count = 0
@@ -569,7 +580,7 @@ class _QueuePollThread(Thread):
         try:
             status_map = self.executor.parse_status_output(exit_code, out)
         except Exception as ex:
-            self._handle_poll_error(True,
+            self._handle_poll_error(False,
                                     ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
