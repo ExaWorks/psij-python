@@ -95,7 +95,7 @@ RUN pip install wordcloud
 
 
 
-## Environmental COVID Workflow
+<!-- ## Environmental COVID Workflow
 
 Wastewater samples are collected and then concentrated to select for viral particles. RNA is then extracted from the concentrated viral solution. This RNA is prepped for sequencing using an amplicon panel targeting the entire [SARS-CoV-2 genome](https://www.ncbi.nlm.nih.gov/sars-cov-2/), and then sequenced. Resulting sequence files are the input for the pipeline below. The sequences are assembled and reads are mapped against the SARS-CoV-2 reference genome for variant detection.
 
@@ -117,4 +117,4 @@ spec = psij.JobSpec()
     spec.stdout_path = 'log.stdout'
     spec.attributes
 ```
-
+ -->
