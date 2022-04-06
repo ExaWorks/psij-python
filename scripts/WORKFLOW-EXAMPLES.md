@@ -7,6 +7,7 @@
 ## PDF to Wordcloud Image
 
 Input: PDF
+
 Output: png
 
 Scripts:
@@ -163,3 +164,31 @@ for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingul
 ## Executing an MPI job
 
 In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psi-j-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpi"`.
+
+```
+# Example for: mpiexec -n 36 -ppn 36 echo HI
+
+import psij
+
+jex = psij.JobExecutor.get_instance('local')
+
+
+spec = psij.JobSpec()
+spec.executable = 'echo'
+spec.arguments = ["Hello", "World"]
+spec.stdout_path = 'echo.stdout'
+spec.stderr_path = 'echo.stderr'
+
+resource = psij.ResourceSpecV1
+resource.node_count = 10
+
+print(resource.computed_node_count())
+
+job = psij.Job()
+job.spec = spec
+job.spec.launcher = "mpi"
+job.spec.resources = None
+
+jex.submit(job)
+job.wait()
+```
