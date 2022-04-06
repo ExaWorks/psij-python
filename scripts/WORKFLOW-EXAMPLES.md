@@ -102,39 +102,7 @@ RUN pip install wordcloud
 We will run the PDF2Wordcloud example in a container. We will use the docker conatiner described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all requiered singularity options.
 
 ```
-import os
-import psij
-
-
-jex = psij.JobExecutor.get_instance('local')
-pdfFile = "example.pdf"
-pngFile = "worcloud.png"
-image = "docker://wilke/pdf2wordcloud:psij"
-
-
-def make_pdf2text_spec(input=None, output=None):
-    '''
-    :param input: path to input file
-    :param output: name for output file
-    '''
-    spec = psij.JobSpec()
-    spec.executable = 'pdftotext'
-    spec.arguments = [input, output]
-    spec.stdout_path = 'pdftotext.stdout'
-    spec.stderr_path = 'pdftotext.stderr'
-    spec.attributes.set_custom_attribute("DEMO", "DEMO")
-
-    return spec
-
-
-def make_text2wordcloud_spec(input, output):
-    spec = psij.JobSpec()
-    spec.executable = 'wordcloud_cli'
-    spec.arguments = ["--text", input, "--imagefile", output]
-    spec.stdout_path = 'wordcloud.stdout'
-    spec.stderr_path = 'wordcloud.stderr'
-    return spec
-
+...
 
 def make_singularity_spec(image=None,
                           bind_input=[],
@@ -145,7 +113,7 @@ def make_singularity_spec(image=None,
     '''
     :param image: path to image file
     :param bind_input: List of input paths
-    :param bind_output: :ist of output paths
+    :param bind_output: :List of output paths
     :param command: name of script/command to be executed
     :param options: command line options for command
     '''
@@ -168,15 +136,10 @@ def make_singularity_spec(image=None,
     return spec
 
 
-def make_job(spec, attributes):
-    job = psij.Job()
-    job.spec = spec
-    return job
+...
 
 
 # Create job spec
-pdf2textSpec = make_pdf2text_spec(pdfFile, "words.txt")
-text2wordcloudSpec = make_text2wordcloud_spec("words.txt", pngFile)
 
 pdf2textSingularitySpec = make_singularity_spec(image=image,
                                                 bind_input=[pdfFile],
@@ -189,11 +152,9 @@ text2wordcloudSingularitySpec = make_singularity_spec(image=image,
                                                       command="pdftotext",
                                                       options=["--text", "words.singularity.txt", "--imagefile", pngFile])
 
+....
 
 # Create jobs from spec
-pdf2textJob = make_job(pdf2textSpec, None)
-text2wordcloudJob = make_job(text2wordcloudSpec, None)
-
 for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingularitySpec, None)]:
     jex.submit(j)
     j.wait()
@@ -202,29 +163,3 @@ for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingul
 ## Executing an MPI job
 
 In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psi-j-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpi"`.
-
-
-
-<!-- ## Environmental COVID Workflow
-
-Wastewater samples are collected and then concentrated to select for viral particles. RNA is then extracted from the concentrated viral solution. This RNA is prepped for sequencing using an amplicon panel targeting the entire [SARS-CoV-2 genome](https://www.ncbi.nlm.nih.gov/sars-cov-2/), and then sequenced. Resulting sequence files are the input for the pipeline below. The sequences are assembled and reads are mapped against the SARS-CoV-2 reference genome for variant detection.
-
-![image](../web/images/assembly-workflow.svg)
-
-This workflow consists of four major steps or jobs:
-
-1. Sequence mapping
-2. Variant calling
-3. Quality control and filtering
-4. Group and plot results for all samples
-
-The tools are packaged in docker/singularity containers. The job spec documents for the jobs above have the follwoing format:
-
-```
-spec = psij.JobSpec()
-    spec.executable = 'singularity'
-    spec.arguments = ['run' , "-bind" , $directory , $tool , $option ]
-    spec.stdout_path = 'log.stdout'
-    spec.attributes
-```
- -->
