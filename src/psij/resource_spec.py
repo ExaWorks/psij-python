@@ -103,7 +103,7 @@ class ResourceSpecV1(ResourceSpec):
         """
         self._check_constraints()
         if self.process_count is not None:
-            return self.computed_process_count
+            return self.process_count
         (nc, pc, ppn) = self._compute_counts()
         return pc
 
