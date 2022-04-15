@@ -1,8 +1,5 @@
 import os
 import psij
-# for debugging remove later
-from psij import Export
-e = Export()
 
 jex = psij.JobExecutor.get_instance('local')
 
