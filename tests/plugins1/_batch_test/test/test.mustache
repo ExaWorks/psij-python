@@ -22,6 +22,8 @@ export {{key}}="{{value}}"
     {{/custom_attributes.test}}
 {{/job.spec.attributes}}
 
-{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+{{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}
+{{name}}="{{value}}" \
+{{/env}}{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 
 echo "$?" > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"

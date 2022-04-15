@@ -27,10 +27,16 @@
 #COBALT --{{key}}="{{value}}"
     {{/custom_attributes.COBALT}}
 {{/job.spec.attributes}}
+
+{{#env}}
+#COBALT --env {{name}}={{value}}
+{{/env}}
+
 {{!since we redirect the output manually, below, tell COBALT not to do its own thing, since it
 only results in empty files that are not cleaned up}}
 #COBALT -e /dev/null
 #COBALT -o /dev/null
+
 
 {{!redirect output here instead of through #COBALT directive since COBALT_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the

@@ -27,9 +27,13 @@ only results in empty files that are not cleaned up}}
 #PBS -e /dev/null
 #PBS -o /dev/null
 
-{{#job.spec.environment}}
-export {{key}}="{{value}}"  # TODO: escaping of value
-{{/job.spec.environment}}
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+{{#env}}
+#PBS -v {{name}}={{value}}
+{{/env}}
+
 
 {{#job.spec.directory}}
 cd "{{.}}"
