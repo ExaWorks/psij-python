@@ -1,7 +1,7 @@
 # Job examples
 
 1. [PDF to Wordcloud](#pdf-to-wordcloud-image)
-2. [Executing a singularity container](#executing-a-singularity-conatiner)
+2. [Executing a singularity container](#executing-a-singularity-container)
 3. [Submitting a MPI job](#executing-an-mpi-job)
 
 ## PDF to Wordcloud Image
@@ -98,7 +98,7 @@ RUN apt-get install -y \
 RUN pip install wordcloud
 ```
 
-## Executing a singularity conatiner
+## Executing a singularity container
 
 We will run the PDF2Wordcloud example in a container. We will use the docker conatiner described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all requiered singularity options.
 
