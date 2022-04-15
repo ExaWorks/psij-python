@@ -3,7 +3,7 @@
 This document will guide you through the install procedure and your first hello world example.
 
 - [Requirements](#requirements)
-- [Install psi-j](#install-psj-j)
+- [Install psi-j](#install-psi-j)
 - [Hello World example](#hello-world)
 
 ## Requirements
@@ -24,7 +24,7 @@ Install psi-j from the github repository:
     `git clone https://github.com/ExaWorks/psi-j-python.git`
 
 2. `cd psi-j-python`
-3. `make install`
+3. `pip install .`
 
 
 
