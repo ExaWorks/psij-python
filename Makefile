@@ -38,20 +38,11 @@ checks: typecheck stylecheck
 
 .PHONY: docs
 docs:
-	rm -rf docs/.generated
-	rm -rf docs/.build
-	sphinx-build --keep-going -n -W -b html docs docs/.build/
-
-
-.PHONY: web-docs
-web-docs:
-	rm -rf docs/.generated
-	sphinx-build -W -b html -D html_theme='cloud' docs docs/.web-build/
+	sphinx-build -a docs docs/build
 
 .PHONY: style
 style:
 	autopep8 -i -r src tests
-
 
 .PHONY: install
 install:

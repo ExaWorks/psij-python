@@ -13,7 +13,7 @@ needs_sphinx = '1.6'
 # Set Sphinx variables
 master_doc = 'index'
 
-project = u'Portable Submission Interface for Jobs'
+project = u'PSI/J'
 copyright = u'The ExaWorks Team'
 release = u'0.0.1'
 version = release
@@ -21,6 +21,15 @@ version = release
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
+html_static_path = ['_static']
+html_css_files = [
+    'css/custom.css',
+]
+html_logo = "images/exaworks-psi-j-logo-white.png"
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+}
 autoclass_content = 'both'
 add_module_names = False
 python_use_unqualified_type_names = True

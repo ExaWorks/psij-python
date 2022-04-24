@@ -13,13 +13,13 @@ jobs:
         uses: actions/checkout@v2
       -
         name: Build Website
-        run: /bin/bash web/build.sh
+        run: /bin/bash docs/build.sh
       -
         name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
-          build_dir: web-build
+          build_dir: docs/build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

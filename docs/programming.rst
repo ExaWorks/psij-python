@@ -138,11 +138,3 @@ The PSI/J Python library comes with a core set of launchers, which are:
 :class:`srun <psij.launchers.srun.SrunLauncher>`
     Starts job using ``srun``, which is part of the
     `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.
-
-
-API Reference
-~~~~~~~~~~~~~
-
-.. toctree::
-
-    .generated/modules

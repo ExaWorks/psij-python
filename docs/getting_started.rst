@@ -11,6 +11,8 @@ HPC centers. If you want your project to be able to request resources
 from one or more of Slurm, LSF, Flux, Cobalt, PBS, and your local machine,
 we think you will find that PSI/J simplifies your work considerably.
 
+.. image:: images/exaworks-psij.png
+    :width: 350px
 
 Who PSI/J is (probably) not for
 -------------------------------

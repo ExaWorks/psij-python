@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 .idea/
+.vscode/
 .mypy_cache/
 .pytest_cache/
 
@@ -16,4 +17,5 @@ psi_j_python.egg-info/
 
 venv*
 .venv*
-build/
+docs/build
+build
