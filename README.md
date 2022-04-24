@@ -1,3 +1,6 @@
+[![Python Package](https://github.com/ExaWorks/psi-j-python/actions/workflows/python-package.yml/badge.svg)](https://github.com/ExaWorks/psi-j-python/actions/workflows/python-package.yml)
+[![Slack](https://img.shields.io/badge/slack-%40exaworks-yellowgreen?logo=slack)](https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ)
+
 <img src="https://exaworks.org/images/exaworks-psij-logo.png" width="300" style="margin-bottom: 2em"/>
 
 # Portable Submission Interface for Jobs
