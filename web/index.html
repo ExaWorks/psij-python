@@ -489,10 +489,12 @@ $ python setup.py install
     $("#docs-frame").on("load", function() {
         resizeDocsFrame(false);
         var hash = window.docs.location.hash;
+        window.scrollTo(window.scrollX, window.scrollY - 56);
         if (hash) {
             var anchor = window.docs.document.getElementById(hash.substr(1));
             if (anchor) {
                 anchor.scrollIntoView();
+                window.scrollTo(window.scrollX, window.scrollY - 56);
             }
         }
 

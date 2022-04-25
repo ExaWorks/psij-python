@@ -772,7 +772,7 @@
                 scrollingActive = true; // disable toc focus calc
                 $('body').animate({
                     // NOTE: hash == "" for top of document
-                    scrollTop: hash ? $(escapeHash(hash)).offset().top : 0
+                    scrollTop: hash ? $(escapeHash(hash)).offset().top - 56: 0
                 }, {
                     duration: scrollSpeed,
                     step: function(now, tween) {
