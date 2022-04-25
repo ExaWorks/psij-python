@@ -470,6 +470,7 @@ $ python setup.py install
                 var fdoc = frame.contentWindow.document;
 
                 frame.style.height = (fdoc.body.offsetHeight + 180) + 'px';
+                $("#docs-frame").css("height", (fdoc.body.offsetHeight + 180) + 'px');
 
                 $(fdoc).find("a.reference.external").each(function() {
                     $(this).attr("target", "_parent");

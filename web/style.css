@@ -182,6 +182,7 @@ pre {
     padding: 0;
     overflow: hidden;
     border: none;
+    height: 100vh;
 }
 
 .bottom-spacer {
