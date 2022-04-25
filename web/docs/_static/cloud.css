@@ -11,8 +11,9 @@
 
 @import url("https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.css");
 @import url("style.css");
-@import url("theme-3.css");
+@import url("theme-9.css");
 @import url("basic.css");
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400&display=swap");
 
 
 * {
@@ -28,14 +29,19 @@ html {
 body {
     padding: 0;
     color: #000;
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif;
+    font-weight: 300;
     font-size: 100%;
     line-height: 1.5em;
     margin: 0;
 }
 
-ul {
-    padding-inline-start: 40px;
+ul, ol {
+    padding-inline-start: 4pt;
+}
+
+div.relbar-top {
+    background-color: #e0e0e0;
 }
 
 div.related {
@@ -125,7 +131,7 @@ div.sphinxsidebar h3, div.sphinxsidebar h4 {
     padding: 0;
     margin: 24px 16px 0 0;
 
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif;
     font-weight: normal;
     color: var(--color-fg-norm-1);
 }
@@ -464,7 +470,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: "Gill Sans", serif;
+    font-family: "Nunito Sans", serif;
     font-weight: normal;
     color: var(--color-fg-norm-1);
     clear: both;
@@ -493,15 +499,16 @@ div.body h1 + .subtitle {
 }
 
 div.body h2, div.body p.rubric {
-    font-size: 1.875em;
+    font-size: 16pt;
     line-height: 1.6em;
-    margin: 0.8em 0 0.8em 0;
+    margin: 1.2em 0 0.2em 0;
 }
 
 div.body h3 {
     font-size: 1.625em;
     line-height: 1.8461538461538463em;
     margin: 0.692em 0 0.692em 0;
+    padding-left: 12pt;
 }
 
 div.body h2,
@@ -509,25 +516,20 @@ div.body p.rubric,
 .section.emphasize-children > .section > h3,
 #table-of-contents > h1,
 h1#search-documentation {
-    padding: 6px 10px;
-    background-color: #84A6C7;
-    border: 1px solid rgba(0,0,0,.125);
-    border-width: 0 0 0 6px;
-    color: #ffffff;
-    text-shadow: 1px 1px rgba(0,0,0,.125);
+    padding: 4pt;
+    padding-left: 12pt;
 
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -o-border-radius: 5px;
-    -ms-border-radius: 5px;
-    border-radius: 5px;
+    /*background-color: #84A6C7;*/
+    border: none;
+    color: #000000;
+    text-shadow: 1px 1px rgba(0,0,0,.125);
 }
 
 div.body h2,
 div.body p.rubric,
 #table-of-contents > h1,
 h1#search-documentation {
-    margin: 0.8em 1px 0.8em 1px;
+    margin: 1.2em 1px 0.2em 1px;
 }
 
 
@@ -547,9 +549,9 @@ div.body h2:hover a.headerlink:not(:hover),
     opacity: 0.4;
 }
 
-div.body h2.highlighted,
+div.body h2.highlighted, div.body h3.highlighted,
 .section.emphasize-children > .section > h3.highlighted {
-    background-color: #fbe54e;
+    background-color: #efe0e0;
     border-color: #F8D186;
     color: #333;
 }
@@ -701,7 +703,13 @@ div.body p {
 
 div.body li, div.body dd {
     text-align: justify;
+    margin-left: 12pt;
 }
+
+div.body ol > li {
+    margin-left: 24pt;
+}
+
 
 div.body hr {
     margin: 0 10px;
@@ -753,7 +761,7 @@ a.biglink {
 }
 
 a.external:before {
-    content: "\21D7";
+    /*content: "\21D7";*/
     padding-right: .1em;
 }
 
@@ -776,12 +784,6 @@ dt:target,
     padding: 4px;
     margin: -4px;
     background-color: #fbe54e;
-
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -o-border-radius: 10px;
-    -ms-border-radius: 10px;
-    border-radius: 10px;
 }
 
 table.fullwidth { width: 100%; }
@@ -1006,19 +1008,40 @@ div.highlight pre, td.linenos pre {
 }
 
 div.highlight pre {
-    background-color: #eeffcc;
+    background-color: #e8e8e8;
 
-    border: 1px solid #AACC99;
-    border-width: 1px 0;
-    border-style: solid dotted dotted solid;
+    padding: 2pt;
+    padding-top: 8pt;
+    padding-bottom: 8pt;
+    margin: 2pt;
+    padding-left: 16pt;
+    border-radius: 4pt;
+}
 
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
-    -ms-border-radius: 3px;
-    border-radius: 3px;
+div.highlight .kn, div.highlight .k, div.highlight .ow {
+    color: #791e41;
+}
 
-    color: #111111;
+div.highlight .nn {
+    color: #c78400;
+}
+
+div.highlight .s1, div.highlight .s2 {
+    color: #8800c7;
+}
+
+div.highlight .mi {
+    color: #495700;
+}
+
+div.highlight .si {
+    color: #4000f0;
+    font-weight: bold;
+    font-style: normal;
+}
+
+div.highlight .nb {
+    color: #a16b5b;
 }
 
 div[class|="highlight"] + div[class|="highlight"] {
@@ -1163,6 +1186,7 @@ dl.method > dt,
 dl.attribute > dt,
 dl.class > dt,
 dl.exception > dt,
+dl.property > dt,
 dl.classmethod > dt,
 dl.staticmethod > dt {
     display: inline-block;
@@ -1175,6 +1199,22 @@ dl.staticmethod > dt {
     -o-border-radius: 3px;
     -ms-border-radius: 3px;
     border-radius: 3px;
+}
+
+code.xref.py-func > .pre,
+code.xref.py-class > .pre,
+code.xref.py-meth > .pre,
+code.xref.py-mod > .pre,
+code.xref.py-attr > .pre {
+    font-family: var(--main-font), sans-serif;
+    font-size: 12pt;
+    color: #6060ff;
+}
+
+code.sig-name > .pre,
+dl.method > dt > code {
+    font-family: var(--main-font), sans-serif;
+    font-size: 12pt;
 }
 
 dl.has-headerlink > dt,
@@ -1192,16 +1232,57 @@ dl.function > dt,
 dl.method > dt,
 dl.classmethod > dt,
 dl.staticmethod > dt {
-    background-color: #deebf5;
+    background-color: #ffb88c;
 }
 
 dl.class > dt {
-    background-color: #eee3ce;
+    background-color: #f5a080;
     border-width: 0 0 0 6px;
 }
 
 dl.exception > dt {
     background-color: #eee3ce;
+}
+
+dl.field-list ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+dl.field-list > dd {
+    margin-bottom: 16pt;
+}
+
+dl.field-list ul li {
+    margin-left: 0;
+}
+
+dl.field-list ul li strong,
+dl.field-list dd strong {
+    background-color: #f0f0f0;
+    padding-left: 2pt;
+    padding-right: 2pt;
+}
+
+em.sig-param,
+dl.field-list em {
+    font-style: normal;
+    font-weight: 400;
+    color: #802000;
+}
+
+em.property {
+    font-style: normal;
+    font-weight: 400;
+}
+
+dl.property > dt {
+    background-color: #fae199;
+    display: inline-block;
+}
+
+dl.field-list .reference em {
+    color: #6060ff;
 }
 
 dl.object > dt:before,
@@ -1214,11 +1295,16 @@ dl.exception > dt > .property:first-child,
 dl.classmethod > dt > .property:first-child,
     dl.method[subtype] > dt > .property:first-child,
 dl.staticmethod > dt > .property:first-child {
-    font-size: 0.8em;
+    font-size: 12pt;
     font-weight: bold;
     font-style: italic;
     letter-spacing: 0.1em;
-    color: rgba(0,0,0,0.3);
+    color: rgba(0,0,0,0.6);
+}
+
+dt.sig, .sig-name {
+    font-family: var(--main-font), sans-serif;
+    font-size: 12pt;
 }
 
 .desc-section  dl.attribute > dt:before {
@@ -1298,7 +1384,7 @@ table.indextable td > dl > dd > dl {
         }
 
         div.body {
-            padding-left: calc((100% - 13in) / 2);
+            padding-left: max(calc((100% - 13in) / 2), 8pt);
         }
 
         div.sphinxsidebar { width: 2.5in; }
