@@ -27,6 +27,7 @@
         <link rel="stylesheet" href="style.css?id=2">
         <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer">
     </head>
     <body>
         <v-app id="psij-app">
@@ -59,7 +60,12 @@
         <v-row align="center">
 
             <v-col align="center">
-                <div class="banner-title">An abstraction layer over cluster schedulers</div>
+                <v-card-title class="text-h5 justify-center">
+                    Portable Submission Interface for Jobs
+                </v-card-title>
+                <v-card-text>
+                    A Python abstraction layer over cluster schedulers
+                </v-card-text>
             </v-col>
             <v-col align="center">
                 <img id="big-puzzle" src="images/puzzle6.png">
@@ -74,6 +80,9 @@
         <v-row>
             <v-col align="center">
                 <v-card align="center" max-width="400pt">
+                    <div class="icon-logo">
+                        <i class="fa-solid fa-server" style="color: rgb(154, 58, 104);"></i>
+                    </div>
                     <v-card-title class="text-h5 justify-center">
                         Write Scheduler Agnostic HPC Applications
                     </v-card-title>
@@ -95,6 +104,9 @@
         <v-row>
             <v-col align="center">
                 <v-card align="center" max-width="400pt">
+                    <div class="icon-logo">
+                        <i class="fa-solid fa-terminal" style="color: rgb(221, 61, 90);"></i>
+                    </div>
                     <v-card-title class="text-h5 justify-center">
                         <span class="psi-j-font">PSI/J</span> runs entirely in user space
                     </v-card-title>
@@ -108,6 +120,9 @@
             </v-col>
             <v-col align="center">
                 <v-card align="center" max-width="400pt">
+                    <div class="icon-logo">
+                        <i class="fa-solid fa-puzzle-piece" style="color: rgb(241, 90, 61);"></i>
+                    </div>
                     <v-card-title class="text-h5 justify-center">
                         Use built-in or community contributed plugins
                     </v-card-title>
@@ -124,6 +139,9 @@
 
             <v-col align="center">
                 <v-card align="center" max-width="400pt">
+                    <div class="icon-logo">
+                        <i class="fa-solid fa-save" style="color: rgb(253, 162, 20);"></i>
+                    </div>
                     <v-card-title class="text-h5 justify-center">
                         <span class="psi-j-font">PSI/J</span> has a rich HPC legacy
                     </v-card-title>

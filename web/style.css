@@ -72,6 +72,16 @@ body .v-application a {
     color: var(--color-fg-inv-2);
 }
 
+#main-banner .v-card__title.text-h5 {
+    font-size: 20pt !important;
+    font-weight: 400;
+}
+
+#main-banner .v-card__text {
+    font-size: 16pt !important;
+    font-weight: 300;
+}
+
 .banner-title {
     width: 280pt;
     font-size: 24pt;
@@ -190,4 +200,15 @@ pre {
     height: 196pt;
     clear: both;
     background-color: var(--color-global-bg);
+}
+
+#psij-app .icon-logo i {
+    display: block;
+    font-size: 24pt;
+    font-weight: 900!important;
+    padding-top: 8pt;
+}
+
+.v-card__title:not(:first-child) {
+    padding-top: 8pt;
 }
