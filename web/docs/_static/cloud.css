@@ -1102,6 +1102,10 @@ h1 code.samp.literal > em {
     font-weight: normal;
 }
 
+code.literal .pre {
+    font-family: var(--code-font);
+}
+
 div.sphinxsidebar code.literal,
 a.reference code.literal,
 div.related a code.literal,
@@ -1206,14 +1210,14 @@ code.xref.py-class > .pre,
 code.xref.py-meth > .pre,
 code.xref.py-mod > .pre,
 code.xref.py-attr > .pre {
-    font-family: var(--main-font), sans-serif;
+    font-family: var(--code-font), sans-serif;
     font-size: 12pt;
     color: #6060ff;
 }
 
 code.sig-name > .pre,
 dl.method > dt > code {
-    font-family: var(--main-font), sans-serif;
+    font-family: var(--code-font), sans-serif;
     font-size: 12pt;
 }
 
@@ -1303,7 +1307,7 @@ dl.staticmethod > dt > .property:first-child {
 }
 
 dt.sig, .sig-name {
-    font-family: var(--main-font), sans-serif;
+    font-family: var(--code-font), sans-serif;
     font-size: 12pt;
 }
 

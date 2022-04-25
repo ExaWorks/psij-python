@@ -12,6 +12,7 @@
     --color-fg-lines: #6b6bff;
     --color-global-bg: #ffffff;
     --main-font: "Nunito Sans" !important;
+    --code-font: "Nunito Sans" !important;
 }
 
 #psij-app * {
