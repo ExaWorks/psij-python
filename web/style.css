@@ -28,8 +28,14 @@ body .v-application a {
     background-color: var(--color-fg-lines) !important;
 }
 
-.v-app-bar .gh-link {
+.v-app-bar .gh-link, .v-app-bar .slack-link {
     margin-top: 4pt;
+    margin-left: 6pt;
+}
+
+.slack-link {
+    margin-top: -4px;
+    margin-bottom: -2px;
 }
 
 
