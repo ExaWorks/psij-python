@@ -466,15 +466,19 @@ $ python setup.py install
         watch: {
             maintabs: function(newVal, oldVal) {
                 window.setTimeout(hljs.highlightAll, 100);
+                crtpath.tab = newVal;
+                window.location.hash = buildPath(crtpath);
                 if (newVal == "docs") {
-                    window.setTimeout(resizeDocsFrame(false), 100);
+                    var docpath = buildDocsPath(crtpath);
+                    $(document).ready(function() {
+                        $("#docs-frame").attr("src", docpath);
+                        window.setTimeout(resizeDocsFrame(false), 100);
+                    });
                 }
                 else {
                     crtpath.doc = null;
                     crtpath.dochash = null;
                 }
-                crtpath.tab = newVal;
-                window.location.hash = buildPath(crtpath);
             }
         }
     });
