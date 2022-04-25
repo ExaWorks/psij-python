@@ -158,29 +158,38 @@
     </v-container>
 </div>
 <div id="main-content">
-    <v-row align="center">
-        <v-col class="text-end">
-            <img height="64pt" src="https://exaworks.org/images/doe.png">
-        </v-col>
-        <v-col class="text-start">
-            <span class="psi-j-font">PSI/J</span> is funded by the U.S. Department of Energy
-        </v-col>
-        <v-col class="text-end">
-            <img height="64pt" src="https://exaworks.org/images/ecp.png">
-        </v-col>
-        <v-col class="text-start">
-            <span class="psi-j-font">PSI/J</span> is part of the Exascale Computing Project
-        </v-col>
-    </v-row>
-    <v-row align="center">
+    <v-row>
         <v-col align="center">
-            <img height="64pt" src="https://exaworks.org/images/bnl-200.png">
-        </v-col>
-        <v-col align="center">
-            <img height="64pt" src="https://exaworks.org/images/llnl-200.png">
-        </v-col>
-        <v-col align="center">
-            <img height="64pt" src="https://exaworks.org/images/anl-200.png">
+            <v-card flat color="transparent">
+                <v-row>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/ornl.png">
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col class="text-end">
+                        <img height="20pt" src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png" style="margin-top: 6pt">
+                    </v-col>
+                    <v-col class="text-start logo-text">
+                        <span class="psi-j-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end" style="vertical-align: top">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png" style="margin-top: -4px">
+                    </v-col>
+                    <v-col class="text-start logo-text">
+                        <span class="psi-j-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
         </v-col>
     </v-row>
 </div>
@@ -416,21 +425,32 @@ $ python setup.py install
                 </v-tabs-items>
 <div class="bottom-spacer">&nbsp;</div>
                 <v-footer padless absolute>
-<v-col>
-    <v-card flat max-width="400pt">
-        <v-card-title class="text-h5">
-            GitHub
-        </v-card-title>
+                    <v-container>
+                    <v-row>
+                        <v-col>
+                            <v-card flat max-width="400pt">
+                                <v-card-title class="text-h5">
+                                    GitHub
+                                </v-card-title>
 
-        <v-card-text>
-            <ul class="no-bullet">
-                <li><a href="https://github.com/ExaWorks/job-api-spec"><span class="psi-j-font flushleft">PSI/J</span> Specification</a></li>
-                <li><a href="https://github.com/ExaWorks/psi-j-python"><span class="psi-j-font flushleft">PSI/J</span> Python Library</a></li>
-                <li><a href="https://github.com/ExaWorks">The ExaWorks Project</a></li>
-            </ul>
-        </v-card-text>
-  </v-card>
-</v-col>
+                                <v-card-text>
+                                    <ul class="no-bullet">
+                                        <li><a href="https://github.com/ExaWorks/job-api-spec"><span class="psi-j-font flushleft">PSI/J</span> Specification</a></li>
+                                        <li><a href="https://github.com/ExaWorks/psi-j-python"><span class="psi-j-font flushleft">PSI/J</span> Python Library</a></li>
+                                        <li><a href="https://github.com/ExaWorks">The ExaWorks Project</a></li>
+                                    </ul>
+                                </v-card-text>
+                          </v-card>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <v-card flat>
+                                &copy; 2021-2022 - The ExaWorks Project
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                    </v-container>
                 </v-footer>
         </v-app>
 

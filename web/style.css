@@ -212,3 +212,7 @@ pre {
 .v-card__title:not(:first-child) {
     padding-top: 8pt;
 }
+
+.logo-text {
+    font-size: 9pt;
+}
