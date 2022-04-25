@@ -31,7 +31,7 @@
     <body>
         <v-app id="psij-app">
                 <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
-                    <v-tabs v-model="maintabs" @change="tabChanged">
+                    <v-tabs v-model="maintabs">
                         <v-tab href="#index" key="index"><div class="psi-j-font logo">PSI/J</div></v-tab>
                         <v-tab href="#install" key="install">Install</v-tab>
                         <v-tab href="#docs" key="docs">Documentation</v-tab>
@@ -44,7 +44,7 @@
                     </div>
                 </v-app-bar>
                 <div id="top-spacer"></div>
-                <v-tabs-items v-model="maintabs2">
+                <v-tabs-items v-model="maintabs">
                     <v-tab-item value="index" key="index">
 
 
@@ -230,7 +230,7 @@ $ python setup.py install
 <!--------                Docs                         ---------->
 <!--------------------------------------------------------------->
 
-<iframe id="docs-frame" name="docs" src="docs/index.html"></iframe>
+<iframe id="docs-frame" name="docs"></iframe>
 
                     </v-tab-item>
 
@@ -417,59 +417,111 @@ $ python setup.py install
         </v-app>
 
 <script>
-    var crttab = null;
+    var crtpath = null;
     v = new Vue({
         el: '#psij-app',
         vuetify: new Vuetify(),
         data: {
             themes: ["theme-1", "theme-3"],
-            maintabs2: "index",
-            tabChanged: function (name) {
-                console.log("Tab changed to " + name);
+            maintabs: "index"
+        },
+        watch: {
+            maintabs: function(newVal, oldVal) {
                 window.setTimeout(hljs.highlightAll, 100);
-                if (name == "docs") {
+                if (newVal == "docs") {
                     window.setTimeout(resizeDocsFrame(false), 100);
                 }
-            },
-        },
-        computed: {
-            maintabs: {
-                get() {
-                    // for some odd reason, tab switching fails to work
-                    // if both tabs and tab items use the same model and
-                    // the model uses getters and setters; it works fine
-                    // if the model is not computed, but then we can't
-                    // mess with the url
-                    var val = getTabFromHash(window.location.hash);
-                    this.maintabs2 = val;
-                    return val;
-                },
-                set(val) {
-                    window.location.hash = "#" + val;
-                    this.maintabs2 = val;
-                    crttab = val;
-                    window.setTimeout(function() {resizeDocsFrame(false)}, 1000);
+                else {
+                    crtpath.doc = null;
+                    crtpath.dochash = null;
                 }
+                crtpath.tab = newVal;
+                window.location.hash = buildPath(crtpath);
             }
         }
     });
     hljs.highlightAll();
+
+    crtpath = getPathFromHash(window.location.hash);
+    v.maintabs = crtpath.tab;
+    if (crtpath.tab == "docs") {
+        $(document).ready(function() {
+            var docpath = buildDocsPath(crtpath);
+            $("#docs-frame").prop("src", docpath);
+        });
+    }
     $(window).on("hashchange", function() {
-        var tab = getTabFromHash(window.location.hash);
-        if (v.maintabs != tab) {
-            v.maintabs = tab;
+        crtpath = getPathFromHash(window.location.hash);
+        if (v.maintabs != crtpath.tab) {
+            v.maintabs = crtpath.tab;
         }
     });
 
-    crttab = window.location.hash ? window.location.hash.substr(1) : "index";
+    function buildPath(crtpath) {
+        if (!crtpath.tab) {
+            return "";
+        }
+        if (!crtpath.doc || crtpath.tab != "docs") {
+            return "#" + crtpath.tab;
+        }
+        if (!crtpath.dochash) {
+            return "#" + crtpath.tab + "/" + crtpath.doc;
+        }
+        return "#" + crtpath.tab + "/" + crtpath.doc + "/#" + crtpath.dochash;
+    }
+
+    function buildDocsPath(crtpath) {
+        if (crtpath.tab != "docs") {
+            return "";
+        }
+        if (!crtpath.doc) {
+            return "/docs/index.html";
+        }
+        if (!crtpath.dochash) {
+            return "/docs/" + crtpath.doc;
+        }
+        else {
+            return "/docs/" + crtpath.doc + "#" + crtpath.dochash;
+        }
+    }
+
+    function getPathFromHash(hash) {
+        if (hash == "") {
+            return {tab: "index", doc: null, dochash: null};
+        }
+        var els = hash.split("/");
+        var tab = els[0].substr(1);
+        var doc = null;
+        var dochash = null;
+        if (els.length == 2) {
+            doc = els[1];
+        }
+        if (els.length > 2) {
+            var last = els[els.length - 1];
+            if (last && last.startsWith("#")) {
+                dochash = last.substr(1);
+                doc = els.slice(1, -1).join("/");
+            }
+            else {
+                doc = els.slice(1).join("/");
+                dochash = null;
+            }
+        }
+        return {tab: tab, doc: doc, dochash: dochash};
+    }
+
+
+    console.log(crtpath);
 
     function resizeDocsFrame() {
-        if (crttab == "docs") {
-            var frame = document.getElementById("docs-frame");
-            if (frame && frame.contentWindow && frame.contentWindow.document && frame.contentWindow.document.body) {
-                var fdoc = frame.contentWindow.document;
+        if (crtpath.tab == "docs") {
+            if (window.docs && window.docs.document && window.docs.document.body) {
+                var fdoc = window.docs.document;
 
-                frame.style.height = (fdoc.body.offsetHeight + 180) + 'px';
+                if (fdoc.body.offsetHeight == 0) {
+                    window.setTimeout(function() {resizeDocsFrame(false)}, 100);
+                    return;
+                }
                 $("#docs-frame").css("height", (fdoc.body.offsetHeight + 180) + 'px');
 
                 $(fdoc).find("a.reference.external").each(function() {
@@ -479,10 +531,22 @@ $ python setup.py install
         }
     };
 
-    $("#docs-frame").on("load", function() {
-        resizeDocsFrame(false);
-        var hash = window.docs.location.hash;
+    docsHashChange = function(path, hash) {
+        if (!path.startsWith("/docs/")) {
+            throw new Exception("Something is wrong with the docs path " +
+            "(should start) with '/docs/'" + path);
+        }
+        if (hash.startsWith("#")) {
+            hash = hash.substr(1);
+        }
+        path = path.substr("/docs/".length);
         window.scrollTo(window.scrollX, window.scrollY - 56);
+        window.location.hash = buildPath({tab: "docs", doc: path, dochash: hash});
+    }
+
+    docsLoaded = function(path, hash) {
+        docsHashChange(path, hash);
+        resizeDocsFrame();
         if (hash) {
             var anchor = window.docs.document.getElementById(hash.substr(1));
             if (anchor) {
@@ -503,7 +567,7 @@ $ python setup.py install
         ibody.scrollpos = function() {
             return html.scrollTop;
         }
-    });
+    }
 </script>
     </body>
 </html>

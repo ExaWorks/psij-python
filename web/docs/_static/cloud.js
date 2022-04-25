@@ -988,6 +988,13 @@
             .filter(":has(> dt > a.headerlink:last-child)").addClass("has-headerlink");
     });
 
+    $(window).on("hashchange", function() {
+        parent.docsHashChange(window.location.pathname, window.location.hash)
+    });
+    $(window).on("load", function() {
+        parent.docsLoaded(window.location.pathname, window.location.hash)
+    });
+
     /*==========================================================================
      * eof
      *==========================================================================*/
