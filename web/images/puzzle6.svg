@@ -368,7 +368,7 @@
        width="1.6522545"
        height="1.6522545">
       <feFlood
-         flood-opacity="0.647059"
+         flood-opacity="0.40000000000000002"
          flood-color="rgb(0,0,0)"
          result="flood"
          id="feFlood67279" />
@@ -404,7 +404,7 @@
        width="1.6522545"
        height="1.6522545">
       <feFlood
-         flood-opacity="0.647059"
+         flood-opacity="0.40000000000000002"
          flood-color="rgb(0,0,0)"
          result="flood"
          id="feFlood67279-9" />
@@ -440,7 +440,7 @@
        width="1.6522545"
        height="1.6522545">
       <feFlood
-         flood-opacity="0.647059"
+         flood-opacity="0.40000000000000002"
          flood-color="rgb(0,0,0)"
          result="flood"
          id="feFlood67279-6" />
@@ -505,9 +505,9 @@
        style="font-size:66.6667px;line-height:125%;font-family:Saira;-inkscape-font-specification:Saira;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect32712);fill:none;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><tspan
          x="295.50391"
          y="519.06246"
-         id="tspan67774"><tspan
+         id="tspan68092"><tspan
            style="fill:#ffffff"
-           id="tspan67772">PSI/J</tspan></tspan></text>
+           id="tspan68090">PSI/J</tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-9.9214983,-2.9532456)"
@@ -515,9 +515,9 @@
        style="font-size:66.6667px;line-height:125%;font-family:Saira;-inkscape-font-specification:Saira;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect84870);fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><tspan
          x="521.39844"
          y="567.1199"
-         id="tspan67778"><tspan
+         id="tspan68096"><tspan
            style="font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans';fill:#ffffff;stroke:#ffffff"
-           id="tspan67776">Core</tspan></tspan></text>
+           id="tspan68094">Core</tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-112.13917,40.687868)"
@@ -527,7 +527,7 @@
        y="0"><tspan
          x="549.29276"
          y="561.34519"
-         id="tspan67780">PBS</tspan></text>
+         id="tspan68098">PBS</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-62.396262,41.371454)"
@@ -537,7 +537,7 @@
        y="0"><tspan
          x="532.73454"
          y="561.34519"
-         id="tspan67782">Slurm</tspan></text>
+         id="tspan68100">Slurm</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-9.6278545,41.488281)"
@@ -547,7 +547,7 @@
        y="0"><tspan
          x="556.37282"
          y="561.34519"
-         id="tspan67784">LSF</tspan></text>
+         id="tspan68102">LSF</tspan></text>
     <circle
        style="fill:#e83c25;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linejoin:round;filter:url(#filter67289)"
        id="path67025"
