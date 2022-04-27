@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class JobExecutor(ABC):
-    """This is an abstract base class for all JobExecutor implementations."""
+    """An abstract base class for all JobExecutor implementations."""
 
     _executors = {}  # type: Dict[str, List[_VersionEntry['JobExecutor']]]
 

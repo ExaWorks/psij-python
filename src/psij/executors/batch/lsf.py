@@ -26,7 +26,16 @@ class LsfExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class LsfJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the LSF Workload Manager."""
+    """A :class:`~psij.JobExecutor` for the LSF Workload Manager.
+
+    The `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_
+    is the system resource manager on LLNL's Sierra and Lassen, and ORNL's Summit.
+
+    Uses the 'bsub', 'bjobs', and 'bkill' commands, respectively, to submit,
+    monitor, and cancel jobs.
+
+    Creates a batch script with #BSUB directives when submitting a job.
+    """
 
     # see https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bjobs-description
     _STATE_MAP = {

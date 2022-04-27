@@ -17,7 +17,17 @@ class SlurmExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class SlurmJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the Slurm Workload Manager."""
+    """A :class:`~psij.JobExecutor` for the Slurm Workload Manager.
+
+    The `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_ is a
+    widely used resource manager running on machines such as
+    NERSC's Perlmutter, as well as a variety of LLNL machines.
+
+    Uses the 'sbatch', 'squeue', and 'scancel' commands, respectively, to submit,
+    monitor, and cancel jobs.
+
+    Creates a batch script with #SBATCH directives when submitting a job.
+    """
 
     # see https://slurm.schedmd.com/squeue.html
     _STATE_MAP = {

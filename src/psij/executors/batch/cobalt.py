@@ -27,7 +27,16 @@ class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class CobaltJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the Cobalt Workload Manager."""
+    """A :class:`~psij.JobExecutor` for the Cobalt Workload Manager.
+
+    The `Cobalt HPC Job Scheduler <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_,
+    is used by `Argonne's <www.anl.gov>`_ `ALCF <www.alcf.anl.gov>`_ systems.
+
+    Uses the ``qsub``, ``qstat``, and ``qdel`` commands, respectively, to submit,
+    monitor, and cancel jobs.
+
+    Creates a batch script with #COBALT directives when submitting a job.
+    """
 
     # see https://Cobalt.schedmd.com/squeue.html
     _STATE_MAP = {

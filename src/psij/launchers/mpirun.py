@@ -7,7 +7,12 @@ from psij.launchers import MultipleLauncher
 
 
 class MPILauncher(MultipleLauncher):
-    """Launches a job using `mpirun`."""
+    """Launches jobs using ``mpirun``.
+
+    ``mpirun`` is a tool provided by
+    `MPI <https://www.mpi-forum.org/>`_ implementations, such as
+    `Open MPI <https://www.open-mpi.org/>`_.
+    """
 
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         """

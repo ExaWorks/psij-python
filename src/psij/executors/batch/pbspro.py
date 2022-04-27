@@ -49,7 +49,16 @@ class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
 
 
 class PBSProJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for PBS Pro."""
+    """A :class:`~psij.JobExecutor` for PBS Pro.
+
+    `PBS Pro <https://www.altair.com/pbs-professional/>`_ is a resource manager
+    on certain machines at Argonne National Lab, among others.
+
+    Uses the 'qsub', 'qstat', and 'qdel' commands, respectively, to submit,
+    monitor, and cancel jobs.
+
+    Creates a batch script with #PBS directives when submitting a job.
+    """
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
         """Initializes a :class:`~PBSProJobExecutor`."""

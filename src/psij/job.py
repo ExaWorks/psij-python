@@ -50,7 +50,7 @@ class Job(object):
         # no point in storing integers as strings.
         self._native_id = None  # type: Optional[object]
         self.status_callback = None  # type: Optional[JobStatusCallback]
-        """Setting this property registers a :class:`~psij.JobStatusCallback` with this executor.
+        """Setting this attribute registers a :class:`~psij.JobStatusCallback` with this executor.
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`."""
@@ -61,22 +61,22 @@ class Job(object):
     @property
     def id(self) -> str:
         """
-        Returns this job’s ID.
+        This job’s ID, read-only.
 
-         The ID is assigned automatically by the implementation when this `Job` object is
-         constructed. The ID is guaranteed to be unique on the machine on which the `Job` object
-         was instantiated. The ID does not have to match the ID of the underlying LRM job, but is
-         used to identify `Job` instances as seen by a client application.
+        The ID is assigned automatically by the implementation when this `Job` object is
+        constructed. The ID is guaranteed to be unique on the machine on which the `Job` object
+        was instantiated. The ID does not have to match the ID of the underlying LRM job, but is
+        used to identify `Job` instances as seen by a client application.
         """
         return self._id
 
     @property
     def native_id(self) -> Optional[str]:
         """
-        Returns the native ID of this job.
+        The ID of this job according to the underlying LRM, read-only.
 
         The native ID may not be available until after the job is submitted to a
-        :class:`~psij.JobExecutor`.
+        :class:`~psij.JobExecutor`, in which case the attribute is ``None``.
         """
         if self._native_id is None:
             return None
@@ -190,8 +190,8 @@ class Job(object):
 
     def __str__(self) -> str:
         """Returns a string representation of this job."""
-        return 'Job[id={}, nativeId={}, executor={}, status={}]'.format(self._id, self._native_id,
-                                                                        self.executor, self.status)
+        return 'Job[id={}, native_id={}, executor={}, status={}]'.format(self._id, self._native_id,
+                                                                         self.executor, self.status)
 
 
 class JobStatusCallback(ABC):

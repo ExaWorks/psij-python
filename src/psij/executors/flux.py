@@ -31,7 +31,14 @@ import flux.job
 
 
 class FluxJobExecutor(JobExecutor):
-    """A job executor that runs jobs via Flux."""
+    """A :class:`~psij.JobExecutor` for the Flux scheduler.
+
+    The `Flux resource manager framework <http://flux-framework.org/>`_ is
+    deployed and used on a per-user basis at many sites, and is slated to become
+    the system-level resource manager at LLNL.
+
+    Uses Flux's python library/bindings to submit, monitor, and manipulate jobs.
+    """
 
     _event_map = {
         # 'submit': JobState.QUEUED,
@@ -52,7 +59,6 @@ class FluxJobExecutor(JobExecutor):
 
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `FluxJobExecutor` does not have any configuration options.
-        :type config: psij.JobExecutorConfig
         """
         # TODO: url is not passed
         # if not url.startswith('flux://'):
