@@ -7,7 +7,7 @@ This document will guide you through the install procedure and your first hello 
 - [Hello World example](#hello-world)
 
 ## Requirements
-- python3.7
+- python3.7+
 
 ## Install psi-j
 
