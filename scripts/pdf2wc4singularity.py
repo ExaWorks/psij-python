@@ -7,7 +7,7 @@ N = 1  # number of jobs to run
 
 pdfFile = "example.pdf"
 pngFile = "worcloud.png"
-image = "docker://wilke/pdf2wordcloud:psij"
+image = "docker://exaworks/pdf2wordcloud:demo"
 
 
 def make_pdf2text_spec(input=None, output=None):
