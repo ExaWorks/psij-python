@@ -262,6 +262,7 @@ h3 {
 
 #secondary-banner .v-card {
     min-height: 20em;
+    padding: 1em;
 }
 
 .vbox {
