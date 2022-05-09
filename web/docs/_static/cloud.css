@@ -11,7 +11,7 @@
 
 @import url("https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.css");
 @import url("style.css");
-@import url("theme-3.css");
+@import url("theme-4.css");
 @import url("basic.css");
 
 
@@ -28,7 +28,7 @@ html {
 body {
     padding: 0;
     color: #000;
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif;
     font-size: 100%;
     line-height: 1.5em;
     margin: 0;
@@ -125,7 +125,7 @@ div.sphinxsidebar h3, div.sphinxsidebar h4 {
     padding: 0;
     margin: 24px 16px 0 0;
 
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif;
     font-weight: normal;
     color: var(--color-fg-norm-1);
 }
@@ -464,7 +464,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: "Gill Sans", serif;
+    font-family: var(--main-font), serif;
     font-weight: normal;
     color: var(--color-fg-norm-1);
     clear: both;
@@ -813,7 +813,7 @@ table.docutils th p:last-child, table.docutils td p:last-child {
 table.docutils th {
     border: 0 solid transparent;
     padding: .4em;
-    font-family: "Gill Sans", sans-serif;
+    font-family: var(--main-font), sans-serif;
     background: rgba(0,0,0,.15);
 }
 
