@@ -30,6 +30,10 @@
     box-shadow: 0pt 0pt 1pt #8080ff !important;
 }
 
+#psij-app .v-app-bar a {
+    font-weight: 400 !important;
+}
+
 #psij-app .v-card.v-card--flat {
     box-shadow: none !important;
 }
