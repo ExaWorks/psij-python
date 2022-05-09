@@ -1,6 +1,6 @@
 :root {
     --color-bg-inv-1: #d0d0d0;
-    --color-fg-inv-1: #ffffff;
+    --color-fg-inv-1: #000000;
     --color-fg-inv-2: #202020;
     --color-fg-norm-1: #202020;
     --color-fg-norm-2: #404040;
@@ -39,17 +39,16 @@
 }
 
 .v-app-bar {
-    background-image: -moz-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
-    background-image: -webkit-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
-    background-image: -ms-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
-    background-image: linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
+    background-image: -moz-linear-gradient(90deg, #ff6b6b 15%, #ffb88c 55%);
+    background-image: -webkit-linear-gradient(90deg, #ff6b6b 15%, #ffb88c 55%);
+    background-image: -ms-linear-gradient(90deg, #ff6b6b 15%, #ffb88c 55%);
+    background-image: linear-gradient(90deg, #ff6b6b 15%, #ffb88c 55%);
     background-color: #de6262;
     background-size: 100% 620%, auto;
     background-repeat: repeat, no-repeat, no-repeat;
 }
 
-.gh-link a {
-    color: #fff !important;
+.navbar-link a {
     font-size: 1.2em;
 }
 

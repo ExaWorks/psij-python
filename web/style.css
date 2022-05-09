@@ -31,9 +31,13 @@ body .v-application a {
     background-color: var(--color-fg-lines) !important;
 }
 
-.v-app-bar .gh-link {
+.v-app-bar .navbar-link a {
+    color: var(--color-fg-inv-1) !important;
+}
+
+.v-app-bar .navbar-link {
     margin-top: 4pt;
-    min-width: 4em;
+    min-width: 2em;
 }
 
 .psi-j-font {
