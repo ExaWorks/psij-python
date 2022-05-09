@@ -159,6 +159,7 @@ ul.no-bullet {
 }
 
 .v-card__text {
+    background: transparent !important;
     font-size: 13pt;
 }
 
