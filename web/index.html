@@ -27,11 +27,9 @@
 
 <body>
     <v-app id="psij-app">
-        <v-app-bar elevation="4" height="60pt" fixed elevate-on-scroll width="100%">
+        <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
             <v-tabs v-model="maintabs" @change="tabChanged">
-                <v-tab href="#index" key="index" class="logo" style="margin: 0 !important">
-                    <img src="images/exaworks-psij-logo.png" width="200" />
-                </v-tab>
+                <v-tab href="#index" key="index"><div class="psi-j-font logo">PSI/J</div></v-tab>
                 <v-tab href="#install" key="install">Install</v-tab>
                 <v-tab href="#docs" key="docs">Documentation</v-tab>
                 <v-tab href="#resources" key="resources">Resources</v-tab>
