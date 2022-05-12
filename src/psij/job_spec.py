@@ -160,4 +160,18 @@ class JobSpec(object):
         else:
             d['attributes'] = None
 
+        if self.resources:
+
+            d['resources'] = {
+                'node_count': None,
+                'process_count': None,
+                'process_per_node': None,
+                'cpu_cores_per_process': None,
+                'gpu_cores_per_process': None,
+                'exclusive_node_use': None
+            }
+            r = self.resources.__dict__
+            for k in d['resources'].keys():
+                d[k] = r[k] if k in r else None
+
         return d
