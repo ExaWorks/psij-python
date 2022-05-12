@@ -1,0 +1,75 @@
+:root {
+    --color-bg-inv-1: #d0d0d0;
+    --color-fg-inv-1: #ffffff;
+    --color-fg-inv-2: #202020;
+    --color-fg-norm-1: #202020;
+    --color-fg-norm-2: #404040;
+    --color-sel-inv-1: #000000;
+    --color-bg-inv-2: #ffffff;
+    --color-bg-norm-1: #ffffff;
+    --color-bg-norm-2: #ffffff;
+    --color-link: #6080ff;
+    --color-fg-lines: #fe7000;
+    --color-global-bg: #ffffff;
+}
+
+#psij-app .v-card {
+    border-radius: 4pt;
+    background-color: #f8f8f8;
+    box-shadow: 0pt 0pt 1pt #8080ff !important;
+}
+
+#psij-app .v-card.v-card--flat {
+    box-shadow: none !important;
+}
+
+#secondary-banner .v-card, .v-card__title, .v-card__text,
+#secondary-banner .v-card *, #tertiary-banner .v-card * {
+    background-color: #f8f8f8 !important;
+}
+
+#secondary-banner .v-card * {
+    background-color: transparent !important; 
+    border: 0;
+}
+
+.vbox, #secondary-banner .v-card, #psij-app .v-card {
+    background-color: #fff !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 0px 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+.v-app-bar {
+    background-image: -moz-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
+    background-image: -webkit-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
+    background-image: -ms-linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
+    background-image: linear-gradient(90deg, #de6262 15%, #ffb88c 55%);
+    background-color: #de6262;
+    background-size: 100% 620%, auto;
+    background-repeat: repeat, no-repeat, no-repeat;
+}
+
+.gh-link a {
+    color: #fff !important;
+    font-size: 1.2em;
+}
+
+h2, h3 {
+    font-weight: 400;
+}
+
+h3 {
+    color: #666;
+}
+
+/* Logo related stuff */
+a.v-tab:focus, a.v-tab:hover {
+    background: rgba(252, 182, 182, 0.25);
+}
+
+.logo {
+    background: rgba(255, 255, 255, 0.75); 
+    border-radius: 0em !important;
+    border-right: solid 4px;
+    border-color: rgba(255, 255, 255, 0.55);
+}
+
