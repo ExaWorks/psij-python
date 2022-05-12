@@ -39,28 +39,34 @@ need to sit in the queue for a variable amount of time, depending on how
 busy the cluster is. Then the job will be started, the executable will
 run to completion, and the job will be marked as completed.
 
-PSI/J's ``Job`` objects are representations of underlying resource manager
-jobs. One ``Job`` instance might represent a Slurm job running on a LLNL cluster,
-another a Cobalt job running on ALCF's Theta, another a Flux job on the cloud, and
-so on.
+PSI/J's :class:`Job <psij.job.Job>` objects are representations of underlying
+resource manager jobs. One :class:`Job <psij.job.Job>` instance might represent a Slurm
+job running on a LLNL cluster, another a Cobalt job running on ALCF's Theta, another a
+Flux job in the cloud, and so on.
 
-However, a newly-created ``Job`` object does not represent any resource manager
-job, it is a kind of free agent. To convert it to a resource manager job, the
-``Job`` needs to be submitted to a ``JobExecutor`` instance. That action
-creates a new resource manager job and permanently binds the ``Job`` to it.
-Alternatively, a ``Job`` can be bound to an *existing* resource manager job by
-calling ``JobExecutor.attach``, passing in a ``Job`` and the ID of the underlying
-resource manager job.
+However, a newly-created :class:`Job <psij.job.Job>` object does not represent
+any resource manager job, it is a kind of free agent.
+To convert it to a resource manager job, the
+:class:`Job <psij.job.Job>` needs to be submitted to a
+:class:`JobExecutor <psij.job_executor.JobExecutor>` instance. That action
+creates a new resource manager job and permanently binds the
+:class:`Job <psij.job.Job>` to it. Alternatively, a :class:`Job <psij.job.Job>`
+can be bound to an *existing* resource manager job by
+calling :meth:`JobExecutor.attach <psij.job_executor.JobExecutor.attach>`, passing in a
+:class:`Job <psij.job.Job>` and the ID of the underlying resource manager job.
 
 Basic Usage
 -----------
 
 The most basic way to use PSI/J looks something like the following:
 
-#. Create a ``JobExecutor`` instance.
-#. Create a ``JobSpec`` object and populate it with information about your job.
-#. Create a ``Job`` with that ``JobSpec``.
-#. Submit the ``Job`` instance to the ``JobExecutor``.
+#. Create a :class:`JobExecutor <psij.job_executor.JobExecutor>` instance.
+#. Create a :class:`JobSpec <psij.job_spec.JobSpec>` object and populate
+   it with information about your job.
+#. Create a :class:`Job <psij.job.Job>` with that
+   :class:`JobSpec <psij.job_spec.JobSpec>`.
+#. Submit the :class:`Job <psij.job.Job>` instance to the
+   :class:`JobExecutor <psij.job_executor.JobExecutor>`.
 
 That's all there is to it! Assuming there are no errors, you should
 see a new entry in your resource manager's queue. On a Slurm cluster,
@@ -111,9 +117,11 @@ Submitting multiple jobs is as simple as adding a loop:
         job = Job(JobSpec(executable='/bin/date'))
         ex.submit(job)
 
-Every ``JobExecutor`` can handle arbitrary numbers of jobs.
-Most of the functionality provided by ``JobExecutor`` is
-contained in the ``submit`` and ``attach`` methods.
+Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
+numbers of jobs. Most of the functionality provided by
+:class:`JobExecutor <psij.job_executor.JobExecutor>` is
+contained in the :meth:`JobExecutor.submit <psij.job_executor.JobExecutor.submit>` and
+:meth:`JobExecutor.attach <psij.job_executor.JobExecutor.attach>` methods.
 
 Checking Job Completion
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -122,7 +130,7 @@ In all the above examples, we have submitted jobs without
 checking on what happened to them.
 
 To wait for a job to complete once it has been submitted, it suffices
-to call the ``wait`` method with no arguments:
+to call the :meth:`wait <psij.job.Job.wait>` method with no arguments:
 
 .. code-block:: python
 
@@ -132,12 +140,13 @@ to call the ``wait`` method with no arguments:
     ex.submit(job)
     job.wait()
 
-The ``wait`` call will return once the job has reached
+The :meth:`wait <psij.job.Job.wait>` call will return once the job has reached
 a terminal state, which almost always means that it finished or was
 cancelled.
 
 To distinguish jobs that complete successfully from ones that fail or
-are cancelled, fetch the status of the job after calling ``wait``:
+are cancelled, fetch the status of the job after calling
+:meth:`wait <psij.job.Job.wait>`:
 
 .. code-block:: python
 
@@ -148,12 +157,12 @@ are cancelled, fetch the status of the job after calling ``wait``:
 Status Callbacks
 ^^^^^^^^^^^^^^^^
 
-Waiting for jobs to complete with ``wait()`` is fine if you don't
+Waiting for jobs to complete with :meth:`wait <psij.job.Job.wait>` is fine if you don't
 mind blocking while you wait for a single job to complete. However,
 if you want to wait on multiple jobs without blocking, or you want
 to get updates when jobs start running, you can attach a callback
-to a ``JobExecutor`` which will fire whenever any job submitted to that
-executor changes status.
+to a :class:`JobExecutor <psij.job_executor.JobExecutor>` which will
+fire whenever any job submitted to that executor changes status.
 
 To wait on multiple jobs at once:
 
@@ -193,7 +202,8 @@ However, much of what you wish to specify is supported (although we hope it all 
 Resources
 ^^^^^^^^^
 To specify your job's resources, like GPUs and nodes, create a
-``ResourceSpecV1`` and set it with ``JobSpec(..., resources=my_spec_v1)``.
+:class:`ResourceSpecV1 <psij.resource_spec.ResourceSpecV1>` and set it
+with ``JobSpec(..., resources=my_spec_v1)``.
 
 Launching Methods
 ^^^^^^^^^^^^^^^^^
@@ -204,5 +214,6 @@ like so: ``JobSpec(..., launcher='srun')``.
 Scheduling Information
 ^^^^^^^^^^^^^^^^^^^^^^
 To specify resource-manager-specific information, like queues/partitions,
-runtime, and so on, create a ``JobAttributes`` and set it with
+runtime, and so on, create a
+:class:`JobAttributes <psij.job_attributes.JobAttributes>` and set it with
 ``JobSpec(..., attributes=my_job_attributes)``.
