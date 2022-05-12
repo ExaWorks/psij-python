@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>PSI/J - ExaWorks</title>
+    <title>PSI/J - Python</title>
     <!-- must be first for the switcher to work -->
     <link rel="stylesheet" href="theme-4.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
@@ -26,11 +26,9 @@
 
 <body>
     <v-app id="psij-app">
-        <v-app-bar elevation="4" height="60pt" fixed elevate-on-scroll width="100%">
+        <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
             <v-tabs v-model="maintabs" @change="tabChanged">
-                <v-tab href="#index" key="index" class="logo" style="margin: 0 !important">
-                    <img src="images/exaworks-psij-logo.png" width="200" />
-                </v-tab>
+                <v-tab href="#index" key="index"><div class="psi-j-font logo">PSI/J</div></v-tab>
                 <v-tab href="#install" key="install">Install</v-tab>
                 <v-tab href="#docs" key="docs">Documentation</v-tab>
                 <v-tab href="#resources" key="resources">Resources</v-tab>
@@ -307,7 +305,7 @@ $ python setup.py install
             <v-card flat tile class="lighten-1 text-center"
                 style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
                 <v-card-text>
-                    &copy;2021-{{ new Date().getFullYear() }} - <strong>ExaWorks</strong>
+                    &copy;2021-{{ new Date().getFullYear() }} - <a href="https://exaworks.org">The ExaWorks Project</a>
                 </v-card-text>
 
                 <v-row justify="center">
