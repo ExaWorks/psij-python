@@ -159,7 +159,8 @@ ul.no-bullet {
 }
 
 .v-card__text {
-    font-size: 13pt;
+    background: transparent !important;
+    font-size: 12pt;
 }
 
 ul {
@@ -215,8 +216,9 @@ pre {
     padding: 1em;
 }
 
-.icon-logo {
+#psij-app .icon-logo i {
     font-size: 2em;
     text-align: center;
     width: 100%;
+    font-weight: 900 !important;
 }

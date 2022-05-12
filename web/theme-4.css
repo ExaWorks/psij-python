@@ -11,6 +11,17 @@
     --color-link: #6080ff;
     --color-fg-lines: #fe7000;
     --color-global-bg: #ffffff;
+    --main-font: "Nunito Sans" !important;
+}
+
+#psij-app * {
+    font-weight: 300 !important;
+}
+
+#psij-app .fas, 
+#psij-app .fab.
+#psij-app .v-app-bar a {
+    font-weight: 400 !important;
 }
 
 #psij-app .v-card {
@@ -19,18 +30,21 @@
     box-shadow: 0pt 0pt 1pt #8080ff !important;
 }
 
-#psij-app .v-card.v-card--flat {
-    box-shadow: none !important;
+#psij-app .v-app-bar a {
+    font-weight: 400 !important;
 }
 
-#secondary-banner .v-card, .v-card__title, .v-card__text,
-#secondary-banner .v-card *, #tertiary-banner .v-card * {
-    background-color: #f8f8f8 !important;
+#psij-app .v-card.v-card--flat {
+    box-shadow: none !important;
 }
 
 #secondary-banner .v-card * {
     background-color: transparent !important; 
     border: 0;
+}
+
+#psij-app .v-card .v-card__text {
+    color: #404040;
 }
 
 .vbox, #secondary-banner .v-card, #psij-app .v-card {
@@ -53,12 +67,11 @@
     font-size: 1.2em;
 }
 
-h2, h3 {
-    font-weight: 400;
-}
-
-h3 {
-    color: #666;
+#psij-app h2,
+#psij-app h2 *,
+#psij-app h3,
+#psij-app h3 * {
+    font-weight: 400 !important;
 }
 
 /* Logo related stuff */
