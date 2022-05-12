@@ -67,7 +67,10 @@
     font-size: 1.2em;
 }
 
-#psij-app h2, #psij-app h3 {
+#psij-app h2,
+#psij-app h2 *,
+#psij-app h3,
+#psij-app h3 * {
     font-weight: 400 !important;
 }
 
