@@ -172,6 +172,6 @@ class JobSpec(object):
             }
             r = self.resources.__dict__
             for k in d['resources'].keys():
-                d[k] = r[k] if k in r else None
+                d['resources'][k] = r[k] if k in r else None
 
         return d
