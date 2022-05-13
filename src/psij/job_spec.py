@@ -99,7 +99,8 @@ class JobSpec(object):
             'stdout_path': None,
             'stderr_path': None,
             'resources': None,
-            'attributes': None
+            'attributes': None,
+            'launcher': None
         }
 
         return job_spec
