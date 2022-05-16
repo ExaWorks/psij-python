@@ -52,18 +52,35 @@
                 <div id="main-banner">
                     <v-container justify="space-around">
                         <v-row justify="center">
-                            <v-col justify="center">
-                                <div>
-                                    <h2>Portable Submission Interface for Jobs</h2>
-                                    <h3>A Python abstraction layer over cluster schedulers</h3>
-                                    <br />
-                                    <img id="big-puzzle" src="https://exaworks.org/images/exaworks-psij.png">
-                                </div>
+                            <v-col class="d-flex align-center justify-center">
+                                <v-card align="center" flat>
+                                    <v-card-title class="text-h5 justify-center">
+                                        Portable Submission Interface for Jobs
+                                    </v-card-title>
+                                    <v-card-text class="justify-center">
+                                        A Python abstraction layer over cluster schedulers
+                                    </v-card-text>
+                                </v-card>
                             </v-col>
-                            <v-col justify="center">
-                                <v-card align="center" style="padding: 2em; margin-right: 5em">
-                                    <div class="icon-logo"><i class="fas fa-server" style="color: #9A3A68"></i></div>
-                                    <h3>Write Scheduler Agnostic HPC Applications</h3>
+                            <v-col class="d-flex align-center justify-center">
+                                <img id="big-puzzle" src="https://exaworks.org/images/exaworks-psij.png">
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </div>
+
+                <div id="secondary-banner">
+                    <v-container>
+                        <v-row>
+                            <v-col align="center">
+                                <v-card align="center" max-width="400pt">
+                                    <div class="icon-logo">
+                                        <i class="fas fa-server" style="color: #9A4A68"></i>
+                                    </div>
+                                    <v-card-title class="text-h5 justify-center">
+                                        Write Scheduler Agnostic HPC Applications
+                                    </v-card-title>
+
                                     <v-card-text>
                                         Use a unified API to enable your HPC application to run virtually anywhere.
                                         <span class="psi-j-font">PSI/J</span> automatically translates abstract job
@@ -76,7 +93,8 @@
                     </v-container>
                 </div>
 
-                <div id="secondary-banner">
+
+                <div id="tertiary-banner">
                     <v-container>
                         <v-row>
                             <v-col justify="center">
