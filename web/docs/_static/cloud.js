@@ -772,7 +772,8 @@
                 scrollingActive = true; // disable toc focus calc
                 $('body').animate({
                     // NOTE: hash == "" for top of document
-                    scrollTop: hash ? $(escapeHash(hash)).offset().top : 0
+                    // the 56 px offset is for the navbar
+                    scrollTop: hash ? $(escapeHash(hash)).offset().top - 56: 0
                 }, {
                     duration: scrollSpeed,
                     step: function(now, tween) {
@@ -986,6 +987,13 @@
         // NOTE: .classmethod & .staticmethod can be removed when sphinx 1.x is dropped.
         $("dl.object, dl.data, dl.function, dl.method, dl.attribute, dl.class , dl.exception, dl.classmethod, dl.staticmethod")
             .filter(":has(> dt > a.headerlink:last-child)").addClass("has-headerlink");
+    });
+
+    $(window).on("hashchange", function() {
+        parent.docsHashChange(window.location.pathname, window.location.hash)
+    });
+    $(window).on("load", function() {
+        parent.docsLoaded(window.location.pathname, window.location.hash)
     });
 
     /*==========================================================================
