@@ -40,6 +40,7 @@ extensions = [
 ]
 
 autodoc_typehints = "description"
+autodoc_typehints_format = "short"
 
 
 script_dir = os.path.normpath(os.path.dirname(__file__))
