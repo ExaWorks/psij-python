@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class RPJobExecutor(JobExecutor):
-    """A job executor that runs jobs via radical.pilot."""
+    """A job executor that runs jobs via radical.pilot.
+
+    The `RADICAL Pilot system
+    <https://radical-cybertools.github.io/radical-pilot/>`_.
+    """
 
     import radical.pilot as _rp
 

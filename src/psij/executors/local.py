@@ -162,6 +162,9 @@ class LocalJobExecutor(JobExecutor):
     """
     A job executor that runs jobs locally using :class:`subprocess.Popen`.
 
+    This job executor is intended to be used when there is no resource manager, only
+    the operating system. Or when there is a resource manager, but it should be ignored.
+
     Limitations: in Linux, attached jobs always appear to complete with a zero exit code regardless
     of the actual exit code.
     """
