@@ -89,7 +89,8 @@ class Import():
             ja.duration = attributes['duration']
             ja.queue_name = attributes['queue_name']
             ja.reservation_id = attributes['reservation_id']
-            ja._custom_attributes = attributes['custom_attributes'] if "custom_attributes" in attributes else None
+            ja._custom_attributes = attributes['custom_attributes'] \
+                if "custom_attributes" in attributes else None
 
             spec.attributes = ja
 
