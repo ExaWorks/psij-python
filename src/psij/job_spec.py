@@ -99,7 +99,8 @@ class JobSpec(object):
             'stdout_path': None,
             'stderr_path': None,
             'resources': None,
-            'attributes': None
+            'attributes': None,
+            'launcher': None
         }
 
         return job_spec
@@ -159,5 +160,19 @@ class JobSpec(object):
                     sys.stderr.write("Unsupported attribute " + k + ", skipping attribute\n")
         else:
             d['attributes'] = None
+
+        if self.resources:
+
+            d['resources'] = {
+                'node_count': None,
+                'process_count': None,
+                'process_per_node': None,
+                'cpu_cores_per_process': None,
+                'gpu_cores_per_process': None,
+                'exclusive_node_use': None
+            }
+            r = self.resources.__dict__
+            for k in d['resources'].keys():
+                d['resources'][k] = r[k] if k in r else None
 
         return d
