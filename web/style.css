@@ -84,6 +84,7 @@ body .v-application a {
 .banner-title {
     width: 280pt;
     font-size: 24pt;
+    height: 100vh;
 }
 
 #big-puzzle {

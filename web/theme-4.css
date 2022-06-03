@@ -12,6 +12,7 @@
     --color-fg-lines: #6b6bff;
     --color-global-bg: #ffffff;
     --main-font: "Nunito Sans" !important;
+    --code-font: "Nunito Sans" !important;
 }
 
 #psij-app * {
@@ -82,3 +83,30 @@ a.v-tab:focus, a.v-tab:hover {
     border-radius: 0em !important;
 }
 
+/* Syntax highlighting */
+
+div.highlight .kn, div.highlight .k, div.highlight .ow {
+    color: #791e41;
+}
+
+div.highlight .nn {
+    color: #c78400;
+}
+
+div.highlight .s1, div.highlight .s2 {
+    color: #8800c7;
+}
+
+div.highlight .mi {
+    color: #495700;
+}
+
+div.highlight .si {
+    color: #4000f0;
+    font-weight: bold;
+    font-style: normal;
+}
+
+div.highlight .nb {
+    color: #a16b5b;
+}
