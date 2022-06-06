@@ -7,7 +7,6 @@ docsHashChange = function(path, hash) {
     else {
         path = path.substr(ix);
     }
-    console.log("Path: " + path);
     if (hash.startsWith("#")) {
         hash = hash.substr(1);
     }
