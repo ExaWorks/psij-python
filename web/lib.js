@@ -1,8 +1,13 @@
 docsHashChange = function(path, hash) {
-    if (!path.startsWith("/docs/")) {
-        throw new Exception("Something is wrong with the docs path " +
-        "(should start) with '/docs/'" + path);
+    var ix = path.indexOf("/docs/");
+    if (ix == -1) {
+        throw new Error("Something is wrong with the docs path " +
+        "(should start) with '/<prefix>/docs/'" + path);
     }
+    else {
+        path = path.substr(ix);
+    }
+    console.log("Path: " + path);
     if (hash.startsWith("#")) {
         hash = hash.substr(1);
     }
@@ -72,13 +77,13 @@ function buildDocsPath(crtpath) {
         return "";
     }
     if (!crtpath.doc) {
-        return "/docs/index.html";
+        return "docs/index.html";
     }
     if (!crtpath.dochash) {
-        return "/docs/" + crtpath.doc;
+        return "docs/" + crtpath.doc;
     }
     else {
-        return "/docs/" + crtpath.doc + "#" + crtpath.dochash;
+        return "docs/" + crtpath.doc + "#" + crtpath.dochash;
     }
 }
 
