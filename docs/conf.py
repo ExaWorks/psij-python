@@ -13,7 +13,7 @@ needs_sphinx = '1.6'
 # Set Sphinx variables
 master_doc = 'index'
 
-project = u'Portable Submission Interface for Jobs'
+project = u'PSI/J'
 copyright = u'The ExaWorks Team'
 release = u'0.0.1'
 version = release
