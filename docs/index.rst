@@ -12,6 +12,7 @@ schedulers include Slurm, LSF, Flux, PBS Pro, and Cobalt.
     :maxdepth: 2
 
     getting_started
-    programming
+    api
     contributing
+    programming
     tutorial_add_executor
