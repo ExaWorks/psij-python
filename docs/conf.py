@@ -30,6 +30,8 @@ nitpick_ignore = [
     ('py:class', 'distutils.version.Version')
 ]
 
+html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
+
 # Setup Sphinx extensions (and associated variables)
 extensions = [
     'sphinx.ext.napoleon',
