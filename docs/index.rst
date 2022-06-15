@@ -1,3 +1,4 @@
+===============================================================
 Portable Submission Interface for Jobs (PSI/J) - Python Library
 ===============================================================
 
@@ -8,8 +9,9 @@ number of executors and launchers, which are the components that allow
 PSI/J to communicate with specific job schedulers. Currently supported
 schedulers include Slurm, LSF, Flux, PBS Pro, and Cobalt.
 
+
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     getting_started
     programming
