@@ -23,7 +23,7 @@
 #PBS -q {{.}}
     {{/queueName}}
     {{#custom_attributes.pbs}}
-#PBS --{{key}}="{{value}}"
+#PBS -{{key}} "{{value}}"
     {{/custom_attributes.pbs}}
 
 {{/job.spec.attributes}}
