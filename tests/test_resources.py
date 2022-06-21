@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Optional
 
 import pytest
 
@@ -23,10 +24,13 @@ def test_resource_constraints() -> None:
     ResourceSpecV1(process_count=4, node_count=2, processes_per_node=2)
 
 
-def _failingResourceSpecV1(**kwargs) -> None:
+def _failingResourceSpecV1(node_count: Optional[int] = None, process_count: Optional[int] = None,
+                           processes_per_node: Optional[int] = None) -> None:
     try:
-        ResourceSpecV1(**kwargs)
-        pytest.fail('Should have failed: %s' % kwargs)
+        ResourceSpecV1(node_count=node_count, process_count=process_count,
+                       processes_per_node=processes_per_node)
+        pytest.fail('Should have failed: process_count=%s, node_count=%s, ppn=%s' %
+                    (process_count, node_count, processes_per_node))
     except InvalidJobException:
         pass
 
@@ -37,7 +41,7 @@ def test_failing_resource_constraints() -> None:
     _failingResourceSpecV1(process_count=8, node_count=2, processes_per_node=2)
 
 
-def _check_ranks(s: str, expected_ranks: int, expected_nodes: int) -> bool:
+def _check_ranks(s: str, expected_ranks: int, expected_nodes: int) -> None:
     lines = s.splitlines()
     unique_hosts = set()
     rank_count = 0
@@ -63,12 +67,13 @@ def test_nodes(execparams: ExecutorTestParams) -> None:
 
     n_ranks = 4
     n_nodes = 2
-    ppn = n_ranks / n_nodes
+    ppn = n_ranks // n_nodes
 
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
         outp = Path(td, 'stdout.txt')
         job = Job(JobSpec(executable='/bin/hostname', stdout_path=outp,
                           launcher=execparams.launcher))
+        assert job.spec is not None
         job.spec.resources = ResourceSpecV1(node_count=n_nodes, processes_per_node=ppn)
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
