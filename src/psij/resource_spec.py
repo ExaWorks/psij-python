@@ -88,14 +88,20 @@ class ResourceSpecV1(ResourceSpec):
                 self._computed_node_count = 1
         elif nulls == 1:
             if self.process_count is None:
+                assert self.node_count is not None
+                assert self.processes_per_node is not None
                 self._computed_process_count = int(self.node_count * self.processes_per_node)
             elif self.node_count is None:
+                assert self.process_count is not None
+                assert self.processes_per_node is not None
                 if self.process_count % self.processes_per_node != 0:
                     raise InvalidJobException('The process_count (%s) must be an integral multiple'
                                               ' of processes_per_node (%s)' %
                                               (self.process_count, self.processes_per_node))
                 self._computed_node_count = self.process_count // self.processes_per_node
             else:
+                assert self.process_count is not None
+                assert self.node_count is not None
                 if self.process_count % self.node_count != 0:
                     raise InvalidJobException('The process_count (%s) must be an integral multiple'
                                               ' of node_count (%s)' %
@@ -103,6 +109,9 @@ class ResourceSpecV1(ResourceSpec):
                 self._computed_ppn = self.process_count // self.node_count
         else:
             # all specified
+            assert self.process_count is not None
+            assert self.node_count is not None
+            assert self.processes_per_node is not None
             if self.process_count != self.node_count * self.processes_per_node:
                 raise InvalidJobException('The resources must satisfy the constraint '
                                           'process_count (%s) = node_count (%s) * '
@@ -120,6 +129,7 @@ class ResourceSpecV1(ResourceSpec):
 
         :return: An integer value with the specified or calculated node count.
         """
+        assert self._computed_node_count is not None
         return self._computed_node_count
 
     @property
@@ -133,6 +143,7 @@ class ResourceSpecV1(ResourceSpec):
         :return: An integer value with either the value of `process_count` or one if the
             former is not specified.
         """
+        assert self._computed_process_count is not None
         return self._computed_process_count
 
     @property
@@ -146,6 +157,7 @@ class ResourceSpecV1(ResourceSpec):
         :return: An integer value with either the value of `processes_per_node` or one if the
             former cannot be determined.
         """
+        assert self._computed_ppn is not None
         return self._computed_ppn
 
     @property
