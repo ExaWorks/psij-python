@@ -104,7 +104,8 @@ class ScriptBasedLauncher(Launcher):
         dst_dir.mkdir(parents=True, exist_ok=True)
         dst_path = dst_dir / path.name
         if dst_path.exists():
-            return dst_path
+            if dst_path.stat().st_mtime >= path.stat().st_mtime:
+                return dst_path
         tmp_prefix = secrets.token_hex() + '_'
         tmp_path = dst_dir / (tmp_prefix + path.name)
         shutil.copy(path, tmp_path)
