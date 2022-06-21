@@ -95,7 +95,8 @@ def _get_executors(config: Dict[str, str]) -> List[str]:
 
 def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
     if executor == 'auto':
-        execs = ['local:single', 'local:multiple', 'batch-test:single', 'batch-test:multiple']
+        execs = ['local:single', 'local:multiple', 'batch-test:single', 'batch-test:multiple',
+                 'batch-test:batch-test']
         queue_execs = _translate_executor(config, 'auto_q')
         assert len(queue_execs) in [0, 1]
         queue_exec = None
