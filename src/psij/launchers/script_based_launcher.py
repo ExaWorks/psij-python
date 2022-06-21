@@ -96,8 +96,11 @@ class ScriptBasedLauncher(Launcher):
             if self._deployed:
                 return
 
-            self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
-            self._deployed_script_path = self._deploy_file(self._script_path)
+            self._deploy_files()
+
+    def _deploy_files(self) -> None:
+        self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
+        self._deployed_script_path = self._deploy_file(self._script_path)
 
     def _deploy_file(self, path: Path) -> Path:
         dst_dir = self.config.work_directory
