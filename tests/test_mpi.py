@@ -52,7 +52,7 @@ def test_basic_mpi(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
 
         with open(outp, 'r') as outf:
             result = outf.read()

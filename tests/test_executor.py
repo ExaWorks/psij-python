@@ -13,7 +13,7 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
     status = job.wait(timeout=_get_timeout(execparams))
-    assert_completed(status)
+    assert_completed(job, status)
 
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
@@ -24,7 +24,7 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
         f = outp.open("r")
         contents = f.read()
         f.close()
@@ -42,7 +42,7 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     job2 = Job()
     ex.attach(job2, native_id)
     status = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(status)
+    assert_completed(job2, status)
 
 
 def test_cancel(execparams: ExecutorTestParams) -> None:
@@ -92,8 +92,8 @@ def test_parallel_jobs(execparams: ExecutorTestParams) -> None:
     ex.submit(job2)
     status1 = job1.wait(timeout=_get_timeout(execparams))
     status2 = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(status1)
-    assert_completed(status2)
+    assert_completed(job1, status1)
+    assert_completed(job2, status2)
 
 
 def test_env_var(execparams: ExecutorTestParams) -> None:
@@ -107,7 +107,7 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
         f = outp.open("r")
         contents = f.read()
         f.close()
@@ -129,7 +129,7 @@ def test_stdin_redirect(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
 
         with open(outp, 'r') as outf:
             contents = outf.read()
