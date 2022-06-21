@@ -112,3 +112,26 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
         contents = f.read()
         f.close()
         assert contents == '_y_'
+
+
+def test_stdin_redirect(execparams: ExecutorTestParams) -> None:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
+        inp = Path(td, 'stdin.txt')
+        outp = Path(td, 'stdout.txt')
+
+        rnd_str = uuid.uuid4().hex
+
+        with open(inp, 'w') as inf:
+            inf.write(rnd_str)
+
+        job = Job(JobSpec(executable='/bin/cat', stdin_path=inp, stdout_path=outp))
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
+        status = job.wait(timeout=_get_timeout(execparams))
+        assert_completed(status)
+
+        with open(outp, 'r') as outf:
+            contents = outf.read()
+
+        assert contents == rnd_str
