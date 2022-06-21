@@ -45,8 +45,9 @@ def test_basic_mpi(execparams: ExecutorTestParams) -> None:
 
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
         outp = Path(td, 'stdout.txt')
+        errp = Path(td, 'stderr.txt')
         job = Job(JobSpec(executable='/bin/bash', arguments=['-c', 'env | grep RANK'],
-                          stdout_path=outp, launcher=execparams.launcher))
+                          stdout_path=outp, stderr_path=errp, launcher=execparams.launcher))
         assert job.spec is not None
         job.spec.resources = ResourceSpecV1(process_count=n_ranks)
         ex = _get_executor_instance(execparams, job)
