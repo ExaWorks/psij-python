@@ -1,7 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+from typing import Optional, List
 
 from psij.exceptions import InvalidJobException
+
+
+def _nulls(objs: List[object]) -> int:
+    s = 0
+    for e in objs:
+        if e is None:
+            s += 1
+    return s
 
 
 class ResourceSpec(ABC):
@@ -31,14 +39,20 @@ class ResourceSpecV1(ResourceSpec):
         """
         Constructs a `ResourceSpecV1` object and optionally initializes its properties.
 
+        Some of the properties of this class are constrained. Specifically,
+        `process_count = node_count * processes_per_node`. Specifying all constrained properties
+        in a way that does not satisfy the constraint will result in an error. Specifying some
+        of the constrained properties will result in the remaining one being inferred based on
+        the constraint. This inference is done by this class. However, executor implementations
+        may chose to delegate this inference to an underlying implementation and ignore the
+        values inferred by this class.
+
         :param node_count: If specified, request that the backend allocate this many compute nodes
-            for the job. This defaults to `1` if `exclusive_node_use` is `True`. This property
-            cannot be specified concurrently with `process_count`.
+            for the job.
         :param process_count: If specified, instruct the backend to start this many process
-            instances. This defaults to `1`. This property cannot be specified concurrently with
-            `node_count`.
+            instances. This defaults to `1`.
         :param processes_per_node: Instruct the backend to run this many process instances on each
-            node. In principle, `process_count = node_count * processes_per_node`. Defaults to `1`.
+            node.
         :param cpu_cores_per_process: Request this many CPU cores for each process instance. This
             property is used by a backend to calculate the number of nodes from the `process_count`
         :param gpu_cores_per_process:
@@ -46,33 +60,55 @@ class ResourceSpecV1(ResourceSpec):
         """
         self.node_count = node_count
         self.process_count = process_count
-        self._check_constraints()
         self.processes_per_node = processes_per_node
         self.cpu_cores_per_process = cpu_cores_per_process
         self.gpu_cores_per_process = gpu_cores_per_process
         self.exclusive_node_use = exclusive_node_use
+        self._check_constraints()
 
     def _check_constraints(self) -> None:
-        if self.node_count is not None and self.process_count is not None:
-            raise InvalidJobException('Cannot simmultaneously specify both node_count and '
-                                      'process_count')
-
-    def _compute_counts(self) -> Tuple[int, int, int]:
-        if self.processes_per_node is None:
-            ppn = 1
-        else:
-            ppn = self.processes_per_node
-        if self.process_count is None:
-            if self.node_count is None:
-                return (1, 1, ppn)
+        nulls = _nulls([self.process_count, self.node_count, self.processes_per_node])
+        self._computed_process_count = self.process_count
+        self._computed_node_count = self.node_count
+        self._computed_ppn = self.processes_per_node
+        if nulls == 3:
+            # nothing specified
+            self._computed_process_count = 1
+            self._computed_node_count = 1
+            self._commputed_ppn = 1
+        elif nulls == 2:
+            if self.process_count is not None:
+                self._computed_node_count = 1
+                self._computed_ppn = self.process_count
+            elif self.node_count is not None:
+                self._computed_process_count = self.node_count
+                self._computed_ppn = 1
             else:
-                return (self.node_count, 1, ppn)
-        else:
-            if self.node_count is None:
-                return (int(self.process_count / ppn), self.process_count, ppn)
+                self._computed_process_count = self.processes_per_node
+                self._computed_node_count = 1
+        elif nulls == 1:
+            if self.process_count is None:
+                self._computed_process_count = int(self.node_count * self.processes_per_node)
+            elif self.node_count is None:
+                if self.process_count % self.processes_per_node != 0:
+                    raise InvalidJobException('The process_count (%s) must be an integral multiple'
+                                              ' of processes_per_node (%s)' %
+                                              (self.process_count, self.processes_per_node))
+                self._computed_node_count = self.process_count // self.processes_per_node
             else:
-                raise InvalidJobException('Cannot simmultaneously specify both node_count and '
-                                          'process_count')
+                if self.process_count % self.node_count != 0:
+                    raise InvalidJobException('The process_count (%s) must be an integral multiple'
+                                              ' of node_count (%s)' %
+                                              (self.process_count, self.node_count))
+                self._computed_ppn = self.process_count // self.node_count
+        else:
+            # all specified
+            if self.process_count != self.node_count * self.processes_per_node:
+                raise InvalidJobException('The resources must satisfy the constraint '
+                                          'process_count (%s) = node_count (%s) * '
+                                          'processes_per_node (%s).' %
+                                          (self.process_count, self.node_count,
+                                           self.processes_per_node))
 
     @property
     def computed_node_count(self) -> int:
@@ -84,11 +120,7 @@ class ResourceSpecV1(ResourceSpec):
 
         :return: An integer value with the specified or calculated node count.
         """
-        self._check_constraints()
-        if self.node_count is not None:
-            return self.node_count
-        (nc, pc, ppn) = self._compute_counts()
-        return nc
+        return self._computed_node_count
 
     @property
     def computed_process_count(self) -> int:
@@ -101,11 +133,20 @@ class ResourceSpecV1(ResourceSpec):
         :return: An integer value with either the value of `process_count` or one if the
             former is not specified.
         """
-        self._check_constraints()
-        if self.process_count is not None:
-            return self.process_count
-        (nc, pc, ppn) = self._compute_counts()
-        return pc
+        return self._computed_process_count
+
+    @property
+    def computed_processes_per_node(self) -> int:
+        """
+        Returns or calculates the number of processes per node.
+
+        If the `processes_per_node` property is specified, this method returns it, otherwise
+        calculates it based on `process_count` and `node_count` if possible, or defaults to 1.
+
+        :return: An integer value with either the value of `processes_per_node` or one if the
+            former cannot be determined.
+        """
+        return self._computed_ppn
 
     @property
     def version(self) -> int:
