@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, TextIO, cast
 
-from psij import Job, JobStatus, JobState, SubmitException
+from psij import Job, JobStatus, JobState, SubmitException, JobExecutorConfig, ResourceSpecV1
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
     BatchSchedulerExecutorConfig, InvalidJobStateError, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
-
+from psij.launchers import MultipleLauncher
 
 QSUB_PATH = str(Path(__file__).parent / 'test' / 'qsub')
 QSTAT_PATH = str(Path(__file__).parent / 'test' / 'qstat')
@@ -85,3 +85,34 @@ class _TestJobExecutor(BatchSchedulerExecutor):
     def _get_state(self, state: str) -> JobState:
         assert state in _TestJobExecutor._STATE_MAP
         return _TestJobExecutor._STATE_MAP[state]
+
+
+class _TestLauncher(MultipleLauncher):
+    def __init__(self, config: Optional[JobExecutorConfig] = None):
+        super().__init__(Path(__file__).parent / 'test' / 'launcher.sh', config)
+
+    def _deploy_files(self) -> None:
+        super()._deploy_files()
+        self._deploy_file(Path(__file__).parent / 'test' / 'hostname')
+
+    def get_additional_args(self, job: Job) -> List[str]:
+        args = super().get_additional_args(job)
+        process_count = int(args[0])
+        node_count = self._get_node_count(job)
+        ppn = process_count // node_count
+        if node_count * ppn != process_count:
+            raise ValueError('Cannot divide processes evenly across nodes')
+        args += [str(node_count), str(ppn)]
+        return args
+
+    def _get_node_count(self, job):
+        assert job.spec is not None
+        res = job.spec.resources
+        if res is None:
+            return 1
+        if res.version == 1:
+            res1 = cast(ResourceSpecV1, res)
+            return res1.computed_node_count
+        else:
+            raise ValueError('This launcher cannot handle resource specs with version {}'.
+                             format(res.version))
