@@ -10,7 +10,7 @@ shift
 export _PSI_J_PROCESS_COUNT
 
 for INDEX in $(seq 1 1 $_PSI_J_PROCESS_COUNT); do
-    _PSI_J_PROCESS_INDEX_=$INDEX "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR  <$_PSI_J_STDIN &
+    _PSI_J_PROCESS_INDEX_=$INDEX "$@" 1>>$_PSI_J_STDOUT 2>>$_PSI_J_STDERR  <$_PSI_J_STDIN &
     PIDS="$PIDS $!"
 done
 
