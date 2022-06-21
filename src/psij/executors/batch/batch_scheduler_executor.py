@@ -504,6 +504,7 @@ class BatchSchedulerExecutor(JobExecutor):
                     # only read output from submit script if another error message is not
                     # already present
                     status.message = self._read_aux_file(job, '.out')
+                    logger.debug('Output from launcher: %s', status.message)
                 else:
                     self._delete_aux_file(job, '.out')
 
@@ -525,6 +526,7 @@ class BatchSchedulerExecutor(JobExecutor):
             finally:
                 self._delete_aux_file(job=job, suffix=suffix, path=path, force=True)
         else:
+            logger.debug('%s does not exist', path)
             return None
 
     def _delete_aux_file(self, job: Optional[Job] = None, suffix: Optional[str] = None,
