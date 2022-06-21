@@ -22,3 +22,8 @@ __PSI_J_EXECUTORS__ = [
                cls='_batch_test._batch_test._TestJobExecutor')
 
 ]
+
+__PSI_J_LAUNCHERS__ = [
+    Descriptor(name='batch-test', version=StrictVersion('0.0.1'),
+               cls='_batch_test._batch_test._TestLauncher')
+]
