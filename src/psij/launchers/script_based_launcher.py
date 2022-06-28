@@ -68,6 +68,8 @@ class _ProcessSandbox:
 
     def clean(self) -> None:
         now = time.time()
+        if not self.config.work_directory.exists():
+            return
         for child in self.config.work_directory.iterdir():
             if child.name.startswith(_SANDBOX_PREFIX):
                 marker = child / '.stale'
