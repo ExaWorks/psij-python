@@ -55,6 +55,7 @@ class _ProcessSandbox:
             return self.dir
 
     def create(self) -> None:
+        self.config.work_directory.mkdir(parents=True, exist_ok=True)
         self.dir = Path(tempfile.mkdtemp(prefix=_SANDBOX_PREFIX, dir=self.config.work_directory))
         self.created = True
 
