@@ -1,9 +1,14 @@
+import atexit
 import logging
 import secrets
 import shutil
+import tempfile
 import threading
+from datetime import timedelta
+
+import time
 from pathlib import Path
-from typing import Optional, List
+from typing import Dict, Optional, List, Type
 
 from psij.job_launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
@@ -25,6 +30,68 @@ def _path(obj: Optional[object]) -> str:
         return '/dev/null'
     else:
         return str(obj)
+
+
+_SANDBOX_PREFIX = 'sbx-'
+_SANDBOX_CLEAN_TIME = timedelta(days=2).total_seconds()
+
+
+class _ProcessSandbox:
+    _instances = {}  # type: Dict[Path, _ProcessSandbox]
+    _instances_lock = threading.RLock()
+    _mark_initialized = False
+
+    def __init__(self, config: JobExecutorConfig) -> None:
+        self.config = config
+        self.lock = threading.RLock()
+        self.created = False
+        self.dir = None  # type: Optional[Path]
+
+    def get_dir(self) -> Path:
+        with self.lock:
+            if not self.created:
+                self.create()
+            assert self.dir is not None
+            return self.dir
+
+    def create(self) -> None:
+        self.dir = Path(tempfile.mkdtemp(prefix=_SANDBOX_PREFIX, dir=self.config.work_directory))
+        self.created = True
+
+    def mark_unused(self) -> None:
+        try:
+            assert self.dir is not None
+            with open(self.dir / '.stale', 'w'):
+                pass
+        except Exception:
+            pass
+
+    def clean(self) -> None:
+        now = time.time()
+        for child in self.config.work_directory.iterdir():
+            if child.name.startswith(_SANDBOX_PREFIX):
+                marker = child / '.stale'
+                if marker.exists() and now - marker.stat().st_mtime > _SANDBOX_CLEAN_TIME:
+                    shutil.rmtree(child, ignore_errors=True)
+
+    @classmethod
+    def get_sandbox(cls: Type['_ProcessSandbox'], config: JobExecutorConfig) -> '_ProcessSandbox':
+        with _ProcessSandbox._instances_lock:
+            if not _ProcessSandbox._mark_initialized:
+                atexit.register(_ProcessSandbox.mark_all)
+                _ProcessSandbox._mark_initialized = True
+
+            if config.work_directory not in _ProcessSandbox._instances:
+                inst = _ProcessSandbox(config)
+                _ProcessSandbox._instances[config.work_directory] = inst
+
+                threading.Thread(target=inst.clean).start()
+            return _ProcessSandbox._instances[config.work_directory]
+
+    @classmethod
+    def mark_all(cls: Type['_ProcessSandbox']) -> None:
+        for sandbox in _ProcessSandbox._instances.values():
+            sandbox.mark_unused()
 
 
 class ScriptBasedLauncher(Launcher):
@@ -100,8 +167,7 @@ class ScriptBasedLauncher(Launcher):
             self._deployed_script_path = self._deploy_file(self._script_path)
 
     def _deploy_file(self, path: Path) -> Path:
-        dst_dir = self.config.work_directory
-        dst_dir.mkdir(parents=True, exist_ok=True)
+        dst_dir = _ProcessSandbox.get_sandbox(self.config).get_dir()
         dst_path = dst_dir / path.name
         if dst_path.exists():
             return dst_path
