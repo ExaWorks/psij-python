@@ -1,9 +1,9 @@
+import hashlib
 import logging
 import secrets
-import shutil
 import threading
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from psij.job_launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
@@ -25,6 +25,18 @@ def _path(obj: Optional[object]) -> str:
         return '/dev/null'
     else:
         return str(obj)
+
+
+_BLOCK_SZ = 16384
+
+
+def _copy_and_checksum(src_path: Path, dst_path: Path, s: Any) -> None:
+    with open(src_path, 'rb') as src:
+        with open(dst_path, 'wb') as dst:
+            bytes = src.read(_BLOCK_SZ)
+            dst.write(bytes)
+            s.update(bytes)
+    dst_path.chmod(src_path.stat().st_mode)
 
 
 class ScriptBasedLauncher(Launcher):
@@ -96,38 +108,67 @@ class ScriptBasedLauncher(Launcher):
             if self._deployed:
                 return
 
-            self._deploy_files()
+            deploy_dir = self._deploy_files(self._files_to_deploy())
+            self._deployed_script_path = deploy_dir / self._script_path.name
 
-    def _deploy_files(self) -> None:
-        self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
-        self._deployed_script_path = self._deploy_file(self._script_path)
+    def _files_to_deploy(self) -> List[Path]:
+        return [
+            Path(__file__).parent / 'scripts' / 'launcher_lib.sh',
+            self._script_path
+        ]
 
-    def _deploy_file(self, path: Path) -> Path:
-        dst_dir = self.config.work_directory
-        dst_dir.mkdir(parents=True, exist_ok=True)
-        dst_path = dst_dir / path.name
-        if dst_path.exists():
-            if dst_path.stat().st_mtime >= path.stat().st_mtime:
-                return dst_path
+    def _deploy_files(self, paths: List[Path]) -> Path:
+        """
+        Deploys all files in a list to the same subdirectory of `config.work_directory`.
+
+        The directory is guaranteed to be unique for each distinct list of files. That is,
+        two invocations of this method with byte-by-byte identical files pointed to by `paths`
+        and in the same order, will lead to the same subdirectory; changing the order of files
+        in `paths` or changing the contents of one or more files in the list will lead to
+        a different subdirectory.
+        This allows files deployed together through this method to maintain relative references
+        to each other while ensuring that different processes using different files do not interfere
+        with each other.
+        """
+        wrk_dir = self.config.work_directory
+        wrk_dir.mkdir(parents=True, exist_ok=True)
+
         tmp_prefix = secrets.token_hex() + '_'
-        tmp_path = dst_dir / (tmp_prefix + path.name)
-        shutil.copy(path, tmp_path)
-        try:
-            # this appears to use os.rename, although I'd wish pathlib docs would state this
-            # explicitly, since the docs for Path.rename mention nothing of the exceptions thrown
-            tmp_path.rename(dst_path)
-            return dst_path
-        except FileExistsError:
-            # thrown in Windows if the path already exists, which is fine if the destination is a
-            # file; we were racing another process
-            if dst_path.is_dir():
+        h = hashlib.sha256()
+        tmp_paths = {}
+        for path in paths:
+            tmp_path = wrk_dir / (tmp_prefix + path.name)
+            tmp_paths[path] = tmp_path
+            _copy_and_checksum(path, tmp_path, h)
+
+        dst_dir = wrk_dir / h.hexdigest()
+
+        if dst_dir.exists():
+            for path in paths:
+                tmp_paths[path].unlink()
+            return dst_dir
+        dst_dir.mkdir(exist_ok=True)
+
+        for path in paths:
+            dst_path = dst_dir / path.name
+            try:
+                # this appears to use os.rename, although I'd wish pathlib docs would state this
+                # explicitly, since the docs for Path.rename mention nothing of the exceptions
+                # thrown
+
+                tmp_paths[path].rename(dst_path)
+            except FileExistsError:
+                # thrown in Windows if the path already exists, which is fine if the destination is
+                # a file; we were racing another process
+                if dst_path.is_dir():
+                    raise
+                else:
+                    continue
+            except IsADirectoryError:
+                # this is thrown in Unix if the destination exists and is a directory; we're not
+                # expecting this
                 raise
-            else:
-                return dst_path
-        except IsADirectoryError:
-            # this is throw in Unix if the destination exists and is a directory; we're not
-            # expecting this
-            raise
+        return dst_dir
 
     def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
         """See :func:`~psij.job_launcher.Launcher.get_launch_command`."""

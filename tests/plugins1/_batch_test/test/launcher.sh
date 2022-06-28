@@ -22,7 +22,8 @@ if [ "$EXECUTABLE" == "/bin/hostname" ]; then
 fi
 
 log "Running stuff"
-log "Stdout: $_PSI_J_STDOUT"
+log "STDOUT: $_PSI_J_STDOUT"
+log "STDERR: $_PSI_J_STDERR"
 
 for NODE in $(seq 1 1 $_PSI_J_NODE_COUNT); do
     log "Node: $NODE"
