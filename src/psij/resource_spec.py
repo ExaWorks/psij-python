@@ -4,14 +4,6 @@ from typing import Optional, List
 from psij.exceptions import InvalidJobException
 
 
-def _nulls(objs: List[object]) -> int:
-    s = 0
-    for e in objs:
-        if e is None:
-            s += 1
-    return s
-
-
 class ResourceSpec(ABC):
     """
     A base class for resource specifications.
@@ -67,7 +59,7 @@ class ResourceSpecV1(ResourceSpec):
         self._check_constraints()
 
     def _check_constraints(self) -> None:
-        nulls = _nulls([self.process_count, self.node_count, self.processes_per_node])
+        nulls = [self.process_count, self.node_count, self.processes_per_node].count(None)
         self._computed_process_count = self.process_count
         self._computed_node_count = self.node_count
         self._computed_ppn = self.processes_per_node
