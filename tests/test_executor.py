@@ -1,37 +1,11 @@
-from datetime import timedelta
+import uuid
 from pathlib import Path
-from typing import Optional
 
-from psij import SubmitException, Job, JobExecutor, JobSpec, JobState, JobAttributes, JobStatus
+from psij import SubmitException, Job, JobSpec, JobState
 from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
-
-
-_QUICK_EXECUTORS = set(['local', 'batch-test'])
-
-
-def _make_test_dir() -> None:
-    (Path.home() / '.psij' / 'test').mkdir(parents=True, exist_ok=True)
-
-
-def _get_timeout(execparams: ExecutorTestParams) -> Optional[timedelta]:
-    if execparams.executor in _QUICK_EXECUTORS:
-        return timedelta(minutes=10)
-    else:
-        return None
-
-
-def assert_completed(status: Optional[JobStatus]) -> None:
-    assert status is not None
-    assert status.state == JobState.COMPLETED
-
-
-def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
-    assert job.spec is not None
-    job.spec.launcher = ep.launcher
-    job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
-    return JobExecutor.get_instance(ep.executor, url=ep.url)
+from _test_tools import _get_executor_instance, _get_timeout, assert_completed, _make_test_dir
 
 
 def test_simple_job(execparams: ExecutorTestParams) -> None:
@@ -39,7 +13,7 @@ def test_simple_job(execparams: ExecutorTestParams) -> None:
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
     status = job.wait(timeout=_get_timeout(execparams))
-    assert_completed(status)
+    assert_completed(job, status)
 
 
 def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
@@ -50,7 +24,7 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
         f = outp.open("r")
         contents = f.read()
         f.close()
@@ -68,7 +42,7 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     job2 = Job()
     ex.attach(job2, native_id)
     status = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(status)
+    assert_completed(job2, status)
 
 
 def test_cancel(execparams: ExecutorTestParams) -> None:
@@ -118,8 +92,8 @@ def test_parallel_jobs(execparams: ExecutorTestParams) -> None:
     ex.submit(job2)
     status1 = job1.wait(timeout=_get_timeout(execparams))
     status2 = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(status1)
-    assert_completed(status2)
+    assert_completed(job1, status1)
+    assert_completed(job2, status2)
 
 
 def test_env_var(execparams: ExecutorTestParams) -> None:
@@ -133,8 +107,31 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
-        assert_completed(status)
+        assert_completed(job, status)
         f = outp.open("r")
         contents = f.read()
         f.close()
         assert contents == '_y_'
+
+
+def test_stdin_redirect(execparams: ExecutorTestParams) -> None:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
+        inp = Path(td, 'stdin.txt')
+        outp = Path(td, 'stdout.txt')
+
+        rnd_str = uuid.uuid4().hex
+
+        with open(inp, 'w') as inf:
+            inf.write(rnd_str)
+
+        job = Job(JobSpec(executable='/bin/cat', stdin_path=inp, stdout_path=outp))
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
+        status = job.wait(timeout=_get_timeout(execparams))
+        assert_completed(job, status)
+
+        with open(outp, 'r') as outf:
+            contents = outf.read()
+
+        assert contents == rnd_str

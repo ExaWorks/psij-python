@@ -8,7 +8,7 @@ shift
 pre_launch
 
 set +e
-mpirun -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
+mpirun --oversubscribe -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
 _PSI_J_EC=$?
 set -e
 

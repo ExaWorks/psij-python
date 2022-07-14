@@ -1,0 +1,4 @@
+#!/bin/bash
+
+HOSTNAME=`/bin/hostname "$@"`
+echo "${HOSTNAME}-${_PSI_J_NODE_INDEX_}"
