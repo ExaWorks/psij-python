@@ -13,7 +13,7 @@ fi
 pre_launch
 
 set +e
-if "$IS_OPENMPI" == "1"; then
+if [ "$IS_OPENMPI" == "1" ]; then
     mpirun --oversubscribe -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
 else
     mpirun -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
