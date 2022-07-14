@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import Optional
 
 from psij.exceptions import InvalidJobException
 
