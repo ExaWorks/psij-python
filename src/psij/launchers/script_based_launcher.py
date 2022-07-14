@@ -96,15 +96,19 @@ class ScriptBasedLauncher(Launcher):
             if self._deployed:
                 return
 
-            self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
-            self._deployed_script_path = self._deploy_file(self._script_path)
+            self._deploy_files()
+
+    def _deploy_files(self) -> None:
+        self._deploy_file(Path(__file__).parent / 'scripts' / 'launcher_lib.sh')
+        self._deployed_script_path = self._deploy_file(self._script_path)
 
     def _deploy_file(self, path: Path) -> Path:
         dst_dir = self.config.work_directory
         dst_dir.mkdir(parents=True, exist_ok=True)
         dst_path = dst_dir / path.name
         if dst_path.exists():
-            return dst_path
+            if dst_path.stat().st_mtime >= path.stat().st_mtime:
+                return dst_path
         tmp_prefix = secrets.token_hex() + '_'
         tmp_path = dst_dir / (tmp_prefix + path.name)
         shutil.copy(path, tmp_path)
