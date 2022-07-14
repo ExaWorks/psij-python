@@ -6,7 +6,7 @@ _PSI_J_PROCESS_COUNT="$1"
 shift
 
 IS_OPENMPI=0
-if mpirun -version | grep "Open MZI" >/dev/null 2>&1; then
+if mpirun -version | grep "Open MPI" >/dev/null 2>&1; then
     IS_OPENMPI=1
 fi
 
