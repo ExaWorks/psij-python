@@ -47,19 +47,30 @@ class CustomBuildCommand(build):
         BuildLauncherScriptsCommand(self.distribution).run()
         super().run()
 
+with open('src/psij/version.py') as f:
+    exec(f.read())
+
+with open('requirements.txt') as f:
+    install_requires = f.readlines()
+
+extras_require = {
+}
 
 if __name__ == '__main__':
     setup(
         name='psi-j-python',
-        version='1.0.0-a0',
+        version=VERSION,
 
         description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
         specification.''',
+        download_url='https://github.com/ExaWorks/psi-j-python/archive/{}.tar.gz'.format(VERSION),
 
         author='The ExaWorks Team',
         author_email='hategan@mcs.anl.gov',
 
-        url='https://github.com/exaworks/psi-j-python',
+        url='https://github.com/ExaWorks/psi-j-python',
+
+        license='MIT License',
 
         classifiers=[
             'Programming Language :: Python :: 3',
@@ -82,9 +93,8 @@ if __name__ == '__main__':
 
         entry_points={
         },
-
-        install_requires=[
-        ],
+        extras_require=extras_require,
+        install_requires=install_requires,
         python_requires='>=3.6',
 
         cmdclass={
