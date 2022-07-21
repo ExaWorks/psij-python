@@ -54,6 +54,19 @@ with open('requirements.txt') as f:
     install_requires = f.readlines()
 
 extras_require = {
+    'radical': ['radical.utils',
+                'radical.pilot'],
+    'saga': ['radical.saga',
+             'radical.utils'],
+    'dev': ['six',
+            'sphinx',
+            'sphinx_rtd_theme',
+            'sphinx-tabs',
+            # sphinx-autodoc-typehints
+            'mypy >=0.790',
+            'pytest',
+            'flake8',
+            'autopep8'],
 }
 
 if __name__ == '__main__':
