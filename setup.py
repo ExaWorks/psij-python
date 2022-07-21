@@ -51,7 +51,7 @@ class CustomBuildCommand(build):
 if __name__ == '__main__':
     setup(
         name='psi-j-python',
-        version='0.1',
+        version='1.0.0-a0',
 
         description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
         specification.''',
