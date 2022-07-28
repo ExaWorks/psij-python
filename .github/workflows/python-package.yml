@@ -60,4 +60,6 @@ jobs:
           pip install -r requirements-connector-radical.txt
           make launcher-scripts
           make install
-          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 make tests
+          ref_name="${{ github.ref_name }}"
+          echo "ref_name : $ref_name"
+          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 make tests -- --branch-name-override $ref_name
