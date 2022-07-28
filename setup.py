@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open("src/psij/version.py") as f:
+    exec(f.read())
+
 
 if __name__ == '__main__':
     with open('requirements.txt') as f:
@@ -7,7 +10,7 @@ if __name__ == '__main__':
 
     setup(
         name='psi-j-python',
-        version='0.1',
+        version=VERSION,
 
         description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
         specification.''',
