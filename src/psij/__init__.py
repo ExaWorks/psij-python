@@ -18,7 +18,9 @@ from .job_state import JobState
 from .job_status import JobStatus
 from .resource_spec import ResourceSpec, ResourceSpecV1
 from .serialize import Export, Import
+from .version import VERSION
 
+__version__ = VERSION
 
 __all__ = [
     'JobExecutor', 'JobExecutorConfig', 'Job', 'JobStatusCallback', 'JobSpec', 'JobAttributes',
