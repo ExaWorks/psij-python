@@ -65,7 +65,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         self, job: Job, context: Dict[str, object], submit_file: TextIO
     ) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
-        assert(job.spec is not None)
+        assert job.spec is not None
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)
         self.generator.generate_submit_script(job, context, submit_file)
 
