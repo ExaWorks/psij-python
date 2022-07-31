@@ -11,7 +11,7 @@ This document will guide you through the install procedure and your first hello 
 
 ## Install psi-j
 
-If you have conda installed you might want to start from a fresh environment:
+If you have conda installed you might want to start from a fresh environment. This part is not installing psi-j but setting up a new environment with the specified python version:
 
 1. `conda create -n psi-j python=3.7`
 2. `conda activate psi-j`
@@ -53,8 +53,22 @@ N=1 # number of jobs to run
 def make_job():
     job = psij.Job()
     spec = psij.JobSpec()
-    spec.executable = '/bin/sleep'
-    spec.arguments = ['10']
+    
+    spec.executable = 'echo'
+    spec.arguments = ['HELLO WORLD!']
+    
+    # set project name if no default is specified
+    # spec.attributes.project_name = <PROJECT_NAME>
+    
+    # set queue if no default is specified
+    # spec.attributes.queue_name = <QUEUE_NAME>
+  
+    spec.stdout_path = "out.txt"
+    
+    # set node count
+    # resource = psij.ResourceSpecV1()
+    # resource.node_count = N
+    
     job.spec = spec
     return job
 
