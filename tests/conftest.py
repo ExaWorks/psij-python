@@ -265,8 +265,11 @@ def _get_id(config):
 
 
 def _run(*args) -> str:
-    process = subprocess.run(args, check=True, text=True,
+    process = subprocess.run(args, check=False, text=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if process.returncode != 0:
+        raise Exception('Command %s failed with exit code %s. Output: %s, %s' %
+                        (args, process.returncode, process.stdout, process.stderr))
     return process.stdout.strip()
 
 
