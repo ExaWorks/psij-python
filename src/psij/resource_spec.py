@@ -1,7 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 from psij.exceptions import InvalidJobException
+
+
+def _nulls(objs: List[object]) -> int:
+    s = 0
+    for e in objs:
+        if e is None:
+            s += 1
+    return s
 
 
 class ResourceSpec(ABC):

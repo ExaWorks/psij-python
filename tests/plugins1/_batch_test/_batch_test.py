@@ -91,9 +91,10 @@ class _TestLauncher(MultipleLauncher):
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         super().__init__(Path(__file__).parent / 'test' / 'launcher.sh', config)
 
-    def _deploy_files(self) -> None:
-        super()._deploy_files()
-        self._deploy_file(Path(__file__).parent / 'test' / 'hostname')
+    def _files_to_deploy(self) -> List[Path]:
+        files = super()._files_to_deploy()
+        files.append(Path(__file__).parent / 'test' / 'hostname')
+        return files
 
     def get_additional_args(self, job: Job) -> List[str]:
         args = super().get_additional_args(job)
