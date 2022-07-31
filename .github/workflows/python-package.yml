@@ -44,6 +44,9 @@ jobs:
         options: -v ${{ github.workspace }}:/workspace -u root
         run: |
           cd /workspace
+          # git can complain about "dubious ownership" without this
+          # we mark it as safe here since it's an ephemeral container anyway
+          git config --global --add safe.directory /workspace
           echo "Running in ${PWD}"
           sudo apt update
           sudo apt install -y openssh-server openssh-client
