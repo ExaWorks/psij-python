@@ -44,11 +44,6 @@ jobs:
         options: -v ${{ github.workspace }}:/workspace -u root
         run: |
           cd /workspace
-          git --version
-          git branch -a
-          # git can complain about "dubious ownership" without this
-          # we mark it as safe here since it's an ephemeral container anyway
-          git config --global --add safe.directory /workspace
           echo "Running in ${PWD}"
           sudo apt update
           sudo apt install -y openssh-server openssh-client
@@ -65,6 +60,4 @@ jobs:
           pip install -r requirements-connector-radical.txt
           make launcher-scripts
           make install
-          ref_name="${{ github.ref_name }}"
-          echo "ref_name : $ref_name"
-          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 make tests -- --branch-name-override $ref_name
+          PYTHONPATH=$(flux env | grep PYTHONPATH | sed -E 's/.*PYTHONPATH="(.*)"/\1/') OMPI_ALLOW_RUN_AS_ROOT=1 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 make tests
