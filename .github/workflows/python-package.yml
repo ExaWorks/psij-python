@@ -45,6 +45,7 @@ jobs:
         run: |
           cd /workspace
           git --version
+          git branch -a
           # git can complain about "dubious ownership" without this
           # we mark it as safe here since it's an ephemeral container anyway
           git config --global --add safe.directory /workspace
