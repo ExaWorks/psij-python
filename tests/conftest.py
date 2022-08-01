@@ -212,21 +212,24 @@ def _get_config_env(config, name):
 
 
 def pytest_unconfigure(config):
-    data = {
-        'module': '_conftest',
-        'cls': None,
-        'function': '_end',
-        'test_name': '_end',
-        'results': {},
-        'extras': None,
-        'test_start_time': _now(),
-        'test_end_time': _now(),
-        'run_id': _get_config_env(config, 'run_id'),
-        'branch': _get_config_env(config, 'git_branch')
-    }
-    if hasattr(config.option, 'environment'):
-        # only upload if we were able to get a basic environment
-        _save_or_upload(config, data)
+    save = config.getoption('save_results')
+    upload = config.getoption('upload_results')
+    if save or upload:
+        data = {
+            'module': '_conftest',
+            'cls': None,
+            'function': '_end',
+            'test_name': '_end',
+            'results': {},
+            'extras': None,
+            'test_start_time': _now(),
+            'test_end_time': _now(),
+            'run_id': _get_config_env(config, 'run_id'),
+            'branch': _get_config_env(config, 'git_branch')
+        }
+        if hasattr(config.option, 'environment'):
+            # only upload if we were able to get a basic environment
+            _save_or_upload(config, data)
 
 
 def _cache(file_path, fn):
