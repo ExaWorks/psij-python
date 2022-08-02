@@ -117,7 +117,7 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
         args.append('--branch-name-override')
         args.append(fake_branch_name)
     for opt in ['maintainer_email', 'executors', 'server_url', 'key', 'max_age',
-                'custom_attributes']:
+                'custom_attributes', 'minimal_uploads']:
         try:
             val = get_conf(conf, opt)
             args.append('--' + opt.replace('_', '-'))
