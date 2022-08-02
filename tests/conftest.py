@@ -212,21 +212,24 @@ def _get_config_env(config, name):
 
 
 def pytest_unconfigure(config):
-    data = {
-        'module': '_conftest',
-        'cls': None,
-        'function': '_end',
-        'test_name': '_end',
-        'results': {},
-        'extras': None,
-        'test_start_time': _now(),
-        'test_end_time': _now(),
-        'run_id': _get_config_env(config, 'run_id'),
-        'branch': _get_config_env(config, 'git_branch')
-    }
-    if hasattr(config.option, 'environment'):
-        # only upload if we were able to get a basic environment
-        _save_or_upload(config, data)
+    save = config.getoption('save_results')
+    upload = config.getoption('upload_results')
+    if save or upload:
+        data = {
+            'module': '_conftest',
+            'cls': None,
+            'function': '_end',
+            'test_name': '_end',
+            'results': {},
+            'extras': None,
+            'test_start_time': _now(),
+            'test_end_time': _now(),
+            'run_id': _get_config_env(config, 'run_id'),
+            'branch': _get_config_env(config, 'git_branch')
+        }
+        if hasattr(config.option, 'environment'):
+            # only upload if we were able to get a basic environment
+            _save_or_upload(config, data)
 
 
 def _cache(file_path, fn):
@@ -265,8 +268,11 @@ def _get_id(config):
 
 
 def _run(*args) -> str:
-    process = subprocess.run(args, check=True, text=True,
+    process = subprocess.run(args, check=False, text=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if process.returncode != 0:
+        raise Exception('Command %s failed with exit code %s. Output: %s, %s' %
+                        (args, process.returncode, process.stdout, process.stderr))
     return process.stdout.strip()
 
 
@@ -364,13 +370,8 @@ def _discover_environment(config):
     env['in_venv'] = _get_env('VIRTUAL_ENV') != ''
     config.option.custom_attributes = _parse_custom_attributes(
         config.getoption('custom_attributes'))
+
     try:
-        env['has_slurm'] = shutil.which('sbatch') is not None
-        env['has_mpirun'] = shutil.which('mpirun') is not None
-        env['has_flux'] = _has_flux()
-        env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
-                                                        '-oStrictHostKeyChecking=no', 'localhost',
-                                                        'true'], timeout=5)
         env['git_branch'] = _get_git_branch(config)
         env['git_last_commit'] = _get_last_commit()
         ahead, behind = _get_commit_diff()
@@ -378,6 +379,21 @@ def _discover_environment(config):
         env['git_behind_remote_commit_count'] = behind
         env['git_local_change_summary'] = _get_git_diff_stat()
         env['git_has_local_changes'] = (env['git_local_change_summary'] != '')
+    except Exception as ex:
+        logger.exception(ex)
+        save = config.getoption('save_results')
+        upload = config.getoption('upload_results')
+        if save or upload:
+            raise Exception('Cannot get required repository information.')
+        else:
+            logger.warning('Cannot get git repository information.')
+    try:
+        env['has_slurm'] = shutil.which('sbatch') is not None
+        env['has_mpirun'] = shutil.which('mpirun') is not None
+        env['has_flux'] = _has_flux()
+        env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
+                                                        '-oStrictHostKeyChecking=no', 'localhost',
+                                                        'true'], timeout=5)
     except Exception as ex:
         env['error'] = str(ex)
     config.option.environment = env

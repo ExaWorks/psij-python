@@ -217,7 +217,7 @@ class BatchSchedulerExecutor(JobExecutor):
         self._queue_poll_thread.register_job(job)
 
     def _get_launcher_from_job(self, job: Job) -> Launcher:
-        assert(job.spec)
+        assert job.spec
         launcher_name = job.spec.launcher
         if not launcher_name:
             launcher_name = Launcher.DEFAULT_LAUNCHER_NAME

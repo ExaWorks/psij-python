@@ -99,7 +99,7 @@ class Import():
     def from_dict(self, hash: Dict[str, Any], target_type: Optional[str] = None) -> object:
         """Reads an object from a dict."""
         if target_type == "JobSpec":
-            return(self._dict2spec(hash))
+            return self._dict2spec(hash)
         else:
             sys.exit("Can't create dict,  type " + str(target_type) + " not supported")
 
