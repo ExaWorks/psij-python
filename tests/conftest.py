@@ -481,10 +481,10 @@ def _save_report(config, data):
 _SAFE_KEYS = ['module', 'cls', 'function', 'test_name', 'test_start_time', 'test_end_time',
               'run_id', 'branch', 'results.setup.passed', 'results.setup.status',
               'results.call.passed', 'results.call.status', 'results.teardown.passed',
-              'results.teardown.status', 'extras.executors', 'extras.maintainer_email',
-              'extras.start_time', 'extras.run_id', 'extras.git_branch', 'extras.git_last_commit',
-              'extras.git_ahead_remote_commit_count', 'extras.git_behind_remote_commit_count',
-              'extras.git_local_change_summary', 'extras.git_has_local_changes']
+              'results.teardown.status', 'extras.start_time', 'extras.run_id', 'extras.git_branch',
+              'extras.git_last_commit', 'extras.git_ahead_remote_commit_count',
+              'extras.git_behind_remote_commit_count',  'extras.git_has_local_changes',
+              'extras.config.id', 'extras.config.executors', 'extras.config.maintainer_email']
 _SAFE_KEYS_PROCESSED = None
 
 
