@@ -46,3 +46,9 @@ class JobAttributes(object):
         if name not in self._custom_attributes:
             return None
         return self._custom_attributes[name]
+
+    def __repr__(self) -> str:
+        """Returns a string representation of this object."""
+        return 'JobAttributes(duration={}, queue_name={}, project_name={}, reservation_id={}, ' \
+               'custom_attributes={})'.format(self.duration, self.queue_name, self.project_name,
+                                              self.reservation_id, self._custom_attributes)
