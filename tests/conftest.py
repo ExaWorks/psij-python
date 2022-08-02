@@ -483,7 +483,7 @@ _SAFE_KEYS = ['module', 'cls', 'function', 'test_name', 'test_start_time', 'test
               'results.call.passed', 'results.call.status', 'results.teardown.passed',
               'results.teardown.status', 'extras.start_time', 'extras.run_id', 'extras.git_branch',
               'extras.git_last_commit', 'extras.git_ahead_remote_commit_count',
-              'extras.git_behind_remote_commit_count',  'extras.git_has_local_changes',
+              'extras.git_behind_remote_commit_count', 'extras.git_has_local_changes',
               'extras.config.id', 'extras.config.executors', 'extras.config.maintainer_email']
 _SAFE_KEYS_PROCESSED = {}
 
@@ -517,7 +517,7 @@ def _do_sanitize(data: Dict[str, object], result: Dict[str, object],
         if k not in safe:
             continue
         s = safe[k]
-        if s == True:
+        if s is True:
             if isinstance(v, dict):
                 # value expected, but got dict instead
                 raise ValueError('Unexpected dict in data: %s' % v)
