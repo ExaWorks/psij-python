@@ -6,6 +6,84 @@ import functools
 
 import radical.utils as ru
 
+from typing import List, Dict, Any
+
+
+'''
+This file implements a psij job service.  The service can be contacted via ZMQ.
+It listens for requests on a `zmq.REP` reply socket - a client should
+accordingly connect via an `zmq:REQ` request socket.
+
+the service will
+
+Requests are formed as follows:
+
+    {
+        'cmd'   : str,
+        'args'  : Tuple[Any],
+        'kwargs': Dict[str, Any]
+    }
+
+Repsonse messages are formed as follows:
+
+    {
+        'err'   : str = None,  # error message
+        'exc'   : str = None,  # exception stacktrace
+        'res'   : Any          # any serializable data type
+    }
+
+
+The service interface mirrors that of an psij executor implementation.  The
+supported `cmd` requests, their parameters and return values are as follows:
+
+    register_client(name: str = None, url: str = None) -> sid: str, sub_url: str
+
+        name: name of backend psij executor to use for this client
+              defaults to `local`
+        url : url to pass to backend psij executor
+              defaults to `fork://localhost/`
+
+
+        sid    : unique ID to identify the client on further requests
+        sub_url: zmq subscriber URL to subscribe for state notifications
+
+        Register client, configure the service's psij executor to use for this
+        client, and return a unique session ID.  That ID is required for
+        all further requests.
+
+        The returned `sub_url` will point to an additional ZMQ socket the server
+        provides.  That socket is of `zmq.XBUB` type: the client can connect
+        with an `zmq.SUB` socket and subscribe state notifications.  The topic
+        to be used for that subscription is the returned `sid`.
+
+
+    submit(sid: str, spec: Dict[str, Any]) -> str
+
+        sid : session ID obtained via `register_client`
+        spec: serialized psij.JobSepc
+
+        This method submits a job as described by the JobSpec to the backend psij
+        executor and returns the job ID.
+
+
+    cancel(sid: str, jobid: str) -> None
+
+        sid  : session ID obtained via `register_client`
+        jobid: job ID obtained via `submit` or `list`
+
+        This method will cancel the specified job.  The method returns without
+        waiting for the cancelation request to suceed, the callee should observe
+        state notifications to confirm successfull cancellation.
+
+
+    list(sid: str) -> List[str]
+
+        sid  : session ID obtained via `register_client`
+
+        This method will return a list of job IDs known to this service.
+
+'''
+
 
 # ------------------------------------------------------------------------------
 #
@@ -22,7 +100,6 @@ class Service(ru.zmq.Server):
         self.register_request('submit', self._request_submit)
         self.register_request('cancel', self._request_cancel)
         self.register_request('list', self._request_list)
-        self.register_request('attach', self._request_attach)
 
         self._clients = dict()
 
@@ -48,7 +125,7 @@ class Service(ru.zmq.Server):
 
     # --------------------------------------------------------------------------
     #
-    def _request_register(self, name: str, url: str = None):
+    def _request_register(self, name: str, url: str = None) -> str:
 
         # register new client
         sid = ru.generate_id('client')
@@ -69,26 +146,16 @@ class Service(ru.zmq.Server):
                               'jobs': dict()}
 
         # client is now known and initialized
-        return sid
+        return sid, str(self._pubsub.addr_sub)
 
     # --------------------------------------------------------------------------
     #
-    def _request_get_pubsub(self, sid):
+    def _request_submit(self, sid: str, spec: Dict[str, Any]) -> str:
 
         if sid not in self._clients:
             raise ValueError('unknown client sid %s' % sid)
 
-        return str(self._pubsub.addr_sub)
-
-    # --------------------------------------------------------------------------
-    #
-    def _request_submit(self, sid, spec):
-
-        if sid not in self._clients:
-            raise ValueError('unknown client sid %s' % sid)
-
-        spec = self._deserialize.from_dict(spec, 'JobSpec')
-        job = psij.Job(spec)
+        job = psij.Job(self._deserialize.from_dict(spec, 'JobSpec'))
         self._clients[sid]['jobs'][job.id] = job
         self._clients[sid]['jex'].submit(job)
 
@@ -96,7 +163,7 @@ class Service(ru.zmq.Server):
 
     # --------------------------------------------------------------------------
     #
-    def _request_cancel(self, sid, jobid):
+    def _request_cancel(self, sid: str, jobid: str) -> None:
 
         if sid not in self._clients:
             raise ValueError('unknown client sid %s' % sid)
@@ -111,22 +178,12 @@ class Service(ru.zmq.Server):
 
     # --------------------------------------------------------------------------
     #
-    def _request_list(self, sid):
+    def _request_list(self, sid: str) -> List[str]:
 
         if sid not in self._clients:
             raise ValueError('unknown client sid %s' % sid)
 
         return list(self._clients[sid]['jobs'])
-
-    # --------------------------------------------------------------------------
-    #
-    def _request_attach(self, sid):
-
-        if sid not in self._clients:
-            raise ValueError('unknown client sid %s' % sid)
-
-        # FIXME: TBD
-        raise NotImplementedError()
 
     # --------------------------------------------------------------------------
     #
