@@ -96,7 +96,6 @@ class Service(ru.zmq.Server):
         ru.zmq.Server.__init__(self, url='tcp://*:12345')
 
         self.register_request('register', self._request_register)
-        self.register_request('get_pubsub', self._request_get_pubsub)
         self.register_request('submit', self._request_submit)
         self.register_request('cancel', self._request_cancel)
         self.register_request('list', self._request_list)
@@ -121,6 +120,7 @@ class Service(ru.zmq.Server):
                'state': str(status.state),
                'metadata': status.metadata,
                'exit_code': status.exit_code}
+        self._log.debug('status update for %s: %s', sid, msg)
         self._pub.put(sid, msg)
 
     # --------------------------------------------------------------------------

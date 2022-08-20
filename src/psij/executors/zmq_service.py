@@ -1,6 +1,7 @@
 """This module contains the ZMQService :class:`~psij.JobExecutor`.
 """
 
+import threading
 from typing import Optional, List
 
 from psij import (
@@ -55,6 +56,11 @@ class ZMQServiceJobExecutor(JobExecutor):
         self._idmap = dict()
         self._serialize = Export()
 
+        # we can only update the idmap when the `submit` request returns, but
+        # an state notification may happen before that.  We use a lock to ensure
+        # that state updates are delayed until after `submit` completed.
+        self._lock = threading.Lock()
+
         # connect to service and register this client instance
         self._client = ru.zmq.Client(url=str(ru_url))
         self._sid, sub_url = self._client.request('register', name='local')
@@ -70,11 +76,12 @@ class ZMQServiceJobExecutor(JobExecutor):
         """
         assert topic == self._sid
 
-        jobid = self._idmap.get(msg['jobid'])
-        if not jobid:
-            # FIXME: use logger
-            print('job %s unknown: %s' % (jobid, self._idmap.keys()))
-            return
+        with self._lock:
+            jobid = self._idmap.get(msg['jobid'])
+            if not jobid:
+                # FIXME: use logger
+                print('job %s unknown: %s' % (jobid, self._idmap.keys()))
+                return
 
         job = self._jobs.get(jobid)
         assert job
@@ -90,10 +97,11 @@ class ZMQServiceJobExecutor(JobExecutor):
     def submit(self, job: Job) -> None:
         """See :func:`~psij.job_executor.JobExecutor.submit`."""
         job.executor = self
-        self._jobs[job.id] = job
-        job._native_id = self._client.request('submit', sid=self._sid,
-                                              spec=self._serialize.to_dict(job.spec))
-        self._idmap[job._native_id] = job.id
+        with self._lock:
+            self._jobs[job.id] = job
+            job._native_id = self._client.request('submit', sid=self._sid,
+                                        spec=self._serialize.to_dict(job.spec))
+            self._idmap[job._native_id] = job.id
 
     def cancel(self, job: Job) -> None:
         """See :func:`~psij.job_executor.JobExecutor.cancel`."""
