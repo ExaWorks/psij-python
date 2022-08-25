@@ -33,11 +33,11 @@ crontab_list() {
 
 
 cron_check_existing() {
-    crontab_list 2>/dev/null | grep "psij-ci-run" >/dev/null 2>&1
+    crontab_list | grep "psij-ci-run" >/dev/null 2>&1
 }
 
 cron_existing_error() {
-    EXISTING=`crontab_list 2>/dev/null | grep "psij-ci-run"`
+    EXISTING=`crontab_list | grep "psij-ci-run"`
     echo
     echo "================================================================"
     echo "Error: a crontab for PSI/J tests already exists:                "
