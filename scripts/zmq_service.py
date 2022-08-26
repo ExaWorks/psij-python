@@ -36,7 +36,7 @@ Repsonse messages are formed as follows:
 The service interface mirrors that of an psij executor implementation.  The
 supported `cmd` requests, their parameters and return values are as follows:
 
-    register_client(name: str = None, url: str = None) -> sid: str, sub_url: str
+    register_client(name: str = None, url: str = None) -> cid: str, sub_url: str
 
         name: name of backend psij executor to use for this client
               defaults to `local`
@@ -44,31 +44,31 @@ supported `cmd` requests, their parameters and return values are as follows:
               defaults to `fork://localhost/`
 
 
-        sid    : unique ID to identify the client on further requests
+        cid    : unique ID to identify the client on further requests
         sub_url: zmq subscriber URL to subscribe for state notifications
 
         Register client, configure the service's psij executor to use for this
-        client, and return a unique session ID.  That ID is required for
+        client, and return a unique client ID.  That ID is required for
         all further requests.
 
         The returned `sub_url` will point to an additional ZMQ socket the server
         provides.  That socket is of `zmq.XBUB` type: the client can connect
         with an `zmq.SUB` socket and subscribe state notifications.  The topic
-        to be used for that subscription is the returned `sid`.
+        to be used for that subscription is the returned `cid`.
 
 
-    submit(sid: str, spec: Dict[str, Any]) -> str
+    submit(cid: str, spec: Dict[str, Any]) -> str
 
-        sid : session ID obtained via `register_client`
+        cid : client ID obtained via `register_client`
         spec: serialized psij.JobSepc
 
         This method submits a job as described by the JobSpec to the backend psij
         executor and returns the job ID.
 
 
-    cancel(sid: str, jobid: str) -> None
+    cancel(cid: str, jobid: str) -> None
 
-        sid  : session ID obtained via `register_client`
+        cid  : client ID obtained via `register_client`
         jobid: job ID obtained via `submit` or `list`
 
         This method will cancel the specified job.  The method returns without
@@ -76,9 +76,9 @@ supported `cmd` requests, their parameters and return values are as follows:
         state notifications to confirm successfull cancellation.
 
 
-    list(sid: str) -> List[str]
+    list(cid: str) -> List[str]
 
-        sid  : session ID obtained via `register_client`
+        cid  : client ID obtained via `register_client`
 
         This method will return a list of job IDs known to this service.
 
@@ -112,7 +112,7 @@ class Service(ru.zmq.Server):
 
     # --------------------------------------------------------------------------
     #
-    def _status_callback(self, sid: str, job: psij.Job, status: psij.JobStatus):
+    def _status_callback(self, cid: str, job: psij.Job, status: psij.JobStatus):
 
         msg = {'jobid': job.id,
                'time': status.time,
@@ -120,15 +120,24 @@ class Service(ru.zmq.Server):
                'state': str(status.state),
                'metadata': status.metadata,
                'exit_code': status.exit_code}
-        self._log.debug('status update for %s: %s', sid, msg)
-        self._pub.put(sid, msg)
+        self._log.debug('status update for %s: %s', cid, msg)
+        self._pub.put(cid, msg)
 
     # --------------------------------------------------------------------------
     #
     def _request_register(self, name: str, url: str = None) -> str:
+        '''
+        parameters:
+            name:str : name of psij executor to use
+            url:str  : optional url to pass to psij executor
+
+        returns:
+            uid:str  : unique ID identifying the registered client
+            addr:str : URL to be used for state notifications
+        '''
 
         # register new client
-        sid = ru.generate_id('client')
+        cid = ru.generate_id('client')
 
         if not url:
             # by default run jobs on localhost
@@ -137,53 +146,74 @@ class Service(ru.zmq.Server):
         # create executor
         jex = psij.JobExecutor.get_instance(name=name, url=url)
 
-        # register state callback for this sid
-        cb = functools.partial(self._status_callback, sid)
+        # register state callback for this cid
+        cb = functools.partial(self._status_callback, cid)
         jex.set_job_status_callback(cb)
 
         # store client information
-        self._clients[sid] = {'jex': jex,
+        self._clients[cid] = {'jex': jex,
                               'jobs': dict()}
 
         # client is now known and initialized
-        return sid, str(self._pubsub.addr_sub)
+        return cid, str(self._pubsub.addr_sub)
 
     # --------------------------------------------------------------------------
     #
-    def _request_submit(self, sid: str, spec: Dict[str, Any]) -> str:
+    def _request_submit(self, cid: str, spec: Dict[str, Any]) -> str:
+        '''
+        parameters:
+           cid:str   : client ID
+           spec:Dict : job spec
 
-        if sid not in self._clients:
-            raise ValueError('unknown client sid %s' % sid)
+        returns:
+           jobid:str : psij job ID for submitted job
+        '''
+
+
+        if cid not in self._clients:
+            raise ValueError('unknown client cid %s' % cid)
 
         job = psij.Job(self._deserialize.from_dict(spec, 'JobSpec'))
-        self._clients[sid]['jobs'][job.id] = job
-        self._clients[sid]['jex'].submit(job)
+        self._clients[cid]['jobs'][job.id] = job
+        self._clients[cid]['jex'].submit(job)
 
         return job.id
 
     # --------------------------------------------------------------------------
     #
-    def _request_cancel(self, sid: str, jobid: str) -> None:
+    def _request_cancel(self, cid: str, jobid: str) -> None:
+        '''
+        parameters:
+           cid:str   : client ID
+           jobid:str : psij job ID for job to be canceled
+        '''
 
-        if sid not in self._clients:
-            raise ValueError('unknown client sid %s' % sid)
+        if cid not in self._clients:
+            raise ValueError('unknown client cid %s' % cid)
 
-        if jobid not in self._clients[sid]['jobs']:
+        if jobid not in self._clients[cid]['jobs']:
             raise ValueError('unknown job id %s' % jobid)
 
-        jex = self._clients[sid]['jex']
-        job = self._clients[sid]['jobs'][jobid]
+        jex = self._clients[cid]['jex']
+        job = self._clients[cid]['jobs'][jobid]
 
         jex.cancel(job)
 
     # --------------------------------------------------------------------------
     #
-    def _request_list(self, sid: str) -> List[str]:
+    def _request_list(self, cid: str) -> List[str]:
+        '''
+        parameters:
+           cid:str   : client ID
 
-        if sid not in self._clients:
-            raise ValueError('unknown client sid %s' % sid)
+        returns:
+           jobids:List[str] : all known psij job IDs
+        '''
 
-        return list(self._clients[sid]['jobs'])
+        if cid not in self._clients:
+            raise ValueError('unknown client cid %s' % cid)
+
+        return list(self._clients[cid]['jobs'])
 
     # --------------------------------------------------------------------------
     #

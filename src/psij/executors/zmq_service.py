@@ -99,13 +99,13 @@ class ZMQServiceJobExecutor(JobExecutor):
         job.executor = self
         with self._lock:
             self._jobs[job.id] = job
-            job._native_id = self._client.request('submit', sid=self._sid,
+            job._native_id = self._client.request('submit', cid=self._sid,
                                         spec=self._serialize.to_dict(job.spec))
             self._idmap[job._native_id] = job.id
 
     def cancel(self, job: Job) -> None:
         """See :func:`~psij.job_executor.JobExecutor.cancel`."""
-        self._client.request('cancel', sid=self._sid, jobid=job._native_id)
+        self._client.request('cancel', cid=self._sid, jobid=job._native_id)
 
     def list(self) -> List[str]:
         """See :func:`~psij.job_executor.JobExecutor.list`.
@@ -116,7 +116,7 @@ class ZMQServiceJobExecutor(JobExecutor):
 
         :return: The list of known job ids.
         """
-        return self._client.request('list', sid=self._sid)
+        return self._client.request('list', cid=self._sid)
 
     def attach(self, job: Job, native_id: str) -> None:
         """
