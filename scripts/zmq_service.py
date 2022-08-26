@@ -6,7 +6,7 @@ import functools
 
 import radical.utils as ru
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 
 '''
@@ -125,7 +125,7 @@ class Service(ru.zmq.Server):
 
     # --------------------------------------------------------------------------
     #
-    def _request_register(self, name: str, url: str = None) -> str:
+    def _request_register(self, name: str, url: str = None) -> Tuple[str, str]:
         '''
         parameters:
             name:str : name of psij executor to use
@@ -138,10 +138,6 @@ class Service(ru.zmq.Server):
 
         # register new client
         cid = ru.generate_id('client')
-
-        if not url:
-            # by default run jobs on localhost
-            url = 'fork://localhost'
 
         # create executor
         jex = psij.JobExecutor.get_instance(name=name, url=url)
@@ -168,7 +164,6 @@ class Service(ru.zmq.Server):
         returns:
            jobid:str : psij job ID for submitted job
         '''
-
 
         if cid not in self._clients:
             raise ValueError('unknown client cid %s' % cid)
@@ -218,14 +213,16 @@ class Service(ru.zmq.Server):
     # --------------------------------------------------------------------------
     #
     def _request_stage_in(self, data, fname):
-        ...
-        raise NotImplementedError()
+
+        with open(fname, 'w') as fout:
+            fout.write(data)
 
     # --------------------------------------------------------------------------
     #
     def _request_stage_out(self, fname):
-        ...
-        raise NotImplementedError()
+
+        with open(fname) as fin:
+            return fin.read()
 
 
 # ------------------------------------------------------------------------------
