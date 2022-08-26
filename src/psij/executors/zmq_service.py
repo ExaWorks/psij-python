@@ -50,6 +50,11 @@ class ZMQServiceJobExecutor(JobExecutor):
         if not config:
             config = JobExecutorConfig()
 
+        if ru_url.path and ru_url.path != '/':
+            name = ru_url.path.strip('/')
+            ru_url.path = None
+        else:
+            name = 'local'
         super().__init__(url=str(ru_url), config=config)
 
         self._jobs = dict()
@@ -62,8 +67,8 @@ class ZMQServiceJobExecutor(JobExecutor):
         self._lock = threading.Lock()
 
         # connect to service and register this client instance
-        self._client = ru.zmq.Client(url=str(ru_url))
-        self._sid, sub_url = self._client.request('register', name='local')
+        self._client = ru.zmq.Client(url=str(ru_url).rstrip('/'))
+        self._sid, sub_url = self._client.request('register', name=name)
 
         # subscribe for state update information (trigger `self._state_cb`)
         ru.zmq.Subscriber(channel='state', url=sub_url,
