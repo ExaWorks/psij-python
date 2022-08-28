@@ -68,18 +68,21 @@ class ZMQServiceJobExecutor(JobExecutor):
 
         # connect to service and register this client instance
         self._client = ru.zmq.Client(url=str(ru_url).rstrip('/'))
-        self._sid, sub_url = self._client.request('register', name=name)
+        self._cid, sub_url = self._client.request('register', name=name)
 
         # subscribe for state update information (trigger `self._state_cb`)
-        ru.zmq.Subscriber(channel='state', url=sub_url,
-                          cb=self._state_cb, topic=self._sid)
+        self._sub = ru.zmq.Subscriber(channel='state', url=sub_url,
+                                      cb=self._state_cb, topic=self._cid)
+
+    def __del__(self):
+        self._sub.stop()
 
     def _state_cb(self, topic, msg):
         """Callback triggered on job state update messages
 
         Update the status of the psij.Job.
         """
-        assert topic == self._sid
+        assert topic == self._cid, str([topic, self._cid, msg])
 
         with self._lock:
             jobid = self._idmap.get(msg['jobid'])
@@ -104,13 +107,13 @@ class ZMQServiceJobExecutor(JobExecutor):
         job.executor = self
         with self._lock:
             self._jobs[job.id] = job
-            job._native_id = self._client.request('submit', cid=self._sid,
+            job._native_id = self._client.request('submit', cid=self._cid,
                                         spec=self._serialize.to_dict(job.spec))
             self._idmap[job._native_id] = job.id
 
     def cancel(self, job: Job) -> None:
         """See :func:`~psij.job_executor.JobExecutor.cancel`."""
-        self._client.request('cancel', cid=self._sid, jobid=job._native_id)
+        self._client.request('cancel', cid=self._cid, jobid=job._native_id)
 
     def list(self) -> List[str]:
         """See :func:`~psij.job_executor.JobExecutor.list`.
@@ -121,7 +124,7 @@ class ZMQServiceJobExecutor(JobExecutor):
 
         :return: The list of known job ids.
         """
-        return self._client.request('list', cid=self._sid)
+        return self._client.request('list', cid=self._cid)
 
     def attach(self, job: Job, native_id: str) -> None:
         """
