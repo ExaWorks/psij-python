@@ -26,7 +26,7 @@ __all__ = [
     'InvalidJobException', 'UnreachableStateException', 'Export', 'Import'
 ]
 
-if os.environ['PSIJ_LOG_LEVEL']:
+if 'PSIJ_LOG_LEVEL' in os.environ:
     logging.basicConfig(format='%(name)s:%(levelname)s:%(message)s',
                         level=os.environ['PSIJ_LOG_LEVEL'].upper())
 logger = logging.getLogger(__name__)
