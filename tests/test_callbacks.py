@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+# pylint: disable=unused-argument, no-value-for-parameter
+
+from unittest import TestCase
+import psij
+
+class TestCallbacks(TestCase):
+
+    def __init__(self, arg):
+        self._cb_states = list()
+        TestCase.__init__(self, arg)
+
+    def state_cb(self, job: psij.Job, status: psij.JobStatus):
+        self._cb_states.append(status.state)
+
+    def test_job_callbacks(self):
+
+        self._cb_states = list()
+        job = psij.Job(psij.JobSpec(executable='/bin/false'))
+        job.set_job_status_callback(self.state_cb)
+        jex = psij.JobExecutor.get_instance(name='local')
+        jex.submit(job)
+        job.wait()
+
+        self.assertEqual(len(self._cb_states), 3)
+        self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.FAILED, self._cb_states)
+
+        self._cb_states = list()
+        job = psij.Job(psij.JobSpec(executable='/bin/date'))
+        job.set_job_status_callback(self.state_cb)
+        jex = psij.JobExecutor.get_instance(name='local')
+        jex.submit(job)
+        job.wait()
+
+        self.assertEqual(len(self._cb_states), 3)
+        self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.COMPLETED, self._cb_states)
+
+    def test_job_executor_callbacks(self):
+
+        self._cb_states = list()
+        job = psij.Job(psij.JobSpec(executable='/bin/date'))
+        jex = psij.JobExecutor.get_instance(name='local')
+        jex.set_job_status_callback(self.state_cb)
+        jex.submit(job)
+        job.wait()
+
+        self.assertEqual(len(self._cb_states), 3)
+        self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.COMPLETED, self._cb_states)
