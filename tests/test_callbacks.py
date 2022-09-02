@@ -5,13 +5,13 @@
 from unittest import TestCase
 import psij
 
-from typing import Any
+from typing import Any, List
 
 
 class TestCallbacks(TestCase):
 
     def __init__(self, arg: Any) -> None:
-        self._cb_states = list()
+        self._cb_states: List[psij.JobState] = list()
         TestCase.__init__(self, arg)
 
     def state_cb(self, job: psij.Job, status: psij.JobStatus) -> None:
