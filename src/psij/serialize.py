@@ -91,7 +91,7 @@ class Import():
 
         return spec
 
-    def from_dict(self, hash: Dict[str, Any], target_type: Optional[str] = None) -> object:
+    def from_dict(self, hash: Dict[str, Any], target_type: str) -> object:
         """Reads an object from a dict."""
         if target_type != "JobSpec":
             raise TypeError("Can't create object, type " + target_type + " not supported")
