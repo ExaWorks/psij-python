@@ -246,5 +246,3 @@ class JobExecutor(ABC):
                 self._cb.job_status_changed(job, status)
             except Exception as ex:
                 logger.warning('Job status callback for %s threw an exception: %s', job.id, ex)
-
-

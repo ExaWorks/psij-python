@@ -145,7 +145,6 @@ class Job(object):
         else:
             self._cb = FunctionJobStatusCallback(cb)
 
-
     def cancel(self) -> None:
         """
         Cancels this job.
@@ -240,6 +239,7 @@ class JobStatusCallback(ABC):
         :param job_status: The new status of the job.
         """
         pass
+
 
 class FunctionJobStatusCallback(JobStatusCallback):
     """A JobStatusCallback that wraps a function."""
