@@ -5,16 +5,19 @@
 from unittest import TestCase
 import psij
 
+from typing import Any
+
+
 class TestCallbacks(TestCase):
 
-    def __init__(self, arg):
+    def __init__(self, arg: Any) -> None:
         self._cb_states = list()
         TestCase.__init__(self, arg)
 
-    def state_cb(self, job: psij.Job, status: psij.JobStatus):
+    def state_cb(self, job: psij.Job, status: psij.JobStatus) -> None:
         self._cb_states.append(status.state)
 
-    def test_job_callbacks(self):
+    def test_job_callbacks(self) -> None:
 
         self._cb_states = list()
         job = psij.Job(psij.JobSpec(executable='/bin/false'))
@@ -40,7 +43,7 @@ class TestCallbacks(TestCase):
         self.assertIn(psij.JobState.ACTIVE, self._cb_states)
         self.assertIn(psij.JobState.COMPLETED, self._cb_states)
 
-    def test_job_executor_callbacks(self):
+    def test_job_executor_callbacks(self) -> None:
 
         self._cb_states = list()
         job = psij.Job(psij.JobSpec(executable='/bin/date'))
