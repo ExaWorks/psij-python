@@ -39,7 +39,6 @@ class Export(object):
 
     def export(self, obj: object, dest: str) -> bool:
         """Serializes an object to a file."""
-
         source_type = type(obj).__name__
         d = self.to_dict(obj)
 
