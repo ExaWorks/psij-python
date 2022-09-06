@@ -8,7 +8,7 @@ import psij
 from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_status import JobStatus
-from psij.job import Job, JobStatusCallback
+from psij.job import Job, JobStatusCallback, FunctionJobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
 from psij.job_launcher import Launcher
 
@@ -137,14 +137,14 @@ class JobExecutor(ABC):
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`.
 
-        :param cb: An instance of :class:`~psij.JobStatusCallback` or a function with two
+        :param cb: An instance of :class:`~psij.JobStatusCallback` or a callable with two
             parameters, job of type :class:`~psij.Job` and job_status of type
             :class:`~psij.JobStatus` returning nothing.
         """
         if isinstance(cb, JobStatusCallback):
             self._cb = cb
         else:
-            self._cb = _FunctionJobStatusCallback(cb)
+            self._cb = FunctionJobStatusCallback(cb)
 
     def __str__(self) -> str:
         """Returns a string representation of this executor."""
@@ -246,15 +246,3 @@ class JobExecutor(ABC):
                 self._cb.job_status_changed(job, status)
             except Exception as ex:
                 logger.warning('Job status callback for %s threw an exception: %s', job.id, ex)
-
-
-class _FunctionJobStatusCallback(JobStatusCallback):
-    """A JobStatusCallback that wraps a function."""
-
-    def __init__(self, fn: Callable[[Job, 'psij.JobStatus'], None]):
-        """Initializes a `_FunctionJobStatusCallback`."""
-        self.fn = fn
-
-    def job_status_changed(self, job: Job, job_status: 'psij.JobStatus') -> None:
-        """See :func:`~psij.JobStatusCallback.job_status_changed`."""
-        self.fn(job, job_status)
