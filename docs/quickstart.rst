@@ -14,7 +14,7 @@ Install from pip
 pip install  psi-j
 
 Install from source
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 git clone https://github.com/ExaWorks/psi-j-python.git
 cd psi-j-python
