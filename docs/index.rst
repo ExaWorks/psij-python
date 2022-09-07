@@ -21,7 +21,7 @@ workflow systems for large scale computing. PSI/J has a number of advantages:
 
 #. **Built by the HPC community for the HPC community:** PSI/J is based on a number of libraries used by state of the art HPC Workflow applications.
 
-#. **PSI/J is an open source project:** we are establishing a community to develope, test, and deploy PSI/J across many HPC facilities.
+#. **PSI/J is an open source project:** we are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
 
 Most HPC centers now feature multiple schedulers, rolling policy changes and
 deployments of software stacks, and subtle differences even across systems with
