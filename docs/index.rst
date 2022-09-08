@@ -35,6 +35,7 @@ with HPC centers.
     :maxdepth: 3
 
     getting_started
+    quickstart
     api
     contributing
     programming
