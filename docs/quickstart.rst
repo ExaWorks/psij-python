@@ -32,13 +32,16 @@ PSI/J supports a number of common batch schedulers, providing a common Python in
 
 Choose from the tabs below for a simple example showing how to submit a job for that scheduler.  
 
-Local // Slurm // LSF // PBSPro // Cobalt // 
+
+.. rst-class:: executor-type-selector
+
+Local // Slurm // LSF // PBS // Cobalt
 
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec, JobAttributes, ResourceSpecV1
 
-    executor = JobExecutor.get_instance("cobalt")
+    executor = JobExecutor.get_instance("<&executor-type>")
 
     job = Job(
         JobSpec(
