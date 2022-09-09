@@ -34,7 +34,6 @@ html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', '
 
 # These are needed for the dhtml trickery
 html_static_path = ["_static"]
-html_css_files = ["extras.css"]
 html_js_files = ["https://code.jquery.com/jquery-3.5.1.min.js", "extras.js"]
 
 # Setup Sphinx extensions (and associated variables)
