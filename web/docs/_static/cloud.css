@@ -1470,7 +1470,7 @@ div.highlight pre {
 	border-color: transparent;
 }
 
-div.body p.executor-type-selector {
+div.body p.selector-container {
     margin: 0 2pt 0 2pt;
     margin-top: 1em;
     position: relative;

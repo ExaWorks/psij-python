@@ -126,6 +126,8 @@ function initializeSelector(context, $el, selectorType, selectedValue) {
     else {
         initializeSelectorDropdown(context, $el, selectorType, values, selectedValue);
     }
+     $el.addClass("initialized")
+        .addClass("selector-container");
 }
 
 function initializeSelectorDropdown(context, $el, selectorType, values, selectedValue) {
@@ -142,7 +144,6 @@ function initializeSelectorDropdown(context, $el, selectorType, values, selected
     select.change(function() {
         globalSelectSelectorValue(selectorType, $(this).val());
     });
-    $el.addClass("initialized");
     $el.addClass("selector-container-dropdown");
     select.appendTo($el);
 }
