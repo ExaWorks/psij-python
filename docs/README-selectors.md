@@ -10,15 +10,21 @@ This will add a heading before the next code block containing:
 
     "See example for [Local >]",
 
-where `[Local >]` is a drop-down with the options listed above (i.e., Local, Slurm, LSF, PBS, Cobalt).
-Alternatively, one can add the class "selector-mode-tabs" to the `rst-class` directive above to 
-display the options as tabs.
+where `[Local >]` is a drop-down with the options listed above (i.e.,
+Local, Slurm, LSF, PBS, Cobalt). Alternatively, one can add the class
+"selector-mode-tabs" to the `rst-class` directive above to  display the
+options as tabs.
 
-In the code block, you can use the string `"<&executor-type>"` to substitute the value selected in the selector. For example:
+In the code block, you can use the string `"<&executor-type>"` to
+substitute the value selected in the selector. For example:
 
     x = f("<&executor-type>")
 
-When rendered, the `<&executor-type>` string will be replaced by the lower case version of the selected value in the immediately preceeding selector. The string `"<&executor-type>"` must be a standalone token as far as the syntax highlighter is concerned. That is, it probably won't work if it's in a comment.
+When rendered, the `<&executor-type>` string will be replaced by the
+lower case version of the selected value in the immediately preceeding
+selector. The string `"<&executor-type>"` must be a standalone token as
+far as the syntax highlighter is concerned. That is, it probably won't
+work if it's in a comment.
 
 To add alternative code blocks, use:
 
@@ -34,9 +40,15 @@ To add alternative code blocks, use:
     # code for Slurm executor
 ```
 
-Alternate code blocks as well as value substitutions bind to the closest preceeding selector. However, selectors are synchronized, in that selecting "Local" in one selector, will also select "Local" in all other selectors of the same type (i.e. "executor-type-*") that have "Local" as a listed value. If a selector does not have that value, the values and blocks bound to it are left untouched.
+Alternate code blocks as well as value substitutions bind to the closest
+preceeding selector. However, selectors are synchronized, in that
+selecting "Local" in one selector, will also select "Local" in all other
+selectors of the same type (i.e. "executor-type-*") that have "Local" as
+a listed value. If a selector does not have that value, the values and
+blocks bound to it are left untouched.
 
-By default, only "executor-type-" selectors are available. More can be added using:
+By default, only "executor-type-" selectors are available. More can be
+added using:
 
 ```Sphinx
 .. raw:: html
@@ -44,7 +56,9 @@ By default, only "executor-type-" selectors are available. More can be added usi
     <script>addSelectorType("site-name", "localhost");</script>,
 ```
 
-where "site-name" is like "executor-type" above, and "localhost" is the value used by default. In other words, using "site-name" selectors is now done as follows:
+where "site-name" is like "executor-type" above, and "localhost" is the
+value used by default. In other words, using "site-name" selectors is now
+done as follows:
 
 ```
 .. rst-class:: site-name-selector
