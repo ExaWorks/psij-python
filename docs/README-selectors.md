@@ -10,7 +10,9 @@ This will add a heading before the next code block containing:
 
     "See example for [Local >]",
 
-where `[Local >]` is a drop-down with the options listed above (i.e., Local, Slurm, LSF, PBS, Cobalt)
+where `[Local >]` is a drop-down with the options listed above (i.e., Local, Slurm, LSF, PBS, Cobalt).
+Alternatively, one can add the class "selector-mode-tabs" to the `rst-class` directive above to 
+display the options as tabs.
 
 In the code block, you can use the string `"<&executor-type>"` to substitute the value selected in the selector. For example:
 
