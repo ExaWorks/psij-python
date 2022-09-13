@@ -1,5 +1,5 @@
-Contributors and Developers
-===========================
+Contributing
+============
 
 
 How to Contribute
