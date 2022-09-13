@@ -1,6 +1,35 @@
 Getting Started
 ===============
 
+Installation
+------------
+
+PSI/J can be installed via `pip <https://pypi.org/project/pip/>`_
+or from source.
+
+Requirements
+^^^^^^^^^^^^
+
+The only requirements are Python 3.7+ and pip, which almost always
+comes with Python.
+
+Install from pip
+^^^^^^^^^^^^^^^^
+
+
+.. code-block:: console
+
+    pip install  psi-j
+
+Install from source
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    git clone https://github.com/ExaWorks/psi-j-python.git
+    cd psi-j-python
+    pip install .
+
 
 Who PSI/J is for
 ----------------
@@ -69,33 +98,26 @@ The most basic way to use PSI/J looks something like the following:
    :class:`JobExecutor <psij.job_executor.JobExecutor>`.
 
 That's all there is to it! Assuming there are no errors, you should
-see a new entry in your resource manager's queue. On a Slurm cluster,
-this code might look like:
+see a new entry in your resource manager's queue. Choose from the tabs below
+for a very simple example showing how to submit a job for that resource manager.
+
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
 
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance('slurm')
-    job = Job(JobSpec(executable='/bin/date'))
+    ex = JobExecutor.get_instance("<&executor-type>")
+    job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
 The ``executable='/bin/date')`` part tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
-(which should be almost as soon as the job starts) the resource manager
-will mark the job as complete, triggering PSI/J to do the same.
-
-And by way of comparison, here is the same functionality on an LSF cluster:
-
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance('lsf')
-    job = Job(JobSpec(executable='/bin/date'))
-    ex.submit(job)
-
-Note that the only difference is the argument to the ``get_instance`` method.
+(which should be almost as soon as the job starts, since ``date`` does very little work)
+the resource manager will mark the job as complete, triggering PSI/J to do the same.
 
 Adding Complexity
 -----------------
@@ -152,6 +174,12 @@ are cancelled, fetch the status of the job after calling
 
     job.wait()
     print(str(job.status))
+
+
+Canceling your job
+^^^^^^^^^^^^^^^^^^
+If supported by the underlying job scheduler, PSI/J jobs can be canceled by
+invoking the :meth:`cancel <psij.job.Job.cancel>` method.
 
 
 Status Callbacks
@@ -217,6 +245,34 @@ To specify resource-manager-specific information, like queues/partitions,
 runtime, and so on, create a
 :class:`JobAttributes <psij.job_attributes.JobAttributes>` and set it with
 ``JobSpec(..., attributes=my_job_attributes)``.
+
+Example of Adding Job Information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Choose from the tabs below for a simple example showing how to submit a job for that scheduler.
+
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
+.. code-block:: python
+
+    from psij import Job, JobExecutor, JobSpec, JobAttributes, ResourceSpecV1
+
+    executor = JobExecutor.get_instance("<&executor-type>")
+
+    job = Job(
+        JobSpec(
+            executable="/bin/date",
+            resources=ResourceSpecV1(node_count=1),
+            attributes=JobAttributes(
+                queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
+            ),
+        )
+    )
+
+    executor.submit(job)
 
 
 Examples
