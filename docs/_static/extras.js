@@ -69,7 +69,7 @@ function detectAll(selectorType) {
 }
 
 function initializeSelectors(selectorType, defaultValue) {
-    var context = {lastSelector: null, lastValues: null};
+    var context = {lastValues: null, tabsIndex: 0};
     $("." + selectorType + "-item").each(function() {
         if ($(this).is("p")) {
             // selector
@@ -92,6 +92,7 @@ function initializeSelectors(selectorType, defaultValue) {
 
 function globalSelectSelectorValue(selectorType, value) {
     $("select." + selectorType + "-selector option[value=\"" + value + "\"]").prop("selected", true);
+    $("input." + selectorType + "-selector[value=\"" + value + "\"]").prop("checked", true);
     $("." + selectorType + "-value").each(function() {
         if ($(this).parent().data("allowed-values").includes(value)) {
             $(this).fadeTo(300, 0.01, function() {
@@ -116,12 +117,23 @@ function globalSelectSelectorValue(selectorType, value) {
 function initializeSelector(context, $el, selectorType, selectedValue) {
     var text = $el.text();
     var values = text.split(/\s*\/\/\s*/); // split on "//" possible with whitespace around
-    var select = $("<select>").addClass(selectorType + "-selector").addClass("psij-selector");
-    $el.html($("<label>").text("See example for "));
     
     context.lastValues = values;
-    context.lastSelector = select;
     
+    if ($el.hasClass("selector-mode-tabs")) {
+        initializeSelectorTabs(context, $el, selectorType, values, selectedValue);
+    }
+    else {
+        initializeSelectorDropdown(context, $el, selectorType, values, selectedValue);
+    }
+     $el.addClass("initialized")
+        .addClass("selector-container");
+}
+
+function initializeSelectorDropdown(context, $el, selectorType, values, selectedValue) {
+    var select = $("<select>").addClass(selectorType + "-selector").addClass("psij-selector");
+    $el.html($("<label>").text("See example for "));
+
     values.forEach(function(value) {
         var option = $("<option>").attr("value", value).text(value);
         if (value == selectedValue) {
@@ -132,9 +144,40 @@ function initializeSelector(context, $el, selectorType, selectedValue) {
     select.change(function() {
         globalSelectSelectorValue(selectorType, $(this).val());
     });
-    $el.addClass("initialized");
+    $el.addClass("selector-container-dropdown");
     select.appendTo($el);
 }
+
+function initializeSelectorTabs(context, $el, selectorType, values, selectedValue) {
+    var i = 0;
+    $el.html(""); // remove unparsed labels
+    values.forEach(function(value) {
+        var input = $("<input></input>")
+				.addClass("selector-radio").addClass(selectorType + "-selector")
+				.attr("type", "radio")
+				.attr("name", "_" + selectorType + "-" + context.tabsIndex)
+				.attr("id", "_" + selectorType + "-" + context.tabsIndex + "-" + i)
+				.attr("value", value);
+		if (value == selectedValue) {
+		    input.prop("checked", true);
+		}
+        input.appendTo($el);
+        input.change(function() {
+            globalSelectSelectorValue(selectorType, $(this).val());
+        });
+        var label = $("<label></label>")
+				.addClass("selector-label")
+				.attr("for", "_" + selectorType + "-" + context.tabsIndex + "-" + i)
+				.html(value);
+		$el.addClass("initialized");
+	    label.appendTo($el);
+	    i++;
+    });
+    context.tabsIndex++;
+    $el.addClass("selector-container-tabs");
+}
+
+
 
 function initializeSimpleValue(context, $el, selectorType, selectedValue) {
     $el.html($("<span>").addClass(selectorType + "-value").text('"' + selectedValue.toLowerCase() + '"'));

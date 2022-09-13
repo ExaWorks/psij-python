@@ -33,7 +33,7 @@ PSI/J supports a number of common batch schedulers, providing a common Python in
 Choose from the tabs below for a simple example showing how to submit a job for that scheduler.  
 
 
-.. rst-class:: executor-type-selector
+.. rst-class:: executor-type-selector selector-mode-tabs
 
 Local // Slurm // LSF // PBS // Cobalt
 

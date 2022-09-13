@@ -1470,21 +1470,28 @@ div.highlight pre {
 	border-color: transparent;
 }
 
-div.body p.executor-type-selector {
+div.body p.selector-container {
     margin: 0 2pt 0 2pt;
     margin-top: 1em;
     position: relative;
-    top: 1.5em;
-    background-color: #e8e8e8;
-    padding-bottom: 0.5em;
     padding-left: 8pt;
     padding-top: 6pt;
+    top: 1.5em;
     z-index: 1;
-    border-bottom: thin solid #c0c0c0;
     border-radius: 4pt;
 }
 
-div.highlight-python {
+div.body p.selector-container-dropdown {
+    background-color: #e8e8e8;
+    padding-bottom: 0.5em;
+    border-bottom: thin solid #c0c0c0;
+}
+
+div.body p.selector-container-tabs {
+    padding-bottom: 0;
+}
+
+div.highlight pre {
     z-index: 2;
 }
 
@@ -1513,4 +1520,39 @@ select.psij-selector:focus {
     outline: none;
     border-color: var(--color-fg-lines);
     box-shadow: 0 0 1.5pt var(--color-fg-lines);
+}
+
+.selector-radio {
+	width: 0;
+    height: 0;
+}
+
+.selector-label {
+	cursor: pointer;
+
+	font-size: 94%;
+
+	z-index: 1;
+	display: inline-block;
+	position: relative;
+	min-width: 80pt;
+
+	padding: 3pt;
+	padding-left: 8pt;
+	top: 2pt;
+	height: 22pt;
+
+	background-color: #d8d8d8;
+	border: thin solid #d8d8d8;
+	border-radius: 3pt 3pt 0 0;
+	margin-right: 1pt;
+}
+
+.selector-radio:checked + .selector-label {
+	z-index: 3;
+	top: 0pt;
+	height: 24pt;
+	background-color: #e8e8e8;
+	border: thin solid #e8e8e8;
+	border-bottom: thin solid #e8e8e8;
 }
