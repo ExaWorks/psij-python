@@ -114,7 +114,7 @@ Local // Slurm // LSF // PBS // Cobalt
     job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
-The ``executable='/bin/date')`` part tells PSI/J that we want the job to run
+The ``executable="/bin/date")`` part tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
 (which should be almost as soon as the job starts, since ``date`` does very little work)
 the resource manager will mark the job as complete, triggering PSI/J to do the same.
@@ -130,13 +130,17 @@ whether it succeeded or failed.
 
 Submitting multiple jobs is as simple as adding a loop:
 
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance('flux')
-    for _ in range(100):
-        job = Job(JobSpec(executable='/bin/date'))
+    ex = JobExecutor.get_instance("<&executor-type>")
+    for _ in range(10):
+        job = Job(JobSpec(executable="/bin/date"))
         ex.submit(job)
 
 Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
@@ -156,9 +160,9 @@ to call the :meth:`wait <psij.job.Job.wait>` method with no arguments:
 
 .. code-block:: python
 
-    from psij import Job, JobExecutor, JobSpec
+    from psij import Job, JobSpec
 
-    job = Job(JobSpec(executable='/bin/date'))
+    job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
     job.wait()
 
@@ -194,12 +198,16 @@ fire whenever any job submitted to that executor changes status.
 
 To wait on multiple jobs at once:
 
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
 .. code-block:: python
 
     import time
     from psij import Job, JobExecutor, JobSpec
 
-    count = 100
+    count = 10
 
     def callback(job, status):
         global count
@@ -208,10 +216,10 @@ To wait on multiple jobs at once:
             print(f"Job {job} completed with status {status}")
             count -= 1
 
-    ex = JobExecutor.get_instance('flux')
+    ex = JobExecutor.get_instance("<&executor-type>")
     ex.set_job_status_callback(callback)
     for _ in range(count):
-        job = Job(JobSpec(executable='/bin/date'))
+        job = Job(JobSpec(executable="/bin/date"))
         ex.submit(job)
 
     while count > 0:
@@ -249,7 +257,7 @@ runtime, and so on, create a
 Example of Adding Job Information
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Choose from the tabs below for a simple example showing how to submit a job for that scheduler.
+Below we add resource and scheduling information to a job before submitting it.
 
 
 .. rst-class:: executor-type-selector selector-mode-tabs
@@ -273,6 +281,9 @@ Local // Slurm // LSF // PBS // Cobalt
     )
 
     executor.submit(job)
+
+Where the `<QUEUE_NAME>` and `<ALLOCATION>` fields will depend on the
+system you are running on.
 
 
 Examples
