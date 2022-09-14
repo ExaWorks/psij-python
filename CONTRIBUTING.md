@@ -68,9 +68,10 @@ run with `make typecheck` and `make checks`.
 
 ## Docstrings
 
-As many public python interfaces in this repo as is feasible should include
-docstring documentation. All docstrings should follow the [numpy
-format](https://numpydoc.readthedocs.io/en/latest/format.html). These
+As many public python interfaces in this repo as is feasible should
+include docstring documentation. All docstrings should follow the
+[numpy format](https://numpydoc.readthedocs.io/en/latest/format.html). These
 docstrings are automatically parsed by Sphinx and turned into html-based
 documentation hosted on readthedocs. Document generation can be run locally
-with `make docs`.
+with `make docs`. For more details about building the documentation, please
+see [`README-dev`][README-dev.md].
