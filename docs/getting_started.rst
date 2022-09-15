@@ -217,3 +217,14 @@ To specify resource-manager-specific information, like queues/partitions,
 runtime, and so on, create a
 :class:`JobAttributes <psij.job_attributes.JobAttributes>` and set it with
 ``JobSpec(..., attributes=my_job_attributes)``.
+
+
+Examples
+--------
+
+Up-to-date and actively tested examples can be found
+`here <https://github.com/ExaWorks/psi-j-python/blob/main/tests/test_doc_examples.py>`_.
+Tests of resource-manager-specific and site-specific values
+(such as accounts, queues/partitions, etc.) can be found in files
+in the same directory but tend to buried under
+layers of indirection in order to reduce code complexity.
