@@ -13,13 +13,13 @@ abstract job specifications into concrete scripts and commands to send to the
 scheduler. PSI/J was built by a team with decades of experience building
 workflow systems for large scale computing. PSI/J has a number of advantages:
 
-#. **Runs entirely in user space:** no need to wait for infrequent deployment cycles, it's easy leverage built-in or commmunity provided plug-ins.
+#. **Runs entirely in user space:** no need to wait for infrequent deployment cycles, it's easy to leverage built-in or commmunity-provided plug-ins.
 
 #. **An asynchronous modern API for job management:** a clean Python API for requesting and managing jobs.
 
-#. **Supports the common batch schedulers:** we test PSI/J across multiple DOE supercomputer centers.  Its easy to test PSI/J on your systems and share the results with the community.
+#. **Supports the common batch schedulers:** we test PSI/J across multiple DOE supercomputer centers. It's easy to test PSI/J on your systems and share the results with the community.
 
-#. **Built by the HPC community for the HPC community:** PSI/J is based on a number of libraries used by state of the art HPC Workflow applications.
+#. **Built by the HPC community, for the HPC community:** PSI/J is based on a number of libraries used by state-of-the-art HPC workflow applications.
 
 #. **PSI/J is an open source project:** we are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
 
