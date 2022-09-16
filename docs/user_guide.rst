@@ -11,10 +11,11 @@ LSF, Flux, Cobalt, PBS and local Linux OS.
 Terminology
 -----------
 
-In PSI/J’s terminology, a :class:`Job <psij.job_executor.Job>` represents an
-executable plus its attributes.  Static job attributes such es resource
-requiremens are defined by the JobSpec at creation, dynamic job attributes such
-as the JobState are updated by PSI/J at runtime.
+In PSI/J’s terminology, a :class:`Job <psij.job.Job>` represents an executable
+plus its attributes.  Static job attributes such es resource requiremens are
+defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic job
+attributes such as the :class:`JobState <psij.job_state.JobState>` are updated
+by PSI/J at runtime.
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents
 a specific RM, e.g. Slurm, on which the Job is being executed.  Generally, when
@@ -137,8 +138,8 @@ Getting status
 In all the above examples, we have submitted jobs without checking on what
 happened to them. Once that command has finished executing (which, for /bin/date
 should be almost as soon as the job starts) the resource manager will mark the
-job as complete, triggering PSI/J to do the same via the `JobStatus` attribute
-of the Job.
+job as complete, triggering PSI/J to do the same via the :class:`JobStatus
+<psij.job_status.JobStatus>` attribute of the Job.
 
 .. image:: states.png
 
