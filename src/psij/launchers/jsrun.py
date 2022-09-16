@@ -8,7 +8,7 @@ from psij.launchers import MultipleLauncher
 
 
 class JsrunLauncher(MultipleLauncher):
-    """Launches a job using LSF's `jsrun`."""
+    """Launches a job using LSF's ``jsrun``."""
 
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         """

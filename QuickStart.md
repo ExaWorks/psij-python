@@ -40,7 +40,7 @@ Install psi-j from the github repository:
 
 **Steps**
 
-1. Create a file *my-worklfow.py* and copy and paste the code below:
+1. Create a file *my-workflow.py* and copy and paste the code below:
 
 ```python
 

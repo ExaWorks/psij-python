@@ -54,7 +54,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     `PBS Pro <https://www.altair.com/pbs-professional/>`_ is a resource manager
     on certain machines at Argonne National Lab, among others.
 
-    Uses the 'qsub', 'qstat', and 'qdel' commands, respectively, to submit,
+    Uses the ``qsub``, ``qstat``, and ``qdel`` commands, respectively, to submit,
     monitor, and cancel jobs.
 
     Creates a batch script with #PBS directives when submitting a job.

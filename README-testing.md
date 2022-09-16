@@ -2,7 +2,7 @@ Introduction
 ============
 
 PSI/J comes with a testing infrastructure that allows users to contribute
-tests of the PSI/J library on resources they have access to and where
+tests of the PSI/J library itself on resources they have access to and where
 running such tests is appropriate.
 
 Contributed tests take the form of normal pytest runs for which results
