@@ -204,10 +204,10 @@ Setting outputs
 ^^^^^^^^^^^^^^^
 
 Dealing with errors
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 Canceling your job
-^^^^^^^^^^^^^^^^^^
+-------------------
 
 Running Psi/J at your site
 --------------------------
