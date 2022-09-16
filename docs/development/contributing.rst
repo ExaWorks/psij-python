@@ -33,3 +33,10 @@ To record your test results to PSI/J's public testing dashboard,
 and to schedule the test suite to run automatically on a timer,
 see the
 `testing README <https://github.com/ExaWorks/psi-j-python/blob/main/README-testing.md>`_.
+
+
+Building the Documentation
+--------------------------
+
+See the instructions in the
+`README <https://github.com/ExaWorks/psi-j-python/blob/main/README-dev.md>`_.
