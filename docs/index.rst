@@ -36,6 +36,7 @@ with HPC centers.
 
     getting_started
     quickstart
+    user_guide
     api
     contributing
     programming
