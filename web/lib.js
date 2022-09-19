@@ -11,20 +11,29 @@ docsHashChange = function(path, hash) {
         hash = hash.substr(1);
     }
     path = path.substr("/docs/".length);
-    window.scrollTo(window.scrollX, window.scrollY - 56);
+
+    scrollToHash(hash);
     window.location.hash = buildPath({tab: "docs", doc: path, dochash: hash});
 }
 
-docsLoaded = function(path, hash) {
-    docsHashChange(path, hash);
-    resizeDocsFrame();
+function scrollToHash(hash) {
     if (hash) {
-        var anchor = window.docs.document.getElementById(hash.substr(1));
+        if (hash.length > 0 && hash.charAt(0) == "#") {
+            hash = hash.substr(1);
+        }
+        var anchor = window.docs.document.getElementById(hash);
         if (anchor) {
             anchor.scrollIntoView();
             window.scrollTo(window.scrollX, window.scrollY - 56);
         }
     }
+
+}
+
+docsLoaded = function(path, hash) {
+    docsHashChange(path, hash);
+    resizeDocsFrame();
+    scrollToHash(hash);
 
     var html = document.getElementsByTagName("html")[0];
     var body = document.getElementsByTagName("body")[0];
