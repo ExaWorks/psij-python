@@ -28,7 +28,8 @@ use the provided setup script:
     ./psij-ci-setup
 ```
 
-or manually set up the CI runner with Cron or your favorite scheduler.
+or manually set up the CI runner (`psij-ci-run`) with Cron or your
+favorite scheduler.
 
 Note: If you need to set up an environment module (such as  `module load
 python/cpython-x.y.z`) or something similar, such as loading a conda or
