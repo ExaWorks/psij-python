@@ -30,14 +30,11 @@ use the provided setup script:
 
 or manually set up the CI runner with Cron or your favorite scheduler.
 
-Note: If you need to set up an environment module (such as 
-`module load python/cpython-x.y.z`) or something similar, such as
-loading a conda or virtual environment, please add the relevant commands to
-`psij-ci-load`, which is sourced before tests are run by `psij-ci-run`. If the
-setup script is run under a venv or Conda, it will attempt to detect this and 
-ask whether the relevant environment activation commands should be added to 
-`psij-ci-load`. However, not all circumstances can be reliably detected and 
-you may need to manually edit `psij-ci-load`.
+Note: If you need to set up an environment module (such as  `module load
+python/cpython-x.y.z`) or something similar, such as loading a conda or
+virtual environment, please run the relevant commands before invoking
+`psij-ci-setup`.
+
 
 Testing with the CI runner
 ==========================
