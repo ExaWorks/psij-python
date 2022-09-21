@@ -16,10 +16,6 @@ failifempty() {
     fi
 }
 
-if [ -f psij-ci-load ]; then
-    source psij-ci-load
-fi
-
 if [ -f psij-ci-env ]; then
     source psij-ci-env
 fi
