@@ -1,5 +1,5 @@
-Architecture and Programming Guide
-==================================
+Architecture
+============
 
 This section outlines the architecture of the Python PSI/J implementation for
 those who want to contribute improvements to the core
