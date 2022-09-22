@@ -8,7 +8,7 @@ from psij.launchers import MultipleLauncher
 
 
 class AprunLauncher(MultipleLauncher):
-    """Launches a job using Cobalt's `aprun`."""
+    """Launches a job using Cobalt's ``aprun``."""
 
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         """

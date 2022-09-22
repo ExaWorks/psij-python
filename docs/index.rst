@@ -37,6 +37,4 @@ with HPC centers.
     getting_started
     user_guide
     api
-    contributing
-    programming
-    tutorial_add_executor
+    development/index.rst

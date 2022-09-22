@@ -53,9 +53,9 @@ other than complexity.
 If you write application code that is meant to run on various HPC clusters, but
 which never make calls to the underlying resource manager (e.g. by calling into
 Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), then
-PSI/J will not help you. This is likely your situation if you work on a MPI-based
-science simulation, since we have observed that it is often the users' responsibility
-to actually launch the simulation through the resource manager.
+PSI/J will not help you. This is likely your situation if you are a developer working
+on a MPI-based science simulation, since we have observed that it is often the users'
+responsibility to actually launch the simulation through the resource manager.
 However, PSI/J is more likely to help with various tools
 associated with your simulation--for instance, your test suite.
 
