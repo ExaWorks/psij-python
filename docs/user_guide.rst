@@ -33,16 +33,29 @@ a Flux instance that runs in the cloud, and so on.
 What is a JobExecutor?
 ----------------------
 
-`JobExecutor.submit` creates a new resource manager job and
-permanently binds the Job to it. Alternatively, a Job can be bound to an
-existing resource manager job by calling JobExecutor.attach, passing in a Job
-and the ID of the underlying resource manager job.
+`JobExecutor.submit` creates a new resource manager job and permanently binds
+the Job to it. Alternatively, a Job can be bound to an existing resource manager
+job by calling `JobExecutor.attach`, passing in a Job and the ID of the
+underlying resource manager job.
 
 .. image:: psij_arch.png
 
+PSI/J currently provides executors for the following backends:
 
-Submitting your job
--------------------
+  - `local` : run jobs on localhost
+  - `flux`  : `Flux Scheduling Framework <https://flux-framework.org/>`_
+  - `slurm` : `Slurm Scheduling System <https://slurm.schedmd.com/>`_
+  - `lsf`   : `IBM Spectrum LSF <https://www.ibm.com/docs/en/spectrum-lsf>`_
+  - `pbspro`: `Altair's PBS-Professional <https://www.altair.com/pbs-professional>`_
+  - `cobalt`: ALCF's Cobalt Job Scheduler
+
+We encourage the contribution of executors for additional backends - please
+reference the `developers documentation
+<development/tutorial_add_executor.html>`_ for details.
+
+
+Using a Job Executor
+--------------------
 
 The most basic way to use PSI/J looks something like the following:
 
@@ -51,26 +64,29 @@ The most basic way to use PSI/J looks something like the following:
 3. Create a Job with that JobSpec.
 4. Submit the Job instance to the JobExecutor.
 
-That’s all there is to it! Assuming there are no errors, you should see a new
-entry in your resource manager’s queue. On a Slurm cluster, this code might look
-like: from psij import Job, JobExecutor, JobSpec
+On a Slurm cluster, this code might look like:
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Slurm // Local // LSF // PBS // Cobalt
 
 .. code-block:: python
 
-    ex = JobExecutor.get_instance('slurm')
+    from psij import Job, JobExecutor, JobSpec
+
+    ex = JobExecutor.get_instance("<&executor-type>")
     job = Job(JobSpec(executable='/bin/date'))
     ex.submit(job)
 
-And by way of comparison, here is the same functionality on an LSF cluster:
-from psij import Job, JobExecutor, JobSpec
-
-.. code-block:: python
-
-    ex = JobExecutor.get_instance('lsf')
-    job = Job(JobSpec(executable='/bin/date'))
-    ex.submit(job)
-
+And by way of comparison, other backends can be selected with the tabs above.
 Note that the only difference is the argument to the get_instance method.
+
+The Job Executor implementation will translate all PSI/J API activities into the
+respective backend commands and run them on the backend, while at the same time
+monitoring the backend jobs for failure, completion or other state updates.
+
+Assuming there are no errors, you should see a new entry in your resource
+manager’s queue after running that example above.
 
 
 Configuring your job
@@ -115,16 +131,100 @@ Note: JobSpec attributes can also be added incrementally:
     spec.executable = '/bin/date'
     spec.arguments = ['-u']
 
+
 Job Environment
 ^^^^^^^^^^^^^^^
 
-The Job environment consists of ...
+The Job environment is provided a environment variables to the executing job
+- the are the equivalent of `export FOO=bar` on the shell command line.  Those
+environment variables are specified as a dictionary of string-type key/value
+pairs:
+
+.. code-block:: python
+
+    from psij import JobSpec
+
+    spec = JobSpec()
+    spec.executable = '/bin/date'
+    spec.environment = {'TZ': 'America/Los_Angeles'}
+
+Environment variables specified this way will overwrite settings from yuor shell
+initialization files (`~/.bashrc`), including from any modules loaded in the
+default shell environment.
+
 
 Job StdIO
 ^^^^^^^^^
 
+Standard output and standard error streams of the job can be individually
+redirected to files by setting the `stdout_path` and `stderr_path` attributes:
+
+.. code-block:: python
+
+    from psij import JobSpec
+
+    spec = JobSpec()
+    spec.executable = '/bin/date'
+    spec.stdout_path = '/tmp/date.out'
+    spec.stderr_path = '/tmp/date.err'
+
+The job's standard input stream can also be redirected to read from a file, by
+setting the `spec.stdin_path` attribute.
+
+
 Job Resources
 ^^^^^^^^^^^^^
+
+A job submitted to a cluster is allocated a specific set of resources to run on.
+The amount and type of resources are defined by a resource specification
+`psij.ResourceSpec` which becomes a part of the job specification.  The resource specification supports the following attributes:
+
+  - `node_count`: allocate that number of compute nodes to the job.  All
+    cpu-cores and gpu-cores on the allocated node can be exclusively used by the
+    submitted job.
+  - `processes_per_node`: on the allocated nodes, execute that given number of
+    processes.
+  - `process_count`: the total number of processes (ranks) to be started
+  - `cpu_cores_per_process`: the number of cpu cores allocated to each launched
+    process.  PSI/J uses the system definition of a cpu core which may refer to
+    a physical cpu core or to a virtual cpu core, aka. hardware thread.
+  - `gpu_cores_per_process`: the number of gpu cores allocated to each launched
+    process.  The system definition of an gpu core is used, but usually refers
+    to a full physical GPU.
+  - `exclusive_node_use`: When this boolean flag is set to `True`, then PSI/J
+    will ensure that no other jobs, neither of the same user nor of other users
+    of the same system, will run on any of the compute nodes on which processes
+    for this job are launched.
+
+A resource specification does not need to define all available attributes. In
+fact, an empty resource spec is valid as it refers to a single process being
+launched on a single cpu core.
+
+The user should also take care not to define contradictory statements.  For
+example, the following specification cannot be enacted by PSI/J as the specified
+node count contradicts the value of `process_count / processes_per_node`:
+
+.. code-block:: python
+
+    from psij import JobSpec, ResourceSpec
+
+    spec = JobSpec()
+    spec.executable = '/bin/stress'
+    spec.resource_spec = ResourceSpec(node_count=2, processes_per_node=2,
+            process_count=2)
+
+
+Processes versus ranks
+""""""""""""""""""""""
+
+All processes of the job will share a single MPI communicator
+(`MPI_COMM_WORLD`), independent of their placement, and the term `rank` (which
+usually refers to an MPI rank) is thus equivalent.  However, jobs started with
+a single process instance may, depending on the executor implementation, not get
+an MPI communicator.
+
+TODO: reference the launcher section
+
 
 Other Job Attributes
 ^^^^^^^^^^^^^^^^^^^^
