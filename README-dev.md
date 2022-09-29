@@ -2,8 +2,8 @@
 
 ## Building the Documentation
 
-There are two ways to build the documentation. One is the plain one, where
-the plain Sphinx output is desired, and the other is the themed version that
+There are two ways to build the documentation. One is the plain one, where the 
+plain Sphinx output is desired, and the other is the themed version that
 is meant to integrate with the web site.
 
 ### Building the Standalone Documentation
