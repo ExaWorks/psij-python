@@ -162,7 +162,7 @@ NEW_REPO = 'ExaWorks/psij-python'
 
 
 def patch_file(file_name: str) -> None:
-    if os._exists(file_name + '.is_patched'):
+    if os.path.exists(file_name + '.is_patched'):
         return
 
     with info('Pathcing %s' % file_name):
