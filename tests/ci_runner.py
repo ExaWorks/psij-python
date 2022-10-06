@@ -50,12 +50,13 @@ def read_conf(fname: str) -> Dict[str, str]:
     return conf
 
 
-def run(*args: str, cwd: Optional[str] = None) -> None:
+def run(*args: str, cwd: Optional[str] = None) -> str:
     p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                        cwd=cwd, text=True)
     if p.returncode != 0:
         print(p.stdout)
         raise subprocess.CalledProcessError(p.returncode, args, output=p.stdout)
+    return p.stdout
 
 
 def get_conf(conf: Dict[str, str], name: str) -> str:
