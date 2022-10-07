@@ -31,5 +31,13 @@ class JobExecutorConfig(object):
         else:
             self.work_directory = JobExecutorConfig.DEFAULT_WORK_DIRECTORY
 
+    @property
+    def work_directory(self):
+        return self.work_directory
+
+    @work_directory.setter
+    def work_directory(self, value):
+        self.work_directory = Path(value)
+
 
 JobExecutorConfig.DEFAULT = JobExecutorConfig()
