@@ -165,7 +165,7 @@ def patch_file(file_name: str) -> None:
     if os.path.exists(file_name + '.is_patched'):
         return
 
-    with info('Pathcing %s' % file_name):
+    with info('Patching %s' % file_name):
         with open(file_name) as inf:
             with open(file_name + '._new_', 'w') as outf:
                 for line in inf:
