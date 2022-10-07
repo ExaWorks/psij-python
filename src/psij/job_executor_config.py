@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 
 class JobExecutorConfig(object):
@@ -9,8 +9,8 @@ class JobExecutorConfig(object):
 
     DEFAULT_WORK_DIRECTORY = Path.home() / '.psij' / 'work'
 
-    def __init__(self, launcher_log_file: Optional[Path] = None,
-                 work_directory: Optional[Path] = None) -> None:
+    def __init__(self, launcher_log_file: Optional[Union[str, Path]] = None,
+                 work_directory: Optional[Union[str, Path]] = None) -> None:
         """
         Initializes a configuration object.
 
@@ -26,17 +26,27 @@ class JobExecutorConfig(object):
             likely running on a head node.
         """
         self.launcher_log_file = launcher_log_file
+
         if work_directory:
             self.work_directory = work_directory
         else:
             self.work_directory = JobExecutorConfig.DEFAULT_WORK_DIRECTORY
 
     @property
+    def launcher_log_file(self):
+        return self.launcher_log_file
+
+    @launcher_log_file.setter
+    def launcher_log_file(self, value: Optional[Union[str, Path]]):
+        if value:
+            self.launcher_log_file = Path(value)
+
+    @property
     def work_directory(self):
         return self.work_directory
 
     @work_directory.setter
-    def work_directory(self, value):
+    def work_directory(self, value: Union[str, Path]):
         self.work_directory = Path(value)
 
 
