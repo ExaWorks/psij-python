@@ -33,20 +33,20 @@ class JobExecutorConfig(object):
             self._work_directory = JobExecutorConfig.DEFAULT_WORK_DIRECTORY
 
     @property
-    def launcher_log_file(self):
+    def launcher_log_file(self) -> Optional[Path]:
         return self._launcher_log_file
 
     @launcher_log_file.setter
-    def launcher_log_file(self, value: Optional[Union[str, Path]]):
+    def launcher_log_file(self, value: Optional[Union[str, Path]]) -> None:
         if value:
             self._launcher_log_file = Path(value)
 
     @property
-    def work_directory(self):
+    def work_directory(self) -> Path:
         return self._work_directory
 
     @work_directory.setter
-    def work_directory(self, value: Union[str, Path]):
+    def work_directory(self, value: Union[str, Path]) -> None:
         self._work_directory = Path(value)
 
 
