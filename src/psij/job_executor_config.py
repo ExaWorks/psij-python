@@ -25,29 +25,29 @@ class JobExecutorConfig(object):
             that the exit code file, likely written on a service node, can be accessed by PSI/J,
             likely running on a head node.
         """
-        self.launcher_log_file = launcher_log_file
+        self._launcher_log_file = launcher_log_file
 
         if work_directory:
-            self.work_directory = work_directory
+            self._work_directory = work_directory
         else:
-            self.work_directory = JobExecutorConfig.DEFAULT_WORK_DIRECTORY
+            self._work_directory = JobExecutorConfig.DEFAULT_WORK_DIRECTORY
 
     @property
     def launcher_log_file(self):
-        return self.launcher_log_file
+        return self._launcher_log_file
 
     @launcher_log_file.setter
     def launcher_log_file(self, value: Optional[Union[str, Path]]):
         if value:
-            self.launcher_log_file = Path(value)
+            self._launcher_log_file = Path(value)
 
     @property
     def work_directory(self):
-        return self.work_directory
+        return self._work_directory
 
     @work_directory.setter
     def work_directory(self, value: Union[str, Path]):
-        self.work_directory = Path(value)
+        self._work_directory = Path(value)
 
 
 JobExecutorConfig.DEFAULT = JobExecutorConfig()
