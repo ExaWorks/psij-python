@@ -50,12 +50,13 @@ def read_conf(fname: str) -> Dict[str, str]:
     return conf
 
 
-def run(*args: str, cwd: Optional[str] = None) -> None:
+def run(*args: str, cwd: Optional[str] = None) -> str:
     p = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                        cwd=cwd, text=True)
     if p.returncode != 0:
         print(p.stdout)
         raise subprocess.CalledProcessError(p.returncode, args, output=p.stdout)
+    return p.stdout
 
 
 def get_conf(conf: Dict[str, str], name: str) -> str:
@@ -156,6 +157,44 @@ def run_tests(conf: Dict[str, str], site_ids: List[str], branches: List[str], cl
                     run_branch_tests(conf, tmpp, run_id, clone, site_id, branch)
 
 
+OLD_REPO = 'ExaWorks/psi-j-python'
+NEW_REPO = 'ExaWorks/psij-python'
+
+
+def patch_file(file_name: str) -> None:
+    if os.path.exists(file_name + '.is_patched'):
+        return
+
+    with info('Patching %s' % file_name):
+        with open(file_name) as inf:
+            with open(file_name + '._new_', 'w') as outf:
+                for line in inf:
+                    # strip new line
+                    if line.find(OLD_REPO) != -1:
+                        # we're adding one space so that the line has the same length;
+                        # when invoking a subprocess, bash stores the location where
+                        # it's supposed to continue parsing from, so it's a good idea
+                        # to to not move things around
+                        line = line.replace(OLD_REPO, NEW_REPO)[:-1] + ' \n'
+                    outf.write(line)
+        os.chmod(file_name + '._new_', os.stat(file_name).st_mode)
+        os.rename(file_name + '._new_', file_name)
+        Path(file_name + '.is_patched').touch()
+
+
+def patch_repo() -> None:
+    patch_file('testing.conf')
+    patch_file('psij-ci-run')
+
+
+def update_origin() -> None:
+    old_url = run('git', 'remote', 'get-url', 'origin')
+    new_url = old_url.strip().replace(OLD_REPO, NEW_REPO)
+    if new_url != old_url:
+        with info('Updating git url to %s' % new_url):
+            run('git', 'remote', 'set-url', 'origin', new_url)
+
+
 @contextmanager
 def info(msg: str) -> Generator[bool, None, None]:
     print(msg + '... ', end='')
@@ -192,4 +231,6 @@ if __name__ == '__main__':
     else:
         raise ValueError('Unrecognized value for scope: "%s"' % scope)
 
+    patch_repo()
+    update_origin()
     run_tests(conf, site_ids, branches, clone)
