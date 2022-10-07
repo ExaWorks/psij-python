@@ -34,6 +34,15 @@ class JobExecutorConfig(object):
 
     @property
     def launcher_log_file(self) -> Optional[Path]:
+        """
+        Configure the executor's launcher log file
+
+        Parameters
+        ----------
+        launcher_log_file
+            If specified, log messages from launcher scripts (including
+            output from pre- and post- launch scripts) will be directed to this file.
+        """
         return self._launcher_log_file
 
     @launcher_log_file.setter
@@ -43,6 +52,18 @@ class JobExecutorConfig(object):
 
     @property
     def work_directory(self) -> Path:
+        """
+        Configure the execor's work directory
+
+        Parameters
+        ----------
+        work_directory
+            A directory where submit scripts and auxiliary job files will be generated. In a,
+            cluster this directory needs to point to a directory on a shared filesystem. This is so
+            that the exit code file, likely written on a service node, can be accessed by PSI/J,
+            likely running on a head node.
+        """
+
         return self._work_directory
 
     @work_directory.setter
