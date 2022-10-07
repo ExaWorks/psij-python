@@ -9,8 +9,8 @@ class JobExecutorConfig(object):
 
     DEFAULT_WORK_DIRECTORY = Path.home() / '.psij' / 'work'
 
-    def __init__(self, launcher_log_file: Optional[Union[str, Path]] = None,
-                 work_directory: Optional[Union[str, Path]] = None) -> None:
+    def __init__(self, launcher_log_file: Optional[Path] = None,
+                 work_directory: Optional[Path] = None) -> None:
         """
         Initializes a configuration object.
 
