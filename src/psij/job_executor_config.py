@@ -35,7 +35,7 @@ class JobExecutorConfig(object):
     @property
     def launcher_log_file(self) -> Optional[Path]:
         """
-        Configure the executor's launcher log file
+        Configure the executor's launcher log file.
 
         Parameters
         ----------
@@ -53,7 +53,7 @@ class JobExecutorConfig(object):
     @property
     def work_directory(self) -> Path:
         """
-        Configure the execor's work directory
+        Configure the execor's work directory.
 
         Parameters
         ----------
@@ -63,7 +63,6 @@ class JobExecutorConfig(object):
             that the exit code file, likely written on a service node, can be accessed by PSI/J,
             likely running on a head node.
         """
-
         return self._work_directory
 
     @work_directory.setter
