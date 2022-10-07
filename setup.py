@@ -11,7 +11,7 @@ if __name__ == '__main__':
     setup(
         name='psi-j-python',
         version=VERSION,
-
+        license='MIT',
         description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
         specification.''',
 
