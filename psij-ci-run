@@ -54,7 +54,7 @@ fi
 
 # Ensure latest test runner is there
 git fetch https://github.com/ExaWorks/psi-j-python.git
-git checkout origin/main -- tests/ci_runner.py
+git checkout FETCH_HEAD -- tests/ci_runner.py
 
 
 if [ "$REPEAT" == "1" ]; then
