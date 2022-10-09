@@ -35,28 +35,28 @@ associated with your simulation--for instance, your test suite.
 Terminology
 -----------
 
-What is a `Job`?
-^^^^^^^^^^^^^^^^
+What is a Job?
+^^^^^^^^^^^^^^
 
 In PSI/J’s terminology, a :class:`Job <psij.job.Job>` represents an underlying
 resource manager job.  One :class:`Job <psij.job.Job>` instance might represent
 a Slurm job running on a LLNL cluster, another a Cobalt job running on ALCF's
 Theta, another a Flux job in the cloud, and so on.
 
-A `Job` is described by an executable plus job attributes which specify how
+A ``Job`` is described by an executable plus job attributes which specify how
 exactly the job is executed.  Static job attributes such es resource requiremens
 are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic
 job attributes such as the :class:`JobState <psij.job_state.JobState>` are
 updated by PSI/J at runtime.
 
 
-What is a `JobExecutor`?
-^^^^^^^^^^^^^^^^^^^^^^^^
+What is a JobExecutor?
+^^^^^^^^^^^^^^^^^^^^^^
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific RM,
-e.g. Slurm, on which the `Job` is being executed.  Generally, when jobs are
+e.g. Slurm, on which the job is being executed.  Generally, when jobs are
 submitted, they will be queued for a variable period of time, depending on how
-busy the target machine is. Once the `Job` is started, its executable is
+busy the target machine is. Once the job is started, its executable is
 launched and runs to completion, and the job will be marked as completed.
 
 In PSI/J, a job is submitted by passing a :class:`Job <psij.job.Job>` instance
@@ -82,15 +82,15 @@ reference the `developers documentation
 <development/tutorial_add_executor.html>`_ for details.
 
 
-Submit a `Job`
---------------
+Submit a Job
+------------
 
 The most basic way to use PSI/J looks something like the following:
 
-1. Create a `JobExecutor` instance.
-2. Create a `JobSpec` object and populate it with information about your job.
-3. Create a `Job` with that `JobSpec`.
-4. Submit the `Job` instance to the `JobExecutor`.
+1. Create a ``JobExecutor`` instance.
+2. Create a ``JobSpec`` object and populate it with information about your job.
+3. Create a ``Job`` with that ``JobSpec``.
+4. Submit the ``Job`` instance to the ``JobExecutor``.
 
 On a Slurm cluster, this code might look like:
 
@@ -109,7 +109,7 @@ Slurm // Local // LSF // PBS // Cobalt
 And by way of comparison, other backends can be selected with the tabs above.
 Note that the only difference is the argument to the get_instance method.
 
-The `JobExecutor` implementation will translate all PSI/J API activities into the
+The ``JobExecutor`` implementation will translate all PSI/J API activities into the
 respective backend commands and run them on the backend, while at the same time
 monitoring the backend jobs for failure, completion or other state updates.
 
@@ -140,8 +140,8 @@ Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
 numbers of jobs (tested with up to 64k jobs).
 
 
-Configuring your `Job`
-----------------------
+Configuring your Job
+--------------------
 
 In the example above, the `executable='/bin/date'` part tells PSI/J that we want
 the job to run the `/bin/date` command. But there are other parts to the job
@@ -153,12 +153,12 @@ which can be configured:
 - resource requirements for the job's execution
 - accounting details to be used
 
-That information is encoded in the `JobSpec` which is used to create the `Job`
-instance.
+That information is encoded in the ``JobSpec`` which is used to create the
+``Job`` instance.
 
 
-`Job` Arguments
-^^^^^^^^^^^^^^^
+Job Arguments
+^^^^^^^^^^^^^
 
 The executable's command line arguments to be used for a job are specified as
 a list of strings in the arguments attribute of the `JobSpec` class.  For
@@ -188,10 +188,10 @@ Note: `JobSpec` attributes can also be added incrementally:
     spec.arguments = ['-u']
 
 
-`Job` Environment
-^^^^^^^^^^^^^^^^^
+Job Environment
+^^^^^^^^^^^^^^^
 
-The `Job` environment is provided a environment variables to the executing job
+The job environment is provided a environment variables to the executing job
 - the are the equivalent of `export FOO=bar` on the shell command line.  Those
 environment variables are specified as a dictionary of string-type key/value
 pairs:
@@ -209,8 +209,8 @@ initialization files (`e.g., ~/.bashrc`), including from any modules loaded in
 the default shell environment.
 
 
-`Job` StdIO
-^^^^^^^^^^^
+Job StdIO
+^^^^^^^^^
 
 Standard output and standard error streams of the job can be individually
 redirected to files by setting the `stdout_path` and `stderr_path` attributes:
@@ -228,8 +228,8 @@ The job's standard input stream can also be redirected to read from a file, by
 setting the `spec.stdin_path` attribute.
 
 
-`Job` Resources
-^^^^^^^^^^^^^^^
+Job Resources
+^^^^^^^^^^^^^
 
 A job submitted to a cluster is allocated a specific set of resources to run on.
 The amount and type of resources are defined by a resource specification
@@ -277,9 +277,8 @@ All processes of the job will share a single MPI communicator
 (`MPI_COMM_WORLD`), independent of their placement, and the term `rank` (which
 usually refers to an MPI rank) is thus equivalent.  However, jobs started with
 a single process instance may, depending on the executor implementation, not get
-an MPI communicator.
-
-TODO: reference the launcher section
+an MPI communicator.  How Jobs are launched can be specified by the `launcher`
+attribute of the ``JobSpec``, as documented below.
 
 
 Launching Methods
@@ -331,7 +330,7 @@ In all the above examples, we have submitted jobs without checking on what
 happened to them. Once the job has finished executing (which, for `/bin/date`,
 should be almost as soon as the job starts) the resource manager will mark the
 job as complete, triggering PSI/J to do the same via the :class:`JobStatus
-<psij.job_status.JobStatus>` attribute of the `Job`.  PSIJ `Job` state
+<psij.job_status.JobStatus>` attribute of the job.  ``Job`` state
 progressions follow this state model:
 
 .. image:: states.png
@@ -366,8 +365,8 @@ are cancelled, fetch the status of the job after calling
     print(str(job.status))
 
 
-Canceling your `Job`
-^^^^^^^^^^^^^^^^^^^^
+Canceling your Job
+^^^^^^^^^^^^^^^^^^
 
 If supported by the underlying job scheduler, PSI/J jobs can be canceled by
 invoking the :meth:`cancel <psij.job.Job.cancel>` method.
