@@ -2,41 +2,69 @@
 User Guide
 ==========
 
+Who PSI/J is for
+----------------
+
 PSI/J is a Python library for submitting and managing HPC jobs via arbitrary
 Resource Managers (RMs). PSI/J abstracts the specific RM, making your code
-RM-independent and portable. Currently, PSI/J supports the following RMs: Slurm,
-LSF, Flux, Cobalt, PBS and local Linux OS.
+RM-independent and portable, or at least easier to port, across HPC centers.  If
+you want your project to be able to request resources from one or more of Slurm,
+LSF, Flux, Cobalt, PBS, and your local machine, we think you will find that
+PSI/J simplifies your work considerably.
+
+
+Who PSI/J is (probably) not for
+-------------------------------
+
+If you were sure that you will only *ever* be launching jobs on ORNL's Summit
+system, and you don't care about any other cluster or machine, then you may as
+well interact with LSF (the resource manager on Summit) directly, rather than
+indirectly through PSI/J. In that case PSI/J would not really be adding much
+other than complexity.
+
+If you write application code that is meant to run on various HPC clusters, but
+which never make calls to the underlying resource manager (e.g. by calling into
+Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), then
+PSI/J will not help you. This is likely your situation if you are a developer
+working on a MPI-based science simulation, since we have observed that it is
+often the users' responsibility to actually launch the simulation through the
+resource manager.  However, PSI/J is more likely to help with various tools
+associated with your simulation--for instance, your test suite.
 
 
 Terminology
 -----------
 
-In PSI/J’s terminology, a :class:`Job <psij.job.Job>` represents an executable
-plus its attributes.  Static job attributes such es resource requiremens are
-defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic job
-attributes such as the :class:`JobState <psij.job_state.JobState>` are updated
-by PSI/J at runtime.
+What is a `Job`?
+^^^^^^^^^^^^^^^^
 
-A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents
-a specific RM, e.g. Slurm, on which the Job is being executed.  Generally, when
-jobs are submitted, they will be queued for a variable period of time, depending
-on how busy the target machine is. Once the Job is started, its executable is
-launched and runs to completion.
+In PSI/J’s terminology, a :class:`Job <psij.job.Job>` represents an underlying
+resource manager job.  One :class:`Job <psij.job.Job>` instance might represent
+a Slurm job running on a LLNL cluster, another a Cobalt job running on ALCF's
+Theta, another a Flux job in the cloud, and so on.
 
-In PSI/J, a job is submitted by binding a Job object to a JobExecutor object
-with an appropriate configuration. For example, one Job instance bound to
-a JobExecutor object might represent a job submitted to LSF on ORNL Frontier,
-another a job submitted to Slurm on NERSC Perlmutter, another a job submitted to
-a Flux instance that runs in the cloud, and so on.
+A `Job` is described by an executable plus job attributes which specify how
+exactly the job is executed.  Static job attributes such es resource requiremens
+are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic
+job attributes such as the :class:`JobState <psij.job_state.JobState>` are
+updated by PSI/J at runtime.
 
 
-What is a JobExecutor?
-----------------------
+What is a `JobExecutor`?
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-`JobExecutor.submit` creates a new resource manager job and permanently binds
-the Job to it. Alternatively, a Job can be bound to an existing resource manager
-job by calling `JobExecutor.attach`, passing in a Job and the ID of the
-underlying resource manager job.
+A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific RM,
+e.g. Slurm, on which the `Job` is being executed.  Generally, when jobs are
+submitted, they will be queued for a variable period of time, depending on how
+busy the target machine is. Once the `Job` is started, its executable is
+launched and runs to completion, and the job will be marked as completed.
+
+In PSI/J, a job is submitted by passing a :class:`Job <psij.job.Job>` instance
+to the :meth:`JobExecutor.submit <psij.job_executor.JobExecutor.submit>`
+function.  Alternatively, a :class:`Job <psij.job.Job>` instance can be bound to
+an *existing* resource manager job by passing it and the ID of the underlying
+resource manager job to :meth:`JobExecutor.attach
+<psij.job_executor.JobExecutor.attach>`.
 
 .. image:: psij_arch.png
 
@@ -47,22 +75,22 @@ PSI/J currently provides executors for the following backends:
   - `slurm` : `Slurm Scheduling System <https://slurm.schedmd.com/>`_
   - `lsf`   : `IBM Spectrum LSF <https://www.ibm.com/docs/en/spectrum-lsf>`_
   - `pbspro`: `Altair's PBS-Professional <https://www.altair.com/pbs-professional>`_
-  - `cobalt`: ALCF's Cobalt Job Scheduler
+  - `cobalt`: ALCF's Cobalt job scheduler
 
 We encourage the contribution of executors for additional backends - please
 reference the `developers documentation
 <development/tutorial_add_executor.html>`_ for details.
 
 
-Using a Job Executor
---------------------
+Submit a `Job`
+--------------
 
 The most basic way to use PSI/J looks something like the following:
 
-1. Create a JobExecutor instance.
-2. Create a JobSpec object and populate it with information about your job.
-3. Create a Job with that JobSpec.
-4. Submit the Job instance to the JobExecutor.
+1. Create a `JobExecutor` instance.
+2. Create a `JobSpec` object and populate it with information about your job.
+3. Create a `Job` with that `JobSpec`.
+4. Submit the `Job` instance to the `JobExecutor`.
 
 On a Slurm cluster, this code might look like:
 
@@ -81,7 +109,7 @@ Slurm // Local // LSF // PBS // Cobalt
 And by way of comparison, other backends can be selected with the tabs above.
 Note that the only difference is the argument to the get_instance method.
 
-The Job Executor implementation will translate all PSI/J API activities into the
+The `JobExecutor` implementation will translate all PSI/J API activities into the
 respective backend commands and run them on the backend, while at the same time
 monitoring the backend jobs for failure, completion or other state updates.
 
@@ -89,8 +117,31 @@ Assuming there are no errors, you should see a new entry in your resource
 manager’s queue after running that example above.
 
 
-Configuring your job
---------------------
+Multiple Jobs
+^^^^^^^^^^^^^
+
+In the last section we submitted a single job.  Submitting multiple jobs is as
+simple as adding a loop:
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Slurm // Local // LSF // PBS // Cobalt
+
+.. code-block:: python
+
+    from psij import Job, JobExecutor, JobSpec
+
+    ex = JobExecutor.get_instance("<&executor-type>")
+    for _ in range(10):
+        job = Job(JobSpec(executable="/bin/date"))
+        ex.submit(job)
+
+Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
+numbers of jobs (tested with up to 64k jobs).
+
+
+Configuring your `Job`
+----------------------
 
 In the example above, the `executable='/bin/date'` part tells PSI/J that we want
 the job to run the `/bin/date` command. But there are other parts to the job
@@ -102,26 +153,31 @@ which can be configured:
 - resource requirements for the job's execution
 - accounting details to be used
 
-That information is encoded in the JobSpec which is used to create the Job
+That information is encoded in the `JobSpec` which is used to create the `Job`
 instance.
 
 
-Job Arguments
-^^^^^^^^^^^^^
+`Job` Arguments
+^^^^^^^^^^^^^^^
 
 The executable's command line arguments to be used for a job are specified as
-a list of strings in the arguments attribute of the JobSpec class.  For example,
-our previous `/bin/date` job could be changed to request UTC time formatting:
+a list of strings in the arguments attribute of the `JobSpec` class.  For
+example, our previous `/bin/date` job could be changed to request UTC time
+formatting:
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Slurm // Local // LSF // PBS // Cobalt
 
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance('slurm')
+    ex = JobExecutor.get_instance('<&executor-type>')
     job = Job(JobSpec(executable='/bin/date', arguments=['-u']))
     ex.submit(job)
 
-Note: JobSpec attributes can also be added incrementally:
+Note: `JobSpec` attributes can also be added incrementally:
 
 .. code-block:: python
 
@@ -132,10 +188,10 @@ Note: JobSpec attributes can also be added incrementally:
     spec.arguments = ['-u']
 
 
-Job Environment
-^^^^^^^^^^^^^^^
+`Job` Environment
+^^^^^^^^^^^^^^^^^
 
-The Job environment is provided a environment variables to the executing job
+The `Job` environment is provided a environment variables to the executing job
 - the are the equivalent of `export FOO=bar` on the shell command line.  Those
 environment variables are specified as a dictionary of string-type key/value
 pairs:
@@ -148,13 +204,13 @@ pairs:
     spec.executable = '/bin/date'
     spec.environment = {'TZ': 'America/Los_Angeles'}
 
-Environment variables specified this way will overwrite settings from yuor shell
-initialization files (`~/.bashrc`), including from any modules loaded in the
-default shell environment.
+Environment variables specified this way will overwrite settings from your shell
+initialization files (`e.g., ~/.bashrc`), including from any modules loaded in
+the default shell environment.
 
 
-Job StdIO
-^^^^^^^^^
+`Job` StdIO
+^^^^^^^^^^^
 
 Standard output and standard error streams of the job can be individually
 redirected to files by setting the `stdout_path` and `stderr_path` attributes:
@@ -172,8 +228,8 @@ The job's standard input stream can also be redirected to read from a file, by
 setting the `spec.stdin_path` attribute.
 
 
-Job Resources
-^^^^^^^^^^^^^
+`Job` Resources
+^^^^^^^^^^^^^^^
 
 A job submitted to a cluster is allocated a specific set of resources to run on.
 The amount and type of resources are defined by a resource specification
@@ -226,39 +282,83 @@ an MPI communicator.
 TODO: reference the launcher section
 
 
-Other Job Attributes
-^^^^^^^^^^^^^^^^^^^^
+Launching Methods
+^^^^^^^^^^^^^^^^^
 
-Monitoring your job
--------------------
+To specify how the processes in your job should be started once resources have been
+allocated for it, pass the name of a launcher (e.g. ``"mpirun"``, ``"srun"``, etc.)
+like so: ``JobSpec(..., launcher='srun')``.
 
-Getting status
-^^^^^^^^^^^^^^
 
-In all the above examples, we have submitted jobs without checking on what
-happened to them. Once that command has finished executing (which, for /bin/date
-should be almost as soon as the job starts) the resource manager will mark the
-job as complete, triggering PSI/J to do the same via the :class:`JobStatus
-<psij.job_status.JobStatus>` attribute of the Job.
+Scheduling Information
+^^^^^^^^^^^^^^^^^^^^^^
 
-.. image:: states.png
+To specify resource-manager-specific information, like queues/partitions,
+runtime, and so on, create a :class:`JobAttributes
+<psij.job_attributes.JobAttributes>` and set it with ``JobSpec(...,
+attributes=my_job_attributes)``::
 
-To wait for a job to complete once it has been submitted, it suffices to call the wait method with no arguments:
-from psij import Job, JobExecutor, JobSpec
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Slurm // Local // LSF // PBS // Cobalt
 
 .. code-block:: python
 
-    from psij import Job, JobExecutor, JobSpec
+    from psij import Job, JobExecutor, JobSpec, JobAttributes, ResourceSpecV1
 
-    job = Job(JobSpec(executable='/bin/date'))
+    executor = JobExecutor.get_instance("<&executor-type>")
+
+    job = Job(
+        JobSpec(
+            executable="/bin/date",
+            resources=ResourceSpecV1(node_count=1),
+            attributes=JobAttributes(
+                queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
+            ),
+        )
+    )
+
+    executor.submit(job)
+
+The `<QUEUE_NAME>` and `<ALLOCATION>` fields will depend on the system you are
+running on.
+
+
+Managing Job State
+------------------
+
+In all the above examples, we have submitted jobs without checking on what
+happened to them. Once the job has finished executing (which, for `/bin/date`,
+should be almost as soon as the job starts) the resource manager will mark the
+job as complete, triggering PSI/J to do the same via the :class:`JobStatus
+<psij.job_status.JobStatus>` attribute of the `Job`.  PSIJ `Job` state
+progressions follow this state model:
+
+.. image:: states.png
+
+
+
+Waiting for Completion
+^^^^^^^^^^^^^^^^^^^^^^
+
+To wait for a job to complete once it has been submitted, it suffices
+to call the :meth:`wait <psij.job.Job.wait>` method with no arguments:
+
+.. code-block:: python
+
+    from psij import Job, JobSpec
+
+    job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
     job.wait()
 
-The wait call will return once the job has reached a terminal state, which
-almost always means that it finished or was cancelled.
+The :meth:`wait <psij.job.Job.wait>` call will return once the job has reached
+a terminal state, which almost always means that it finished or was
+cancelled.
 
-To distinguish jobs that complete successfully from ones that fail or are
-cancelled, fetch the status of the job after calling wait:
+To distinguish jobs that complete successfully from ones that fail or
+are cancelled, fetch the status of the job after calling
+:meth:`wait <psij.job.Job.wait>`:
 
 .. code-block:: python
 
@@ -266,23 +366,35 @@ cancelled, fetch the status of the job after calling wait:
     print(str(job.status))
 
 
+Canceling your `Job`
+^^^^^^^^^^^^^^^^^^^^
+
+If supported by the underlying job scheduler, PSI/J jobs can be canceled by
+invoking the :meth:`cancel <psij.job.Job.cancel>` method.
+
+
 Status Callbacks
 ^^^^^^^^^^^^^^^^
 
-Waiting for jobs to complete with wait is fine if you don’t mind blocking while
-you wait for a single job to complete. However, if you want to wait on multiple
-jobs without blocking, or you want to get updates when jobs start running, you
-can attach a callback to a JobExecutor which will fire whenever any job
-submitted to that executor changes status.
+Waiting for jobs to complete with :meth:`wait <psij.job.Job.wait>` is fine if
+you don't mind blocking while you wait for a single job to complete. However, if
+you want to wait on multiple jobs without blocking, or you want to get updates
+when jobs start running, you can attach a callback to a :class:`JobExecutor
+<psij.job_executor.JobExecutor>` which will fire whenever any job submitted to
+that executor changes status.
 
 To wait on multiple jobs at once:
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Slurm // Local // LSF // PBS // Cobalt
 
 .. code-block:: python
 
     import time
     from psij import Job, JobExecutor, JobSpec
 
-    count = 100
+    count = 10
 
     def callback(job, status):
         global count
@@ -291,29 +403,24 @@ To wait on multiple jobs at once:
             print(f"Job {job} completed with status {status}")
             count -= 1
 
-    ex = JobExecutor.get_instance('flux')
+    ex = JobExecutor.get_instance("<&executor-type>")
     ex.set_job_status_callback(callback)
+
     for _ in range(count):
-        job = Job(JobSpec(executable='/bin/date'))
+        job = Job(JobSpec(executable="/bin/date"))
         ex.submit(job)
 
     while count > 0:
         time.sleep(0.01)
 
+Status callbacks can also be set on individual jobs with
+:meth:`set_job_status_callback <psij.job.Job.set_job_status_callback>`.
 
-Setting outputs
-^^^^^^^^^^^^^^^
-
-Dealing with errors
--------------------
-
-Canceling your job
--------------------
 
 Running Psi/J at your site
 --------------------------
 
-Pages should contain:
+TODO: Pages should contain:
 
 - A simple example ported to multiple sites showing how to configure PSI/J for
   each site with required configuration / attributes (with site-switcher?)
