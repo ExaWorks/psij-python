@@ -19,15 +19,15 @@ Install from pip
 
 .. code-block:: console
 
-    pip install  psi-j
+    pip install psij
 
 Install from source
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    git clone https://github.com/ExaWorks/psi-j-python.git
-    cd psi-j-python
+    git clone https://github.com/ExaWorks/psij-python.git
+    cd psij-python
     pip install .
 
 
@@ -290,7 +290,7 @@ Examples
 --------
 
 Up-to-date and actively tested examples can be found
-`here <https://github.com/ExaWorks/psi-j-python/blob/main/tests/test_doc_examples.py>`_.
+`here <https://github.com/ExaWorks/psij-python/blob/main/tests/test_doc_examples.py>`_.
 Tests of resource-manager-specific and site-specific values
 (such as accounts, queues/partitions, etc.) can be found in files
 in the same directory but tend to buried under

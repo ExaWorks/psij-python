@@ -21,7 +21,7 @@ Setting up an automated testing job
 
 This is the preferred way of running the tests since it allows the PSI/J
 team to keep a constant eye on the state of the library on various
-resources. To set up the Cron job (or an alternative method), you can either 
+resources. To set up the Cron job (or an alternative method), you can either
 use the provided setup script:
 
 ```bash
@@ -30,13 +30,13 @@ use the provided setup script:
 
 or manually set up the CI runner with Cron or your favorite scheduler.
 
-Note: If you need to set up an environment module (such as 
+Note: If you need to set up an environment module (such as
 `module load python/cpython-x.y.z`) or something similar, such as
 loading a conda or virtual environment, please add the relevant commands to
 `psij-ci-load`, which is sourced before tests are run by `psij-ci-run`. If the
-setup script is run under a venv or Conda, it will attempt to detect this and 
-ask whether the relevant environment activation commands should be added to 
-`psij-ci-load`. However, not all circumstances can be reliably detected and 
+setup script is run under a venv or Conda, it will attempt to detect this and
+ask whether the relevant environment activation commands should be added to
+`psij-ci-load`. However, not all circumstances can be reliably detected and
 you may need to manually edit `psij-ci-load`.
 
 Testing with the CI runner
@@ -69,7 +69,7 @@ Testing with pytest
 ===================
 
 This is the most direct way to run the tests and it must be done from the
-main psi-j directory. Use the following steps:
+main psij directory. Use the following steps:
 
 1. Install dependencies:
 ```bash
