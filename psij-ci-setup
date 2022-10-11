@@ -188,8 +188,7 @@ echo "This script will install requirements for the PSI/J CI tests and"
 echo "add a cron job to run the tests once a day at some random time. "
 echo "                                                                "
 echo "If you need to set up a special environment, such as loading an "
-echo "environment module please exit this script and add the relevant "
-echo "commands to psij-ci-load.                                       "
+echo "environment module please do so and then re-run this script.    "
 echo "================================================================"
 echo
 
