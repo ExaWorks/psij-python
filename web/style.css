@@ -40,20 +40,20 @@ body .v-application a {
     min-width: 2em;
 }
 
-.psi-j-font {
+.psij-font {
     font-family: "Saira", sans-serif;
 }
 
-.text-h5 .psi-j-font::before {
+.text-h5 .psij-font::before {
     content: "\00a0";
 }
 
-.psi-j-font.flushleft::before {
+.psij-font.flushleft::before {
     content: "";
 }
 
 
-.text-h5 .psi-j-font::after {
+.text-h5 .psij-font::after {
     content: "\00a0";
 }
 
