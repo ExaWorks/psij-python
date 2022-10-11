@@ -1,0 +1,57 @@
+.psij-selector-value {
+    display: inline-block;
+    border-style: solid;
+    border-width: 1pt;
+    border-radius: 3pt;
+    border-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+select.psij-selector {
+    border: thin solid;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3pt;
+    padding-left: 4pt;
+    padding-right: 16pt;
+    appearance: none;
+    background: url(select-arrow.png) no-repeat;
+    background-position: right 4pt center;
+    background-size: 8pt;
+}
+
+select.psij-selector:focus {
+    outline: none;
+    border-color: var(--color-fg-lines);
+    box-shadow: 0 0 1.5pt var(--color-fg-lines);
+}
+
+.selector-radio {
+	width: 0;
+    height: 0;
+}
+
+.selector-label {
+	cursor: pointer;
+
+	font-size: 94%;
+
+	z-index: 1;
+	display: inline-block;
+	position: relative;
+	min-width: 80pt;
+
+	padding: 3pt;
+	padding-left: 8pt;
+	height: 22pt;
+
+	margin-right: 1pt;
+	
+	background: #e7f2fa;
+	top: 12pt;
+}
+
+.selector-radio:checked + .selector-label {
+	z-index: 3;
+	height: 24pt;
+	border-top: 3px solid #6ab0de;
+}
