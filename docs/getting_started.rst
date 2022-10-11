@@ -37,9 +37,11 @@ Overview
 
 In PSI/J's terminology, a :class:`Job <psij.job.Job>` represents an executable
 plus a bunch of attributes.  Static job attributes such es resource requiremens
-are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic
-job attributes such as the :class:`JobState <psij.job_state.JobState>` are
-updated by PSI/J at runtime.
+are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at
+creation. Dynamic job attributes such as the :class:`JobState
+<psij.job_state.JobState>` are modified by :class:`JobExecutors
+<psij.job_executor.JobExecutor>` as the :class:`Job <psij.job.Job>`
+progresses through its lifecycle.
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific
 Resource Manager, e.g. Slurm, on which the Job is being executed.  Generally,
@@ -47,9 +49,9 @@ when jobs are submitted, they will be queued for a variable period of time,
 depending on how busy the target machine is. Once the Job is started, its
 executable is launched and runs to completion.
 
-In PSI/J, a job is submitted by `JobExecutor.submit(Job)` which permanently
-binds the Job to that executor and submits it to the underlying resource
-manager.
+In PSI/J, a job is submitted by :meth:`JobExecutor.submit(Job)
+<psij.job_executor.JobExecutor.submit>` which permanently binds the Job to that
+executor and submits it to the underlying resource manager.
 
 
 Basic Usage

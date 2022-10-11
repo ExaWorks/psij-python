@@ -43,11 +43,13 @@ resource manager job.  One :class:`Job <psij.job.Job>` instance might represent
 a Slurm job running on a LLNL cluster, another a Cobalt job running on ALCF's
 Theta, another a Flux job in the cloud, and so on.
 
-A ``Job`` is described by an executable plus job attributes which specify how
-exactly the job is executed.  Static job attributes such es resource requiremens
-are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at creation, dynamic
-job attributes such as the :class:`JobState <psij.job_state.JobState>` are
-updated by PSI/J at runtime.
+A :class:`Job <psij.job.Job>` is described by an executable plus job attributes which specify how
+exactly the job is executed.  Static job attributes such as resource
+requirements are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at
+creation. Dynamic job attributes such as the :class:`JobState
+<psij.job_state.JobState>` are modified by :class:`JobExecutors
+<psij.job_executor.JobExecutor>` as the :class:`Job <psij.job.Job>`
+progresses through its lifecycle.
 
 
 What is a JobExecutor?
@@ -75,7 +77,7 @@ PSI/J currently provides executors for the following backends:
   - `slurm` : `Slurm Scheduling System <https://slurm.schedmd.com/>`_
   - `lsf`   : `IBM Spectrum LSF <https://www.ibm.com/docs/en/spectrum-lsf>`_
   - `pbspro`: `Altair's PBS-Professional <https://www.altair.com/pbs-professional>`_
-  - `cobalt`: ALCF's Cobalt job scheduler
+  - `cobalt`: `ALCF's Cobalt job scheduler <https://www.alcf.anl.gov/support/user-guides/theta/queueing-and-running-jobs/job-and-queue-scheduling/index.html>`_
 
 We encourage the contribution of executors for additional backends - please
 reference the `developers documentation
@@ -143,12 +145,12 @@ numbers of jobs (tested with up to 64k jobs).
 Configuring your Job
 --------------------
 
-In the example above, the `executable='/bin/date'` part tells PSI/J that we want
-the job to run the `/bin/date` command. But there are other parts to the job
+In the example above, the ``executable='/bin/date'`` part tells PSI/J that we want
+the job to run the ``/bin/date`` command. But there are other parts to the job
 which can be configured:
 
 - arguments for the job executable
-- environment the job is running it
+- environment the job is running in
 - destination for standard output and error streams
 - resource requirements for the job's execution
 - accounting details to be used
@@ -161,8 +163,8 @@ Job Arguments
 ^^^^^^^^^^^^^
 
 The executable's command line arguments to be used for a job are specified as
-a list of strings in the arguments attribute of the `JobSpec` class.  For
-example, our previous `/bin/date` job could be changed to request UTC time
+a list of strings in the arguments attribute of the ``JobSpec`` class.  For
+example, our previous ``/bin/date`` job could be changed to request UTC time
 formatting:
 
 .. rst-class:: executor-type-selector selector-mode-tabs
@@ -174,7 +176,7 @@ Slurm // Local // LSF // PBS // Cobalt
     from psij import Job, JobExecutor, JobSpec
 
     ex = JobExecutor.get_instance('<&executor-type>')
-    job = Job(JobSpec(executable='/bin/date', arguments=['-u']))
+    job = Job(JobSpec(executable='/bin/date', arguments=['-utc', '--debug']))
     ex.submit(job)
 
 Note: `JobSpec` attributes can also be added incrementally:
@@ -191,10 +193,10 @@ Note: `JobSpec` attributes can also be added incrementally:
 Job Environment
 ^^^^^^^^^^^^^^^
 
-The job environment is provided a environment variables to the executing job
-- the are the equivalent of `export FOO=bar` on the shell command line.  Those
-environment variables are specified as a dictionary of string-type key/value
-pairs:
+The job environment sets the environment variables for a job before it is
+launched. This is the equivalent of exporting ``FOO=bar`` on the command line
+before running a command. These environment variables are specified as
+a dictionary of string key/value pairs:
 
 .. code-block:: python
 
@@ -209,11 +211,11 @@ initialization files (`e.g., ~/.bashrc`), including from any modules loaded in
 the default shell environment.
 
 
-Job StdIO
+Job Stdio
 ^^^^^^^^^
 
 Standard output and standard error streams of the job can be individually
-redirected to files by setting the `stdout_path` and `stderr_path` attributes:
+redirected to files by setting the ``stdout_path`` and ``stderr_path`` attributes:
 
 .. code-block:: python
 
@@ -225,7 +227,7 @@ redirected to files by setting the `stdout_path` and `stderr_path` attributes:
     spec.stderr_path = '/tmp/date.err'
 
 The job's standard input stream can also be redirected to read from a file, by
-setting the `spec.stdin_path` attribute.
+setting the ``spec.stdin_path`` attribute.
 
 
 Job Resources
@@ -233,21 +235,22 @@ Job Resources
 
 A job submitted to a cluster is allocated a specific set of resources to run on.
 The amount and type of resources are defined by a resource specification
-`psij.ResourceSpec` which becomes a part of the job specification.  The resource specification supports the following attributes:
+``ResourceSpec`` which becomes a part of the job specification.  The resource
+specification supports the following attributes:
 
-  - `node_count`: allocate that number of compute nodes to the job.  All
+  - ``node_count``: allocate that number of compute nodes to the job.  All
     cpu-cores and gpu-cores on the allocated node can be exclusively used by the
     submitted job.
-  - `processes_per_node`: on the allocated nodes, execute that given number of
+  - ``processes_per_node``: on the allocated nodes, execute that given number of
     processes.
-  - `process_count`: the total number of processes (ranks) to be started
-  - `cpu_cores_per_process`: the number of cpu cores allocated to each launched
+  - ``process_count``: the total number of processes (ranks) to be started
+  - ``cpu_cores_per_process``: the number of cpu cores allocated to each launched
     process.  PSI/J uses the system definition of a cpu core which may refer to
-    a physical cpu core or to a virtual cpu core, aka. hardware thread.
-  - `gpu_cores_per_process`: the number of gpu cores allocated to each launched
+    a physical cpu core or to a virtual cpu core, also known as a hardware thread.
+  - ``gpu_cores_per_process``: the number of gpu cores allocated to each launched
     process.  The system definition of an gpu core is used, but usually refers
     to a full physical GPU.
-  - `exclusive_node_use`: When this boolean flag is set to `True`, then PSI/J
+  - ``exclusive_node_use``: When this boolean flag is set to ``True``, then PSI/J
     will ensure that no other jobs, neither of the same user nor of other users
     of the same system, will run on any of the compute nodes on which processes
     for this job are launched.
@@ -258,7 +261,7 @@ launched on a single cpu core.
 
 The user should also take care not to define contradictory statements.  For
 example, the following specification cannot be enacted by PSI/J as the specified
-node count contradicts the value of `process_count / processes_per_node`:
+node count contradicts the value of ``process_count / processes_per_node``:
 
 .. code-block:: python
 
@@ -268,6 +271,7 @@ node count contradicts the value of `process_count / processes_per_node`:
     spec.executable = '/bin/stress'
     spec.resource_spec = ResourceSpec(node_count=2, processes_per_node=2,
             process_count=2)
+    # the line above should raise an 'psij.InvalidJobException' exception
 
 
 Processes versus ranks
@@ -295,7 +299,7 @@ Scheduling Information
 To specify resource-manager-specific information, like queues/partitions,
 runtime, and so on, create a :class:`JobAttributes
 <psij.job_attributes.JobAttributes>` and set it with ``JobSpec(...,
-attributes=my_job_attributes)``::
+attributes=my_job_attributes)``:
 
 .. rst-class:: executor-type-selector selector-mode-tabs
 
@@ -414,30 +418,3 @@ Slurm // Local // LSF // PBS // Cobalt
 
 Status callbacks can also be set on individual jobs with
 :meth:`set_job_status_callback <psij.job.Job.set_job_status_callback>`.
-
-
-Running Psi/J at your site
---------------------------
-
-TODO: Pages should contain:
-
-- A simple example ported to multiple sites showing how to configure PSI/J for
-  each site with required configuration / attributes (with site-switcher?)
-  (Each example should be in the test suite)
-- Common errors you might encounter
-- ‘If your site isn’t listed, please contact us to include it’
-
-
-Running at LLNL LC
-^^^^^^^^^^^^^^^^^^
-
-Running at OLCF
-^^^^^^^^^^^^^^^
-
-Running at NERSC
-^^^^^^^^^^^^^^^^
-
-Running at ALCF
-^^^^^^^^^^^^^^^
-
-
