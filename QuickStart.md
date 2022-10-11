@@ -21,9 +21,9 @@ Install psi-j from the github repository:
 
 1. Clone repository into your working directory:
 
-    `git clone https://github.com/ExaWorks/psi-j-python.git`
+    `git clone https://github.com/ExaWorks/psij-python.git`
 
-2. `cd psi-j-python`
+2. `cd psij-python`
 3. `pip install .`
 
 
