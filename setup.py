@@ -9,16 +9,16 @@ if __name__ == '__main__':
         install_requires = f.readlines()
 
     setup(
-        name='psi-j-python',
+        name='psij-python',
         version=VERSION,
 
-        description='''This is an implementation of the J/PSI (Portable Submission Interface for Jobs)
+        description='''This is an implementation of the PSI/J (Portable Submission Interface for Jobs)
         specification.''',
 
         author='The ExaWorks Team',
         author_email='hategan@mcs.anl.gov',
 
-        url='https://github.com/exaworks/psi-j-python',
+        url='https://github.com/exaworks/psij-python',
 
         classifiers=[
             'Programming Language :: Python :: 3',

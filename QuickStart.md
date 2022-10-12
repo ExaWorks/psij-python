@@ -3,27 +3,27 @@
 This document will guide you through the install procedure and your first hello world example.
 
 - [Requirements](#requirements)
-- [Install psi-j](#install-psi-j)
+- [Install psij](#install-psij)
 - [Hello World example](#hello-world)
 
 ## Requirements
 - python3.7+
 
-## Install psi-j
+## Install psij
 
-If you have conda installed you might want to start from a fresh environment. This part is not installing psi-j but setting up a new environment with the specified python version:
+If you have conda installed you might want to start from a fresh environment. This part is not installing psij but setting up a new environment with the specified python version:
 
-1. `conda create -n psi-j python=3.7`
-2. `conda activate psi-j`
+1. `conda create -n psij python=3.7`
+2. `conda activate psij`
 
 
-Install psi-j from the github repository:
+Install psij from the github repository:
 
 1. Clone repository into your working directory:
 
-    `git clone https://github.com/ExaWorks/psi-j-python.git`
+    `git clone https://github.com/ExaWorks/psij-python.git`
 
-2. `cd psi-j-python`
+2. `cd psij-python`
 3. `pip install .`
 
 
@@ -85,4 +85,4 @@ for i in range(N):
 2. In this example the number of jobs is 1. Set *N* to the number of jobs you want to run and save file.
 
 3. `python my-workflow.py`
- 
+

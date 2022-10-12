@@ -175,5 +175,5 @@ defined interface. This interface consists of:
 Writing a custom script based launcher can be as easy as subclassing
 :class:`~psij.launchers.script_based_launcher.ScriptBasedLauncher` and passing
 a launcher script path to the base class constructor. For example, see the
-`MPI launcher class <https://github.com/ExaWorks/psi-j-python/blob/main/src/psij/launchers/mpirun.py>` and the
-`MPI launcher script <https://github.com/ExaWorks/psi-j-python/blob/main/src/psij/launchers/scripts/mpi_launch.sh>`.
+`MPI launcher class <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/mpirun.py>` and the
+`MPI launcher script <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/scripts/mpi_launch.sh>`.

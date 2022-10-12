@@ -29,7 +29,7 @@
     <v-app id="psij-app">
         <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
             <v-tabs v-model="maintabs">
-                <v-tab href="#index" key="index"><div class="psi-j-font logo">PSI/J</div></v-tab>
+                <v-tab href="#index" key="index"><div class="psij-font logo">PSI/J</div></v-tab>
                 <v-tab href="#install" key="install">Install</v-tab>
                 <v-tab href="#docs" key="docs">Documentation</v-tab>
                 <v-tab href="#resources" key="resources">Resources</v-tab>
@@ -86,9 +86,9 @@
 
                                     <v-card-text>
                                         Use a unified API to enable your HPC application to run virtually anywhere.
-                                        <span class="psi-j-font">PSI/J</span> automatically translates abstract job
+                                        <span class="psij-font">PSI/J</span> automatically translates abstract job
                                         specifications into concrete scripts and commands to send to the scheduler.
-                                        <span class="psi-j-font">PSI/J</span> is tested on a wide variety of clusters.
+                                        <span class="psij-font">PSI/J</span> is tested on a wide variety of clusters.
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -103,7 +103,7 @@
                             <v-col justify="center">
                                 <v-card align="center">
                                     <div class="icon-logo"><i class="fas fa-terminal" style="color: #DD3D5A"></i></div>
-                                    <h3><span class="psi-j-font">PSI/J</span> runs entirely in user space</h3>
+                                    <h3><span class="psij-font">PSI/J</span> runs entirely in user space</h3>
 
                                     <v-card-text>
                                         There is no need to wait for infrequent deployment cycles. The HPC world
@@ -121,7 +121,7 @@
                                     <v-card-text>
                                         Let's be realistic. It is virtually impossible for a single entity to
                                         provide stable and tested adapters to all clusters and schedulers. That is
-                                        why <span class="psi-j-font">PSI/J</span> enables and encourages community
+                                        why <span class="psij-font">PSI/J</span> enables and encourages community
                                         contributions to scheduler adapters, testbeds, and specific cluster
                                         knowledge.
                                     </v-card-text>
@@ -131,12 +131,12 @@
                             <v-col justify="center">
                                 <v-card align="center">
                                     <div class="icon-logo"><i class="fas fa-save" style="color: #FDA214"></i></div>
-                                    <h3><span class="psi-j-font">PSI/J</span> has a rich HPC legacy</h3>
+                                    <h3><span class="psij-font">PSI/J</span> has a rich HPC legacy</h3>
 
                                     <v-card-text>
-                                        The design of <span class="psi-j-font">PSI/J</span> is based on a number of
+                                        The design of <span class="psij-font">PSI/J</span> is based on a number of
                                         libraries used by state of the art HPC workflow applications that the
-                                        <span class="psi-j-font">PSI/J</span> team has worked on. Its architectural
+                                        <span class="psij-font">PSI/J</span> team has worked on. Its architectural
                                         foundations have been tested at extreme scales and in diverse environments.
                                     </v-card-text>
                                 </v-card>
@@ -153,11 +153,11 @@
                 <v-row class="page-start">
                     <v-col align="center">
                         <v-card align="left" class="mb-6 vbox">
-                            <h2><i class="fab fa-python"></i> Installing <span class="psi-j-font">PSI/J</span> in Python
+                            <h2><i class="fab fa-python"></i> Installing <span class="psij-font">PSI/J</span> in Python
                             </h2>
 
                             <div style="margin-top: 1em">
-                                The psi-j-python library has the following requirements:
+                                The psij-python library has the following requirements:
                                 <ul>
                                     <li>Python 3.7 or later
                                     <li>Ubuntu 16.04 or later (or an equivalent Linux distribution)
@@ -166,7 +166,7 @@
                                 <p>
                                     To install from the command line using <code>pip</code>:
                                 <pre><code class="language-bash">
-$ pip install psi-j-python
+$ pip install psij-python
                     </code></pre>
                                 </p>
                             </div>
@@ -174,14 +174,14 @@ $ pip install psi-j-python
 
                         <v-card align="left" class="mb-6 vbox">
                             <h2><i class="fas fa-code"></i> Installing the development version of <span
-                                    class="psi-j-font">PSI/J</span> in Python</h2>
+                                    class="psij-font">PSI/J</span> in Python</h2>
 
                             <div>
                                 <p>
                                     Using the command line:
                                 <pre><code class="language-bash">
-$ git clone https://github.com/ExaWorks/psi-j-python.git
-$ cd psi-j-python
+$ git clone https://github.com/ExaWorks/psij-python.git
+$ cd psij-python
 $ pip install -r requirements.txt
 $ python setup.py install
                   </code></pre>
@@ -212,7 +212,7 @@ $ python setup.py install
                                 <p>
                                     The <a href="https://testing.exaworks.org">site status dashboard</a> shows
                                     current and past test results for the Python binding of
-                                    <span class="psi-j-font">PSI/J</span> on all sites on which test results
+                                    <span class="psij-font">PSI/J</span> on all sites on which test results
                                     are reported.
                                 </p>
                             </div>
@@ -225,7 +225,7 @@ $ python setup.py install
                                     We use <a
                                         href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ">Slack</a>
                                     for various conversations about
-                                    both the <span class="psi-j-font">PSI/J</span> specification and the Python
+                                    both the <span class="psij-font">PSI/J</span> specification and the Python
                                     binding.
                                 </p>
                             </div>
@@ -241,7 +241,7 @@ $ python setup.py install
                 <v-row class="page-start">
                     <v-col align="center">
                         <v-card align="left" class="mb-6 vbox">
-                            <h2>The motivation behind <span class="psi-j-font">PSI/J</span></h2>
+                            <h2>The motivation behind <span class="psij-font">PSI/J</span></h2>
 
                             <p>
                                 The <a href="exaworks.org">ExaWorks</a> project is a community-led project
@@ -271,22 +271,22 @@ $ python setup.py install
                                 team has access to will encounter problems on other HPC resources is fairly
                                 high. As mentioned above, a first step in addressing this problem is by
                                 pooling the teams' respective resources for testing purposes. However,
-                                <span class="psi-j-font">PSI/J</span> takes it a step further by exposing an
-                                infrastructure that allows any user <span class="psi-j-font">PSI/J</span> user
-                                to easily contribute test results to the <span class="psi-j-font">PSI/J</span>,
+                                <span class="psij-font">PSI/J</span> takes it a step further by exposing an
+                                infrastructure that allows any user <span class="psij-font">PSI/J</span> user
+                                to easily contribute test results to the <span class="psij-font">PSI/J</span>,
                                 and do so automatically. This is a mutually beneficial relationship: the
-                                <span class="psi-j-font">PSI/J</span> community at large gains a certain level
-                                of assurance that <span class="psi-j-font">PSI/J</span> functions correctly on
+                                <span class="psij-font">PSI/J</span> community at large gains a certain level
+                                of assurance that <span class="psij-font">PSI/J</span> functions correctly on
                                 a wide range of resources, while users contributing tests have a mechanism to
-                                ensure that the <span class="psi-j-font">PSI/J</span> team is aware of
+                                ensure that the <span class="psij-font">PSI/J</span> team is aware of
                                 potential problems specific to their resources and can address them, thus
-                                ensuring that <span class="psi-j-font">PSI/J</span> continues to function
+                                ensuring that <span class="psij-font">PSI/J</span> continues to function
                                 correctly on specific resources.
                             </p>
                         </v-card>
 
                         <v-card align="left" class="mb-6 vbox">
-                            <h2>Precursors to <span class="psi-j-font">PSI/J</span></h2>
+                            <h2>Precursors to <span class="psij-font">PSI/J</span></h2>
                             <br />
                             <h3>SAGA</h3>
                             <p>
@@ -300,13 +300,13 @@ $ python setup.py install
                                 submissions and file transfers across resources. RADICAL-SAGA is used by
                                 <a href="https://github.com/radical-cybertools/radical.pilot">RADICAL-Pilot</a>
                                 to acquire resources and staging data to and from HPC platforms.
-                                <span class="psi-j-font">PSI/J</span> will replace RADICAL-SAGA, offering
+                                <span class="psij-font">PSI/J</span> will replace RADICAL-SAGA, offering
                                 streamlined capabilities and a modern implementation.
                             </p>
                             <br />
                             <h3>Java CoG Kit</h3>
                             <p>
-                                The <span class="psi-j-font">PSI/J</span> API is in no small part inspired by
+                                The <span class="psij-font">PSI/J</span> API is in no small part inspired by
                                 the Java CoG Kit
                                 <a href="https://ieeexplore.ieee.org/document/1271452">Abstraction API</a>.
 
@@ -351,13 +351,13 @@ $ python setup.py install
                             style="vertical-align: middle">
                     </v-col>
                     <v-col class="text-start">
-                        <span class="psi-j-font">PSI/J</span> is funded by the U.S. Department of Energy
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
                     </v-col>
                     <v-col class="text-end">
                         <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
                     </v-col>
                     <v-col class="text-start">
-                        <span class="psi-j-font">PSI/J</span> is part of the Exascale Computing Project
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
                     </v-col>
                 </v-row>
             </v-card>

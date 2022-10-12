@@ -21,7 +21,7 @@ Setting up an automated testing job
 
 This is the preferred way of running the tests since it allows the PSI/J
 team to keep a constant eye on the state of the library on various
-resources. To set up the Cron job (or an alternative method), you can either 
+resources. To set up the Cron job (or an alternative method), you can either
 use the provided setup script:
 
 ```bash
@@ -67,7 +67,7 @@ Testing with pytest
 ===================
 
 This is the most direct way to run the tests and it must be done from the
-main psi-j directory. Use the following steps:
+main psij directory. Use the following steps:
 
 1. Install dependencies:
 ```bash
