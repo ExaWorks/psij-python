@@ -175,7 +175,10 @@ def patch_file(file_name: str) -> None:
                         # when invoking a subprocess, bash stores the location where
                         # it's supposed to continue parsing from, so it's a good idea
                         # to to not move things around
-                        line = line.replace(OLD_REPO, NEW_REPO)[:-1] + ' \n'
+                        if line[-1] == '\n':
+                            # It could be that this is the last line and missing a new line
+                            line = line[:-1]
+                        line = line.replace(OLD_REPO, NEW_REPO) + ' \n'
                     outf.write(line)
         os.chmod(file_name + '._new_', os.stat(file_name).st_mode)
         os.rename(file_name + '._new_', file_name)
