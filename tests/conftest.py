@@ -567,7 +567,6 @@ def _upload_report(config, data):
 
     url = config.getoption('server_url')
     minimal = _get_bool_option(config, 'minimal_uploads')
-    print('Minimal: %s' % minimal)
     if minimal:
         data = _sanitize(data)
     resp = requests.post('%s/result' % url, json={'id': env['config']['id'],
