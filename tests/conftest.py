@@ -270,6 +270,10 @@ def _get_id(config):
         raise ValueError('Invalid value for --id argument: "%s"' % id)
 
 
+def _get_bool_option(config, name, default='false'):
+    return config.getoption(name, default=default).lower() == 'true'
+
+
 def _run(*args) -> str:
     process = subprocess.run(args, check=False, text=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -475,7 +479,7 @@ def _mk_test_fname(data):
 
 
 def _save_or_upload(config, data):
-    minimal = config.getoption('minimal_uploads')
+    minimal = _get_bool_option(config, 'minimal_uploads')
     save = config.getoption('save_results')
     upload = config.getoption('upload_results')
     if upload and minimal:
@@ -562,7 +566,8 @@ def _upload_report(config, data):
     env = config.option.environment
 
     url = config.getoption('server_url')
-    minimal = config.getoption('minimal_uploads')
+    minimal = _get_bool_option(config, 'minimal_uploads')
+    print('Minimal: %s' % minimal)
     if minimal:
         data = _sanitize(data)
     resp = requests.post('%s/result' % url, json={'id': env['config']['id'],
