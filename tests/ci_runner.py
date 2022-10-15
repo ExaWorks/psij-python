@@ -59,9 +59,12 @@ def run(*args: str, cwd: Optional[str] = None) -> str:
     return p.stdout
 
 
-def get_conf(conf: Dict[str, str], name: str) -> str:
+def get_conf(conf: Dict[str, str], name: str, default: Optional[str] = None) -> str:
     if name not in conf:
-        raise KeyError('Missing configuration option "%s"' % name)
+        if default is not None:
+            return default
+        else:
+            raise KeyError('Missing configuration option "%s"' % name)
     return conf[name]
 
 
@@ -118,7 +121,7 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
         args.append('--branch-name-override')
         args.append(fake_branch_name)
     for opt in ['maintainer_email', 'executors', 'server_url', 'key', 'max_age',
-                'custom_attributes', 'minimal_uploads']:
+                'custom_attributes']:
         try:
             val = get_conf(conf, opt)
             args.append('--' + opt.replace('_', '-'))
@@ -128,6 +131,11 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
             # old test cycles from working, if their configs don't contain
             # the new options
             pass
+
+    val = get_conf(conf, 'minimal_uploads', 'false')
+    if val == 'true':
+        args.append('--minimal-uploads')
+
     cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
     env['PYTHONPATH'] = str(Path('.').resolve() / '.packages') \
@@ -175,7 +183,7 @@ def patch_file(file_name: str) -> None:
                         # when invoking a subprocess, bash stores the location where
                         # it's supposed to continue parsing from, so it's a good idea
                         # to to not move things around
-                        line = line.replace(OLD_REPO, NEW_REPO)[:-1] + ' \n'
+                        line = line.rstrip('\n').replace(OLD_REPO, NEW_REPO) + ' \n'
                     outf.write(line)
         os.chmod(file_name + '._new_', os.stat(file_name).st_mode)
         os.rename(file_name + '._new_', file_name)

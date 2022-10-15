@@ -66,7 +66,7 @@ def pytest_addoption(parser):
                      help='Pretend that the current git branch is this value.')
     parser.addoption('--custom-attributes', action='store', default=None,
                      help='A set of custom attributes to pass to jobs.')
-    parser.addoption('--minimal-uploads', action='store', default=False,
+    parser.addoption('--minimal-uploads', action='store_true', default=False,
                      help='Enables minimal uploads mode, which restricts the information that '
                           'is uploaded to the test aggregation server. ')
 
@@ -268,10 +268,6 @@ def _get_id(config):
         return id[1:-1]
     else:
         raise ValueError('Invalid value for --id argument: "%s"' % id)
-
-
-def _get_bool_option(config, name, default='false'):
-    return config.getoption(name, default=default).lower() == 'true'
 
 
 def _run(*args) -> str:
@@ -479,7 +475,7 @@ def _mk_test_fname(data):
 
 
 def _save_or_upload(config, data):
-    minimal = _get_bool_option(config, 'minimal_uploads')
+    minimal = config.getoption('minimal_uploads')
     save = config.getoption('save_results')
     upload = config.getoption('upload_results')
     if upload and minimal:
@@ -566,7 +562,7 @@ def _upload_report(config, data):
     env = config.option.environment
 
     url = config.getoption('server_url')
-    minimal = _get_bool_option(config, 'minimal_uploads')
+    minimal = config.getoption('minimal_uploads')
     if minimal:
         data = _sanitize(data)
     resp = requests.post('%s/result' % url, json={'id': env['config']['id'],
