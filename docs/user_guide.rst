@@ -243,7 +243,7 @@ specification supports the following attributes:
     submitted job.
   - ``processes_per_node``: on the allocated nodes, execute that given number of
     processes.
-  - ``process_count``: the total number of processes (ranks) to be started
+  - ``process_count``: the total number of processes (MPI ranks) to be started
   - ``cpu_cores_per_process``: the number of cpu cores allocated to each launched
     process.  PSI/J uses the system definition of a cpu core which may refer to
     a physical cpu core or to a virtual cpu core, also known as a hardware thread.
