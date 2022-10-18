@@ -993,7 +993,14 @@
         parent.docsHashChange(window.location.pathname, window.location.hash)
     });
     $(window).on("load", function() {
-        parent.docsLoaded(window.location.pathname, window.location.hash)
+        if (window.parent.location == window.location) {
+            // not in an iframe; redirect
+            window.location.href = "/#" + window.location.pathname.substring(1);
+        }
+        else {
+            // in an iframe; not necessarily in the main page, but that is an unlikely scenario
+            parent.docsLoaded(window.location.pathname, window.location.hash);
+        }
     });
 
     /*==========================================================================

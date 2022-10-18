@@ -1,2 +1,7 @@
+# Things needed to run the tests
+
 -r requirements.txt
 -r requirements-connector-radical.txt
+
+pytest >= 6.2.0
+requests >= 2.25.1

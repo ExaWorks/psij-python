@@ -2,7 +2,7 @@ import logging
 import threading
 from abc import ABC, abstractmethod
 from datetime import timedelta, datetime
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union, Callable
 from uuid import uuid4
 
 import psij
@@ -49,11 +49,7 @@ class Job(object):
         # allow the native ID to be anything and do the string conversion in the getter; there's
         # no point in storing integers as strings.
         self._native_id = None  # type: Optional[object]
-        self.status_callback = None  # type: Optional[JobStatusCallback]
-        """Setting this attribute registers a :class:`~psij.JobStatusCallback` with this executor.
-        The callback will be invoked whenever a status change occurs for any of the jobs submitted
-        to this job executor, whether they were submitted with an individual job status callback or
-        not. To remove the callback, set it to `None`."""
+        self._cb = None  # type: Optional[JobStatusCallback]
         self._status_cv = threading.Condition()
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('New Job: {}'.format(self))
@@ -117,10 +113,37 @@ class Job(object):
             self._status = status
             self._status_cv.notify_all()
 
-        if self.status_callback:
-            self.status_callback.job_status_changed(self, status)
+        if self._cb:
+            try:
+                self._cb.job_status_changed(self, status)
+            except Exception as ex:
+                logger.warning('Job status callback for %s threw an exception: %s', self.id, ex)
+
         if self.executor:
             self.executor._notify_callback(self, status)
+
+    def set_job_status_callback(self,
+                                cb: Union['JobStatusCallback',
+                                          Callable[['Job', 'psij.JobStatus'], None]]) -> None:
+        """
+        Registers a status callback with this job.
+
+        The callback can either be a subclass of :class:`~psij.JobStatusCallback` or a function
+        accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus` and
+        returning nothing.
+
+        The callback will be invoked whenever a status change occurs for this job, independent of
+        any callback registered on the job's :class:`~psij.JobExecutor`.  To remove the callback,
+        set it to `None`.
+
+        :param cb: An instance of :class:`~psij.JobStatusCallback` or a callable with two
+            parameters, job of type :class:`~psij.Job` and job_status of type
+            :class:`~psij.JobStatus` returning nothing.
+        """
+        if isinstance(cb, JobStatusCallback):
+            self._cb = cb
+        else:
+            self._cb = FunctionJobStatusCallback(cb)
 
     def cancel(self) -> None:
         """
@@ -216,3 +239,15 @@ class JobStatusCallback(ABC):
         :param job_status: The new status of the job.
         """
         pass
+
+
+class FunctionJobStatusCallback(JobStatusCallback):
+    """A JobStatusCallback that wraps a function."""
+
+    def __init__(self, fn: Callable[[Job, 'psij.JobStatus'], None]):
+        """Initializes a `_FunctionJobStatusCallback`."""
+        self.fn = fn
+
+    def job_status_changed(self, job: Job, job_status: 'psij.JobStatus') -> None:
+        """See :func:`~psij.JobStatusCallback.job_status_changed`."""
+        self.fn(job, job_status)

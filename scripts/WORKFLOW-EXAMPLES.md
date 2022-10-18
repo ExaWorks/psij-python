@@ -163,7 +163,7 @@ for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingul
 
 ## Executing an MPI job
 
-In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psi-j-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpirun"`. The complete example script can be found [here](./).
+In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psij-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpirun"`. The complete example script can be found [here](./).
 
 1. Load psij module and instanciate job executer, e.g. local or slurm
 

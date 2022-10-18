@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 from psij.job_spec import JobSpec
 from psij.job_attributes import JobAttributes
-import sys
 import json
 
 
@@ -31,20 +30,15 @@ class Export(object):
         """Returns a dictionary representation of an object."""
         new_dict = {}
 
-        if isinstance(obj, JobSpec):
-            new_dict = obj.to_dict
-        else:
-            sys.exit("Can't create dict, type " + type(obj).__name__ + " not supported")
+        if not isinstance(obj, JobSpec):
+            raise TypeError("Can't create dict, type " + type(obj).__name__ + " not supported")
+
+        new_dict = obj.to_dict
 
         return new_dict
 
-    def export(self, obj: Optional[object] = None, dest: Optional[str] = None) -> bool:
+    def export(self, obj: object, dest: str) -> bool:
         """Serializes an object to a file."""
-        if not dest:
-            sys.exit("Cannot export, missing destinstion file")
-        if not obj:
-            sys.exit("Cannot export, missing object")
-
         source_type = type(obj).__name__
         d = self.to_dict(obj)
 
@@ -96,18 +90,14 @@ class Import():
 
         return spec
 
-    def from_dict(self, hash: Dict[str, Any], target_type: Optional[str] = None) -> object:
+    def from_dict(self, hash: Dict[str, Any], target_type: str) -> object:
         """Reads an object from a dict."""
-        if target_type == "JobSpec":
-            return self._dict2spec(hash)
-        else:
-            sys.exit("Can't create dict,  type " + str(target_type) + " not supported")
+        if target_type != "JobSpec":
+            raise TypeError("Can't create object, type " + target_type + " not supported")
+        return self._dict2spec(hash)
 
-    def load(self, src: Optional[str] = None) -> object:
+    def load(self, src: str) -> object:
         """Loads an object from a file."""
-        if not src:
-            sys.exit("Cannot import, missing source file")
-
         envelope = None
         with open(src, 'r', encoding='utf-8') as f:
             envelope = json.load(f)

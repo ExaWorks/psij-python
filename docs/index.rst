@@ -2,12 +2,33 @@
 Portable Submission Interface for Jobs (PSI/J) - Python Library
 ===============================================================
 
-This is a Python library that contains the core implementation of  `the
-PSI/J specification
-<https://exaworks.org/job-api-spec/specification>`_ as well as a
-number of executors and launchers, which are the components that allow
-PSI/J to communicate with specific job schedulers. Currently supported
-schedulers include Slurm, LSF, Flux, PBS Pro, and Cobalt.
+
+.. image:: psij.png
+   :width: 70%
+   :align: center
+
+PSI/J provides a modern unified API across different HPC schedulers, enabling
+your HPC application to run virtually anywhere.  PSI/J automatically translates
+abstract job specifications into concrete scripts and commands to send to the
+scheduler. PSI/J was built by a team with decades of experience building
+workflow systems for large scale computing. PSI/J has a number of advantages:
+
+#. **Runs entirely in user space:** no need to wait for infrequent deployment cycles, it's easy to leverage built-in or commmunity-provided plug-ins.
+
+#. **An asynchronous modern API for job management:** a clean Python API for requesting and managing jobs.
+
+#. **Supports the common batch schedulers:** we test PSI/J across multiple DOE supercomputer centers. It's easy to test PSI/J on your systems and share the results with the community.
+
+#. **Built by the HPC community, for the HPC community:** PSI/J is based on a number of libraries used by state-of-the-art HPC workflow applications.
+
+#. **PSI/J is an open source project:** we are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
+
+Most HPC centers now feature multiple schedulers, rolling policy changes and
+deployments of software stacks, and subtle differences even across systems with
+similar architectures.  **PSI/J is designed to tame this complexity** and provide
+computational scientists and workflow developers a common API for interacting
+with HPC centers.
+
 
 
 .. toctree::
@@ -15,6 +36,4 @@ schedulers include Slurm, LSF, Flux, PBS Pro, and Cobalt.
 
     getting_started
     api
-    contributing
-    programming
-    tutorial_add_executor
+    development/index.rst

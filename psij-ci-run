@@ -16,7 +16,6 @@ failifempty() {
     fi
 }
 
-source psij-ci-load
 if [ -f psij-ci-env ]; then
     source psij-ci-env
 fi
@@ -53,8 +52,8 @@ else
 fi
 
 # Ensure latest test runner is there
-git fetch https://github.com/ExaWorks/psi-j-python.git
-git checkout origin/main -- tests/ci_runner.py
+git fetch https://github.com/ExaWorks/psij-python.git
+git checkout FETCH_HEAD -- tests/ci_runner.py
 
 
 if [ "$REPEAT" == "1" ]; then

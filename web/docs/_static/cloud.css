@@ -1455,3 +1455,104 @@ table.indextable td > dl > dd > dl {
         content: "[not printed]" !important;
     }
 }
+
+
+/* Selectors for executor type/sites etc. */
+
+div.highlight pre {
+	background-color: #e8e8e8;
+	padding: 2pt;
+	padding-top: 8pt;
+	padding-bottom: 8pt;
+	margin: 2pt;
+	padding-left: 16pt;
+	border-radius: 4pt;
+	border-color: transparent;
+}
+
+div.body p.selector-container {
+    margin: 0 2pt 0 2pt;
+    margin-top: 1em;
+    position: relative;
+    padding-left: 8pt;
+    padding-top: 6pt;
+    top: 1.5em;
+    z-index: 1;
+    border-radius: 4pt;
+}
+
+div.body p.selector-container-dropdown {
+    background-color: #e8e8e8;
+    padding-bottom: 0.5em;
+    border-bottom: thin solid #c0c0c0;
+}
+
+div.body p.selector-container-tabs {
+    padding-bottom: 0;
+}
+
+div.highlight pre {
+    z-index: 2;
+}
+
+.psij-selector-value {
+    display: inline-block;
+    border-style: solid;
+    border-width: 1pt;
+    border-radius: 3pt;
+    border-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+select.psij-selector {
+    border: thin solid;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3pt;
+    padding-left: 4pt;
+    padding-right: 16pt;
+    appearance: none;
+    background: url(select-arrow.png) no-repeat rgba(255, 255, 255, 0.7);
+    background-position: right 4pt center;
+    background-size: 8pt;
+}
+
+select.psij-selector:focus {
+    outline: none;
+    border-color: var(--color-fg-lines);
+    box-shadow: 0 0 1.5pt var(--color-fg-lines);
+}
+
+.selector-radio {
+	width: 0;
+    height: 0;
+}
+
+.selector-label {
+	cursor: pointer;
+
+	font-size: 94%;
+
+	z-index: 1;
+	display: inline-block;
+	position: relative;
+	min-width: 80pt;
+
+	padding: 3pt;
+	padding-left: 8pt;
+	top: 2pt;
+	height: 22pt;
+
+	background-color: #d8d8d8;
+	border: thin solid #d8d8d8;
+	border-radius: 3pt 3pt 0 0;
+	margin-right: 1pt;
+}
+
+.selector-radio:checked + .selector-label {
+	z-index: 3;
+	top: 0pt;
+	height: 24pt;
+	background-color: #e8e8e8;
+	border: thin solid #e8e8e8;
+	border-bottom: thin solid #e8e8e8;
+}

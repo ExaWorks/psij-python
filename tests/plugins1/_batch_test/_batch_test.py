@@ -28,6 +28,8 @@ class _TestExecutorConfig(BatchSchedulerExecutorConfig):
         super().__init__(launcher_log_file, work_directory, queue_polling_interval,
                          initial_queue_polling_delay, queue_polling_error_threshold, keep_files)
 
+        assert isinstance(self.work_directory, Path)
+
 
 class _TestJobExecutor(BatchSchedulerExecutor):
     _STATE_MAP = {

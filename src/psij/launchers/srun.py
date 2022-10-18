@@ -7,7 +7,7 @@ from psij.launchers import MultipleLauncher
 
 
 class SrunLauncher(MultipleLauncher):
-    """Launches a job using Slurm's `srun`.
+    """Launches a job using Slurm's ``srun``.
 
     See the
     `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_.

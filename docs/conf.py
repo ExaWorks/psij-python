@@ -32,6 +32,11 @@ nitpick_ignore = [
 
 html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
 
+# These are needed for the dhtml trickery
+html_static_path = ["_static"]
+html_js_files = ["extras.js"]
+html_css_files = ["extras.css"]
+
 # Setup Sphinx extensions (and associated variables)
 extensions = [
     'sphinx.ext.napoleon',

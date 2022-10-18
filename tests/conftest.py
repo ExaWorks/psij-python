@@ -66,6 +66,9 @@ def pytest_addoption(parser):
                      help='Pretend that the current git branch is this value.')
     parser.addoption('--custom-attributes', action='store', default=None,
                      help='A set of custom attributes to pass to jobs.')
+    parser.addoption('--minimal-uploads', action='store', default=False,
+                     help='Enables minimal uploads mode, which restricts the information that '
+                          'is uploaded to the test aggregation server. ')
 
 
 def _get_executors(config: Dict[str, str]) -> List[str]:
@@ -472,8 +475,11 @@ def _mk_test_fname(data):
 
 
 def _save_or_upload(config, data):
+    minimal = config.getoption('minimal_uploads')
     save = config.getoption('save_results')
     upload = config.getoption('upload_results')
+    if upload and minimal:
+        save = True
     if save:
         _save_report(config, data)
     if upload:
@@ -488,10 +494,77 @@ def _save_report(config, data):
         json.dump(data, f, indent=4)
 
 
+_SAFE_KEYS = ['module', 'cls', 'function', 'test_name', 'test_start_time', 'test_end_time',
+              'run_id', 'branch', 'results.setup.passed', 'results.setup.status',
+              'results.call.passed', 'results.call.status', 'results.teardown.passed',
+              'results.teardown.status', 'extras.start_time', 'extras.run_id', 'extras.git_branch',
+              'extras.git_last_commit', 'extras.git_ahead_remote_commit_count',
+              'extras.git_behind_remote_commit_count', 'extras.git_has_local_changes',
+              'extras.config.id', 'extras.config.executors', 'extras.config.maintainer_email']
+_SAFE_KEYS_PROCESSED = {}
+
+
+def _add_key(d: Dict[str, object], parts: List[str]) -> None:
+    key = parts[0]
+    if len(parts) == 1:
+        d[key] = True
+    else:
+        if key not in d:
+            d[key] = {}
+        if isinstance(d[key], dict):
+            _add_key(d[key], parts[1:])
+        else:
+            raise ValueError('Unexpected value in keys dict: %s' % d[key])
+
+
+def _process_safe_keys() -> None:
+    for key in _SAFE_KEYS:
+        parts = key.split('.')
+        _add_key(_SAFE_KEYS_PROCESSED, parts)
+
+
+def _do_sanitize(data: Dict[str, object], result: Dict[str, object],
+                 safe: Dict[str, object]) -> None:
+    for k, v in data.items():
+        if isinstance(v, bool):
+            # booleans are allowed automatically
+            result[k] = v
+            continue
+        if k not in safe:
+            continue
+        s = safe[k]
+        if s is True:
+            if isinstance(v, dict):
+                # value expected, but got dict instead
+                raise ValueError('Unexpected dict in data: %s' % v)
+            result[k] = v
+        else:
+            # only dicts and True are in safe, so this must be a dict (or None)
+            if isinstance(v, dict):
+                rd = {}
+                result[k] = rd
+                _do_sanitize(v, rd, s)
+            elif v is None:
+                result[k] = None
+            else:
+                raise ValueError('Unexpected value (%s) in data for key %s' % (v, k))
+
+
+def _sanitize(data: Dict[str, object]) -> Dict[str, object]:
+    if len(_SAFE_KEYS_PROCESSED) == 0:
+        _process_safe_keys()
+    result = {}
+    _do_sanitize(data, result, _SAFE_KEYS_PROCESSED)
+    return result
+
+
 def _upload_report(config, data):
     env = config.option.environment
 
     url = config.getoption('server_url')
+    minimal = config.getoption('minimal_uploads')
+    if minimal:
+        data = _sanitize(data)
     resp = requests.post('%s/result' % url, json={'id': env['config']['id'],
                                                   'key': config.option.key, 'data': data})
     resp.raise_for_status()

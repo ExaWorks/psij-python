@@ -1,6 +1,35 @@
 Getting Started
 ===============
 
+Installation
+------------
+
+PSI/J can be installed via `pip <https://pypi.org/project/pip/>`_
+or from source.
+
+Requirements
+^^^^^^^^^^^^
+
+The only requirements are Python 3.7+ and pip, which almost always
+comes with Python.
+
+Install from pip
+^^^^^^^^^^^^^^^^
+
+
+.. code-block:: console
+
+    pip install psij
+
+Install from source
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    git clone https://github.com/ExaWorks/psij-python.git
+    cd psij-python
+    pip install .
+
 
 Who PSI/J is for
 ----------------
@@ -24,9 +53,9 @@ other than complexity.
 If you write application code that is meant to run on various HPC clusters, but
 which never make calls to the underlying resource manager (e.g. by calling into
 Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), then
-PSI/J will not help you. This is likely your situation if you work on a MPI-based
-science simulation, since we have observed that it is often the users' responsibility
-to actually launch the simulation through the resource manager.
+PSI/J will not help you. This is likely your situation if you are a developer working
+on a MPI-based science simulation, since we have observed that it is often the users'
+responsibility to actually launch the simulation through the resource manager.
 However, PSI/J is more likely to help with various tools
 associated with your simulation--for instance, your test suite.
 
@@ -69,33 +98,26 @@ The most basic way to use PSI/J looks something like the following:
    :class:`JobExecutor <psij.job_executor.JobExecutor>`.
 
 That's all there is to it! Assuming there are no errors, you should
-see a new entry in your resource manager's queue. On a Slurm cluster,
-this code might look like:
+see a new entry in your resource manager's queue. Choose from the tabs below
+for a very simple example showing how to submit a job for that resource manager.
+
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
 
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance('slurm')
-    job = Job(JobSpec(executable='/bin/date'))
+    ex = JobExecutor.get_instance("<&executor-type>")
+    job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
-The ``executable='/bin/date')`` part tells PSI/J that we want the job to run
+The ``executable="/bin/date")`` part tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
-(which should be almost as soon as the job starts) the resource manager
-will mark the job as complete, triggering PSI/J to do the same.
-
-And by way of comparison, here is the same functionality on an LSF cluster:
-
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance('lsf')
-    job = Job(JobSpec(executable='/bin/date'))
-    ex.submit(job)
-
-Note that the only difference is the argument to the ``get_instance`` method.
+(which should be almost as soon as the job starts, since ``date`` does very little work)
+the resource manager will mark the job as complete, triggering PSI/J to do the same.
 
 Adding Complexity
 -----------------
@@ -108,13 +130,17 @@ whether it succeeded or failed.
 
 Submitting multiple jobs is as simple as adding a loop:
 
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
 .. code-block:: python
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance('flux')
-    for _ in range(100):
-        job = Job(JobSpec(executable='/bin/date'))
+    ex = JobExecutor.get_instance("<&executor-type>")
+    for _ in range(10):
+        job = Job(JobSpec(executable="/bin/date"))
         ex.submit(job)
 
 Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
@@ -134,9 +160,9 @@ to call the :meth:`wait <psij.job.Job.wait>` method with no arguments:
 
 .. code-block:: python
 
-    from psij import Job, JobExecutor, JobSpec
+    from psij import Job, JobSpec
 
-    job = Job(JobSpec(executable='/bin/date'))
+    job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
     job.wait()
 
@@ -154,6 +180,12 @@ are cancelled, fetch the status of the job after calling
     print(str(job.status))
 
 
+Canceling your job
+^^^^^^^^^^^^^^^^^^
+If supported by the underlying job scheduler, PSI/J jobs can be canceled by
+invoking the :meth:`cancel <psij.job.Job.cancel>` method.
+
+
 Status Callbacks
 ^^^^^^^^^^^^^^^^
 
@@ -166,12 +198,16 @@ fire whenever any job submitted to that executor changes status.
 
 To wait on multiple jobs at once:
 
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
 .. code-block:: python
 
     import time
     from psij import Job, JobExecutor, JobSpec
 
-    count = 100
+    count = 10
 
     def callback(job, status):
         global count
@@ -180,10 +216,10 @@ To wait on multiple jobs at once:
             print(f"Job {job} completed with status {status}")
             count -= 1
 
-    ex = JobExecutor.get_instance('flux')
+    ex = JobExecutor.get_instance("<&executor-type>")
     ex.set_job_status_callback(callback)
     for _ in range(count):
-        job = Job(JobSpec(executable='/bin/date'))
+        job = Job(JobSpec(executable="/bin/date"))
         ex.submit(job)
 
     while count > 0:
@@ -217,3 +253,45 @@ To specify resource-manager-specific information, like queues/partitions,
 runtime, and so on, create a
 :class:`JobAttributes <psij.job_attributes.JobAttributes>` and set it with
 ``JobSpec(..., attributes=my_job_attributes)``.
+
+Example of Adding Job Information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below we add resource and scheduling information to a job before submitting it.
+
+
+.. rst-class:: executor-type-selector selector-mode-tabs
+
+Local // Slurm // LSF // PBS // Cobalt
+
+.. code-block:: python
+
+    from psij import Job, JobExecutor, JobSpec, JobAttributes, ResourceSpecV1
+
+    executor = JobExecutor.get_instance("<&executor-type>")
+
+    job = Job(
+        JobSpec(
+            executable="/bin/date",
+            resources=ResourceSpecV1(node_count=1),
+            attributes=JobAttributes(
+                queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
+            ),
+        )
+    )
+
+    executor.submit(job)
+
+Where the `<QUEUE_NAME>` and `<ALLOCATION>` fields will depend on the
+system you are running on.
+
+
+Examples
+--------
+
+Up-to-date and actively tested examples can be found
+`here <https://github.com/ExaWorks/psij-python/blob/main/tests/test_doc_examples.py>`_.
+Tests of resource-manager-specific and site-specific values
+(such as accounts, queues/partitions, etc.) can be found in files
+in the same directory but tend to buried under
+layers of indirection in order to reduce code complexity.
