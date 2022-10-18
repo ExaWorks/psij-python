@@ -2,7 +2,7 @@
 """
 
 import threading
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from psij import (
     Job,
@@ -57,8 +57,8 @@ class ZMQServiceJobExecutor(JobExecutor):
             name = 'local'
         super().__init__(url=str(ru_url), config=config)
 
-        self._jobs = dict()
-        self._idmap = dict()
+        self._jobs: Dict[str, Job] = dict()
+        self._idmap: Dict[str, str] = dict()
         self._serialize = Export()
 
         # we can only update the idmap when the `submit` request returns, but
@@ -74,10 +74,10 @@ class ZMQServiceJobExecutor(JobExecutor):
         self._sub = ru.zmq.Subscriber(channel='state', url=sub_url,
                                       cb=self._state_cb, topic=self._cid)
 
-    def __del__(self):
+    def __del__(self) -> None:
         self._sub.stop()
 
-    def _state_cb(self, topic, msg):
+    def _state_cb(self, topic: str, msg: Dict[str, Any]) -> None:
         """Callback triggered on job state update messages
 
         Update the status of the psij.Job.
@@ -107,8 +107,8 @@ class ZMQServiceJobExecutor(JobExecutor):
         job.executor = self
         with self._lock:
             self._jobs[job.id] = job
-            job._native_id = self._client.request('submit', cid=self._cid,
-                                        spec=self._serialize.to_dict(job.spec))
+            job._native_id = str(self._client.request('submit', cid=self._cid,
+                                                      spec=self._serialize.to_dict(job.spec)))
             self._idmap[job._native_id] = job.id
 
     def cancel(self, job: Job) -> None:
@@ -124,7 +124,10 @@ class ZMQServiceJobExecutor(JobExecutor):
 
         :return: The list of known job ids.
         """
-        return self._client.request('list', cid=self._cid)
+        ret = list()
+        for val in self._client.request('list', cid=self._cid):
+            ret.append(str(val))
+        return ret
 
     def attach(self, job: Job, native_id: str) -> None:
         """

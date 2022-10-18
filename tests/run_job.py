@@ -4,12 +4,11 @@
 
 import sys
 
-from psij import Job, JobExecutor, JobSpec, JobStatusCallback
+from psij import Job, JobExecutor, JobSpec, JobStatus
 
 
-class StateCB(JobStatusCallback):
-    def job_status_changed(self, job, status):
-        print('Job {}: {}'.format(job.id, status))
+def job_status_changed(job: Job, status: JobStatus) -> None:
+    print('Job {}: {}'.format(job.id, status))
 
 
 if __name__ == '__main__':
@@ -24,7 +23,7 @@ if __name__ == '__main__':
 
     jobs = list()
     job = Job(JobSpec(executable='/bin/date'))
-    job.status_callback = StateCB()
+    job.set_job_status_callback(job_status_changed)
     ex = JobExecutor.get_instance(name=name, url=url)
     ex.submit(job)
     jobs.append(job)

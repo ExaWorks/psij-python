@@ -83,16 +83,12 @@ import psij
 import functools
 import radical.utils as ru
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 
-# ------------------------------------------------------------------------------
-#
 class Service(ru.zmq.Server):
 
-    # --------------------------------------------------------------------------
-    #
-    def __init__(self):
+    def __init__(self) -> None:
 
         ru.zmq.Server.__init__(self, url='tcp://*:12345')
 
@@ -101,7 +97,7 @@ class Service(ru.zmq.Server):
         self.register_request('cancel', self._request_cancel)
         self.register_request('list', self._request_list)
 
-        self._clients = dict()
+        self._clients: Dict[str, Dict[str, Any]] = dict()
 
         self._deserialize = psij.Import()
 
@@ -111,9 +107,7 @@ class Service(ru.zmq.Server):
         self._pubsub.start()
         self._pub = ru.zmq.Publisher('state', self._pubsub.addr_pub)
 
-    # --------------------------------------------------------------------------
-    #
-    def _status_callback(self, cid: str, job: psij.Job, status: psij.JobStatus):
+    def _status_callback(self, cid: str, job: psij.Job, status: psij.JobStatus) -> None:
 
         msg = {'jobid': job.id,
                'time': status.time,
@@ -124,9 +118,7 @@ class Service(ru.zmq.Server):
         self._log.debug('status update for %s: %s', cid, msg)
         self._pub.put(cid, msg)
 
-    # --------------------------------------------------------------------------
-    #
-    def _request_register(self, name: str, url: str = None) -> Tuple[str, str]:
+    def _request_register(self, name: str, url: Optional[str] = None) -> Tuple[str, str]:
         '''
         parameters:
             name:str : name of psij executor to use
@@ -154,8 +146,6 @@ class Service(ru.zmq.Server):
         # client is now known and initialized
         return cid, str(self._pubsub.addr_sub)
 
-    # --------------------------------------------------------------------------
-    #
     def _request_submit(self, cid: str, spec: Dict[str, Any]) -> str:
         '''
         parameters:
@@ -175,8 +165,6 @@ class Service(ru.zmq.Server):
 
         return job.id
 
-    # --------------------------------------------------------------------------
-    #
     def _request_cancel(self, cid: str, jobid: str) -> None:
         '''
         parameters:
@@ -195,8 +183,6 @@ class Service(ru.zmq.Server):
 
         jex.cancel(job)
 
-    # --------------------------------------------------------------------------
-    #
     def _request_list(self, cid: str) -> List[str]:
         '''
         parameters:
@@ -211,27 +197,19 @@ class Service(ru.zmq.Server):
 
         return list(self._clients[cid]['jobs'])
 
-    # --------------------------------------------------------------------------
-    #
-    def _request_stage_in(self, data, fname):
+    def _request_stage_in(self, data: str, fname: str) -> None:
 
         with open(fname, 'w') as fout:
             fout.write(data)
 
-    # --------------------------------------------------------------------------
-    #
-    def _request_stage_out(self, fname):
+    def _request_stage_out(self, fname: str) -> str:
 
         with open(fname) as fin:
             return fin.read()
 
 
-# ------------------------------------------------------------------------------
-#
 if __name__ == '__main__':
 
     s = Service()
     s.start()
     s.wait()
-
-# ------------------------------------------------------------------------------
