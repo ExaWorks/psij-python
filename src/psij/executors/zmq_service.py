@@ -1,5 +1,4 @@
-"""This module contains the ZMQService :class:`~psij.JobExecutor`.
-"""
+"""This module contains the ZMQService :class:`~psij.JobExecutor`."""
 
 import threading
 from typing import Optional, List, Dict, Any
@@ -75,10 +74,11 @@ class ZMQServiceJobExecutor(JobExecutor):
                                       cb=self._state_cb, topic=self._cid)
 
     def __del__(self) -> None:
+        """stop subscriber thread upon destruction"""
         self._sub.stop()
 
     def _state_cb(self, topic: str, msg: Dict[str, Any]) -> None:
-        """Callback triggered on job state update messages
+        """Callback triggered on job state update messages.
 
         Update the status of the psij.Job.
         """
@@ -131,7 +131,7 @@ class ZMQServiceJobExecutor(JobExecutor):
 
     def attach(self, job: Job, native_id: str) -> None:
         """
-        Attaches a job instance to an existing job
+        Attaches a job instance to an existing job.
 
         The job instance must be in the :attr:`~psij.JobState.NEW` state.
 
