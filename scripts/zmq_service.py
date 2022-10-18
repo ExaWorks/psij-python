@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 
-import psij
-
-import functools
-
-import radical.utils as ru
-
-from typing import List, Dict, Any, Tuple
-
-
 '''
 This file implements a psij job service.  The service can be contacted via ZMQ.
 It listens for requests on a `zmq.REP` reply socket - a client should
@@ -39,13 +30,14 @@ Note: interal data serialization relies on `msgbuf`, and all data types used for
 The service interface mirrors that of an psij executor implementation.  The
 supported `cmd` requests, their parameters and return values are as follows:
 
-    register_client(name: str = None, url: str = None) -> cid: str, sub_url: str
+    register_client(name: str = None, url: str = None) -> Tuple[str, str]
 
         name: name of backend psij executor to use for this client
               defaults to `local`
         url : url to pass to backend psij executor
               defaults to `fork://localhost/`
 
+        The returned tuple contains two strings: `cid` and `sub_url`.
 
         cid    : unique ID to identify the client on further requests
         sub_url: zmq subscriber URL to subscribe for state notifications
@@ -86,6 +78,12 @@ supported `cmd` requests, their parameters and return values are as follows:
         This method will return a list of job IDs known to this service.
 
 '''
+
+import psij
+import functools
+import radical.utils as ru
+
+from typing import List, Dict, Any, Tuple
 
 
 # ------------------------------------------------------------------------------
