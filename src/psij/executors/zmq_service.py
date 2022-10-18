@@ -74,7 +74,7 @@ class ZMQServiceJobExecutor(JobExecutor):
                                       cb=self._state_cb, topic=self._cid)
 
     def __del__(self) -> None:
-        """stop subscriber thread upon destruction"""
+        """Stop subscriber thread upon destruction."""
         self._sub.stop()
 
     def _state_cb(self, topic: str, msg: Dict[str, Any]) -> None:
