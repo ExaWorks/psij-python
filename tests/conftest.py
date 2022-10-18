@@ -66,7 +66,7 @@ def pytest_addoption(parser):
                      help='Pretend that the current git branch is this value.')
     parser.addoption('--custom-attributes', action='store', default=None,
                      help='A set of custom attributes to pass to jobs.')
-    parser.addoption('--minimal-uploads', action='store', default=False,
+    parser.addoption('--minimal-uploads', action='store_true', default=False,
                      help='Enables minimal uploads mode, which restricts the information that '
                           'is uploaded to the test aggregation server. ')
 
