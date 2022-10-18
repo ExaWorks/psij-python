@@ -36,7 +36,7 @@ Overview
 --------
 
 In PSI/J's terminology, a :class:`Job <psij.job.Job>` represents an executable
-plus a bunch of attributes.  Static job attributes such es resource requirements
+plus a bunch of attributes.  Static job attributes such as resource requirements
 are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at
 creation. Dynamic job attributes such as the :class:`JobState
 <psij.job_state.JobState>` are modified by :class:`JobExecutors
