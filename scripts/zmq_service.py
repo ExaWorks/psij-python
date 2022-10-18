@@ -29,8 +29,11 @@ Repsonse messages are formed as follows:
     {
         'err'   : str = None,  # error message
         'exc'   : str = None,  # exception stacktrace
-        'res'   : Any          # any serializable data type
+        'res'   : Any          # any data type
     }
+
+Note: interal data serialization relies on `msgbuf`, and all data types used for
+      request and response messages MUST be serializable with `msgbuf`.
 
 
 The service interface mirrors that of an psij executor implementation.  The
