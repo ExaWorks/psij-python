@@ -18,6 +18,14 @@ create_tag () {
         exit 1
     fi
 
+    RELEASE=$(cat RELEASE)
+
+    if [[ "$RELEASE" == "$VERSION" ]]; then
+        echo "Release also matches package version: $VERSION"
+    else
+        echo "[ERROR] Version mismatch. User request: '$VERSION' while RELEASE is: '$RELEASE'"
+    fi
+
     echo "Creating tag"
     git tag -a "$VERSION" -m "Psij $VERSION"
 
