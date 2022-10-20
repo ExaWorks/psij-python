@@ -11,7 +11,7 @@ create_tag () {
 
     PSIJ_VERSION=$(PYTHONPATH=./src python3 -c "import psij; print(psij.__version__)" 2>/dev/null)
 
-    then
+    if [[ "$PSIJ_VERSION" == "$VERSION" ]]; then
         echo "Version requested matches package version: $VERSION"
     else
         echo "[ERROR] Version mismatch. User request: '$VERSION' while package version is: '$PSIJ_VERSION'"
