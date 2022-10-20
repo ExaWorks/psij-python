@@ -196,7 +196,7 @@ def patch_repo() -> None:
 
 
 def update_origin() -> None:
-    old_url = run('git', 'remote', 'get-url', 'origin')
+    old_url = run('git', 'config', '--get', 'remote.origin.url')
     new_url = old_url.strip().replace(OLD_REPO, NEW_REPO)
     if new_url != old_url:
         with info('Updating git url to %s' % new_url):
