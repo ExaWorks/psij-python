@@ -2,10 +2,10 @@
 set -euf -o pipefail
 
 create_tag () {
-    if [ -z "$1" ]
-      then
+
+    if [ -z ${1+x} ]; then
         VERSION="unknown"
-      else
+    else
         VERSION=$1
     fi
 
