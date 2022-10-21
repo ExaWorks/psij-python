@@ -172,6 +172,39 @@ completed_msg() {
     echo "================================================================"
 }
 
+continue_or_exit() {
+    RESPONSE=""
+
+    while [ "$RESPONSE" != "C" ] && [ "$RESPONSE" != "X" ]; do
+
+        echo -n "Would you like to (C)ontinue or E(x)it? "
+        read -n1 RESPONSE
+        echo
+        RESPONSE=${RESPONSE^}
+
+        if [ "$RESPONSE" == "X" ]; then
+            echo "Operation canceled"
+            exit 1
+        fi
+    done
+}
+
+check_email() {
+    if ! cat testing.conf | egrep '^maintainer_email\s*=.*@.*$' >/dev/null 2>&1 ; then
+        echo
+        echo "================================================================"
+        echo "Warning: there appears to be no maintainer email specified.     "
+        echo "A maintainer email can help the PSI/J team contact you when     "
+        echo "problems arise with the test suite. It is highly recommended    "
+        echo "that you provide one.                                           "
+        echo "If you would like to do that, please exit this script and add   "
+        echo "your email to the relevant line in testing.conf.                "
+        echo "================================================================"
+        echo
+
+        continue_or_exit
+    fi
+}
 
 FORCE=0
 
@@ -192,20 +225,10 @@ echo "environment module please do so and then re-run this script.    "
 echo "================================================================"
 echo
 
-RESPONSE=""
 
-while [ "$RESPONSE" != "C" ] && [ "$RESPONSE" != "X" ]; do
+continue_or_exit
 
-    echo -n "Would you like to (C)ontinue or E(x)it? "
-    read -n1 RESPONSE
-    echo
-    RESPONSE=${RESPONSE^}
-    
-    if [ "$RESPONSE" == "X" ]; then
-        echo "Operation canceled"
-        exit 1
-    fi
-done
+check_email
 
 cd "$MYPATH"
 
