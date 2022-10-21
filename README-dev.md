@@ -6,6 +6,13 @@ There are two ways to build the documentation. One is the plain one, where
 the plain Sphinx output is desired, and the other is the themed version that
 is meant to integrate with the web site.
 
+!!! Note
+
+    When viewing the built docs locally, using the `file://` protocol results
+    in cross-scripting issues that prevent the correct display of the
+    resulting pages, such as pages being cut off at the bottom. Please use
+    a simple http server as detailed below.
+
 ### Building the Standalone Documentation
 
 1. Make sure you have the documentation dependencies installed:
