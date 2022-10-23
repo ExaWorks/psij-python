@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 '''
-This file implements a psij job service.  The service can be contacted via ZMQ.
-It listens for requests on a `zmq.REP` reply socket - a client should
-accordingly connect via an `zmq:REQ` request socket.
+This file implements a psij job service.  The service can be contacted via
+a REST API.
 
 the service will
 
@@ -79,19 +78,29 @@ supported `cmd` requests, their parameters and return values are as follows:
 
 '''
 
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
 import psij
+import json
+import queue
+import asyncio
+import logging
 import functools
-import radical.utils as ru
 
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Optional
 
 
+# ------------------------------------------------------------------------------
+#
 class _Client(object):
 
     def __init__(self, jex: psij.JobExecutor):
 
         self.jex: psij.JobExecutor = jex
         self._jobs: Dict[str, psij.Job] = dict()
+        self.ws: Optional[WebSocket] = None
+        self._queue: queue.Queue = queue.Queue()
 
     def add_job(self, job: psij.Job) -> None:
 
@@ -105,29 +114,60 @@ class _Client(object):
 
         return list(self._jobs.keys())
 
+    def get_msg(self) -> Any:
+        try:
+            return self._queue.get_nowait()
+        except Exception:
+            pass
 
-class Service(ru.zmq.Server):
+    def send(self, msg: Any) -> None:
+        self._queue.put(msg)
 
-    def __init__(self) -> None:
 
-        ru.zmq.Server.__init__(self, url='tcp://*:12345')
+# ------------------------------------------------------------------------------
+#
+class Service(object):
 
-        self.register_request('register', self._request_register)
-        self.register_request('submit', self._request_submit)
-        self.register_request('cancel', self._request_cancel)
-        self.register_request('list', self._request_list)
+    def __init__(self, app: FastAPI) -> None:
 
         self._clients: Dict[str, _Client] = dict()
-
         self._deserialize = psij.Import()
+        self._log = logging.getLogger('psij')
+        self._cnt: int = 0
 
-        # run a pubsub bridge for state notifications
-        self._pubsub = ru.zmq.PubSub({'channel': 'state',
-                                      'log_lvl': 'debug'})
-        self._pubsub.start()
-        self._pub = ru.zmq.Publisher('state', self._pubsub.addr_pub)
+        # ----------------------------------------------------------------------
+        # websocket endpoint at which client can regoister for state updates
+        @app.websocket("/ws/{cid}")
+        async def ws_endpoint(ws: WebSocket, cid: str) -> None:
+
+            await ws.accept()
+
+            client = self._clients.get(cid)
+            if not client:
+                self._log.error("refuse ws for %s" % cid)
+                raise ValueError("unknown client cid %s" % cid)
+
+            self._log.info("accept ws for %s" % cid)
+            try:
+                # keep this async task alive as long as there are messages to
+                # send and the websocket is alive
+                while True:
+                    msg = client.get_msg()
+                    if msg:
+                        await ws.send_json(msg)
+                    else:
+                        await asyncio.sleep(0.1)
+
+            except WebSocketDisconnect:
+                self._log.info("dropped ws for %s" % cid)
+        # ----------------------------------------------------------------------
 
     def _status_callback(self, cid: str, job: psij.Job, status: psij.JobStatus) -> None:
+
+        client = self._clients.get(cid)
+        if not client:
+            print("unknown client cid %s" % cid)
+            return
 
         msg = {'jobid': job.id,
                'time': status.time,
@@ -135,10 +175,10 @@ class Service(ru.zmq.Server):
                'state': str(status.state),
                'metadata': status.metadata,
                'exit_code': status.exit_code}
-        self._log.debug('status update for %s: %s', cid, msg)
-        self._pub.put(cid, msg)
+        self._log.debug('cb: %s: %s', cid, msg)
+        client.send(msg)
 
-    def _request_register(self, name: str, url: Optional[str] = None) -> Tuple[str, str]:
+    def _request_register(self, name: str, url: Optional[str] = None) -> str:
         '''
         parameters:
             name:str : name of psij executor to use
@@ -150,7 +190,8 @@ class Service(ru.zmq.Server):
         '''
 
         # register new client
-        cid = ru.generate_id('client')
+        cid = 'client.%04d' % self._cnt
+        self._cnt += 1
 
         # create executor
         jex = psij.JobExecutor.get_instance(name=name, url=url)
@@ -163,7 +204,7 @@ class Service(ru.zmq.Server):
         self._clients[cid] = _Client(jex)
 
         # client is now known and initialized
-        return cid, str(self._pubsub.addr_sub)
+        return cid
 
     def _request_submit(self, cid: str, spec: Dict[str, Any]) -> str:
         '''
@@ -228,8 +269,27 @@ class Service(ru.zmq.Server):
             return fin.read()
 
 
-if __name__ == '__main__':
+# ------------------------------------------------------------------------------
+#
+app = FastAPI()
+service = Service(app)
 
-    s = Service()
-    s.start()
-    s.wait()
+
+@app.get("/executor/{name}")
+def register(name: str, url: Optional[str] = None) -> str:
+    return service._request_register(name, url)
+
+
+@app.put("/{cid}")
+def submit(cid: str, spec: Dict[str, Any]) -> str:
+    return service._request_submit(cid, spec)
+
+
+@app.delete("/{cid}/{jobid}")
+def cancel(cid: str, jobid: str) -> None:
+    return service._request_cancel(cid, jobid)
+
+
+@app.get("/{cid}/jobs")
+def list_jobs(cid: str) -> List[str]:
+    return service._request_list(cid)
