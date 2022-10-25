@@ -59,6 +59,7 @@ supported `cmd` requests, their parameters and return values are as follows:
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+import sys
 import psij
 import queue
 import asyncio
@@ -297,4 +298,6 @@ if __name__ == '__main__':
         """
         return service._request_list(cid)
 
-    uvicorn.run(app, port=8000, access_log=False)
+    port = int(sys.argv[1])
+    print('url: http://localhost:%d/' % port)
+    uvicorn.run(app, port=port, access_log=False)
