@@ -34,9 +34,8 @@ class RestServiceJobExecutor(JobExecutor):
                   'CANCELED': JobState.CANCELED}
     _final = [JobState.COMPLETED, JobState.FAILED, JobState.CANCELED]
 
-    def __init__(
-        self, url: Optional[str] = None, config: Optional[JobExecutorConfig] = None
-    ) -> None:
+    def __init__(self, url: str,
+                 config: Optional[JobExecutorConfig] = None) -> None:
         """
         Initializes a `RestServiceJobExecutor`.
 
@@ -47,9 +46,6 @@ class RestServiceJobExecutor(JobExecutor):
         """
         if not config:
             config = JobExecutorConfig()
-
-        if not url:
-            url = 'http://localhost:8000'
 
         url_obj = urlparse(url)
 
@@ -81,10 +77,6 @@ class RestServiceJobExecutor(JobExecutor):
         t = threading.Thread(target=self._state_listener)
         t.daemon = True
         t.start()
-
-    def __del__(self) -> None:
-        """Stop websocket thread upon destruction."""
-        ...
 
     def _state_listener(self) -> None:
         """thrtead to listen for on job state update messages on the websocket.

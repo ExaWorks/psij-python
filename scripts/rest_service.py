@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import uvicorn
-
-
 '''
 This file implements a psij job service.  The service can be contacted via
 a REST API.
@@ -52,11 +49,11 @@ supported `cmd` requests, their parameters and return values are as follows:
         This method will return a list of job IDs known to this service.
 '''
 
+import uvicorn
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 import psij
-import json
 import queue
 import asyncio
 import logging
@@ -245,56 +242,52 @@ class Service(object):
 
 # ------------------------------------------------------------------------------
 #
-app = FastAPI()
-service = Service(app)
-
-
-@app.get("/executor/{name}")
-def register(name: str, url: Optional[str] = None) -> str:
-    """
-    Register a new client and create an executor of type 'name'.
-    request: GET /executor/{name}/
-        name: type of executor to create for this client
-    response: a new client ID (str)
-    """
-
-    return service._request_register(name, url)
-
-
-@app.put("/{cid}")
-def submit(cid: str, spec: Dict[str, Any]) -> str:
-    """
-    Submit a job.
-    request: PUT /{cid}/
-        cid: client ID as obtained by `register`
-        data: json serialized `psij.JobSpec` dictionary
-    response: a new job ID (str) for the submitted job
-    """
-    return service._request_submit(cid, spec)
-
-
-@app.delete("/{cid}/{jobid}")
-def cancel(cid: str, jobid: str) -> None:
-    """
-    Cancel a job.
-    request: DELETE /{cid}/{jobid}
-        cid: client ID as obtained by `register`
-        jobid: ID of job to be canceled
-    response: None
-    """
-    return service._request_cancel(cid, jobid)
-
-
-@app.get("/{cid}/jobs")
-def list_jobs(cid: str) -> List[str]:
-    """
-    List all known jobs.
-    request: GET /{cid}/jobs
-        cid: client ID as obtained by `register`
-    response: serialized json string containing a list of job IDs (`List[str]`)
-    """
-    return service._request_list(cid)
-
-
 if __name__ == '__main__':
+
+    app = FastAPI()
+    service = Service(app)
+
+    @app.get("/executor/{name}")
+    def register(name: str, url: Optional[str] = None) -> str:
+        """
+        Register a new client and create an executor of type 'name'.
+        request: GET /executor/{name}/
+            name: type of executor to create for this client
+        response: a new client ID (str)
+        """
+
+        return service._request_register(name, url)
+
+    @app.put("/{cid}")
+    def submit(cid: str, spec: Dict[str, Any]) -> str:
+        """
+        Submit a job.
+        request: PUT /{cid}/
+            cid: client ID as obtained by `register`
+            data: json serialized `psij.JobSpec` dictionary
+        response: a new job ID (str) for the submitted job
+        """
+        return service._request_submit(cid, spec)
+
+    @app.delete("/{cid}/{jobid}")
+    def cancel(cid: str, jobid: str) -> None:
+        """
+        Cancel a job.
+        request: DELETE /{cid}/{jobid}
+            cid: client ID as obtained by `register`
+            jobid: ID of job to be canceled
+        response: None
+        """
+        return service._request_cancel(cid, jobid)
+
+    @app.get("/{cid}/jobs")
+    def list_jobs(cid: str) -> List[str]:
+        """
+        List all known jobs.
+        request: GET /{cid}/jobs
+            cid: client ID as obtained by `register`
+        response: serialized json string containing a list of job IDs (`List[str]`)
+        """
+        return service._request_list(cid)
+
     uvicorn.run(app, port=8000, access_log=False)
