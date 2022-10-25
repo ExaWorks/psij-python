@@ -34,7 +34,7 @@ class RestServiceJobExecutor(JobExecutor):
                   'CANCELED': JobState.CANCELED}
     _final = [JobState.COMPLETED, JobState.FAILED, JobState.CANCELED]
 
-    def __init__(self, url: str,
+    def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
         Initializes a `RestServiceJobExecutor`.
@@ -46,6 +46,9 @@ class RestServiceJobExecutor(JobExecutor):
         """
         if not config:
             config = JobExecutorConfig()
+
+        if not url:
+            raise ValueError('REST executor requires service URL')
 
         url_obj = urlparse(url)
 

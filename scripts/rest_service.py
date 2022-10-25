@@ -9,12 +9,11 @@ the service will
 The service interface mirrors that of an psij executor implementation.  The
 supported `cmd` requests, their parameters and return values are as follows:
 
-    register_client(name: str = None, url: str = None) -> str
+    register_client(name: str = None) -> str
 
+        REST: GET /executor/{name}/
         name: name of backend psij executor to use for this client
               defaults to `local`
-        url : url to pass to backend psij executor
-              defaults to `fork://localhost/`
 
         returns: a unique ID to identify the client on further requests.
 
@@ -25,6 +24,7 @@ supported `cmd` requests, their parameters and return values are as follows:
 
     submit(cid: str, spec: Dict[str, Any]) -> str
 
+        REST: PUT /{cid}/
         cid : client ID obtained via `register_client`
         spec: serialized psij.JobSepc
 
@@ -34,6 +34,7 @@ supported `cmd` requests, their parameters and return values are as follows:
 
     cancel(cid: str, jobid: str) -> None
 
+        REST : DELETE /{cid}/{jobid}
         cid  : client ID obtained via `register_client`
         jobid: job ID obtained via `submit` or `list`
 
@@ -44,12 +45,17 @@ supported `cmd` requests, their parameters and return values are as follows:
 
     list(cid: str) -> List[str]
 
-        cid  : client ID obtained via `register_client`
+        REST: GET /{cid}/jobs
+        cid : client ID obtained via `register_client`
 
         This method will return a list of job IDs known to this service.
+
+    FIXME:
+      - use cookie instead of client id
+      - add authorization and authentication
+      - add data staging
 '''
 
-import uvicorn
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
@@ -57,6 +63,7 @@ import psij
 import queue
 import asyncio
 import logging
+import uvicorn
 import functools
 
 from typing import List, Dict, Any, Optional
@@ -152,12 +159,11 @@ class Service(object):
     def _request_register(self, name: str, url: Optional[str] = None) -> str:
         '''
         parameters:
-            name:str : name of psij executor to use
-            url:str  : optional url to pass to psij executor
+            name:str: name of psij executor to use
+            url:str: optional URL to be passed to backend executor
 
         returns:
-            uid:str  : unique ID identifying the registered client
-            addr:str : URL to be used for state notifications
+            str: unique ID identifying the registered client
         '''
 
         # register new client
@@ -253,6 +259,7 @@ if __name__ == '__main__':
         Register a new client and create an executor of type 'name'.
         request: GET /executor/{name}/
             name: type of executor to create for this client
+            url: optional url to pass to the backend executor
         response: a new client ID (str)
         """
 
