@@ -45,6 +45,21 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     assert_completed(job2, status)
 
 
+def test_attach2(execparams: ExecutorTestParams) -> None:
+    job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
+    job.wait(target_states=[JobState.ACTIVE, JobState.COMPLETED])
+    native_id = job.native_id
+
+    assert native_id is not None
+    job2 = Job()
+    ex2 = _get_executor_instance(execparams)
+    ex2.attach(job2, native_id)
+    status = job2.wait(timeout=_get_timeout(execparams))
+    assert_completed(job2, status)
+
+
 def test_cancel(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['60']))
     ex = _get_executor_instance(execparams, job)
