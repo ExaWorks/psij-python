@@ -16,6 +16,11 @@ def test_environment_types() -> None:
         spec = JobSpec()
         spec.environment = {'foo': 1}                             # type: ignore
 
+    with pytest.raises(TypeError):
+        spec = JobSpec()
+        spec.environment = {'foo': 'bar'}
+        spec.environment['buz'] = 2                              # type: ignore
+
     spec = JobSpec()
     assert spec.environment is None
 
@@ -28,3 +33,5 @@ def test_environment_types() -> None:
 
     spec.environment = {'foo': 'biz'}
     assert spec.environment['foo'] == 'biz'
+
+test_environment_types()
