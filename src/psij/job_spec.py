@@ -106,6 +106,22 @@ class JobSpec(object):
         return job_spec
 
     @property
+    def environment(self) -> Optional[Dict[str, str]]:
+        return self._environment
+
+    @environment.setter
+    def environment(self, environment: Optional[Dict[str, str]]) -> None:
+        if environment is not None:
+            for k, v in environment.items():
+                if not isinstance(k, str):
+                    raise TypeError('environment key "%s" is not a string (%s)'
+                                    % (k, type(k).__name__))
+                if not isinstance(v, str):
+                    raise TypeError('environment key "%s" has non-string value (%s)'
+                                    % (k, type(v).__name__))
+        self._environment = environment
+
+    @property
     def to_dict(self) -> Dict[str, Any]:
         """Returns a dictionary representation of this object."""
         d = self._init_job_spec_dict
