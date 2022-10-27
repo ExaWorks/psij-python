@@ -107,6 +107,11 @@ class JobSpec(object):
 
     @property
     def environment(self) -> Optional[Dict[str, str]]:
+        """Set job environment.
+        The property setter will typecheck the provided env dictionary - only
+        `Dict[str:str]` types are allowed.
+        """
+
         return self._environment
 
     @environment.setter

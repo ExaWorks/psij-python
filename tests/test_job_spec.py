@@ -3,6 +3,7 @@ import pytest
 
 from psij import JobSpec
 
+
 def test_environment_types() -> None:
 
     with pytest.raises(TypeError):
