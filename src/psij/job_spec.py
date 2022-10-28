@@ -9,11 +9,11 @@ from psij.utils import path_object_to_full_path as o2p
 
 class _EnvDict(dict):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
 
         super().__init__(*args, **kwargs)
 
-    def __setitem__(self, k, v):
+    def __setitem__(self, k: str, v: str) -> None:
 
         if not isinstance(k, str):
             raise TypeError('environment key "%s" is not a string (%s)'
