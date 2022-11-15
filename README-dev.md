@@ -58,3 +58,21 @@ where `<port>` is a port number to start the HTTP server on.
 When developing the web site, a convenient script is `web/watch.sh`, which can
 monitor the source directories and re-build when files are modified. This
 requires `inotify` which may or may not be available on your platform.
+
+
+### Release process
+
+Here are the steps for putting out a fresh release to Pypi.
+
+1. Create a new branch from main, and make release specific updates:
+    * Update `src/psij/version.py` to the new version number
+
+2. Use the standard PR process and get changes from the above step merged to main.
+
+3. Follow instructions here to [pypi docs](https://pypi.org/help/#apitoken) to
+   setup tokens on your machine.
+
+4. Run `make VERSION="version string" tag-and-release`. This will:
+    1. Create and push tags to github
+    2. Build the package
+    3. Push built package to Pypi.
