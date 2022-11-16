@@ -542,6 +542,7 @@ class BatchSchedulerExecutor(JobExecutor):
         if force or path.exists():
             path.unlink()
 
+
     def list(self) -> List[str]:
         """Returns a list of jobs known to the underlying implementation.
 
@@ -551,7 +552,7 @@ class BatchSchedulerExecutor(JobExecutor):
         Implementations are encouraged to restrict the results to jobs accessible by the current
         user.
         """
-        pass
+        raise NotImplementedError()
 
 
 class _QueuePollThread(Thread):
