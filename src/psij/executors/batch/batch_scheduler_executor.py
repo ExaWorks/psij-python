@@ -542,7 +542,6 @@ class BatchSchedulerExecutor(JobExecutor):
         if force or path.exists():
             path.unlink()
 
-
     def list(self) -> List[str]:
         """Returns a list of jobs known to the underlying implementation.
 
