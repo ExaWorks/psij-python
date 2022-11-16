@@ -7,23 +7,6 @@ from psij.resource_spec import ResourceSpec
 from psij.utils import path_object_to_full_path as o2p
 
 
-class _EnvDict(dict):
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-
-        super().__init__(*args, **kwargs)
-
-    def __setitem__(self, k: str, v: str) -> None:
-
-        if not isinstance(k, str):
-            raise TypeError('environment key "%s" is not a string (%s)'
-                            % (k, type(k).__name__))
-        if not isinstance(v, str):
-            raise TypeError('environment key "%s" has non-string value (%s)'
-                            % (k, type(v).__name__))
-        super().__setitem__(k, v)
-
-
 class JobSpec(object):
     """A class to hold information about the characteristics of a:class:`~psij.Job`."""
 
@@ -121,24 +104,6 @@ class JobSpec(object):
         }
 
         return job_spec
-
-    @property
-    def environment(self) -> Optional[Dict[str, str]]:
-        """Set job environment.
-
-        The property setter will typecheck the provided env dictionary - only
-        `Dict[str:str]` types are allowed.
-        """
-        return self._environment
-
-    @environment.setter
-    def environment(self, environment: Optional[Dict[str, str]]) -> None:
-        if environment is None:
-            self._environment = None
-        else:
-            self._environment = _EnvDict()
-            for k, v in environment.items():
-                self._environment[k] = v
 
     @property
     def to_dict(self) -> Dict[str, Any]:
