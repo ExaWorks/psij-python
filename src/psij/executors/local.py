@@ -193,10 +193,7 @@ class LocalJobExecutor(JobExecutor):
 
         :param job: The job to be submitted.
         """
-        spec = job.spec
-        if not spec:
-            raise InvalidJobException('Missing specification')
-        job.executor = self
+        spec = self._check_job(job)
 
         p = _ChildProcessEntry(job, self, self._get_launcher(self._get_launcher_name(spec)))
         assert p.launcher
