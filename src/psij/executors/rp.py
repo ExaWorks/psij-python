@@ -106,11 +106,8 @@ class RPJobExecutor(JobExecutor):
 
         :param job: The job to be submitted.
         """
-        spec = job.spec
-        if not spec:
-            raise InvalidJobException('Missing specification')
+        self._check_job(job)
 
-        job.executor = self
         try:
             td = self._job_2_descr(job)
             task = self._tmgr.submit_tasks(td)

@@ -1,6 +1,8 @@
 from datetime import timedelta
 from typing import Optional, Dict
 
+from typeguard import check_argument_types
+
 
 class JobAttributes(object):
     """A class containing ancillary job information that describes how a job is to be run."""
@@ -27,6 +29,8 @@ class JobAttributes(object):
             :class:`~psij.JobExecutor` define and are responsible for interpreting custom
             attributes.
         """
+        assert check_argument_types()
+
         self.duration = duration
         self.queue_name = queue_name
         self.project_name = project_name

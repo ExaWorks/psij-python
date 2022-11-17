@@ -124,14 +124,14 @@ class FluxJobExecutor(JobExecutor):
 
     def submit(self, job: Job) -> None:
         """See :func:`~psij.job_executor.JobExecutor.submit`."""
-        assert job.spec
-        assert job.spec.attributes
-        job.executor = self
-        if isinstance(job.spec.resources, ResourceSpecV1):
-            resources = job.spec.resources
-        elif isinstance(job.spec.resources, ResourceSpec):
+        spec = self._check_job(job)
+
+        assert spec.attributes
+        if isinstance(spec.resources, ResourceSpecV1):
+            resources = spec.resources
+        elif isinstance(spec.resources, ResourceSpec):
             raise InvalidJobException(
-                f"ResourceSpec version {job.spec.resources.version} not supported"
+                f"ResourceSpec version {spec.resources.version} not supported"
             )
         else:
             resources = ResourceSpecV1(process_count=1, cpu_cores_per_process=1)
@@ -142,10 +142,10 @@ class FluxJobExecutor(JobExecutor):
             )
         if resources.processes_per_node:
             raise InvalidJobException("Flux does not support processes_per_node")
-        if not job.spec.executable:
+        if not spec.executable:
             raise InvalidJobException("Job must have an executable")
-        argv = list(job.spec.arguments) if job.spec.arguments else []
-        argv.insert(0, job.spec.executable)
+        argv = list(spec.arguments) if spec.arguments else []
+        argv.insert(0, spec.executable)
         flux_jobspec = flux.job.JobspecV1.from_command(
             argv,
             num_tasks=resources.process_count,
@@ -153,13 +153,13 @@ class FluxJobExecutor(JobExecutor):
             gpus_per_task=resources.gpu_cores_per_process,
             num_nodes=resources.node_count,
         )
-        if job.spec.stdout_path:
-            flux_jobspec.stdout = job.spec.stdout_path
-        if job.spec.stdin_path:
-            flux_jobspec.stdin = job.spec.stdin_path
-        if job.spec.stderr_path:
-            flux.jobspec.stderr = job.spec.stderr_path
-        flux_jobspec.duration = job.spec.attributes.duration.total_seconds()
+        if spec.stdout_path:
+            flux_jobspec.stdout = spec.stdout_path
+        if spec.stdin_path:
+            flux_jobspec.stdin = spec.stdin_path
+        if spec.stderr_path:
+            flux.jobspec.stderr = spec.stderr_path
+        flux_jobspec.duration = spec.attributes.duration.total_seconds()
         fut = self._flux_executor.submit(flux_jobspec)
         self._add_flux_callbacks(job, fut)
 

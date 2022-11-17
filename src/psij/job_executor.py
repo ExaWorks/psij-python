@@ -5,12 +5,14 @@ from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
 import psij
+from psij import InvalidJobException
 from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback, FunctionJobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
 from psij.job_launcher import Launcher
+from psij.job_spec import JobSpec
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +58,52 @@ class JobExecutor(ABC):
     def version(self) -> Version:
         """Returns the version of this executor."""
         return cast(Version, getattr(self.__class__, '_VERSION_'))
+
+    def _check_job(self, job: Job) -> JobSpec:
+        """
+        Checks a job for consistency and correctness.
+
+        Verifies that various aspects of the job are correctly specified. This includes precisely
+        the following checks:
+        * the job has a non-null specification
+        * job.spec.environment is a Dict[str, str]
+
+        While this method makes a fair attempt at ensuring the validity of the job, it makes no
+        such guarantees. Specifically, if an executor implementation requires checks not listed
+        above, it should implement them explicitly.
+
+        These checks are meant to trigger common runtime type errors somewhat early and with clear
+        error messages. In production software, these checks can be disabled by invoking Python
+        with one of the optimization flags (`-O` or `-OO`).
+
+        Upon completion, this method sets the :attr:`~psij.Job.executor` attribute of the job and
+        returns the job specification.
+
+        Parameters
+        ----------
+        job
+            The job to validate
+
+        Returns
+        -------
+            A non-null job specification
+        """
+        spec = job.spec
+        if not spec:
+            raise InvalidJobException('Missing specification')
+
+        if __debug__:
+            if spec.environment is not None:
+                for k, v in spec.environment.items():
+                    if not isinstance(k, str):
+                        raise TypeError('environment key "%s" is not a string (%s)'
+                                        % (k, type(k).__name__))
+                    if not isinstance(v, str):
+                        raise TypeError('environment key "%s" has non-string value (%s)'
+                                        % (k, type(v).__name__))
+
+        job.executor = self
+        return spec
 
     @abstractmethod
     def submit(self, job: Job) -> None:

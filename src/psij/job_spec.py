@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
 from typing import Optional, List, Dict, Any
+
+from typeguard import check_argument_types
+
 from psij.job_attributes import JobAttributes
 from psij.resource_spec import ResourceSpec
 
@@ -53,6 +56,8 @@ class JobSpec(object):
         :param launcher: The name of a launcher to use, such as "mpirun", "srun", "single", etc.
             For a list of available launchers,:ref:`launchers`
         """
+        assert check_argument_types()
+
         self._name = name
         self.executable = executable
         self.arguments = arguments

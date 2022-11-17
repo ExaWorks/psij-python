@@ -194,9 +194,9 @@ class BatchSchedulerExecutor(JobExecutor):
         """See :func:`~psij.JobExecutor.submit`."""
         logger.info('Job %s: submitting', job.id)
         self._ensure_work_dir()
-        assert (job.spec)
 
-        job.executor = self
+        self._check_job(job)
+
         context = self._create_script_context(job)
 
         # assumes job ids are unique
@@ -551,7 +551,7 @@ class BatchSchedulerExecutor(JobExecutor):
         Implementations are encouraged to restrict the results to jobs accessible by the current
         user.
         """
-        pass
+        raise NotImplementedError()
 
 
 class _QueuePollThread(Thread):
