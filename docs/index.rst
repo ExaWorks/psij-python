@@ -35,5 +35,6 @@ with HPC centers.
     :maxdepth: 3
 
     getting_started
+    user_guide
     api
     development/index.rst
