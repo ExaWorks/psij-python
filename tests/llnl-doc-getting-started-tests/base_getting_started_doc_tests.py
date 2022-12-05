@@ -1,7 +1,7 @@
 """Functions for testing the various code snippets available in psij docs - 'getting started'"""
 import os
 from time import sleep
-from psij import Job, JobExecutor, JobSpec, JobAttributes
+from psij import Job, JobExecutor, JobSpec, JobAttributes, JobStatus
 
 QUEUE_NAME = os.environ.get("LLNL_QUEUE_NAME")
 status_callback_job_count = 3
@@ -32,7 +32,7 @@ def getting_started_adding_complexity(compute_platform: str) -> None:
 
 
 def getting_started_status_callbacks(compute_platform: str) -> None:
-    def callback(job, status):
+    def callback(job: Job, status: JobStatus) -> None:
         global status_callback_job_count
 
         if status.final:
@@ -59,7 +59,7 @@ def our_test(compute_platform: str) -> None:
     jex = JobExecutor.get_instance(compute_platform)
     num_jobs = 3
 
-    def make_job():
+    def make_job() -> Job:
         job = Job()
         spec = JobSpec()
         spec.attributes.queue_name = QUEUE_NAME
@@ -72,7 +72,7 @@ def our_test(compute_platform: str) -> None:
 
     jobs = []
     for _ in range(num_jobs):
-        job = make_job()
+        job: Job = make_job()
         jobs.append(job)
         jex.submit(job)
 
