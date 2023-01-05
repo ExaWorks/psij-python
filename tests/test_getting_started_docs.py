@@ -1,17 +1,16 @@
-"""Functions for testing the various code snippets available in psij docs - 'getting started'"""
-import os
+"""Functions for testing the various code snippets available in psij docs - 'getting started'."""
 from time import sleep
-from psij import Job, JobExecutor, JobSpec, JobAttributes, JobStatus
+from psij import Job, JobSpec, JobStatus
 from executor_test_params import ExecutorTestParams
-from _test_tools import _get_executor_instance, _get_timeout, assert_completed, _make_test_dir
+from _test_tools import _get_executor_instance, _get_timeout, assert_completed
 
 status_callback_job_count = 3
+
 
 def test_getting_started_basic_usage(execparams: ExecutorTestParams) -> None:
     job = Job(
         JobSpec(
             executable="/bin/date",
-            # attributes=JobAttributes(queue_name=QUEUE_NAME) #? Check if getting rid of the Queue name causes test to fail
             launcher=execparams.launcher
         )
     )
@@ -20,13 +19,13 @@ def test_getting_started_basic_usage(execparams: ExecutorTestParams) -> None:
     status = job.wait(timeout=_get_timeout(execparams))
     assert_completed(job, status)
 
+
 def test_getting_started_adding_complexity(execparams: ExecutorTestParams) -> None:
     num_jobs = 3
     for _ in range(num_jobs):
         job = Job(
             JobSpec(
                 executable="/bin/date",
-                # attributes=JobAttributes(queue_name=QUEUE_NAME)
                 launcher=execparams.launcher
             )
         )
@@ -51,14 +50,12 @@ def test_getting_started_status_callbacks(execparams: ExecutorTestParams) -> Non
         sleep(0.01)
 
 
-
 def test_our_test(execparams: ExecutorTestParams) -> None:
     num_jobs = 3
 
     def make_job() -> Job:
         job = Job()
         spec = JobSpec()
-        # spec.attributes.queue_name = QUEUE_NAME
         spec.executable = 'echo'
         spec.arguments = ['HELLO WORLD!']
         job.spec = spec
