@@ -8,7 +8,6 @@ from _test_tools import _get_executor_instance, _get_timeout, assert_completed, 
 status_callback_job_count = 3
 
 def test_getting_started_basic_usage(execparams: ExecutorTestParams) -> None:
-    print(f"\nGetting Started Basic Usage, env: {execparams.executor.__repr__()} \n")
     job = Job(
         JobSpec(
             executable="/bin/date",
@@ -22,7 +21,6 @@ def test_getting_started_basic_usage(execparams: ExecutorTestParams) -> None:
     assert_completed(job, status)
 
 def test_getting_started_adding_complexity(execparams: ExecutorTestParams) -> None:
-    print(f"\nGetting Started Adding Complex, env: {execparams.executor.__repr__()} \n")
     num_jobs = 3
     for _ in range(num_jobs):
         job = Job(
@@ -37,10 +35,8 @@ def test_getting_started_adding_complexity(execparams: ExecutorTestParams) -> No
 
 
 def test_getting_started_status_callbacks(execparams: ExecutorTestParams) -> None:
-    print(f"\nGetting Started Status Callbacks, env: {execparams.executor.__repr__()} \n")
     def callback(job: Job, status: JobStatus) -> None:
         global status_callback_job_count
-
         if status.final:
             print(f"Job {job} completed with status {status}")
             status_callback_job_count -= 1
@@ -48,20 +44,21 @@ def test_getting_started_status_callbacks(execparams: ExecutorTestParams) -> Non
     for _ in range(status_callback_job_count):
         job = Job(JobSpec(executable='/bin/date', launcher=execparams.launcher))
         ex = _get_executor_instance(execparams, job)
+        ex.set_job_status_callback(callback)
         ex.submit(job)
 
     while status_callback_job_count > 0:
         sleep(0.01)
 
 
+
 def test_our_test(execparams: ExecutorTestParams) -> None:
-    print(f"\nGetting Started Dans Test, env: {execparams.executor.__repr__()} \n")
     num_jobs = 3
 
     def make_job() -> Job:
         job = Job()
         spec = JobSpec()
-        spec.attributes.queue_name = QUEUE_NAME
+        # spec.attributes.queue_name = QUEUE_NAME
         spec.executable = 'echo'
         spec.arguments = ['HELLO WORLD!']
         job.spec = spec
