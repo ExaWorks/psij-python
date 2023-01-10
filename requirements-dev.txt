@@ -7,7 +7,7 @@
 # Testing / QA
 -r requirements-tests.txt
 mypy >=0.931
-flake8
+flake8==5.0.4
 flake8-docstrings
 autopep8
 types-requests
