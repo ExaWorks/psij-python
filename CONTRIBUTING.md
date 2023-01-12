@@ -11,13 +11,6 @@ details how to contribute in a standardized and efficient manner.
 - Ensure that you've opened an Issue on Github and consensus around the
   solution has be reached.
   - Minor changes (e.g., grammatical fixes) do not require an Issue first.
-- [Create your own
-  fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo).
-- When you are starting a new set of changes, [fetch any changes from the
-  upstream
-  repo](https://matplotlib.org/stable/devel/gitwash/development_workflow.html#update-the-mirror-of-trunk),
-  and [start a new feature branch on your fork from
-  that](https://matplotlib.org/stable/devel/gitwash/development_workflow.html#make-a-new-feature-branch).
 - Make a new branch for each separable set of changes — ["one task, one
   branch"](https://mail.python.org/pipermail/ipython-dev/2010-October/005632.html).
 - [Each commit should make one change](https://dev.to/ruanbrandao/how-to-make-good-git-commits-256k).
