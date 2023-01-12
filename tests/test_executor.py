@@ -32,6 +32,22 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
 
 
 def test_attach(execparams: ExecutorTestParams) -> None:
+    job1 = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
+    ex = _get_executor_instance(execparams, job1)
+    ex.submit(job1)
+    job1.wait(target_states=[JobState.ACTIVE, JobState.COMPLETED])
+    native_id = job1.native_id
+
+    assert native_id is not None
+    job2 = Job()
+    ex.attach(job2, native_id)
+    status2 = job2.wait(timeout=_get_timeout(execparams))
+    assert_completed(job2, status2)
+    status1 = job1.wait(timeout=_get_timeout(execparams))
+    assert_completed(job1, status1)
+
+
+def test_attach2(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
@@ -40,7 +56,8 @@ def test_attach(execparams: ExecutorTestParams) -> None:
 
     assert native_id is not None
     job2 = Job()
-    ex.attach(job2, native_id)
+    ex2 = _get_executor_instance(execparams)
+    ex2.attach(job2, native_id)
     status = job2.wait(timeout=_get_timeout(execparams))
     assert_completed(job2, status)
 
