@@ -39,9 +39,9 @@ PSI/J repository.
 You should then see something like:
 ```
 ...
-    Server address: http://127.0.0.1:4000/
+    Server address: http://127.0.0.1:4000/psij-python/
   Server running... press ctrl-c to stop.
 ```
 
-You can the point your browser to `http://127.0.0.1:4000` to see the 
-rendered web site.
+You can the point your browser to `http://127.0.0.1:4000/psij-python` to 
+see the rendered web site.
