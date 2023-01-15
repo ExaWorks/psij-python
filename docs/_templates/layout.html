@@ -1,4 +1,8 @@
-{% extends "cloud/layout.html" %}
+{%- extends "cloud/layout.html" -%}
+
+{# We are not processing the output of these pages through Jekyll, so
+   we need to set the variables referenced in the includes. #}
+{% set site = {"baseurl": "/psij-python"} %}
 
 {% block scripts %}
     {% include "../../web/_includes/head.html" %}
@@ -18,20 +22,10 @@
         {% include "../../web/_includes/footer.html" %}
     </v-app>
     
-    {# this has to be done manually because jinja2 and jekyll use the same escapes 
-       and including vueinit.html would make jinja2 complain (and jinja2 does not
-       have a way of including a file as-is #}
-    <script>
-        v = new Vue({
-            el: '#psij-app',
-            vuetify: new Vuetify(),
-            data: {
-                maintabs: "docs"
-            }
-        });
-
-        hljs.highlightAll();
-    </script>
+    {# Same as above #}
+    {% set page = {"tab": 2} %}
+    {% include "../../web/_includes/vueinit.html" %}
+    
 
 {% endblock %}
 
