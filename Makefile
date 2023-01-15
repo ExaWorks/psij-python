@@ -46,7 +46,7 @@ docs:
 .PHONY: web-docs
 web-docs:
 	rm -rf docs/.generated
-	sphinx-build -W -b html -D html_theme='cloud' docs docs/.web-build/
+	sphinx-build -W -b html -D html_theme='cloud' -D templates_path='_templates' docs docs/.web-build/
 
 .PHONY: style
 style:
