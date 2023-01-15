@@ -43,5 +43,5 @@ You should then see something like:
   Server running... press ctrl-c to stop.
 ```
 
-You can the point your browser to `http://127.0.0.1:4000/psij-python` to 
+You can then point your browser to `http://127.0.0.1:4000/psij-python` to
 see the rendered web site.
