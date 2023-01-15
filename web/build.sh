@@ -20,7 +20,6 @@ fi
 
 cp -r web/. web-build/
 cp web/*.css web-build/docs/
-cp web/*.js web-build/docs/
 
 rm -f web-build/*.sh
 rm -f web-build/README
