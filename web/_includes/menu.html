@@ -1,10 +1,10 @@
         <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
             <v-tabs v-model="maintabs">
-                <v-tab href="index.html" key="index"><div class="psij-font logo">PSI/J</div></v-tab>
-                <v-tab href="install.html" key="install">Install</v-tab>
-                <v-tab href="docs" key="docs">Documentation</v-tab>
-                <v-tab href="resources.html" key="resources">Resources</v-tab>
-                <v-tab href="about.html" key="about">About</v-tab>
+                <v-tab key="index"><a href="{{site.baseurl}}/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="{{site.baseurl}}/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="{{site.baseurl}}/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="{{site.baseurl}}/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="{{site.baseurl}}/about.html">About</a></v-tab>
             </v-tabs>
    
             <div class="slack-link navbar-link">
