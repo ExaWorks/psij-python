@@ -22,12 +22,10 @@
        and including vueinit.html would make jinja2 complain (and jinja2 does not
        have a way of including a file as-is #}
     <script>
-        var crtpath = null;
         v = new Vue({
             el: '#psij-app',
             vuetify: new Vuetify(),
             data: {
-                themes: ["theme-1", "theme-3"],
                 maintabs: "docs"
             }
         });
