@@ -18,7 +18,9 @@
         {% include "../../web/_includes/footer.html" %}
     </v-app>
     
-    {# this has to be done manually because jinja2 and jekyll use the same escapes #}
+    {# this has to be done manually because jinja2 and jekyll use the same escapes 
+       and including vueinit.html would make jinja2 complain (and jinja2 does not
+       have a way of including a file as-is #}
     <script>
         var crtpath = null;
         v = new Vue({
