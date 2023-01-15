@@ -1,0 +1,40 @@
+{% extends "cloud/layout.html" %}
+
+{% block scripts %}
+    {% include "../../web/_includes/head.html" %}
+    
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    <v-app id="psij-app">
+        {% include "../../web/_includes/menu.html" %}
+        {{ super() }}
+{% endblock %}
+
+{% block footer %}
+        {{ super() }}
+        
+        {% include "../../web/_includes/footer.html" %}
+    </v-app>
+    
+    {# this has to be done manually because jinja2 and jekyll use the same escapes #}
+    <script>
+        var crtpath = null;
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                themes: ["theme-1", "theme-3"],
+                maintabs: "docs"
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+
+{% endblock %}
+
+
+{% block sidebartoggle %}
+{% endblock %}
