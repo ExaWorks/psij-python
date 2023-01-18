@@ -100,7 +100,7 @@ RUN pip install wordcloud
 
 ## Executing a singularity container
 
-We will run the PDF2Wordcloud example in a container. We will use the docker conatiner described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all requiered singularity options.
+We will run the PDF2Wordcloud example in a container. We will use the docker container described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all requiered singularity options.
 
 ```
 ...

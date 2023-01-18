@@ -177,7 +177,15 @@ class FluxJobExecutor(JobExecutor):
 
         :return: The list of known tasks.
         """
-        return [x["id"] for x in flux.job.job_list(self._fh)]
+        return [
+            x["id"]
+            for x in flux.job.job_list(
+                self._fh,
+                max_entries=100000,
+                attrs=[],
+                states=flux.constants.FLUX_JOB_STATE_ACTIVE,
+            ).get()["jobs"]
+        ]
 
     def attach(self, job: Job, native_id: str) -> None:
         """

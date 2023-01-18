@@ -38,8 +38,9 @@ def assert_completed(job: Job, status: Optional[JobStatus]) -> None:
                              % (status.message, stdout, stderr))
 
 
-def _get_executor_instance(ep: ExecutorTestParams, job: Job) -> JobExecutor:
-    assert job.spec is not None
-    job.spec.launcher = ep.launcher
-    job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
+def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) -> JobExecutor:
+    if job is not None:
+        assert job.spec is not None
+        job.spec.launcher = ep.launcher
+        job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
     return JobExecutor.get_instance(ep.executor, url=ep.url)
