@@ -26,6 +26,15 @@ selector. The string `"<&executor-type>"` must be a standalone token as
 far as the syntax highlighter is concerned. That is, it probably won't
 work if it's in a comment.
 
+An alternative string to `"<&executor-type>"` is `execparams.executor`.
+This so that one could have statements of the form
+
+    x = f(execparams.executor)
+
+works with the selector mechanism. This would allow rendering of
+verbatim functional test cases that parametrize the executor types and
+representing them with selectors in the documentation.
+
 To add alternative code blocks, use:
 
 ```Sphinx
