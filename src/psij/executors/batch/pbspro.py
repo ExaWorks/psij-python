@@ -90,7 +90,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         # the slurm cancel command had a -Q parameter
         # which does not report an error if the job is already
         # completed.
-        # TODO: whats the pbs equivalent of that?
+        # TODO: what's the pbs equivalent of that?
         # there is -x which also removes job history (so would need to
         # check that this doesn't cause implicit COMPLETED states when
         # maybe it should be cancelled states?)

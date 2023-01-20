@@ -163,7 +163,7 @@ class BatchSchedulerExecutor(JobExecutor):
     strongly encouraged to restrict the query of job states to the specified jobs in order to reduce
     the load on the queuing system. The output of the status command is then parsed using
     :func:`~parse_status_output` and the status of each job is updated accordingly. If the status
-    of a registered job is not found in the ouput of the queue status command, it is assumed
+    of a registered job is not found in the output of the queue status command, it is assumed
     completed (or failed, depending on its exit code), since most queuing systems automatically
     purge completed jobs from their databases after a short period of time. The exit code is read
     from the exit code file, as described above. If the exit code value is not zero, the job is
@@ -206,7 +206,7 @@ class BatchSchedulerExecutor(JobExecutor):
         try:
             logger.debug('Job %s: running submit command', job.id)
             out = self._run_command(self.get_submit_command(job, submit_file_path))
-            logger.debug('Job %s: submit command ouput: %s', job.id, out)
+            logger.debug('Job %s: submit command output: %s', job.id, out)
             job._native_id = self.job_id_from_submit_output(out)
             logger.info('Job %s: native id: %s', job.id, job.native_id)
             self._set_job_status(job, JobStatus(JobState.QUEUED,

@@ -43,7 +43,7 @@ def make_singularity_spec(image=None,
     '''
     :param image: path to image file
     :param bind_input: List of input paths
-    :param bind_output: :ist of output paths
+    :param bind_output: List of output paths
     :param command: name of script/command to be executed
     :param options: command line options for command
     '''

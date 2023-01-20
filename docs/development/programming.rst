@@ -99,7 +99,7 @@ The general workflow used by the batch scheduler executor to submit a job is as
 follows:
 
     1. Generate a submit script in the *work directory*, which is obtained
-    from the `config` object at executor intialization, and which defaults to
+    from the `config` object at executor initialization, and which defaults to
     `~/.psij/work/<executor.name>`, where `<executor.name>` is the value of
     the `name` of the implementing class. The submit script is generated using
     the
@@ -112,7 +112,7 @@ follows:
 
     3. Invoke
     :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.job_id_from_submit_output`
-    to obtain the job's native ID from the outut of the submit command executed
+    to obtain the job's native ID from the output of the submit command executed
     in step (2).
 
     4. Register the job with the *status polling thread*.
