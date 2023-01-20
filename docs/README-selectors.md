@@ -21,7 +21,7 @@ substitute the value selected in the selector. For example:
     x = f("<&executor-type>")
 
 When rendered, the `<&executor-type>` string will be replaced by the
-lower case version of the selected value in the immediately preceeding
+lower case version of the selected value in the immediately prceeding
 selector. The string `"<&executor-type>"` must be a standalone token as
 far as the syntax highlighter is concerned. That is, it probably won't
 work if it's in a comment.
@@ -41,7 +41,7 @@ To add alternative code blocks, use:
 ```
 
 Alternate code blocks as well as value substitutions bind to the closest
-preceeding selector. However, selectors are synchronized, in that
+preeeding selector. However, selectors are synchronized, in that
 selecting "Local" in one selector, will also select "Local" in all other
 selectors of the same type (i.e. "executor-type-*") that have "Local" as
 a listed value. If a selector does not have that value, the values and
