@@ -9,9 +9,9 @@ def test_getting_started_scheduling_info(execparams: ExecutorTestParams) -> None
         JobSpec(
             executable="/bin/date",
             resources=ResourceSpecV1(node_count=1),
-            attributes=JobAttributes(
-                queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
-            ),
+            # attributes=JobAttributes(
+            #     queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
+            # ),
         )
     )
 
