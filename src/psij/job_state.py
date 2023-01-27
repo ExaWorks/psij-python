@@ -11,7 +11,7 @@ class JobState(bytes, Enum):
 
     def __new__(cls, index: int, order: int, name: str, final: bool) -> 'JobState':  # noqa: D102
         # This is used internally to allow enum initialization with multiple parameters
-        obj = bytes.__new__(cls)  # type: 'JobState'
+        obj: 'JobState' = bytes.__new__(cls)
         obj._value_ = index
         obj._order = order
         obj._name = name
@@ -20,9 +20,9 @@ class JobState(bytes, Enum):
 
     def __init__(self, *args: object) -> None:  # noqa: D107
         # this is only here to declare the types of the properties
-        self._order = self._order  # type: int
-        self._name = self._name  # type: str
-        self._final = self._final  # type: bool
+        self._order: int = self._order
+        self._name: str = self._name
+        self._final: bool = self._final
 
     NEW = (0, 0, 'NEW', False)
     """

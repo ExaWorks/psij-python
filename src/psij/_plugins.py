@@ -62,8 +62,8 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
     if desc.name not in store:
         store[desc.name] = []
     existing = store[desc.name]
-    entry = _VersionEntry(desc.version, desc_path=desc.path, plugin_path=mod_path,
-                          ecls=cls, exc=exc)  # type: _VersionEntry[T]
+    entry: _VersionEntry[T] = _VersionEntry(desc.version, desc_path=desc.path,
+                                            plugin_path=mod_path, ecls=cls, exc=exc)
     # check if an object with this version already exists
     index = bisect_left(existing, entry)
     if index != len(existing) and existing[index].version == desc.version:

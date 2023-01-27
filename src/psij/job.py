@@ -45,11 +45,11 @@ class Job(object):
         self._id = _generate_id()
         self._status = JobStatus(JobState.NEW)
         # need indirect ref to avoid a circular reference
-        self.executor = None  # type: Optional['psij.JobExecutor']
+        self.executor: Optional['psij.JobExecutor'] = None
         # allow the native ID to be anything and do the string conversion in the getter; there's
         # no point in storing integers as strings.
-        self._native_id = None  # type: Optional[object]
-        self._cb = None  # type: Optional[JobStatusCallback]
+        self._native_id: Optional[object] = None
+        self._cb: Optional[JobStatusCallback] = None
         self._status_cv = threading.Condition()
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('New Job: {}'.format(self))

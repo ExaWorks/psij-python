@@ -33,13 +33,13 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
     if not job.spec.attributes or not job.spec.attributes._custom_attributes:
         return {}
 
-    r = {}  # type: Dict[str, Union[object, List[Dict[str, object]]]]
+    r: Dict[str, Union[object, List[Dict[str, object]]]] = {}
 
     for k, v in job.spec.attributes._custom_attributes.items():
         ks = k.split('.', maxsplit=1)
         if len(ks) == 2:
             if ks[0] not in r:
-                r[ks[0]] = []  # type[List[Dict[str, object]]
+                r[ks[0]] = []
             cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
         else:
             r[k] = v
@@ -563,7 +563,7 @@ class _QueuePollThread(Thread):
         self.config = config
         self.executor = executor
         # native_id -> job
-        self._jobs = {}  # type: Dict[str, List[Job]]
+        self._jobs: Dict[str, List[Job]] = {}
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()

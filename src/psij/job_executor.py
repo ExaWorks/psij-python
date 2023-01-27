@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class JobExecutor(ABC):
     """An abstract base class for all JobExecutor implementations."""
 
-    _executors = {}  # type: Dict[str, List[_VersionEntry['JobExecutor']]]
+    _executors: Dict[str, List[_VersionEntry['JobExecutor']]] = {}
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None):
@@ -40,9 +40,9 @@ class JobExecutor(ABC):
         assert config
         self.config = config
         # _cb is not thread-safe; changing it while jobs are running could lead to badness
-        self._cb = None  # type: Optional[JobStatusCallback]
+        self._cb: Optional[JobStatusCallback] = None
         self._launchers_lock = RLock()
-        self._launchers = {}  # type: Dict[str, Launcher]
+        self._launchers: Dict[str, Launcher] = {}
 
     @property
     def name(self) -> str:
