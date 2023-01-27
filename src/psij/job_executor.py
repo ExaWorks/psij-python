@@ -136,15 +136,15 @@ class JobExecutor(ABC):
         """
         Cancels a job that has been submitted to underlying executor implementation.
 
-        A successful return of this method only indicates that the request for cancelation has been
+        A successful return of this method only indicates that the request for cancellation has been
         communicated to the underlying implementation. The job will then be canceled at the
         discretion of the implementation, which may be at some later time. A successful
-        cancelation is reflected in a change of status of the respective job to
+        cancellation is reflected in a change of status of the respective job to
         :attr:`~psij.JobState.CANCELED`. User code can synchronously wait until the
         :attr:`~psij.JobState.CANCELED` state is reached using `job.wait(JobState.CANCELED)` or
         even `job.wait()`, since the latter would wait for all final states, including
         `JobState.CANCELED`. In fact, it is recommended that `job.wait()` be used because it is
-        entirely possible for the job to complete before the cancelation is communicated to the
+        entirely possible for the job to complete before the cancellation is communicated to the
         underlying implementation and before the client code receives the completion notification.
         In such a case, the job will never enter the `CANCELED` state and
         `job.wait(JobState.CANCELED)` would hang indefinitely.
