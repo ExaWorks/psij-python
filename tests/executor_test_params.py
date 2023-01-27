@@ -18,11 +18,11 @@ class ExecutorTestParams:
         spec_l = re.split(':', spec, maxsplit=2)
         self.executor = spec_l[0]
         if len(spec_l) > 1:
-            self.launcher = spec_l[1]  # type: Optional[str]
+            self.launcher: Optional[str] = spec_l[1]
         else:
             self.launcher = None
         if len(spec_l) == 3:
-            self.url = spec_l[2]  # type: Optional[str]
+            self.url: Optional[str] = spec_l[2]
         else:
             self.url = None
 
