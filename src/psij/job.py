@@ -154,6 +154,8 @@ class Job(object):
 
         :raises psij.SubmitException: if the job has not yet been submitted.
         """
+        if self.status.final:
+            return
         if not self.executor:
             raise SubmitException('Cannot cancel job: not bound to an executor.')
         else:
