@@ -33,7 +33,7 @@
     {{/processes_per_node}}
 
     {{#gpu_cores_per_process}}
-#SBATCH --gpus_per_task={{.}}
+#SBATCH --gpus-per-task={{.}}
     {{/gpu_cores_per_process}}
 
     {{#cpu_cores_per_process}}
@@ -41,7 +41,7 @@
         used. The default plugin uses the literal meaning for 'CPU' - physical processor. The
         consumable resource allocation plugin, on the other hand, equates 'CPU' to a thread (if
         hyperthreaded CPUs are used) or CPU core (for non-hyperthreaded CPUs).}}
-#SBATCH --cpus_per_task={{.}}
+#SBATCH --cpus-per-task={{.}}
     {{/cpu_cores_per_process}}
 {{/job.spec.resources}}
 
