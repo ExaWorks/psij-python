@@ -12,7 +12,7 @@ from psij.job import Job
 class Launcher(ABC):
     """An abstract base class for all launchers."""
 
-    _launchers = {}  # type: Dict[str, List[_VersionEntry['Launcher']]]
+    _launchers: Dict[str, List[_VersionEntry['Launcher']]] = {}
     DEFAULT_LAUNCHER_NAME = 'single'
 
     def __init__(self, config: Optional[JobExecutorConfig] = None) -> None:

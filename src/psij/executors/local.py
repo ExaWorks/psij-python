@@ -23,11 +23,11 @@ class _ProcessEntry(ABC):
     def __init__(self, job: Job, executor: 'LocalJobExecutor', launcher: Optional[Launcher]):
         self.job = job
         self.executor = executor
-        self.exit_code = None  # type: Optional[int]
-        self.done_time = None  # type: Optional[float]
-        self.out = None  # type: Optional[str]
+        self.exit_code: Optional[int] = None
+        self.done_time: Optional[float] = None
+        self.out: Optional[str] = None
         self.kill_flag = False
-        self.process = None  # type: Optional[subprocess.Popen[bytes]]
+        self.process: Optional[subprocess.Popen[bytes]] = None
         self.launcher = launcher
 
     @abstractmethod
@@ -80,7 +80,7 @@ class _AttachedProcessEntry(_ProcessEntry):
     def poll(self) -> Tuple[Optional[int], Optional[str]]:
         try:
             assert self.process
-            ec = self.process.wait(timeout=0)  # type: Optional[int]
+            ec: Optional[int] = self.process.wait(timeout=0)
             if ec is None:
                 return 0, None
             else:
@@ -105,7 +105,7 @@ def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
 
 
 class _ProcessReaper(threading.Thread):
-    _instance = None  # type: _ProcessReaper
+    _instance: Optional['_ProcessReaper'] = None
     _lock = threading.RLock()
 
     @classmethod
@@ -118,7 +118,7 @@ class _ProcessReaper(threading.Thread):
 
     def __init__(self) -> None:
         super().__init__(name='Local Executor Process Reaper', daemon=True)
-        self._jobs = {}  # type: Dict[Job, _ProcessEntry]
+        self._jobs: Dict[Job, _ProcessEntry] = {}
         self._lock = threading.RLock()
 
     def register(self, entry: _ProcessEntry) -> None:
@@ -137,7 +137,7 @@ class _ProcessReaper(threading.Thread):
             time.sleep(_REAPER_SLEEP_TIME)
 
     def _check_processes(self) -> None:
-        done = []  # type: List[_ProcessEntry]
+        done: List[_ProcessEntry] = []
         for entry in self._jobs.values():
             if entry.kill_flag:
                 entry.kill()
