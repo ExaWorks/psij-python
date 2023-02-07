@@ -8,6 +8,7 @@ import psij
 from psij import InvalidJobException
 from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
+from psij.job_state import JobState
 from psij.job_status import JobStatus
 from psij.job import Job, JobStatusCallback, FunctionJobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
@@ -88,6 +89,8 @@ class JobExecutor(ABC):
         -------
             A non-null job specification
         """
+        if job.status.state != JobState.NEW:
+            raise InvalidJobException('Job must be in NEW state')
         spec = job.spec
         if not spec:
             raise InvalidJobException('Missing specification')
