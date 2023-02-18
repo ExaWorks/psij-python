@@ -12,7 +12,7 @@ PYTHON = $(shell if python --version 2>&1 | egrep -q 'Python 3\..*' ; then echo 
 .PHONY: tests
 tests:
 	PYTHONPATH=$(CWD)/src:$(CWD)/tests/plugins1:$(CWD)/tests/plugins2:${PYTHONPATH} \
-		${PYTHON} -m pytest --cov-report html -v --cov=tests $(TESTARGS)
+		${PYTHON} -m pytest --cov-report html -v --cov=tests $(TESTARGS). 
 
 .PHONY: verbose-tests
 verbose-tests:
