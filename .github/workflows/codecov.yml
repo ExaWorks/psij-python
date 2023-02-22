@@ -1,4 +1,4 @@
-name: API workflow
+name: Codecov Action 
 
 on: [push, pull_request]
 
@@ -9,9 +9,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install requirements
-      run: pip install -r requirements.txt
+      run: |
+        pip install -r requirements-tests.txt
+        pip install -r requirements-dev.txt
     - name: Run tests and collect coverage
-      run: pytest --cov ./tests
+      run: make tests
     - name: Upload coverage reports to Codecov
       run: |
         # Replace `linux` below with the appropriate OS
