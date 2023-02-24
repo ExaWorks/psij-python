@@ -10,16 +10,16 @@ are uploaded to a test aggregation service. The compatibility of various
 PSI/J branches with various resources can then be assessed and is
 available at https://testing.exaworks.org
 
-How to run tests
+How to Run Tests
 ================
 
 There are a number of ways to run tests. Invoking `pytest` directly,
-running the integration tests and through `cron` (or a similar tool).
+running the integration tests, and through `cron` (or a similar tool).
 
-Setting up an automated testing job
+Setting up an Automated Testing Job
 ===================================
 
-This is the preferred way of running the tests since it allows the PSI/J
+This is the preferred way of running tests since it allows the PSI/J
 team to keep a constant eye on the state of the library on various
 resources. To set up the Cron job (or an alternative method), you can either
 use the provided setup script:
@@ -37,7 +37,7 @@ virtual environment, please run the relevant commands before invoking
 `psij-ci-setup`.
 
 
-Testing with the CI runner
+Testing with the CI Runner
 ==========================
 
 The CI runner is a convenience script which can clone the PSI/J
@@ -106,4 +106,3 @@ or, using `make`, prefix all options with a double dash ("--"):
 Care must, however, be taken since it is impossible to preserve
 whitespace and certain special characters (such as the double quotes)
 when passing arguments through `make`.
-
