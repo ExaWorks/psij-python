@@ -4,13 +4,13 @@ The PSI/J API
 The most important classes in this library are ``Job`` and ``JobExecutor``,
 followed by ``Launcher``.
 
-The Job class and its modifiers
+The Job Class and Its Modifiers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Job-related classes listed in this section (``Job``, ``JobSpec``,
 ``ResourceSpec``, and ``JobAttributes``) are independent of
 executor implementations. The authors strongly recommend that users
-program against these classes, rather than adding executor-specific
+program against these classes rather than adding executor-specific
 configuration options, to the extent possible.
 
 .. autoclass:: psij.Job
@@ -25,7 +25,7 @@ configuration options, to the extent possible.
     :members:
     :noindex:
 
-Job modifiers
+Job Modifiers
 ^^^^^^^^^^^^^
 
 There can be a lot of configuration information that goes into each
@@ -33,7 +33,7 @@ resource manager job. Its walltime, partition/queue, the number of nodes
 it needs, what kind of nodes, what quality of service the job requires, and
 so on.
 
-PSI/J splits those three attributes into three groups: one for generic
+PSI/J splits those attributes into three groups: one for generic
 POSIX information, one for resource information, and one for resource manager
 scheduling policies.
 
@@ -59,7 +59,7 @@ Executors are concrete implementations of mechanisms that execute jobs.
 To get an instance of a specific executor, call
 :meth:`JobExecutor.get_instance(name) <psij.job_executor.JobExecutor.get_instance>`,
 with ``name`` being one of the installed executor names. Alternatively, directly
-instantiate the executor, e.g.
+instantiate the executor, e.g.:
 
 .. code-block:: python
 
@@ -67,7 +67,7 @@ instantiate the executor, e.g.
 
     ex = FluxJobExecutor()
 
-Rather than
+Rather than:
 
 .. code-block:: python
 
@@ -152,7 +152,7 @@ are wrappers around the job executable which can provide additional
 features, such as setting up an MPI environment, starting a copy of the
 job executable on each allocated node, etc. To get a launcher instance,
 call :meth:`Launcher.get_instance(name) <psij.launcher.Launcher.get_instance>`
-with ``name`` being the name of a launcher. Like job executors, above,
+with ``name`` being the name of a launcher. Like job executors,
 launchers are plugins and can come from various places. To obtain a list
 of launchers, you can run:
 
@@ -160,7 +160,7 @@ of launchers, you can run:
 
     $ python -m psij plugins
 
-Launcher base class
+Launcher Base Class
 ^^^^^^^^^^^^^^^^^^^
 
 Like the executor, the ``Launcher`` base class is abstract, but offers
