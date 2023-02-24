@@ -1,4 +1,4 @@
-# Quick start guide
+# Quick Start Guide
 
 This document will guide you through the install procedure and your first hello world example.
 
@@ -17,9 +17,9 @@ If you have conda installed you might want to start from a fresh environment. Th
 2. `conda activate psij`
 
 
-Install psij from the github repository:
+Install psij from the GitHub repository:
 
-1. Clone repository into your working directory:
+1. Clone the repository into your working directory:
 
     `git clone https://github.com/ExaWorks/psij-python.git`
 
@@ -32,15 +32,15 @@ Install psij from the github repository:
 
 
 
-## Hello world
+## Hello World
 
 **Requirements**
 - python3.7
-- job executioner, e.g. slurm in this example
+- Job executioner, e.g. Slurm in this example
 
 **Steps**
 
-1. Create a file *my-workflow.py* and copy and paste the code below:
+1. Create a file *my-workflow.py* and copy and paste this code:
 
 ```python
 
@@ -82,7 +82,6 @@ for i in range(N):
     jobs[i].wait()
 
 ```
-2. In this example the number of jobs is 1. Set *N* to the number of jobs you want to run and save file.
+2. In this example the number of jobs is 1. Set *N* to the number of jobs you want to run and save the file.
 
 3. `python my-workflow.py`
-
