@@ -1,8 +1,8 @@
-# Job examples
+# Job Examples
 
 1. [PDF to Wordcloud](#pdf-to-wordcloud-image)
-2. [Executing a singularity container](#executing-a-singularity-container)
-3. [Submitting a MPI job](#executing-an-mpi-job)
+2. [Executing a Singularity Container](#executing-a-singularity-container)
+3. [Submitting a MPI Job](#executing-an-mpi-job)
 
 ## PDF to Wordcloud Image
 
@@ -19,11 +19,11 @@ Steps:
 
 ![image](../web/images/wordcloud-workflow.svg)
 
-1. extract text from PDF file
+1. Extract text from PDF file.
 
     `pdftotext INPUT.pdf OUTPUT.txt`
 
-2. create image from text
+2. Create image from text.
 
     `wordcloud_cli.py --text OUTPUT.txt --imagefile IMAGE.png`
 
@@ -87,7 +87,7 @@ for j in [pdf2textJob, text2wordcloudJob]:
 ```
 
 
-The tools used in the example above can be easily installed in a docker container:
+The tools used in the example above can be easily installed in a Docker container:
 
 ```
 FROM ubuntu:latest
@@ -98,9 +98,9 @@ RUN apt-get install -y \
 RUN pip install wordcloud
 ```
 
-## Executing a singularity container
+## Executing a Singularity Container
 
-We will run the PDF2Wordcloud example in a container. We will use the docker container described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all required singularity options.
+We will run the PDF2Wordcloud example in a container. We will use the Docker container described above and execute it with singularity. In this case the spec defines the execution of a container with singularity. The actual command line tool is passed as an optional argument after all required singularity options.
 
 ```
 ...
@@ -161,11 +161,11 @@ for j in [make_job(pdf2textSingularitySpec, None), make_job(text2wordcloudSingul
     j.wait()
 ```
 
-## Executing an MPI job
+## Executing an MPI Job
 
 In this example we demonstrate how to wrap and execute an mpi hello world job with PSI/J. The base mpi command is `mpiexec -n 36 -ppn 36 echo Hello world`. This example is introducing the concept of a [job launcher](https://exaworks.org/psij-python/docs/programming.html#launchers), in this case **mpi**, e.g. `job.spec.launcher = "mpirun"`. The complete example script can be found [here](./).
 
-1. Load psij module and instantiate job executer, e.g. local or slurm
+1. Load psij module and instantiate job executer, e.g. local or Slurm
 
 ```
 import psij
