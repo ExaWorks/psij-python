@@ -2,6 +2,10 @@
     --main-font: "Gill Sans";
 }
 
+html {
+    scroll-padding-top: 40pt;
+}
+
 body #psij-app .v-application,
 .v-application .text-h5,
 .v-application,
@@ -23,7 +27,7 @@ body .v-application a {
     background-color: var(--color-bg-inv-1) !important;
 }
 
-.v-app-bar .v-tab {
+.v-app-bar .v-tab, .v-app-bar .v-tab a {
     color: var(--color-fg-inv-1) !important;
 }
 

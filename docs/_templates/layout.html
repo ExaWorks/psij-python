@@ -1,0 +1,34 @@
+{%- extends "cloud/layout.html" -%}
+
+{# We are not processing the output of these pages through Jekyll, so
+   we need to set the variables referenced in the includes. #}
+{% set site = {"baseurl": "/psij-python"} %}
+
+{% block scripts %}
+    {% include "../../web/_includes/head.html" %}
+    
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    <v-app id="psij-app">
+        {% include "../../web/_includes/menu.html" %}
+        {{ super() }}
+{% endblock %}
+
+{% block footer %}
+        {{ super() }}
+        
+        {% include "../../web/_includes/footer.html" %}
+    </v-app>
+    
+    {# Same as above #}
+    {% set page = {"tab": 2} %}
+    {% include "../../web/_includes/vueinit.html" %}
+    
+
+{% endblock %}
+
+
+{% block sidebartoggle %}
+{% endblock %}
