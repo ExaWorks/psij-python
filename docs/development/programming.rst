@@ -92,7 +92,7 @@ This is an abstract base class for submit-script based executors. It assumes
 a Local Resource Manager (LRM) that allows job submission by pointing a
 *submit* command (a tool accessible through a standard POSIX `exec()`) to a
 file that contains all relevant job information. It also assumes that there
-exist commands for cancelling the job, and for querying for the status of one
+exist commands for cancelling the job and for querying for the status of one
 or more jobs previously submitted.
 
 The general workflow used by the batch scheduler executor to submit a job is as
@@ -151,7 +151,7 @@ standard streams of the actual launcher tool, which is assumed to properly
 aggregate the output streams of the job ranks.
 
 In addition to the functions above, PSI/J launchers also take care of invoking
-the pre and post launch scripts.
+the pre- and post-launch scripts.
 
 Since script based launchers are interchangeable, they must have a well
 defined interface. This interface consists of:
@@ -175,5 +175,5 @@ defined interface. This interface consists of:
 Writing a custom script based launcher can be as easy as subclassing
 :class:`~psij.launchers.script_based_launcher.ScriptBasedLauncher` and passing
 a launcher script path to the base class constructor. For example, see the
-`MPI launcher class <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/mpirun.py>` and the
-`MPI launcher script <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/scripts/mpi_launch.sh>`.
+`MPI launcher class <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/mpirun.py>`_ and the
+`MPI launcher script <https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/scripts/mpi_launch.sh>`_.
