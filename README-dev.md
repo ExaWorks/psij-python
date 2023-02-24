@@ -48,8 +48,8 @@ Make sure that `build.sh` is called from the main directory. The output will
 be in `web-build`.
 
 3. Render the web site and themed documentation, which can be done using Jekyll.
-To install Jekyll, follow these
-[instructions](https://jekyllrb.com/docs/installation/). Then run
+To install Jekyll, follow the instructions in step 2 of 
+[web/README.md](web/README.md). You only need to do this once. Then run
 
     ```
     web/serve.sh
