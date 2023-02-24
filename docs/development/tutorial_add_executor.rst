@@ -1,14 +1,14 @@
 Adding an executor
 ==================
 
-This tutorial will write an executor for PBSPro using PSI/J batch scheduler
+This tutorial will write an executor for PBSPro using the PSI/J batch scheduler
 executor interface.
 
 It should be useful when writing an executor for any HPC style scheduler
 that looks like SLURM or PBSPro.
 
 
-What is an executor and why might you want to add one?
+What Is an Executor and Why Might You Want to Add One?
 ------------------------------------------------------
 
 PSI/J provides a common interface for obtaining allocations on compute resources.
@@ -16,7 +16,7 @@ PSI/J provides a common interface for obtaining allocations on compute resources
 Usually, those compute resources will already have some batch scheduler in place (for example, SLURM).
 
 A PSI/J executor is the code that tells the core of PSI/J how to interact with
-such a batch scheduler, so that it can provide a common interface to applications.
+such a batch scheduler so that it can provide a common interface to applications.
 
 A PSI/J executor needs to implement the abstract methods defined on the :class:`psij.job_executor.JobExecutor` base class.
 The documentation for that class has reference material for each of the methods that won't be repeated here.
@@ -25,11 +25,11 @@ For batch scheduler systems, the :class:`.BatchSchedulerExecutor` subclass provi
 This tutorial will focus on using BatchSchedulerExecutor as a base, rather than implementing JobExecutor directly.
 
 The batch scheduler executor is based around a model where interactions with a local resource manager happen via command line invocations.
-For example, with PBS, that `qsub` and `qstat` commands are used to submit a request and to see status.
+For example, with PBS `qsub` and `qstat` commands are used to submit a request and to see status.
 
-To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
+To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, use subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
 
-First setup a directory structure::
+First set up a directory structure::
 
   mkdir project/
   cd project/
@@ -38,36 +38,36 @@ First setup a directory structure::
 
 We're going to create three source files in this directory structure:
 
-* ``psijpbs/pbspro.py`` - this will contain the bulk of the code
+* ``psijpbs/pbspro.py`` - This will contain the bulk of the code.
 
-* ``psijpbs/pbspro.mustace`` - this will contain a template for a PBS Pro job submission file
+* ``psijpbs/pbspro.mustace`` - This will contain a template for a PBS Pro job submission file.
 
-* ``psij-descriptors/pbspro_descriptor.py`` - this file tells the PSI/J core what this package implements.
+* ``psij-descriptors/pbspro_descriptor.py`` - This file tells the PSI/J core what this package implements.
 
 First, we'll build a skeleton that won't work, and see that it doesn't work in the test suite. Then we'll build up to the full functionality.
 
 Prerequisites:
 
-* you have the psij-python package installed already and are able to run whatever basic verification you think is necessary
+* You have the psij-python package installed already and are able to run whatever basic verification you think is necessary.
 
-* you are able to submit to PBS Pro on a local system
+* You are able to submit to PBS Pro on a local system.
 
 
-A not-implemented stub
+A Not-implemented Stub
 ----------------------
 
-Add the project directory to the python path directory::
+Add the project directory to the Python path directory::
 
   export PYTHONPATH=$(pwd):$PYTHONPATH
 
-Create a simple BatchSchedulerExecutor subclass that does nothing new, in `psijpbs/pbspro.py`::
+Create a simple BatchSchedulerExecutor subclass that does nothing new in `psijpbs/pbspro.py`::
 
   from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
 
   class PBSProJobExecutor(BatchSchedulerExecutor):
       pass
 
-and create a descriptor file to tell psi/j about this, ``psij-descriptors/pbspro.py``::
+and create a descriptor file to tell PSI/J about this, ``psij-descriptors/pbspro.py``::
 
   from distutils.version import StrictVersion
 
@@ -85,24 +85,24 @@ Now, run the test suite. It should fail with an error reporting that the resourc
 
 That error message tells us what we need to implement. There are three broad pieces of functionality:
 
-* submitting a job::
+* Submitting a job::
 
     generate_submit_script
     get_submit_command
     job_id_from_submit_output
 
-* requesting job status::
+* Requesting job status::
 
     get_status_command
     parse_status_output
 
-* cancelling a job::
+* Cancelling a job::
 
     get_cancel_command
     process_cancel_command_output
 
 
-Let's implement all of these with stubs that return NotImplementedError that we will then flesh out::
+Let's implement all of these with stubs that return a NotImplementedError that we will then flesh out::
 
   class PBSProJobExecutor(BatchSchedulerExecutor):
 
@@ -127,15 +127,13 @@ Let's implement all of these with stubs that return NotImplementedError that we 
     def parse_status_output(*args, **kwargs):
         raise NotImplementedError
 
-Now running the same pytest command will give a different error - further along into attempting to submit a job:
-
-... ::
+Now running the same pytest command will give a different error further along into attempting to submit a job::
 
   >       assert config
   E       AssertionError
 
 
-This default BatchSchedulerExecutor code needs a configuration object, and none was supplied.
+This default BatchSchedulerExecutor code needs a configuration object and none was supplied.
 
 A configuration object can contain configuration specific to this particular executor. However,
 for now we are not going to specify a custom configuration object and instead will re-use
@@ -163,10 +161,10 @@ Running pytest again, we get as far as seeing PSI/J is trying to do submit-relat
 
  ../tutorial-play/psijpbs/pbspro.py:13: NotImplementedError
 
-Implementing job submission
+Implementing Job Submission
 ---------------------------
 
-To implement submission, we need to implement these three methods:
+To implement submission, we need to implement three methods:
 
 * :py:meth:`psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script`
 * :py:meth:`psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command`
@@ -174,16 +172,16 @@ To implement submission, we need to implement these three methods:
 
 You can read the docstrings for each of these methods for more information, but briefly the submission process is:
 
-``generate_submit_script`` should generate a submit script specific to the batch scheduler.
+1. ``generate_submit_script`` should generate a submit script specific to the batch scheduler.
 
-``get_submit_command`` should return the command line necessary to submit that script to the batch scheduler.
+2. ``get_submit_command`` should return the command line necessary to submit that script to the batch scheduler.
 
 The output of that command should be interpreted by ``job_id_from_submit_output`` to extract a batch scheduler specific job ID,
 which can be used later when cancelling a job or getting job status.
 
 So let's implement those.
 
-In line with other PSI/J executors, we're going to delegate script generation to a template based helper. So add a line to initialise a :py:class:`.TemplatedScriptGenerator` in the
+In line with other PSI/J executors, we're going to delegate script generation to a template based helper. So add a line to initialize a :py:class:`.TemplatedScriptGenerator` in the
 executor initializer, pointing at a (as yet non-existent) template file, and replace ``generate_submit_script`` with a delegated call to `TemplatedScriptGenerator`::
 
     from pathlib import Path
@@ -272,17 +270,17 @@ In the PBS Pro case, as shown in the example above, that is pretty straightforwa
         return out.strip()
 
 
-That's enough to get jobs submitted using PSI/J, but not enough to run the test suite. Instead, the test suite will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising NotImplementedError.
+That's enough to get jobs submitted using PSI/J, but not enough to run the test suite. Instead, the test suite will appear to hang, because the PSI/J core code gets a bit upset by status monitoring methods raising a NotImplementedError.
 
 
-Implementing status
+Implementing Status
 -------------------
 
-PSI/J needs to ask the batch scheduler for status about jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
+PSI/J needs to ask the batch scheduler for the status of jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
-* :py:meth:`.BatchSchedulerExecutor.get_status_command` - like ``get_submit_command``, this should return a batch scheduler specific commandline, this time to output job status.
+* :py:meth:`.BatchSchedulerExecutor.get_status_command` - Like ``get_submit_command``, this should return a batch scheduler specific command line, this time to output job status.
 
-* :py:meth:`.BatchSchedulerExecutor.parse_status_output` - this will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
+* :py:meth:`.BatchSchedulerExecutor.parse_status_output` - This will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
 
 Here's an implementation for ``get_status_command``::
 
@@ -296,7 +294,7 @@ This constructs a command line which looks something like this::
 
     qstat -f -F json -x 2154.edtb-01.mcp.alcf.anl.gov
 
-The parameters change the default behaviour of ``qstat`` to something more useful for parsing: ``-f`` asks for full output, with `-x` including information for completed jobs (which is normally suppressed) and ``-F json`` asking for the output to be formatted as JSON (rather than a default text tabular view).
+The parameters change the default behavior of ``qstat`` to something more useful for parsing: ``-f`` asks for full output, with `-x` including information for completed jobs (which is normally suppressed) and ``-F json`` asking for the output to be formatted as JSON (rather than a default text tabular view).
 
 This JSON output, which is passed to ``parse_status_output`` looks something like this (with a lot of detail removed)::
 
@@ -350,28 +348,28 @@ We still haven't implemented the cancel methods, though. That will be revealed b
 
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest 'tests' --executors=pbspro
 
-which should give this error (amongst others -- this commandline formation is ugly and I'd like it to work more along the lines of `make test`)::
+which should give this error (amongst others—this commandline formation is ugly and I'd like it to work more along the lines of `make test`)::
 
     FAILED tests/test_executor.py::test_cancel[pbspro] - NotImplementedError
 
-Implementing cancel
+Implementing Cancel
 -------------------
 
 The two methods to implement for cancellation follow the same pattern as for submission and status:
 
-* :py:meth:`.BatchSchedulerExecutor.get_cancel_command` - this should form a command for cancelling a job.
-* :py:meth:`.BatchSchedulerExecutor.process_cancel_command_output` - this should interpret the output from the cancel command.
+* :py:meth:`.BatchSchedulerExecutor.get_cancel_command` - This should form a command for cancelling a job.
+* :py:meth:`.BatchSchedulerExecutor.process_cancel_command_output` - This should interpret the output from the cancel command.
 
-It looks like you don't actually need to implement process_cancel_command_output beyond the stub we already have, to make the abstract class mechanism happy. Maybe that's something that should change in psi/j?
+It looks like you don't actually need to implement `process_cancel_command_output` beyond the stub we already have, to make the abstract class mechanism happy. Maybe that's something that should change in psi/j?
 
 Here's an implementation of `get_cancel_command`::
 
     def get_cancel_command(self, native_id: str) -> List[str]:
         return ['qdel', native_id]
 
-That's enough to tell PBS Pro how to cancel a job, but it isn't enough for PSI/J to know that a job was actually cancelled: the JobState from `parse_status_output` will still return a state of COMPLETED, when we actually want CANCELED. That's because the existing job marks a job as COMPLETED whenever it reaches PBS Pro state `F` - no matter how the job finished.
+That's enough to tell PBS Pro how to cancel a job, but it isn't enough for PSI/J to know that a job was actually cancelled: the JobState from `parse_status_output` will still return a state of COMPLETED, when we actually want CANCELED. That's because the existing job marks a job as COMPLETED whenever it reaches PBS Pro state `F`—no matter how the job finished.
 
-So here's an updated `parse_status_output` which checks the ``Exit_status`` field in the qstat JSON to see if it exited with status code 265 - that means that the job was killed with signal 9. and if so, marks the job as CANCELED instead of completed::
+So here's an updated `parse_status_output` which checks the ``Exit_status`` field in the qstat JSON to see if it exited with status code 265—that means that the job was killed with signal 9. and if so, marks the job as CANCELED instead of COMPLETED::
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         check_status_exit_code('qstat', exit_code, out)
@@ -399,19 +397,18 @@ This isn't necessarily the right thing to do: some PBS installs will use 128+9 =
 
 
 
-What's missing?
+What's Missing?
 ---------------
 
 The biggest thing that was omitted was in the mustache template. A :py:class:`psij.Job` object contains lots of options which could be transcribed into the template (otherwise they will be ignored). Have a look at the docstrings for ``Job`` and at other templates in the PSI/J source code for examples.
 
 The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a different state for a job than what is in it, this will break. So make sure you deal with all the states of your batch scheduler, not just a few that seem obvious.
 
-How to distribute your executor
+How to Distribute Your Executor
 -------------------------------
 
 If you want to share your executor with others, here are two ways:
 
-i) you can make a python package and distribute that as an add-on without needing to interact with the psi/j project
+1. You can make a Python package and distribute that as an add-on without needing to interact with the PSI/J project.
 
-ii) you can make a pull request against the psi/j repo
-
+2. You can make a pull request against the PSI/J repo.
