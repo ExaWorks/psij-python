@@ -14,8 +14,8 @@ documentation](https://exaworks.org/psij-python/#docs).
 
 ## Introduction
 
-1. [Quick start guide](QuickStart.md)
-2. [Workflow examples](scripts/WORKFLOW-EXAMPLES.md)
-3. [Setting up tests](README-testing.md)
-4. [How to contribute](CONTRIBUTING.md)
-5. [Building the documentation](README-dev.md)
+1. [Quick Start Guide](QuickStart.md)
+2. [Workflow Examples](scripts/WORKFLOW-EXAMPLES.md)
+3. [Setting up Tests](README-testing.md)
+4. [How to Contribute](CONTRIBUTING.md)
+5. [Building the Documentation](README-dev.md)
