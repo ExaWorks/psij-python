@@ -10,7 +10,7 @@ fi
 if [ "$1" != "--quick" ]; then
 	mkdir -p web-build
 
-	#pip install -r requirements-docs.txt
+	pip install -r requirements-docs.txt
 	make web-docs
 
 	mkdir -p web-build/docs
