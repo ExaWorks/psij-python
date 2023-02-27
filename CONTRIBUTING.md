@@ -8,13 +8,13 @@ details how to contribute in a standardized and efficient manner.
 
 ## Git Workflow Summary
 
-- Ensure that you've opened an Issue on Github and consensus around the
-  solution has be reached.
+- Ensure that you've opened an Issue on GitHub and consensus around the
+  solution has been reached.
   - Minor changes (e.g., grammatical fixes) do not require an Issue first.
-- Make a new branch for each separable set of changes — ["one task, one
-  branch"](https://mail.python.org/pipermail/ipython-dev/2010-October/005632.html).
-- [Each commit should make one change](https://dev.to/ruanbrandao/how-to-make-good-git-commits-256k).
-  to aide reviewing and (in the worst case) simplify reverting it in the future.
+- Make a new branch for each separable set of changes—["one task, one
+  branch."](https://mail.python.org/pipermail/ipython-dev/2010-October/005632.html).
+- [Each commit should make one change](https://dev.to/ruanbrandao/how-to-make-good-git-commits-256k)
+  to aid reviewing and (in the worst case) simplify reverting it in the future.
   - A patch commit message should consist of a single short (less than 50
     character) sentence summarizing the change, optionally followed by a blank line
     and then a more thorough description.
@@ -25,16 +25,16 @@ details how to contribute in a standardized and efficient manner.
   - If you do find yourself merging from upstream, consider [Rebasing on
     upstream](https://matplotlib.org/stable/devel/gitwash/development_workflow.html#rebase-on-trunk).
 - Submit a Pull Request from your feature branch against upstream.
-  - Use the Draft PR feature on Github or title your PR with `WIP` if your PR is
+  - Use the Draft PR feature on GitHub or title your PR with `WIP` if your PR is
     not ready for a complete review immediately upon submission.
-- Ask on the [Exaworks slack](https://exaworks.slack.com) if you get stuck.
+- Ask on the [Exaworks Slack](https://exaworks.slack.com) if you get stuck.
 
 
 ## Pull Request (PR) Merging Process
 
 - PR reviews should be timely. Both reviewer and PR issuer should make a good
   attempt at resolving the conversation as quickly as possible.
-- PR reviews exist to check obvious things aren't missed, not to achieve
+- PR reviews exist to check that obvious things aren't missed, not to achieve
   perfection.
 - A PR is eligible for merging if it has at least one approval from a
   project maintainer, no outstanding requested changes or discussions, and passes
@@ -55,16 +55,16 @@ under-the-hood. PEP8 compliance is also verified as part of the CI by `flake8`.
 
 ## Type Annotations
 
-As much python code in this repo as is feasible should include type annotations.
+As much Python code in this repo as is feasible should include type annotations.
 These type annotations can then be ingested and checked by `mypy`, which can be
 run with `make typecheck` and `make checks`.
 
 ## Docstrings
 
-As many public python interfaces in this repo as is feasible should
+As many public Python interfaces in this repo as is feasible should
 include docstring documentation. All docstrings should follow the
 [numpy format](https://numpydoc.readthedocs.io/en/latest/format.html). These
 docstrings are automatically parsed by Sphinx and turned into html-based
 documentation hosted on readthedocs. Document generation can be run locally
 with `make docs`. For more details about building the documentation, please
-see [`README-dev`][README-dev.md].
+see [`README-dev`](README-dev.md).

@@ -21,7 +21,7 @@ Install from pip
 
     pip install psij
 
-Install from source
+Install from Source
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
@@ -40,16 +40,15 @@ plus a bunch of attributes.  Static job attributes such as resource requirements
 are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at
 creation. Dynamic job attributes such as the :class:`JobState
 <psij.job_state.JobState>` are modified by :class:`JobExecutors
-<psij.job_executor.JobExecutor>` as the :class:`Job <psij.job.Job>`
-progresses through its lifecycle.
+<psij.job_executor.JobExecutor>` as a Job progresses through its lifecycle.
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific
 Resource Manager, e.g. Slurm, on which the Job is being executed.  Generally,
 when jobs are submitted, they will be queued for a variable period of time,
-depending on how busy the target machine is. Once the Job is started, its
+depending on how busy the target machine is. Once a Job is started, its
 executable is launched and runs to completion.
 
-In PSI/J, a job is submitted by :meth:`JobExecutor.submit(Job)
+In PSI/J, a Job is submitted by :meth:`JobExecutor.submit(Job)
 <psij.job_executor.JobExecutor.submit>` which permanently binds the Job to that
 executor and submits it to the underlying resource manager.
 
@@ -80,7 +79,7 @@ Local // Slurm // LSF // PBS // Cobalt
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance("<&executor-type>")
+    ex = JobExecutor.get_instance(execparams.executor)
     job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 

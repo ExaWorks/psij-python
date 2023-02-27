@@ -10,8 +10,6 @@
 *****************************************************/
 
 @import url("https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.css");
-@import url("style.css");
-@import url("theme-4.css");
 @import url("basic.css");
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400&display=swap");
 
@@ -44,6 +42,7 @@ div.relbar-top {
     background-color: #e0e0e0;
 }
 
+
 div.related {
     width: 100%;
     background: var(--color-bg-inv-2);
@@ -64,7 +63,7 @@ div.related a {
     padding: 0.3em 0.6em;
 
     font-weight: bold;
-    color: var(--color-fg-inv);
+    color: var(--color-fg-inv) !important;
     border: 1px solid transparent;
     transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
 }
@@ -164,7 +163,7 @@ div.sphinxsidebar ul {
 }
 
 div.sphinxsidebar a {
-    color: var(--color-fg-norm-2);
+    color: var(--color-fg-norm-2) !important;
     border: 1px solid transparent;
     border-width: 1px 0;
     transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
