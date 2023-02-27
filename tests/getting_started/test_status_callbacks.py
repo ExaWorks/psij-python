@@ -1,12 +1,12 @@
 import time
-from psij import Job, JobSpec, JobExecutor
+from psij import Job, JobSpec, JobStatus, JobExecutor
 from executor_test_params import ExecutorTestParams
 
 count = 10
 
 
 def test_getting_started_scheduling_info(execparams: ExecutorTestParams) -> None:
-    def callback(job, status):
+    def callback(job: Job, status: JobStatus) -> None:
         global count
 
         if status.final:
