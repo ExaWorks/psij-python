@@ -12,8 +12,7 @@ to create issues and pull requests. Please follow the
 `contributing guide <https://github.com/ExaWorks/psij-python/blob/main/CONTRIBUTING.md>`_.
 
 Please note that many high-level design questions may be better discussed in
-the `PSI/J design repo <https://github.com/ExaWorks/job-api-spec>`_, rather than the Python library implementation
-linked to above.
+the `PSI/J design repo <https://github.com/ExaWorks/job-api-spec>`_, rather than the Python library implementation.
 
 Feel free to chat with the developers on our `Slack <https://exaworks.slack.com>`_!
 
@@ -26,7 +25,7 @@ Once you have cloned the code and installed the dependencies
 suite with ``make tests``. To run the style and type checks, run
 ``make checks``.
 
-The testing dashboard website
+The Testing Dashboard Website
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To record your test results to PSI/J's public testing dashboard,

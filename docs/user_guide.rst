@@ -2,7 +2,7 @@
 User Guide
 ==========
 
-Who PSI/J is for
+Who PSI/J Is for
 ----------------
 
 PSI/J is a Python library for submitting and managing HPC jobs via arbitrary
@@ -13,17 +13,17 @@ LSF, Flux, Cobalt, PBS, and your local machine, we think you will find that
 PSI/J simplifies your work considerably.
 
 
-Who PSI/J is (probably) not for
+Who PSI/J Is (Probably) Not for
 -------------------------------
 
-If you were sure that you will only *ever* be launching jobs on ORNL's Summit
+If you are sure that you will only *ever* be launching jobs on ORNL's Summit
 system, and you don't care about any other cluster or machine, then you may as
 well interact with LSF (the resource manager on Summit) directly, rather than
 indirectly through PSI/J. In that case PSI/J would not really be adding much
 other than complexity.
 
 If you write application code that is meant to run on various HPC clusters, but
-which never make calls to the underlying resource manager (e.g. by calling into
+which never makes calls to the underlying resource manager (e.g. by calling into
 Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), then
 PSI/J will not help you. This is likely your situation if you are a developer
 working on a MPI-based science simulation, since we have observed that it is
@@ -57,7 +57,7 @@ What is a JobExecutor?
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific RM,
 e.g. Slurm, on which the job is being executed.  Generally, when jobs are
-submitted, they will be queued for a variable period of time, depending on how
+submitted they will be queued for a variable period of time, depending on how
 busy the target machine is. Once the job is started, its executable is
 launched and runs to completion, and the job will be marked as completed.
 
@@ -79,8 +79,8 @@ PSI/J currently provides executors for the following backends:
   - `pbspro`: `Altair's PBS-Professional <https://www.altair.com/pbs-professional>`_
   - `cobalt`: `ALCF's Cobalt job scheduler <https://www.alcf.anl.gov/support/user-guides/theta/queueing-and-running-jobs/job-and-queue-scheduling/index.html>`_
 
-We encourage the contribution of executors for additional backends - please
-reference the `developers documentation
+We encourage the contribution of executors for additional backends—please
+reference the `developer documentation
 <development/tutorial_add_executor.html>`_ for details.
 
 
@@ -109,14 +109,14 @@ Slurm // Local // LSF // PBS // Cobalt
     ex.submit(job)
 
 And by way of comparison, other backends can be selected with the tabs above.
-Note that the only difference is the argument to the get_instance method.
+Note that the only difference is the argument to the ``get_instance`` method.
 
 The ``JobExecutor`` implementation will translate all PSI/J API activities into the
 respective backend commands and run them on the backend, while at the same time
 monitoring the backend jobs for failure, completion or other state updates.
 
 Assuming there are no errors, you should see a new entry in your resource
-manager’s queue after running that example above.
+manager’s queue after running the example above.
 
 
 Multiple Jobs
@@ -142,18 +142,18 @@ Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
 numbers of jobs (tested with up to 64k jobs).
 
 
-Configuring your Job
+Configuring Your Job
 --------------------
 
 In the example above, the ``executable='/bin/date'`` part tells PSI/J that we want
 the job to run the ``/bin/date`` command. But there are other parts to the job
 which can be configured:
 
-- arguments for the job executable
-- environment the job is running in
-- destination for standard output and error streams
-- resource requirements for the job's execution
-- accounting details to be used
+- Arguments for the job executable
+- Environment the job is running in
+- Destination for standard output and error streams
+- Resource requirements for the job's execution
+- Accounting details to be used
 
 That information is encoded in the ``JobSpec`` which is used to create the
 ``Job`` instance.
@@ -226,7 +226,7 @@ redirected to files by setting the ``stdout_path`` and ``stderr_path`` attribute
     spec.stdout_path = '/tmp/date.out'
     spec.stderr_path = '/tmp/date.err'
 
-The job's standard input stream can also be redirected to read from a file, by
+A job's standard input stream can also be redirected to read from a file by
 setting the ``spec.stdin_path`` attribute.
 
 
@@ -234,24 +234,24 @@ Job Resources
 ^^^^^^^^^^^^^
 
 A job submitted to a cluster is allocated a specific set of resources to run on.
-The amount and type of resources are defined by a resource specification
-``ResourceSpec`` which becomes a part of the job specification.  The resource
+The number and type of resources are defined by a resource specification,
+``ResourceSpec``, which becomes part of the job specification.  The resource
 specification supports the following attributes:
 
-  - ``node_count``: allocate that number of compute nodes to the job.  All
+  - ``node_count``: Allocate that number of compute nodes to the job.  All
     cpu-cores and gpu-cores on the allocated node can be exclusively used by the
     submitted job.
-  - ``processes_per_node``: on the allocated nodes, execute that given number of
+  - ``processes_per_node``: On the allocated nodes, execute that given number of
     processes.
-  - ``process_count``: the total number of processes (MPI ranks) to be started
-  - ``cpu_cores_per_process``: the number of cpu cores allocated to each launched
-    process.  PSI/J uses the system definition of a cpu core which may refer to
-    a physical cpu core or to a virtual cpu core, also known as a hardware thread.
-  - ``gpu_cores_per_process``: the number of gpu cores allocated to each launched
-    process.  The system definition of an gpu core is used, but usually refers
+  - ``process_count``: The total number of processes (MPI ranks) to be started.
+  - ``cpu_cores_per_process``: The number of cpu cores allocated to each launched
+    process.  PSI/J uses the system definition of a cpu core, which may refer to
+    a physical cpu core or to a virtual cpu core (also known as a hardware thread).
+  - ``gpu_cores_per_process``: The number of gpu cores allocated to each launched
+    process.  The system definition of a gpu core is used, but usually refers
     to a full physical GPU.
   - ``exclusive_node_use``: When this boolean flag is set to ``True``, then PSI/J
-    will ensure that no other jobs, neither of the same user nor of other users
+    will ensure that no other jobs, neither from the same user nor from other users
     of the same system, will run on any of the compute nodes on which processes
     for this job are launched.
 
@@ -274,14 +274,14 @@ node count contradicts the value of ``process_count / processes_per_node``:
     # the line above should raise an 'psij.InvalidJobException' exception
 
 
-Processes versus ranks
+Processes Versus Ranks
 """"""""""""""""""""""
 
-All processes of the job will share a single MPI communicator
+All processes of a job will share a single MPI communicator
 (`MPI_COMM_WORLD`), independent of their placement, and the term `rank` (which
 usually refers to an MPI rank) is thus equivalent.  However, jobs started with
 a single process instance may, depending on the executor implementation, not get
-an MPI communicator.  How Jobs are launched can be specified by the `launcher`
+an MPI communicator.  How jobs are launched can be specified by the `launcher`
 attribute of the ``JobSpec``, as documented below.
 
 
@@ -296,7 +296,7 @@ like so: ``JobSpec(..., launcher='srun')``.
 Scheduling Information
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To specify resource-manager-specific information, like queues/partitions,
+To specify resource manager-specific information, like queues/partitions,
 runtime, and so on, create a :class:`JobAttributes
 <psij.job_attributes.JobAttributes>` and set it with ``JobSpec(...,
 attributes=my_job_attributes)``:
@@ -357,10 +357,10 @@ to call the :meth:`wait <psij.job.Job.wait>` method with no arguments:
 
 The :meth:`wait <psij.job.Job.wait>` call will return once the job has reached
 a terminal state, which almost always means that it finished or was
-cancelled.
+canceled.
 
 To distinguish jobs that complete successfully from ones that fail or
-are cancelled, fetch the status of the job after calling
+are canceled, fetch the status of the job after calling
 :meth:`wait <psij.job.Job.wait>`:
 
 .. code-block:: python
@@ -369,7 +369,7 @@ are cancelled, fetch the status of the job after calling
     print(str(job.status))
 
 
-Canceling your Job
+Canceling Your Job
 ^^^^^^^^^^^^^^^^^^
 
 If supported by the underlying job scheduler, PSI/J jobs can be canceled by
@@ -381,7 +381,7 @@ Status Callbacks
 
 Waiting for jobs to complete with :meth:`wait <psij.job.Job.wait>` is fine if
 you don't mind blocking while you wait for a single job to complete. However, if
-you want to wait on multiple jobs without blocking, or you want to get updates
+you want to wait on multiple jobs without blocking or you want to get updates
 when jobs start running, you can attach a callback to a :class:`JobExecutor
 <psij.job_executor.JobExecutor>` which will fire whenever any job submitted to
 that executor changes status.
