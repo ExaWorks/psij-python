@@ -1,4 +1,5 @@
-from psij import Job, JobSpec, JobExecutor, ResourceSpecV1, JobAttributes
+from psij import Job, JobSpec, JobExecutor, ResourceSpecV1
+# from psij import JobAttributes
 from executor_test_params import ExecutorTestParams
 
 
