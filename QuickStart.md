@@ -36,7 +36,7 @@ Install psij from the GitHub repository:
 
 **Requirements**
 - python3.7
-- Job executioner, e.g. Slurm in this example
+- Job executor, e.g. Slurm in this example
 
 **Steps**
 
