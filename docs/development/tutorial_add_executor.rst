@@ -27,7 +27,7 @@ This tutorial will focus on using BatchSchedulerExecutor as a base, rather than 
 The batch scheduler executor is based around a model where interactions with a local resource manager happen via command line invocations.
 For example, with PBS `qsub` and `qstat` commands are used to submit a request and to see status.
 
-To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, use subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
+To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
 
 First set up a directory structure::
 
