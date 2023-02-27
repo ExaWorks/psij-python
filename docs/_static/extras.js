@@ -59,11 +59,27 @@ function detectAll(selectorType) {
     // Similarly, if "D" is selected in the second selector, we only want to change 
     // simple_value_2. However, if either "B" or "C" are selected in either selector,
     // we want to change both.
-    
+
+    console.log("type:" + selectorType);
     $("p." + selectorType + "-selector").addClass(selectorType + "-item");
+    var prevSpans = [];
     $("span").each(function() {
-        if ($(this).text() == '"<&' + selectorType + '>"') {
+        var text = $(this).text();
+        // look for both "<&<type>>" and execparams.<type> to align with test cases
+
+        if (text == '"<&' + selectorType + '>"') {
             $(this).addClass(selectorType + "-item").addClass("psij-selector-value");
+        }
+        if (text == "executor" && prevSpans.length == 2
+            && prevSpans[0].text() == "execparams" && prevSpans[1].text() == '.') {
+            // remove <span>execparams</span> and <span>.</span>
+            prevSpans[0].remove();
+            prevSpans[1].remove();
+            $(this).addClass(selectorType + "-item").addClass("psij-selector-value");
+        }
+        prevSpans.push($(this));
+        if (prevSpans.length > 2) {
+            prevSpans.shift();
         }
     });
 }

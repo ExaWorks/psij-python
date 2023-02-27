@@ -100,13 +100,10 @@ On a Slurm cluster, this code might look like:
 
 Slurm // Local // LSF // PBS // Cobalt
 
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance("<&executor-type>")
-    job = Job(JobSpec(executable='/bin/date'))
-    ex.submit(job)
+.. literalinclude:: ../tests/getting_started/test_single_job.py
+    :language: python
+    :dedent: 4
+    :lines: 6-8
 
 And by way of comparison, other backends can be selected with the tabs above.
 Note that the only difference is the argument to the ``get_instance`` method.
@@ -129,14 +126,10 @@ simple as adding a loop:
 
 Slurm // Local // LSF // PBS // Cobalt
 
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance("<&executor-type>")
-    for _ in range(10):
-        job = Job(JobSpec(executable="/bin/date"))
-        ex.submit(job)
+.. literalinclude:: ../tests/getting_started/test_multiple_jobs.py
+    :language: python
+    :dedent: 4
+    :lines: 6-9
 
 Every :class:`JobExecutor <psij.job_executor.JobExecutor>` can handle arbitrary
 numbers of jobs (tested with up to 64k jobs).
@@ -171,13 +164,10 @@ formatting:
 
 Slurm // Local // LSF // PBS // Cobalt
 
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance('<&executor-type>')
-    job = Job(JobSpec(executable='/bin/date', arguments=['-utc', '--debug']))
-    ex.submit(job)
+.. literalinclude:: ../tests/getting_started/test_job_arguements.py
+    :language: python
+    :dedent: 4
+    :lines: 6-8
 
 Note: `JobSpec` attributes can also be added incrementally:
 
@@ -305,23 +295,10 @@ attributes=my_job_attributes)``:
 
 Slurm // Local // LSF // PBS // Cobalt
 
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec, JobAttributes, ResourceSpecV1
-
-    executor = JobExecutor.get_instance("<&executor-type>")
-
-    job = Job(
-        JobSpec(
-            executable="/bin/date",
-            resources=ResourceSpecV1(node_count=1),
-            attributes=JobAttributes(
-                queue_name="<QUEUE_NAME>", project_name="<ALLOCATION>"
-            ),
-        )
-    )
-
-    executor.submit(job)
+.. literalinclude:: ../tests/getting_started/test_scheduling_information.py
+    :language: python
+    :dedent: 4
+    :lines: 7-20
 
 The `<QUEUE_NAME>` and `<ALLOCATION>` fields will depend on the system you are
 running on.
@@ -392,29 +369,14 @@ To wait on multiple jobs at once:
 
 Slurm // Local // LSF // PBS // Cobalt
 
-.. code-block:: python
+.. literalinclude:: ../tests/getting_started/test_status_callbacks.py
+    :language: python
+    :lines: 5
 
-    import time
-    from psij import Job, JobExecutor, JobSpec
-
-    count = 10
-
-    def callback(job, status):
-        global count
-
-        if status.final:
-            print(f"Job {job} completed with status {status}")
-            count -= 1
-
-    ex = JobExecutor.get_instance("<&executor-type>")
-    ex.set_job_status_callback(callback)
-
-    for _ in range(count):
-        job = Job(JobSpec(executable="/bin/date"))
-        ex.submit(job)
-
-    while count > 0:
-        time.sleep(0.01)
+.. literalinclude:: ../tests/getting_started/test_status_callbacks.py
+    :language: python
+    :dedent: 4
+    :lines: 9-24
 
 Status callbacks can also be set on individual jobs with
 :meth:`set_job_status_callback <psij.job.Job.set_job_status_callback>`.

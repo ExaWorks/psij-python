@@ -79,7 +79,7 @@ Local // Slurm // LSF // PBS // Cobalt
 
     from psij import Job, JobExecutor, JobSpec
 
-    ex = JobExecutor.get_instance("<&executor-type>")
+    ex = JobExecutor.get_instance(execparams.executor)
     job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
