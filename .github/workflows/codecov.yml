@@ -1,0 +1,23 @@
+name: Codecov Action 
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Test python API
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install requirements
+      run: |
+        pip install -r requirements-tests.txt
+        pip install -r requirements-dev.txt
+    - name: Run tests and collect coverage
+      run: make coverage-tests
+    - name: Upload coverage reports to Codecov
+      run: |
+        # Replace `linux` below with the appropriate OS
+        # Options are `alpine`, `linux`, `macos`, `windows`
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN}
