@@ -53,5 +53,15 @@ plugins:
 #   - vendor/gems/
 #   - vendor/ruby/
 
+exclude:
+    - Gemfile
+    - Gemfile.lock
+    - .gitignore
+    - README.md
 include:
-    - "**"
+    - _static
+    - _images
+    - _sources
+    - _modules
+    - .generated
+    - .doctrees

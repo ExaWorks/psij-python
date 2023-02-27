@@ -22,7 +22,18 @@ PSI/J repository.
     $ sudo pip install -r requirements-docs.txt
     ```
 
- 2. Install Jekyll (see [Jekyll Installation](https://jekyllrb.com/docs/installation/) - also a one-time operation).
+ 2. Install Jekyll prerequisites by following the instructions for your
+ operating system found in the 
+ [Jekyll installation instructions](https://jekyllrb.com/docs/installation/).
+ You should skip installing Jekyll itself, since it will be installed by 
+ *bundler*. Then run
+    ```bash
+    $ cd web
+    $ bundle update
+    $ cd ..
+    ```
+ to install the version of Jekyll used by github-pages. This is a one-time
+ operation. For subsequent builds, you can skip directly to step 3.
 
  3. Run the build script, which will build the documentation, process
  files in the `web` directory, and generate the output in `web-build`:
