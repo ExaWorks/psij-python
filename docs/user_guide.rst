@@ -298,7 +298,7 @@ Slurm // Local // LSF // PBS // Cobalt
 .. literalinclude:: ../tests/getting_started/test_scheduling_information.py
     :language: python
     :dedent: 4
-    :lines: 6-18
+    :lines: 7-20
 
 The `<QUEUE_NAME>` and `<ALLOCATION>` fields will depend on the system you are
 running on.
