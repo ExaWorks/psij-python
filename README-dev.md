@@ -45,19 +45,27 @@ automatically:
     ```
 
 Make sure that `build.sh` is called from the main directory. The output will
-be in `web-build`. You are likely going to need to load it through a web
-server. A simple way to do so is:
+be in `web-build`.
+
+3. Render the web site and themed documentation, which can be done using Jekyll.
+To install Jekyll, follow these
+[instructions](https://jekyllrb.com/docs/installation/). Then run
 
     ```
-    cd web-build
-    python -m http.server <port>
+    web/serve.sh
     ```
 
-where `<port>` is a port number to start the HTTP server on.
+which will output something like this:
+```
+...
+    Server address: http://127.0.0.1:4000/psij-python/
+  Server running... press ctrl-c to stop.
+```
 
-When developing the website, a convenient script is `web/watch.sh`, which can
-monitor the source directories and re-build when files are modified. This
-requires `inotify`, which may or may not be available on your platform.
+
+Pointing your web browser to the URL printed by Jekyll will show the PSI/J
+web site. The themed documentation will be found under the "Documentation"
+tab.
 
 
 ### Release Process
