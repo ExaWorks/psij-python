@@ -54,7 +54,7 @@ class JobSpec(object):
             sourced after all the ranks of the job executable complete and is sourced on the same
             node as the pre-launch script.
         :param launcher: The name of a launcher to use, such as "mpirun", "srun", "single", etc.
-            For a list of available launchers,:ref:`launchers`
+            For a list of available launchers, see :ref:`launchers`
         """
         assert check_argument_types()
 
