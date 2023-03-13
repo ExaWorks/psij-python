@@ -23,6 +23,45 @@ class JobSpec(object):
         """
         Constructs a `JobSpec` object while allowing its properties to be initialized.
 
+        .. note::
+            A note about paths.
+
+            It is strongly recommended that paths to `std*_path`, `directory`, etc. be specified
+            as absolute. While paths can be relative, and there are cases when it is desirable to
+            specify them as relative, it is important to understand what the implications are.
+
+            Paths in a specification refer to paths *that are accessible to the machine where the
+            job is running*. In most cases, that will be different from the machine on which the
+            job is launched (i.e., where PSI/J is invoked from). This means that a given path may
+            or may not point to the same file in both the location where the job is running and the
+            location where the job is launched from.
+
+            For example, if launching jobs from a login node of a cluster, the path `/tmp/foo.txt`
+            will likely refer to locally mounted drives on both the login node and the compute
+            node(s) where the job is running. However, since they are local mounts, the file
+            `/tmp/foo.txt` written by a job running on the compute node will not be visible by
+            opening `/tmp/foo.txt` on the login node. If an output file written on a compute node
+            needs to be accessed on a login node, that file should be placed on a shared filesystem.
+            However, even by doing so, there is no guarantee that the shared filesystem is mounted
+            under the same mount point on both login and compute nodes. While this is an unlikely
+            scenario, it remains a possibility.
+
+            When relative paths are specified, even when they point to files on a shared filesystem
+            as seen from the submission side (i.e., login node), the job working directory may be
+            different from the working directory of the application that is launching the job. For
+            example, an application that uses PSI/J to launch jobs on a cluster may be invoked from
+            (and have its working directory set to) `/home/foo`, where `/home` is a mount point for
+            a shared filesystem accessible by compute nodes. The launched job may specify
+            `stdout_path=Path('bar.txt')`, which would resolve to `/home/foo/bar.txt`. However, the
+            job may start in `/tmp` on the compute node, and its standard output will be redirected
+            to `/tmp/bar.txt`.
+
+            Relative paths are useful when there is a need to refer to the job directory that the
+            scheduler chooses for the job, which is not generally known until the job is started by
+            the scheduler. In such a case, one must leave the `spec.directory` attribute empty and
+            refer to files inside the job directory using relative paths.
+
+
         :param name: A name for the job. The name plays no functional role except that
             :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
             job as presented by the underlying implementation.
