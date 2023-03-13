@@ -18,6 +18,11 @@ tests:
 coverage-tests:
 	PYTHONPATH=$(CWD)/src:$(CWD)/tests/plugins1:$(CWD)/tests/plugins2:${PYTHONPATH} \
 		${PYTHON} -m pytest -v --cov $(TESTARGS)
+		
+.PHONY: html-coverage-report
+html-coverage-report:
+	PYTHONPATH=$(CWD)/src:$(CWD)/tests/plugins1:$(CWD)/tests/plugins2:${PYTHONPATH} \
+		${PYTHON} -m pytest -v --cov --cov-report html
 
 .PHONY: verbose-tests
 verbose-tests:
