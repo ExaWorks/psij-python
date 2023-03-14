@@ -98,6 +98,10 @@ def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
             # merge current env with spec env
             env = os.environ.copy()
             env.update(spec.environment)
+            # convert integers to strings
+            for k, v in env.items():
+                if isinstance(v, int):
+                    env[k] = str(v)
             return env
     else:
         # only spec env

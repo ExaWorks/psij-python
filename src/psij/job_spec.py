@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 from typeguard import check_argument_types
 
@@ -15,7 +15,8 @@ class JobSpec(object):
 
     def __init__(self, name: Optional[str] = None, executable: Optional[str] = None,
                  arguments: Optional[List[str]] = None, directory: Optional[Path] = None,
-                 inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
+                 inherit_environment: bool = True,
+                 environment: Optional[Dict[str, Union[str, int]]] = None,
                  stdin_path: Optional[Path] = None, stdout_path: Optional[Path] = None,
                  stderr_path: Optional[Path] = None, resources: Optional[ResourceSpec] = None,
                  attributes: Optional[JobAttributes] = None, pre_launch: Optional[Path] = None,

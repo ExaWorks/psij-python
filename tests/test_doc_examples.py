@@ -112,7 +112,7 @@ def test_job_parameters() -> None:
             psij.JobSpec(
                 executable="/bin/hostname",
                 stdout_path=output_path,
-                environment={"FOOBAR": "BAZ"},  # custom environment has no effect here
+                environment={"FOOBAR": "BAZ", "BUZ": 1},  # custom environment has no effect here
                 directory=pathlib.Path(td),  # CWD has no effect on result here
             )
         )
