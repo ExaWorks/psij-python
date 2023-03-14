@@ -53,8 +53,7 @@ def _env_to_mustache(job: Job) -> List[Dict[str, str]]:
 
     r = []
     for k, v in job.spec.environment.items():
-        r.append({'name': k, 'value': bash_escape(str(v))})
-
+        r.append({'name': k, 'value': bash_escape(v)})
     return r
 
 

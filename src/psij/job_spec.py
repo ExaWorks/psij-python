@@ -112,6 +112,24 @@ class JobSpec(object):
         return job_spec
 
     @property
+    def environment(self) -> Optional[Dict[str, str]]:
+        """Return the environment dict."""
+        return self._environment
+
+    @environment.setter
+    def environment(self, env: Optional[Dict[str, Union[str, int]]]) -> None:
+        """Ensure env dict values to be string typed."""
+        self._environment = None
+
+        if env:
+            self._environment = {}
+            for k, v in env.items():
+                if isinstance(v, int):
+                    self._environment[k] = str(v)
+                else:
+                    self._environment[k] = v
+
+    @property
     def to_dict(self) -> Dict[str, Any]:
         """Returns a dictionary representation of this object."""
         d = self._init_job_spec_dict
