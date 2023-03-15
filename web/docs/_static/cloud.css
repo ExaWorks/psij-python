@@ -106,9 +106,9 @@ div.body {
     line-height: 1.5em;
     padding: 30px 20px;
     min-width: 0;
-    max-width: 8in;
+    max-width: calc(8in + max((100% - 14in) / 2, 8pt));
     border-left: 1px solid var(--color-fg-lines);
-    padding-left: max(calc((100% - 14in) / 2), 8pt);
+    padding-left: calc(max((100% - 14in) / 2, 8pt));
 }
 
 div.sphinxsidebar {
