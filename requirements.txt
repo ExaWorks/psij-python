@@ -1,4 +1,4 @@
-filelock
-psutil
+filelock==3
+psutil==5
 pystache>=0.6.0
-typeguard
+typeguard==2
