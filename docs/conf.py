@@ -15,8 +15,6 @@ master_doc = 'index'
 
 project = u'PSI/J'
 copyright = u'The ExaWorks Team'
-release = u'0.0.1'
-version = release
 
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -58,6 +56,8 @@ print(src_dir + "/")
 sys.path.insert(0, src_dir)
 
 import psij
+release = psij.__version__
+version = release
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
