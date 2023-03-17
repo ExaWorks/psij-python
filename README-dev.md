@@ -73,14 +73,17 @@ tab.
 Here are the steps for putting out a fresh release to Pypi.
 
 1. Create a new branch from main and make release specific updates:
-    * Update `src/psij/version.py` to the new version number
+    * Update `RELEASE` and `src/psij/version.py` to the new version number
 
 2. Use the standard PR process and get changes from the above step merged to main.
 
 3. Follow instructions here to [pypi docs](https://pypi.org/help/#apitoken) to
    setup tokens on your machine.
 
-4. Run `make VERSION="version string" tag-and-release`. This will:
+4. Make a clean clone of the main branch
+
+5. Run `make VERSION="version string" tag-and-release`, where the version string
+   has the format "x.y.z[-s]". This will:
     * Create and push tags to GitHub.
     * Build the package.
     * Push built package to Pypi.
