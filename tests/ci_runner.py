@@ -2,6 +2,7 @@
 import datetime
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -99,8 +100,14 @@ def install_deps(branch: str, dir: Path) -> None:
     reqpath = dir / 'code' / 'requirements-tests.txt'
     if not reqpath.exists():
         return
+
+    destpath = dir / 'code' / '.packages'
+    # there have been cases when pip failed to leave a consistent
+    # installation after a downgrade, so best to start clean
+    if destpath.exists():
+        shutil.rmtree(str(destpath))
     if MODE == 'plain':
-        run(get_pip(), 'install', '--target', '.packages', '--upgrade', '-r', str(reqpath))
+        run(get_pip(), 'install', '--target', str(destpath), '--upgrade', '-r', str(reqpath))
     else:
         run(get_pip(), 'install', '--upgrade', '-r', str(reqpath))
 
@@ -138,7 +145,7 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
 
     cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
-    env['PYTHONPATH'] = str(Path('.').resolve() / '.packages') \
+    env['PYTHONPATH'] = str(cwd.resolve() / '.packages') \
         + ':' + str(cwd.resolve() / 'src') \
         + (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
     subprocess.run(args, cwd=cwd.resolve(), env=env)
