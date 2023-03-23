@@ -8,6 +8,10 @@ import sys
 import sphinx_rtd_theme
 from sphinx.ext.apidoc import main
 
+web_docs = False
+if 'PSIJ_WEB_DOCS' in os.environ:
+	web_docs = True
+
 needs_sphinx = '1.6'
 
 # Set Sphinx variables
@@ -15,9 +19,11 @@ master_doc = 'index'
 
 project = u'PSI/J'
 copyright = u'The ExaWorks Team'
-
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+if web_docs:
+	html_theme = 'cloud'
+else:
+	html_theme = 'sphinx_rtd_theme'
+	html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
 autoclass_content = 'both'
 add_module_names = False
@@ -28,7 +34,18 @@ nitpick_ignore = [
     ('py:class', 'distutils.version.Version')
 ]
 
+if web_docs:
+	templates_path = ['_templates']
+	# Multi-version
+	smv_branch_whitelist = '^mathcmeifyoucan$'
+	smv_remote_whitelist = None
+	smv_released_pattern = r'^\d+\.\d+\.\d+(\..*)?$'
+	smv_outputdir_format = 'v/{ref.name}'
+
+
 html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
+if web_docs:
+	html_sidebars['**'].insert(0, 'versioning.html')
 
 # These are needed for the dhtml trickery
 html_static_path = ["_static"]
@@ -43,6 +60,9 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
+
+if web_docs:
+    extensions.append('sphinx_multiversion')
 
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
@@ -69,10 +89,8 @@ intersphinx_mapping = {
 # Copied from https://github.com/readthedocs/readthedocs.org/issues/1139
 
 # run api doc
-def run_apidoc(_):
-    output_path = os.path.join(script_dir, '.generated')
-    print(f"OUTPUT PATH = {output_path}")
-    #exclusions = [os.path.join(src_dir, 'setup.py'),]
+def run_apidoc(sphinx):
+    output_path = os.path.join(sphinx.srcdir, '.generated')
     main(['-f', '-o', output_path, src_dir])
 
 # launch setup
