@@ -235,8 +235,18 @@ pre {
 /*** Versioning ***/
 
 #version-selector {
-    margin-top: 4pt;
-    margin-right: 4pt;
+    display: inline-block;
+    margin: 0;
+}
+
+#version-selector .v-input__control, #version-selector .v-input__slot,
+#version-selector .v-select__slot, #version-selector .v-select__selection {
+    width: fit-content;
+    text-overflow: none;
+}
+
+#version-selector .v-input__control {
+    height: 18pt;
 }
 
 #version-selector .v-text-field__prefix {

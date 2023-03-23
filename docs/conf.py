@@ -35,17 +35,25 @@ nitpick_ignore = [
 ]
 
 if web_docs:
-	templates_path = ['_templates']
-	# Multi-version
-	smv_branch_whitelist = '^mathcmeifyoucan$'
-	smv_remote_whitelist = None
-	smv_released_pattern = r'^\d+\.\d+\.\d+(\..*)?$'
-	smv_outputdir_format = 'v/{ref.name}'
+    templates_path = ['_templates']
+    # Unfortunately sphinx-multiversion does not properly deal with 
+    # setting the title to the proper version. You either get some
+    # default like "0.0.1" or you get whatever the current conf.py
+    # sets (i.e., the latest version).
+    # See, e.g., https://github.com/Holzhaus/sphinx-multiversion/issues/61
+    #
+    # But we already have the version selector that displays the version,
+    # so we can display that where the broken version would otherwise
+    # have appeared.
+    html_title = "PSI/J"
+    # Multi-version
+    smv_branch_whitelist = '^matchmeifyoucan$'
+    smv_remote_whitelist = None
+    smv_released_pattern = r'^\d+\.\d+\.\d+(\..*)?$'
+    smv_outputdir_format = 'v/{ref.name}'
 
 
 html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
-if web_docs:
-	html_sidebars['**'].insert(0, 'versioning.html')
 
 # These are needed for the dhtml trickery
 html_static_path = ["_static"]
@@ -67,17 +75,23 @@ if web_docs:
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
 
+release = None
+version = None
+src_dir = None
 
-script_dir = os.path.normpath(os.path.dirname(__file__))
-src_dir = os.path.abspath(os.path.join(script_dir, '../src'))
+def read_version(docs_dir):
+    global release, version, src_dir
+    src_dir = os.path.abspath(os.path.join(docs_dir, '../src'))
 
-print(src_dir + "/")
+    sys.path.insert(0, src_dir)
 
-sys.path.insert(0, src_dir)
+    import psij
+    release = psij.__version__
+    version = release
 
-import psij
-release = psij.__version__
-version = release
+
+my_dir = os.path.normpath(os.path.dirname(__file__))
+read_version(my_dir)
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
@@ -90,6 +104,7 @@ intersphinx_mapping = {
 
 # run api doc
 def run_apidoc(sphinx):
+    read_version(sphinx.srcdir)  # this sets src_dir based on the version being compiled
     output_path = os.path.join(sphinx.srcdir, '.generated')
     main(['-f', '-o', output_path, src_dir])
 
