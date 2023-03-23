@@ -4,26 +4,28 @@ var DOC_SORTED_VERSIONS = [];
 var DOC_LATEST_VERSION = null;
 
 function versionSplit(v) {
-    var nparts = v.split(".", 3);
+    var parts = v.split(".", 4);
     
-    if (nparts.length != 3) {
+    if (parts.length < 3) {
         throw new Error("Invalid version: " + v);
     }
     
-    var last = nparts[2];
-    var ix = last.search(/[^0-9]/);
-    var suffix = "";
-    if (ix >= 0) {
-        nparts[2] = last.substring(0, ix);
-        suffix = last.substring(ix);
-    }
-    
-    var version = nparts[0] + "." + nparts[1] + "." + nparts[2];
-    
+    var nparts = [];
     for (var i = 0; i < 3; i++) {
-        nparts[i] = parseInt(nparts[i]);
+        nparts.push(parseInt(parts[i]));
     }
     
+    var version = parts.slice(0, 3).join(".");
+    
+    var suffix;
+    
+    if (parts.length == 3) {
+        suffix = "";
+    }
+    else {
+        suffix = parts[3];
+    }
+
     return {version: version, nparts: nparts, suffix: suffix, raw: v};
 }
 
@@ -69,7 +71,7 @@ function initVersions() {
     }
     
     for (var key in vs) {
-        vs[key].all.sort((v1, v2) => {return v1.suffix.localeCompare(v2.suffix);});
+        vs[key].all.sort((v1, v2) => {return -v1.suffix.localeCompare(v2.suffix);});
         vs[key].latest = vs[key].all[0];
         DOC_SORTED_VERSIONS.push(vs[key].latest);
     }
@@ -102,18 +104,24 @@ function splitLocation() {
         }
     }
     else {
-        return [url, "unknown", ""];
+        return [url, "", ""];
     }
 }
 
 function setVersion() {    
     var s = splitLocation();
     
-    window.location = s[0] + "/" + this.version + "/" + s[2];
+    window.location = s[0] + "/" + DOC_VERSIONS[this.version].latest.raw + "/" + s[2];
 }
 
 function getCurrentVersion() {
-    return splitLocation()[1];
+    v = splitLocation()[1];
+    if (v == "") {
+        return v;
+    }
+    else {
+        return versionSplit(v).version;
+    }
 }
 
 initVersions();
