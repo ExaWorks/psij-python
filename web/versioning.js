@@ -53,7 +53,7 @@ function versionSplit(v) {
  * @return {Number}      A negative number if v2 represents a version
  *                       smaller than v1 (ignoring the suffix), 0 if
  *                       equal (again, ignoring the suffix), and a
- *                       positive number otheriwse.
+ *                       positive number otherwise.
  */
 function compareVN(v1, v2) {
     for (var i = 0; i < 3; i++) {
