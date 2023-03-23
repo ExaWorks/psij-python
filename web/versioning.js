@@ -45,7 +45,7 @@ function compareV(v1, v2) {
         return nd;
     }
     else {
-        return v1.suffix.localeCompare(v2.suffix);
+        return -v1.suffix.localeCompare(v2.suffix);
     }
 }
 
@@ -71,7 +71,7 @@ function initVersions() {
     }
     
     for (var key in vs) {
-        vs[key].all.sort((v1, v2) => {return -v1.suffix.localeCompare(v2.suffix);});
+        vs[key].all.sort(compareV);
         vs[key].latest = vs[key].all[0];
         DOC_SORTED_VERSIONS.push(vs[key].latest);
     }
