@@ -219,13 +219,31 @@ function setVersion() {
  *                     currently displayed documentation version.
  */
 function getCurrentVersion() {
-    v = splitLocation()[1];
+    var v = splitLocation()[1];
     if (v == "") {
         return v;
     }
     else {
         return versionSplit(v).version;
     }
+}
+
+/**
+ * Returns the main documentation page for the current version by removing
+ * everything after <code>"../docs/v/x.y.z/"</code> from the current URL.
+ */
+function getMainDocsPage() {
+    var s = splitLocation();
+
+    return s[0] + "/" + s[1] + "/";
+}
+
+/**
+ * Returns true if the current URL points to a versioned documentation
+ * page.
+ */
+function isDocsPage() {
+    return window.location.href.includes("/docs/v/");
 }
 
 initVersions();
