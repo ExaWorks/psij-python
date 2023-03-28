@@ -4,7 +4,12 @@
             el: '#psij-app',
             vuetify: new Vuetify(),
             data: {
-                maintabs: {{ page.tab }}
+                maintabs: {{ page.tab }},
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion
             }
         });
 

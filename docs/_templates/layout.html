@@ -16,6 +16,11 @@
         {{ super() }}
 {% endblock %}
 
+{% block rootrellink %}
+    <li><a href="{{ pathto(theme_roottarget) }}">{{shorttitle|e}}</a>{% if versions %}{% include "../../web/_includes/versionselect.html" %}{% endif %}{{reldelim1}}</li>
+{% endblock %}
+
+
 {% block footer %}
         {{ super() }}
         

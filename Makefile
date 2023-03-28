@@ -44,7 +44,7 @@ stylecheck:
 	flake8 src tests
 
 .PHONY: checks
-checks: typecheck stylecheck
+checks: typecheck stylecheck docs
 
 .PHONY: docs
 docs:
@@ -56,7 +56,8 @@ docs:
 .PHONY: web-docs
 web-docs:
 	rm -rf docs/.generated
-	sphinx-build -W -b html -D html_theme='cloud' -D templates_path='_templates' docs docs/.web-build/
+	rm -rf docs/.web-build
+	PSIJ_WEB_DOCS=1 sphinx-multiversion docs docs/.web-build
 
 .PHONY: style
 style:
