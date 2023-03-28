@@ -12,6 +12,9 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
+        name: Fetch tags
+        run: git fetch --all --tags
+      -
         name: Build Website
         run: /bin/bash web/build.sh
       -
