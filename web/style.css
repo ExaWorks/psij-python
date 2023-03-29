@@ -268,7 +268,7 @@ pre {
 }
 
 #version-selector .v-select__selection--comma {
-    margin: 1pt 1pt 1pt 0;
+    margin: 1pt 8pt 1pt 0;
 }
 
 #version-selector input {
