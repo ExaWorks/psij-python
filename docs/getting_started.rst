@@ -40,16 +40,16 @@ plus a bunch of attributes.  Static job attributes such as resource requirements
 are defined by the :class:`JobSpec <psij.job_spec.JobSpec>` at
 creation. Dynamic job attributes such as the :class:`JobState
 <psij.job_state.JobState>` are modified by :class:`JobExecutors
-<psij.job_executor.JobExecutor>` as a Job progresses through its lifecycle.
+<psij.job_executor.JobExecutor>` as a job progresses through its lifecycle.
 
-A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific
-Resource Manager, e.g. Slurm, on which the Job is being executed.  Generally,
-when jobs are submitted, they will be queued for a variable period of time,
-depending on how busy the target machine is. Once a Job is started, its
+A JobExecutor represents a specific
+Resource Manager, e.g. Slurm, on which the job is being executed.  Generally,
+when jobs are submitted, they will be queued
+depending on how busy the target machine is. Once a job is started, its
 executable is launched and runs to completion.
 
-In PSI/J, a Job is submitted by :meth:`JobExecutor.submit(Job)
-<psij.job_executor.JobExecutor.submit>` which permanently binds the Job to that
+In PSI/J, a job is submitted by :meth:`JobExecutor.submit(Job)
+<psij.job_executor.JobExecutor.submit>` which permanently binds the job to that
 executor and submits it to the underlying resource manager.
 
 
@@ -83,7 +83,7 @@ Local // Slurm // LSF // PBS // Cobalt
     job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
-The ``executable="/bin/date")`` part tells PSI/J that we want the job to run
+The ``executable="/bin/date")`` tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
 (which should be almost as soon as the job starts, since ``date`` does very little work)
 the resource manager will mark the job as complete, triggering PSI/J to do the same.
@@ -96,5 +96,5 @@ Up-to-date and actively tested examples can be found
 `here <https://github.com/ExaWorks/psij-python/blob/main/tests/test_doc_examples.py>`_.
 Tests of resource-manager-specific and site-specific values
 (such as accounts, queues/partitions, etc.) can be found in files
-in the same directory but tend to buried under
+in the same directory but tend to be buried under
 layers of indirection in order to reduce code complexity.
