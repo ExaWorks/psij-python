@@ -8,28 +8,24 @@ Who PSI/J Is for
 PSI/J is a Python library for submitting and managing HPC jobs via arbitrary
 Resource Managers (RMs). PSI/J abstracts the specific RM, making your code
 RM-independent and portable, or at least easier to port, across HPC centers.  If
-you want your project to be able to request resources from one or more of Slurm,
-LSF, Flux, Cobalt, PBS, and your local machine, we think you will find that
-PSI/J simplifies your work considerably.
+you want your project to request resources from Slurm,
+LSF, Flux, Cobalt, PBS, and/or your local machine, 
+PSI/J simplifies your work.
 
 
-Who PSI/J Is (Probably) Not for
--------------------------------
+When Not to Use PSI/J
+^^^^^^^^^^^^^^
 
-If you are sure that you will only *ever* be launching jobs on ORNL's Summit
-system, and you don't care about any other cluster or machine, then you may as
-well interact with LSF (the resource manager on Summit) directly, rather than
-indirectly through PSI/J. In that case PSI/J would not really be adding much
-other than complexity.
+If you are certain that you will only *ever* be launching jobs on ORNL's Summit
+system and you don't care about any other cluster or machine, it makes sense to 
+interact with LSF (the resource manager on Summit) directly, rather than
+indirectly through PSI/J. 
 
 If you write application code that is meant to run on various HPC clusters, but
 which never makes calls to the underlying resource manager (e.g. by calling into
-Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), then
-PSI/J will not help you. This is likely your situation if you are a developer
-working on a MPI-based science simulation, since we have observed that it is
-often the users' responsibility to actually launch the simulation through the
-resource manager.  However, PSI/J is more likely to help with various tools
-associated with your simulation--for instance, your test suite.
+Flux's client library, or executing ``srun``/``jsrun``/``aprun`` etc.), 
+PSI/J will not help you. However, PSI/J may be helpful when working with various tools
+associated with MPI-based science simulations--for instance, your test suite.
 
 
 Terminology
@@ -57,7 +53,7 @@ What is a JobExecutor?
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific RM,
 e.g. Slurm, on which the job is being executed.  Generally, when jobs are
-submitted they will be queued for a variable period of time, depending on how
+submitted they will be queued depending on how
 busy the target machine is. Once the job is started, its executable is
 launched and runs to completion, and the job will be marked as completed.
 
@@ -84,7 +80,7 @@ reference the `developer documentation
 <development/tutorial_add_executor.html>`_ for details.
 
 
-Submit a Job
+Submitting a Job
 ------------
 
 The most basic way to use PSI/J looks something like the following:
@@ -94,7 +90,7 @@ The most basic way to use PSI/J looks something like the following:
 3. Create a ``Job`` with that ``JobSpec``.
 4. Submit the ``Job`` instance to the ``JobExecutor``.
 
-On a Slurm cluster, this code might look like:
+Here's how the code might look on different clusters:
 
 .. rst-class:: executor-type-selector selector-mode-tabs
 
@@ -105,7 +101,6 @@ Slurm // Local // LSF // PBS // Cobalt
     :dedent: 4
     :lines: 6-8
 
-And by way of comparison, other backends can be selected with the tabs above.
 Note that the only difference is the argument to the ``get_instance`` method.
 
 The ``JobExecutor`` implementation will translate all PSI/J API activities into the
@@ -116,7 +111,7 @@ Assuming there are no errors, you should see a new entry in your resource
 manager’s queue after running the example above.
 
 
-Multiple Jobs
+Submitting Multiple Jobs
 ^^^^^^^^^^^^^
 
 In the last section we submitted a single job.  Submitting multiple jobs is as
@@ -138,8 +133,8 @@ numbers of jobs (tested with up to 64k jobs).
 Configuring Your Job
 --------------------
 
-In the example above, the ``executable='/bin/date'`` part tells PSI/J that we want
-the job to run the ``/bin/date`` command. But there are other parts to the job
+In the example above, the ``executable='/bin/date'`` tells PSI/J that we want
+the job to run the ``/bin/date`` command. But there are other parts of the job
 which can be configured:
 
 - Arguments for the job executable
@@ -169,7 +164,7 @@ Slurm // Local // LSF // PBS // Cobalt
     :dedent: 4
     :lines: 6-8
 
-Note: `JobSpec` attributes can also be added incrementally:
+`JobSpec` attributes can also be added incrementally:
 
 .. code-block:: python
 
@@ -228,10 +223,10 @@ The number and type of resources are defined by a resource specification,
 ``ResourceSpec``, which becomes part of the job specification.  The resource
 specification supports the following attributes:
 
-  - ``node_count``: Allocate that number of compute nodes to the job.  All
+  - ``node_count``: Allocates that number of compute nodes to the job.  All
     cpu-cores and gpu-cores on the allocated node can be exclusively used by the
     submitted job.
-  - ``processes_per_node``: On the allocated nodes, execute that given number of
+  - ``processes_per_node``: On the allocated nodes, executes that number of
     processes.
   - ``process_count``: The total number of processes (MPI ranks) to be started.
   - ``cpu_cores_per_process``: The number of cpu cores allocated to each launched
@@ -240,8 +235,8 @@ specification supports the following attributes:
   - ``gpu_cores_per_process``: The number of gpu cores allocated to each launched
     process.  The system definition of a gpu core is used, but usually refers
     to a full physical GPU.
-  - ``exclusive_node_use``: When this boolean flag is set to ``True``, then PSI/J
-    will ensure that no other jobs, neither from the same user nor from other users
+  - ``exclusive_node_use``: When this boolean flag is set to ``True``, PSI/J
+    will ensure that no other jobs, whether from the same user nor from other users
     of the same system, will run on any of the compute nodes on which processes
     for this job are launched.
 
@@ -307,9 +302,9 @@ running on.
 Managing Job State
 ------------------
 
-In all the above examples, we have submitted jobs without checking on what
+In the above examples, we submitted jobs without checking on what
 happened to them. Once the job has finished executing (which, for `/bin/date`,
-should be almost as soon as the job starts) the resource manager will mark the
+should be almost as soon as the job starts), the resource manager will mark the
 job as complete, triggering PSI/J to do the same via the :class:`JobStatus
 <psij.job_status.JobStatus>` attribute of the job.  ``Job`` state
 progressions follow this state model:
