@@ -11,12 +11,9 @@ that looks like SLURM or PBSPro.
 What Is an Executor and Why Might You Want to Add One?
 ------------------------------------------------------
 
-PSI/J provides a common interface for obtaining allocations on compute resources.
+PSI/J provides a common interface for obtaining allocations on compute resources. Usually, those compute resources will already have a batch scheduler in place (for example, SLURM).
 
-Usually, those compute resources will already have some batch scheduler in place (for example, SLURM).
-
-A PSI/J executor is the code that tells the core of PSI/J how to interact with
-such a batch scheduler so that it can provide a common interface to applications.
+A PSI/J executor is the code that tells the core of PSI/J how to interact with a batch scheduler so that it can provide a common interface to applications.
 
 A PSI/J executor needs to implement the abstract methods defined on the :class:`psij.job_executor.JobExecutor` base class.
 The documentation for that class has reference material for each of the methods that won't be repeated here.
@@ -24,10 +21,13 @@ The documentation for that class has reference material for each of the methods 
 For batch scheduler systems, the :class:`.BatchSchedulerExecutor` subclass provides further useful structure to help implement JobExecutor.
 This tutorial will focus on using BatchSchedulerExecutor as a base, rather than implementing JobExecutor directly.
 
-The batch scheduler executor is based around a model where interactions with a local resource manager happen via command line invocations.
+The batch scheduler executor is based on a model where interactions with a local resource manager happen via command line invocations.
 For example, with PBS `qsub` and `qstat` commands are used to submit a request and to see status.
 
 To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
+
+Adding an Executor
+----------------
 
 First set up a directory structure::
 
@@ -44,17 +44,16 @@ We're going to create three source files in this directory structure:
 
 * ``psij-descriptors/pbspro_descriptor.py`` - This file tells the PSI/J core what this package implements.
 
-First, we'll build a skeleton that won't work, and see that it doesn't work in the test suite. Then we'll build up to the full functionality.
-
 Prerequisites:
 
-* You have the psij-python package installed already and are able to run whatever basic verification you think is necessary.
+* You have the psij-python package installed and are able to run whatever basic verification you think is necessary.
 
 * You are able to submit to PBS Pro on a local system.
 
+First, we'll build a skeleton that won't work, and see that it doesn't work in the test suite. Then we'll build up to the full functionality.
 
 A Not-implemented Stub
-----------------------
+^^^^^^^^^^^^^^
 
 Add the project directory to the Python path directory::
 
@@ -135,8 +134,7 @@ Now running the same pytest command will give a different error further along in
 
 This default BatchSchedulerExecutor code needs a configuration object and none was supplied.
 
-A configuration object can contain configuration specific to this particular executor. However,
-for now we are not going to specify a custom configuration object and instead will re-use
+A configuration object can contain configuration specific to this particular executor. For now we are not going to specify a custom configuration object and instead will re-use
 the BatchSchedulerExecutorConfig supplied by the PSI/J core.
 
 Define a new __init__ method that will define a default configuration::
@@ -172,14 +170,12 @@ To implement submission, we need to implement three methods:
 
 You can read the docstrings for each of these methods for more information, but briefly the submission process is:
 
-1. ``generate_submit_script`` should generate a submit script specific to the batch scheduler.
+1. ``generate_submit_script`` generates a submit script specific to the batch scheduler.
 
-2. ``get_submit_command`` should return the command line necessary to submit that script to the batch scheduler.
+2. ``get_submit_command`` returns the command line necessary to submit that script to the batch scheduler.
 
 The output of that command should be interpreted by ``job_id_from_submit_output`` to extract a batch scheduler specific job ID,
 which can be used later when cancelling a job or getting job status.
-
-So let's implement those.
 
 In line with other PSI/J executors, we're going to delegate script generation to a template based helper. So add a line to initialize a :py:class:`.TemplatedScriptGenerator` in the
 executor initializer, pointing at a (as yet non-existent) template file, and replace ``generate_submit_script`` with a delegated call to `TemplatedScriptGenerator`::
@@ -278,7 +274,7 @@ Implementing Status
 
 PSI/J needs to ask the batch scheduler for the status of jobs that it has submitted. This can be done with ``BatchSchedulerExecutor`` by overriding these two methods, which we stubbed out as not-implemented earlier on:
 
-* :py:meth:`.BatchSchedulerExecutor.get_status_command` - Like ``get_submit_command``, this should return a batch scheduler specific command line, this time to output job status.
+* :py:meth:`.BatchSchedulerExecutor.get_status_command` - Like ``get_submit_command``, this should return a batch scheduler-specific command line, this time to output job status.
 
 * :py:meth:`.BatchSchedulerExecutor.parse_status_output` - This will interpret the output of the above status command, a bit like ``job_id_from_submit_output``.
 
@@ -407,7 +403,7 @@ The _STATE_MAP given here is also not exhaustive: if PBS Pro qstat returns a dif
 How to Distribute Your Executor
 -------------------------------
 
-If you want to share your executor with others, here are two ways:
+If you want to share your executor with others:
 
 1. You can make a Python package and distribute that as an add-on without needing to interact with the PSI/J project.
 
