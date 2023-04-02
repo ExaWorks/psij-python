@@ -78,7 +78,7 @@ Rather than:
 Executors can be
 installed from multiple sources, so the precise list of executors
 available to a specific installation of the PSI/J Python library can vary.
-In order to get a list of available executors, you can run, in a
+To get a list of available executors, run the following in a
 terminal:
 
 .. code-block:: shell
