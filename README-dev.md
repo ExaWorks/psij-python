@@ -68,7 +68,7 @@ web site. The themed documentation will be found under the "Documentation"
 tab.
 
 
-### Release Process
+## Release Process
 
 Here are the steps for putting out a fresh release to Pypi.
 
