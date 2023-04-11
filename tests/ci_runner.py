@@ -235,7 +235,7 @@ def line_patcher(file_name: str, matcher: Callable[[str], bool],
 
 # Patch 1
 # Updates repositories in testing.conf and psij-ci-run. It also
-# upates the git origin to point to the new repo. This is done to
+# updates the git origin to point to the new repo. This is done to
 # account for the fact that we renamed the repo from psi-j-python
 # to psij-python.
 
