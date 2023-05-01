@@ -15,6 +15,20 @@ from _test_tools import _get_executor_instance, _get_timeout, assert_completed, 
 from pprint import pprint
 
 
+SCHEDULER_COMMANDS = {
+    "slurm": {
+        "get_queues": "mdiag -c",
+        "get_user_jobs": "squeue -u $(whoami)",
+        "kill_command": "scancel"
+    },
+    "lsf": {
+        "get_queues": "bqueues -u $(whoami)",
+        "get_user_jobs": "bjobs",
+        "kill_command": "bkill"
+    }
+}
+
+
 def get_slurm_queues():
     res = os.popen("mdiag -c").read().split("\n")
     res = [line.split("=")[-1] for line in res if "PartitionName" in line]
@@ -29,10 +43,11 @@ def get_lsf_queues():
     return res
 
 
-def get_queue_info():
+def get_queue_info(executor: str):
     res = []
-    res.extend(os.popen("bjobs").read().split("\n"))
-    res.extend(os.popen("bjobs").read().split("\n"))
+    print("PASSED THROUGH EXECUTOR:", executor)
+    command = SCHEDULER_COMMANDS[executor]["get_user_jobs"]
+    res.extend(os.popen(command).read().split("\n"))
     return res
 
 
@@ -50,7 +65,7 @@ def make_job(queue:str) -> Job:
 
 
 def test_queue(execparams: ExecutorTestParams) -> None:
-    executor = ""
+    scheduler = ""
     queues = []
     slurm_queues = get_slurm_queues()
     lsf_queues = get_lsf_queues()
@@ -63,9 +78,9 @@ def test_queue(execparams: ExecutorTestParams) -> None:
     print("extended ques:", queues)
 
     if len(slurm_queues) != 0:
-        executor = "slurm"
+        scheduler = "slurm"
     elif len(lsf_queues) != 0:
-        executor = "lsf"
+        scheduler = "lsf"
 
     if len(queues) <= 1:
         return
@@ -73,21 +88,22 @@ def test_queue(execparams: ExecutorTestParams) -> None:
     test_queues = random.sample(queues, 2)
     print("test queues:", test_queues)
 
-    print("Executor = ", executor)
-
-    executor = JobExecutor.get_instance(executor)
+    executor = JobExecutor.get_instance(scheduler)
 
     job1 = make_job(test_queues[0])
     executor.submit(job1)
-    qstat = get_queue_info()
+    qstat = get_queue_info(scheduler)
     job1_qstat_entry = [l for l in qstat if job1._native_id in l][0]
     assert test_queues[0] in job1_qstat_entry
 
     job2 = make_job(test_queues[1])
     executor.submit(job2)
-    qstat = get_queue_info()
+    qstat = get_queue_info(scheduler)
     job2_qstat_entry = [l for l in qstat if job2._native_id in l][0]
     assert test_queues[1] in job2_qstat_entry
+
+    qstat = get_queue_info(scheduler)
+    print("qstat = ", qstat)
 
     job1.wait()
     job2.wait()
