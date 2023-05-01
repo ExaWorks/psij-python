@@ -3,6 +3,7 @@ import random
 
 import logging
 from pathlib import Path
+from typing import List 
 
 import pytest
 
@@ -27,13 +28,13 @@ SCHEDULER_COMMANDS = {
 }
 
 
-def get_slurm_queues():
+def get_slurm_queues() -> None:
     res = os.popen("mdiag -c").read().split("\n")
     res = [line.split("=")[-1] for line in res if "PartitionName" in line]
     return res
 
 
-def get_lsf_queues():
+def get_lsf_queues() -> None:
     res = os.popen("bqueues -u ramon").read().split("\n")
     res = [l for l in res if len(l) != 0]
     res = [l.split(" ", 1) for l in res]
@@ -41,14 +42,14 @@ def get_lsf_queues():
     return res
 
 
-def get_queue_info(executor: str):
+def get_queue_info(executor: str) -> List[str]:
     res = []
     command = SCHEDULER_COMMANDS[executor]["get_user_jobs"]
     res.extend(os.popen(command).read().split("\n"))
     return res
 
 
-def kill_job(scheduler: str, job: Job):
+def kill_job(scheduler: str, job: Job) -> None:
     command = f"{SCHEDULER_COMMANDS[scheduler]['kill_command']} {job._native_id}"
     print("Kill command:", command)
     os.system(command)
