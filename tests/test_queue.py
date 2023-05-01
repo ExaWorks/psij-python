@@ -51,6 +51,12 @@ def get_queue_info(executor: str):
     return res
 
 
+def kill_job(scheduler: str, job: Job):
+    command = f"{SCHEDULER_COMMANDS[scheduler]['kill_command']} {job._native_id}"
+    print("Kill command:", command)
+    os.system(command)
+
+
 def make_job(queue:str) -> Job:
     return Job(
         JobSpec(
@@ -103,10 +109,10 @@ def test_queue(execparams: ExecutorTestParams) -> None:
     assert test_queues[1] in job2_qstat_entry
 
     qstat = get_queue_info(scheduler)
-    print("qstat = ", qstat)
+    print("qstat = ", "\n".join(qstat))
 
-    job1.wait()
-    job2.wait()
-    print("Job1:", job1.status)
-    print("Job2:", job2.status)
-    print()
+    kill_job(scheduler, job1)
+    kill_job(scheduler, job2)
+
+    qstat = get_queue_info(scheduler)
+    print("qstat = ", "\n".join(qstat))
