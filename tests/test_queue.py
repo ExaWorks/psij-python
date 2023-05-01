@@ -34,12 +34,27 @@ def get_slurm_queues() -> None:
     return res
 
 
-def get_lsf_queues() -> None:
-    res = os.popen("bqueues -u $(whoami)").read().split("\n")
-    res = [l for l in res if len(l) != 0]
-    res = [l.split(" ", 1) for l in res]
-    res = [l[0] for l in res if "Active" in l[1] and len(l) != 0]
-    return res
+def get_lsf_queues() -> str:
+    valid_queues = []
+    out = "".join(os.popen("bqueues -u $(whoami) -o 'QUEUE_NAME NJOBS PEND RUN SUSP STATUS'").read()).split("\n")
+    out = [l for l in out if len(l) != 0]
+    out = [l.split(" ") for l in out]
+    out.pop(0) # popping headers 
+    for queue_info in out: 
+        name = queue_info[0]
+        njobs = int(queue_info[1])
+        pend = int(queue_info[2])
+        run = int(queue_info[3])
+        susp = int(queue_info[4])
+        status = str(queue_info[5])
+
+        if "active" not in status.lower():
+            continue
+
+        if (njobs + pend + run + susp) > 10:
+            valid_queues.append(name)
+
+    return valid_queues
 
 
 def get_queue_info(executor: str) -> List[str]:
