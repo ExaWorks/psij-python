@@ -38,7 +38,10 @@ def get_lsf_queues() -> List[str]:
     out = "".join(os.popen("bqueues -u $(whoami) -o 'QUEUE_NAME NJOBS PEND RUN SUSP STATUS'").read()).split("\n")
     out = [l for l in out if len(l) != 0]
     out = [l.split(" ") for l in out]
+    if len(out) == 0:
+        return []
     out.pop(0) # popping headers 
+
     for queue_info in out: 
         name = queue_info[0]
         njobs = int(queue_info[1])
