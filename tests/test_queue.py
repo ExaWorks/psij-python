@@ -12,8 +12,6 @@ from tempfile import TemporaryDirectory
 from executor_test_params import ExecutorTestParams
 from _test_tools import _get_executor_instance, _get_timeout, assert_completed, _make_test_dir
 
-from pprint import pprint
-
 
 SCHEDULER_COMMANDS = {
     "slurm": {
@@ -45,7 +43,6 @@ def get_lsf_queues():
 
 def get_queue_info(executor: str):
     res = []
-    print("PASSED THROUGH EXECUTOR:", executor)
     command = SCHEDULER_COMMANDS[executor]["get_user_jobs"]
     res.extend(os.popen(command).read().split("\n"))
     return res
@@ -61,8 +58,6 @@ def make_job(queue:str) -> Job:
     return Job(
         JobSpec(
             executable="/bin/date",
-            # arguments=['-utc', '--debug'],
-            # resources=ResourceSpecV1(node_count=1),
             attributes=JobAttributes(
                 queue_name=queue,
             ),
@@ -78,10 +73,6 @@ def test_queue(execparams: ExecutorTestParams) -> None:
 
     queues.extend(slurm_queues)
     queues.extend(lsf_queues)
-
-    print("slurm:", slurm_queues)
-    print("lsf:", lsf_queues)
-    print("extended ques:", queues)
 
     if len(slurm_queues) != 0:
         scheduler = "slurm"
