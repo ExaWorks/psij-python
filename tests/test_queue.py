@@ -79,9 +79,11 @@ def test_queue(execparams: ExecutorTestParams) -> None:
     elif len(lsf_queues) != 0:
         scheduler = "lsf"
 
-    if len(queues) <= 1:
+    if len(queues) < 2:
+        pytest.raises(Exception("Need at least two queues to perform this test"))
         return
 
+    print("available queues:", queues)
     test_queues = random.sample(queues, 2)
     print("test queues:", test_queues)
 
