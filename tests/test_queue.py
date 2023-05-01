@@ -35,7 +35,7 @@ def get_slurm_queues() -> None:
 
 
 def get_lsf_queues() -> None:
-    res = os.popen("bqueues -u ramon").read().split("\n")
+    res = os.popen("bqueues -u $(whoami)").read().split("\n")
     res = [l for l in res if len(l) != 0]
     res = [l.split(" ", 1) for l in res]
     res = [l[0] for l in res if "Active" in l[1] and len(l) != 0]
