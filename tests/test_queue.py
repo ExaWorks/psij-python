@@ -100,7 +100,7 @@ def test_queue(execparams: ExecutorTestParams) -> None:
         scheduler = "lsf"
 
     if len(queues) < 2:
-        pytest.raises(Exception("Need at least two queues to perform this test"))
+        pytest.skip("Need at least two queues to perform this test")
         return
 
     print("available queues:", queues)
