@@ -103,6 +103,9 @@ def test_queue(execparams: ExecutorTestParams) -> None:
         pytest.skip("Need at least two queues to perform this test")
         return
 
+    if execparams.launcher != "single":
+        pytest.skip("No need to test non-single launchers")
+
     print("available queues:", queues)
     test_queues = random.sample(queues, 2)
     print("test queues:", test_queues)
