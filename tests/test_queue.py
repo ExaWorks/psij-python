@@ -17,12 +17,12 @@ from _test_tools import _get_executor_instance, _get_timeout, assert_completed, 
 SCHEDULER_COMMANDS = {
     "slurm": {
         "get_queues": "mdiag -c",
-        "get_user_jobs": "squeue -u $(whoami)",
+        "get_user_jobs": "squeue -o '%P' --jobs",
         "kill_command": "scancel"
     },
     "lsf": {
         "get_queues": "bqueues -u $(whoami) -o 'QUEUE_NAME NJOBS PEND RUN SUSP STATUS'",
-        "get_user_jobs": "bjobs",
+        "get_user_jobs": "bjobs -o 'queue'",
         "kill_command": "bkill"
     }
 }
@@ -61,10 +61,10 @@ def get_lsf_queues() -> List[str]:
     return valid_queues
 
 
-def get_queue_info(executor: str) -> List[str]:
+def get_queue_info(executor: str, job: Job) -> List[str]:
     res = []
     command = SCHEDULER_COMMANDS[executor]["get_user_jobs"]
-    res.extend(os.popen(command).read().split("\n"))
+    res.extend(os.popen(f"{command} {job._native_id}").read().split("\n"))
     return res
 
 
@@ -111,21 +111,13 @@ def test_queue(execparams: ExecutorTestParams) -> None:
 
     job1 = make_job(test_queues[0])
     executor.submit(job1)
-    qstat = get_queue_info(scheduler)
-    job1_qstat_entry = [l for l in qstat if job1._native_id in l][0]
-    assert test_queues[0] in job1_qstat_entry
+    qstat = get_queue_info(scheduler, job1)
+    assert test_queues[0] in qstat
 
     job2 = make_job(test_queues[1])
     executor.submit(job2)
-    qstat = get_queue_info(scheduler)
-    job2_qstat_entry = [l for l in qstat if job2._native_id in l][0]
-    assert test_queues[1] in job2_qstat_entry
-
-    qstat = get_queue_info(scheduler)
-    print("qstat = ", "\n".join(qstat))
+    qstat = get_queue_info(scheduler, job2)
+    assert test_queues[1] in qstat
 
     kill_job(scheduler, job1)
     kill_job(scheduler, job2)
-
-    qstat = get_queue_info(scheduler)
-    print("qstat = ", "\n".join(qstat))
