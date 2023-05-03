@@ -21,7 +21,7 @@ SCHEDULER_COMMANDS = {
         "kill_command": "scancel"
     },
     "lsf": {
-        "get_queues": "bqueues -u $(whoami)",
+        "get_queues": "bqueues -u $(whoami) -o 'QUEUE_NAME NJOBS PEND RUN SUSP STATUS'",
         "get_user_jobs": "bjobs",
         "kill_command": "bkill"
     }
@@ -29,13 +29,15 @@ SCHEDULER_COMMANDS = {
 
 
 def get_slurm_queues() -> List[str]:
-    out = os.popen("mdiag -c").read().split("\n")
+    command = SCHEDULER_COMMANDS["slurm"]["get_queues"]
+    out = os.popen(command).read().split("\n")
     return [line.split("=")[-1] for line in out if "PartitionName" in line]
 
 
 def get_lsf_queues() -> List[str]:
     valid_queues = []
-    out = "".join(os.popen("bqueues -u $(whoami) -o 'QUEUE_NAME NJOBS PEND RUN SUSP STATUS'").read()).split("\n")
+    command = SCHEDULER_COMMANDS["lsf"]["get_queues"]
+    out = "".join(os.popen(command).read()).split("\n")
     out = [l for l in out if len(l) != 0]
     out = [l.split(" ") for l in out]
     if len(out) == 0:
