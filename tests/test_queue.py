@@ -37,14 +37,14 @@ def get_slurm_queues() -> List[str]:
 def get_lsf_queues() -> List[str]:
     valid_queues = []
     command = SCHEDULER_COMMANDS["lsf"]["get_queues"]
-    out = "".join(os.popen(command).read()).split("\n")
+    out = os.popen(command).read().split("\n")
     out = [l for l in out if len(l) != 0]
-    out = [l.split(" ") for l in out]
-    if len(out) == 0:
+    queues = [l.split(" ") for l in out]
+    if len(queues) == 0:
         return []
-    out.pop(0) # popping headers 
+    queues.pop(0) # popping headers 
 
-    for queue_info in out: 
+    for queue_info in queues: 
         name = queue_info[0]
         njobs = int(queue_info[1])
         pend = int(queue_info[2])
