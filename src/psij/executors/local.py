@@ -1,10 +1,12 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import signal
 import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
+from types import FrameType
 from typing import Optional, Dict, List, Type, Tuple
 
 import psutil
@@ -16,6 +18,11 @@ from psij import JobExecutor
 logger = logging.getLogger(__name__)
 
 
+def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
+    _ProcessReaper.get_instance()._handle_sigchld()
+
+
+signal.signal(signal.SIGCHLD, _handle_sigchld)
 _REAPER_SLEEP_TIME = 0.2
 
 
@@ -120,6 +127,7 @@ class _ProcessReaper(threading.Thread):
         super().__init__(name='Local Executor Process Reaper', daemon=True)
         self._jobs: Dict[Job, _ProcessEntry] = {}
         self._lock = threading.RLock()
+        self._cvar = threading.Condition()
 
     def register(self, entry: _ProcessEntry) -> None:
         logger.debug('Registering process %s', entry)
@@ -134,7 +142,12 @@ class _ProcessReaper(threading.Thread):
                     self._check_processes()
                 except Exception as ex:
                     logger.error('Error polling for process status', ex)
-            time.sleep(_REAPER_SLEEP_TIME)
+            with self._cvar:
+                self._cvar.wait(_REAPER_SLEEP_TIME)
+
+    def _handle_sigchld(self) -> None:
+        with self._cvar:
+            self._cvar.notify_all()
 
     def _check_processes(self) -> None:
         done: List[_ProcessEntry] = []
