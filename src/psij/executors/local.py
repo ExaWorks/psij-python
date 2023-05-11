@@ -147,7 +147,20 @@ class _ProcessReaper(threading.Thread):
 
     def _handle_sigchld(self) -> None:
         with self._cvar:
-            self._cvar.notify_all()
+            try:
+                self._cvar.notify_all()
+            except RuntimeError as ex:
+                # In what looks like rare cases, notify_all(), seemingly when combined with
+                # signal handling, raises `RuntimeError: release unlocked lock`.
+                # There appears to be an unresolved Python bug about this:
+                #    https://bugs.python.org/issue34486
+                # We catch the exception here and log it. It is hard to tell if that will not lead
+                # to further issues. It would seem like it shouldn't: after all, all we're doing is
+                # making sure we don't sleep too much, but, even if we do, the consequence is a
+                # small delay in processing a completed job. However, since this exception seems
+                # to be a logical impossibility when looking at the code in threading.Condition,
+                # there is really no telling what else could go wrong.
+                logger.warning('Exception in Condition.notify_all()', ex)
 
     def _check_processes(self) -> None:
         done: List[_ProcessEntry] = []
