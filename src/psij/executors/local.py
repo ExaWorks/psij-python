@@ -162,7 +162,7 @@ class _ProcessReaper(threading.Thread):
                 # small delay in processing a completed job. However, since this exception seems
                 # to be a logical impossibility when looking at the code in threading.Condition,
                 # there is really no telling what else could go wrong.
-                logger.warning('Exception in Condition.notify_all()', ex)
+                logger.debug('Exception in Condition.notify_all()')
 
     def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> None:
         done: List[_ProcessEntry] = []
