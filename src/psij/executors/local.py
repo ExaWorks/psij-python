@@ -1,10 +1,12 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import signal
 import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
+from types import FrameType
 from typing import Optional, Dict, List, Type, Tuple
 
 import psutil
@@ -16,6 +18,11 @@ from psij import JobExecutor
 logger = logging.getLogger(__name__)
 
 
+def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
+    _ProcessReaper.get_instance()._handle_sigchld()
+
+
+signal.signal(signal.SIGCHLD, _handle_sigchld)
 _REAPER_SLEEP_TIME = 0.2
 
 
@@ -120,6 +127,7 @@ class _ProcessReaper(threading.Thread):
         super().__init__(name='Local Executor Process Reaper', daemon=True)
         self._jobs: Dict[Job, _ProcessEntry] = {}
         self._lock = threading.RLock()
+        self._cvar = threading.Condition()
 
     def register(self, entry: _ProcessEntry) -> None:
         logger.debug('Registering process %s', entry)
@@ -134,7 +142,25 @@ class _ProcessReaper(threading.Thread):
                     self._check_processes()
                 except Exception as ex:
                     logger.error('Error polling for process status', ex)
-            time.sleep(_REAPER_SLEEP_TIME)
+            with self._cvar:
+                self._cvar.wait(_REAPER_SLEEP_TIME)
+
+    def _handle_sigchld(self) -> None:
+        with self._cvar:
+            try:
+                self._cvar.notify_all()
+            except RuntimeError as ex:
+                # In what looks like rare cases, notify_all(), seemingly when combined with
+                # signal handling, raises `RuntimeError: release unlocked lock`.
+                # There appears to be an unresolved Python bug about this:
+                #    https://bugs.python.org/issue34486
+                # We catch the exception here and log it. It is hard to tell if that will not lead
+                # to further issues. It would seem like it shouldn't: after all, all we're doing is
+                # making sure we don't sleep too much, but, even if we do, the consequence is a
+                # small delay in processing a completed job. However, since this exception seems
+                # to be a logical impossibility when looking at the code in threading.Condition,
+                # there is really no telling what else could go wrong.
+                logger.warning('Exception in Condition.notify_all()', ex)
 
     def _check_processes(self) -> None:
         done: List[_ProcessEntry] = []
