@@ -110,6 +110,7 @@ class ScriptBasedLauncher(Launcher):
 
             deploy_dir = self._deploy_files(self._files_to_deploy())
             self._deployed_script_path = deploy_dir / self._script_path.name
+            self._deployed = True
 
     def _files_to_deploy(self) -> List[Path]:
         return [
