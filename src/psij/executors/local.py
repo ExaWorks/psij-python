@@ -151,7 +151,7 @@ class _ProcessReaper(threading.Thread):
         with self._cvar:
             try:
                 self._cvar.notify_all()
-            except RuntimeError as ex:
+            except RuntimeError:
                 # In what looks like rare cases, notify_all(), seemingly when combined with
                 # signal handling, raises `RuntimeError: release unlocked lock`.
                 # There appears to be an unresolved Python bug about this:
