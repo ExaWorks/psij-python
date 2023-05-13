@@ -136,12 +136,16 @@ class _ProcessReaper(threading.Thread):
 
     def run(self) -> None:
         logger.debug('Started {}'.format(self))
+        done: List[_ProcessEntry] = []
         while True:
             with self._lock:
-                try:
-                    self._check_processes()
-                except Exception as ex:
-                    logger.error('Error polling for process status', ex)
+                for entry in done:
+                    del self._jobs[entry.job]
+                jobs = dict(self._jobs)
+            try:
+                done = self._check_processes(jobs)
+            except Exception as ex:
+                logger.error('Error polling for process status', ex)
             with self._cvar:
                 self._cvar.wait(_REAPER_SLEEP_TIME)
 
@@ -149,7 +153,7 @@ class _ProcessReaper(threading.Thread):
         with self._cvar:
             try:
                 self._cvar.notify_all()
-            except RuntimeError as ex:
+            except RuntimeError:
                 # In what looks like rare cases, notify_all(), seemingly when combined with
                 # signal handling, raises `RuntimeError: release unlocked lock`.
                 # There appears to be an unresolved Python bug about this:
@@ -160,11 +164,12 @@ class _ProcessReaper(threading.Thread):
                 # small delay in processing a completed job. However, since this exception seems
                 # to be a logical impossibility when looking at the code in threading.Condition,
                 # there is really no telling what else could go wrong.
-                logger.warning('Exception in Condition.notify_all()', ex)
+                logger.debug('Exception in Condition.notify_all()')
 
-    def _check_processes(self) -> None:
+    def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> List[_ProcessEntry]:
         done: List[_ProcessEntry] = []
-        for entry in self._jobs.values():
+
+        for entry in jobs.values():
             if entry.kill_flag:
                 entry.kill()
 
@@ -174,9 +179,11 @@ class _ProcessReaper(threading.Thread):
                 entry.done_time = time.time()
                 entry.out = out
                 done.append(entry)
+
         for entry in done:
-            del self._jobs[entry.job]
             entry.executor._process_done(entry)
+
+        return done
 
     def cancel(self, job: Job) -> None:
         with self._lock:
