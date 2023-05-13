@@ -136,12 +136,14 @@ class _ProcessReaper(threading.Thread):
 
     def run(self) -> None:
         logger.debug('Started {}'.format(self))
+        done: List[_ProcessEntry] = []
         while True:
             with self._lock:
+                for entry in done:
+                    del self._jobs[entry.job]
                 jobs = dict(self._jobs)
-
             try:
-                self._check_processes(jobs)
+                done = self._check_processes(jobs)
             except Exception as ex:
                 logger.error('Error polling for process status', ex)
             with self._cvar:
@@ -164,7 +166,7 @@ class _ProcessReaper(threading.Thread):
                 # there is really no telling what else could go wrong.
                 logger.debug('Exception in Condition.notify_all()')
 
-    def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> None:
+    def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> List[_ProcessEntry]:
         done: List[_ProcessEntry] = []
 
         for entry in jobs.values():
@@ -178,13 +180,10 @@ class _ProcessReaper(threading.Thread):
                 entry.out = out
                 done.append(entry)
 
-        if len(done) > 0:
-            with self._lock:
-                for entry in done:
-                    del self._jobs[entry.job]
+        for entry in done:
+            entry.executor._process_done(entry)
 
-            for entry in done:
-                entry.executor._process_done(entry)
+        return done
 
     def cancel(self, job: Job) -> None:
         with self._lock:
