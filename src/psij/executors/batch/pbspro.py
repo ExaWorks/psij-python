@@ -134,6 +134,14 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
         return r
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return ['qstat', '-u', self._current_user()]
+
+    def parse_list_output(self, out: str) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.parse_list_output`."""
+        return [s.split()[0].strip() for s in out.splitlines()[2:]]
+
     def _get_state(self, state: str) -> JobState:
         assert state in _STATE_MAP, f"PBS state {state} is not known to PSI/J"
         return _STATE_MAP[state]

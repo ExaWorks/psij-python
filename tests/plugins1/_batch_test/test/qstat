@@ -6,7 +6,10 @@ from qlib import *
 from filelock import FileLock
 
 
-ids = sys.argv[1]
+if len(sys.argv) > 1:
+    ids = sys.argv[1]
+else:
+    ids = None
 
 
 with FileLock(lock_file):
@@ -14,8 +17,12 @@ with FileLock(lock_file):
         sys.exit(0)
     state = read_state()
 
-idlist = ids.split(',')
-for id in idlist:
-    if id in state['jobs']:
-        j = state['jobs'][id]
-        print('%s %s %s' % (id, j['state'], j['error']))
+if ids is not None:
+    idlist = ids.split(',')
+    for id in idlist:
+        if id in state['jobs']:
+            j = state['jobs'][id]
+            print('%s %s %s' % (id, j['state'], j['error']))
+else:
+    for id in state['jobs'].keys():
+        print(id)
