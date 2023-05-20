@@ -160,6 +160,10 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
 
         return r
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return ['squeue', '--me', '-o', '%i', '-h', '-r', '-t', 'all']
+
     def _get_state(self, state: str) -> JobState:
         assert state in SlurmJobExecutor._STATE_MAP
         return SlurmJobExecutor._STATE_MAP[state]

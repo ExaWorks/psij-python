@@ -420,6 +420,38 @@ class BatchSchedulerExecutor(JobExecutor):
         """
         pass
 
+    @abstractmethod
+    def get_list_command(self) -> List[str]:
+        """Constructs a command to retrieve the list of jobs known to the LRM for the current user.
+
+        Concrete implementations of batch scheduler executors must override this method. Upon
+        running the command, the output can be parsed with :func:`~parse_list_output`.
+
+        Returns
+        -------
+        A list of strings representing the executable and arguments to invoke in order to obtain
+        the list of jobs the LRM knows for the current user.
+        """
+        pass
+
+    def parse_list_output(self, out: str) -> List[str]:
+        """Parses the output of the command obtained from :func:`~get_list_command`.
+
+        The default implementation of this method assumes that the output has no header and
+        consists of native IDs, one per line, possibly surrounded by whitespace. Concrete
+        implementations should override this method if a different format is expected.
+
+        Parameters
+        ----------
+        out
+            The output from the "list" command as returned by :func:`~get_list_command`.
+        Returns
+        -------
+        A list of strings representing the native IDs of the jobs known to the LRM for the current
+        user.
+        """
+        return [s.strip() for s in out.splitlines()]
+
     def _create_script_context(self, job: Job) -> Dict[str, object]:
         launcher = self._get_launcher_from_job(job)
         if isinstance(launcher, ScriptBasedLauncher) and logger.isEnabledFor(logging.DEBUG):
@@ -551,7 +583,10 @@ class BatchSchedulerExecutor(JobExecutor):
         Implementations are encouraged to restrict the results to jobs accessible by the current
         user.
         """
-        raise NotImplementedError()
+        return self.parse_list_output(self._run_command(self.get_list_command()))
+
+    def _current_user(self) -> str:
+        return os.getlogin()
 
 
 class _QueuePollThread(Thread):

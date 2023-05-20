@@ -119,6 +119,8 @@ class JobExecutor(ABC):
         has not been successfully sent to the underlying implementation, the job status remains
         unchanged, and no status notifications about the job will be fired.
 
+        A successful return of this method guarantees that the job's `native_id` property is set.
+
         :raises ~psij.InvalidJobException: Thrown if the job specification cannot be understood.
             This exception is fatal in that submitting another job with the exact same details will
             also fail with an `~psij.InvalidJobException`. In principle, the underlying
