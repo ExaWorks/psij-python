@@ -249,13 +249,20 @@ def _cache(file_path, fn):
 
 
 def _get_key(config):
-    key = config.getoption('key')
-    if key == 'random':
-        return _cache(KEY_FILE, secrets.token_hex)
-    elif key[0] == '"' and key[-1] == '"':
-        return key[1:-1]
+    if Path('~/.psij/key').exists():
+        with open('~/.psij/key') as f:
+            return f.read().strip()
     else:
-        raise ValueError('Invalid value for --key argument: "%s"' % key)
+        # use legacy if needed
+        key = config.getoption('key')
+        logger.warning('Legacy keys are deprecated. Please go to https://testing.psij.io/auth.html '
+                       'to obtain an authentication key.')
+        if key == 'random':
+            return _cache(KEY_FILE, secrets.token_hex)
+        elif key[0] == '"' and key[-1] == '"':
+            return key[1:-1]
+        else:
+            raise ValueError('Invalid value for --key argument: "%s"' % key)
 
 
 def _get_id(config):

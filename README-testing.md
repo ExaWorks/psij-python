@@ -36,6 +36,10 @@ python/cpython-x.y.z`) or something similar, such as loading a conda or
 virtual environment, please run the relevant commands before invoking
 `psij-ci-setup`.
 
+Note: To upload data to the test server, you will need an authentication
+key. You can obtain such a key from https://testing.psij.io/auth.html.
+Obtaining a key requires a valid email.
+
 
 Testing with the CI Runner
 ==========================
