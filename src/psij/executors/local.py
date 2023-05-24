@@ -22,7 +22,6 @@ def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
     _ProcessReaper.get_instance()._handle_sigchld()
 
 
-signal.signal(signal.SIGCHLD, _handle_sigchld)
 _REAPER_SLEEP_TIME = 0.2
 
 
@@ -121,6 +120,7 @@ class _ProcessReaper(threading.Thread):
             if cls._instance is None:
                 cls._instance = _ProcessReaper()
                 cls._instance.start()
+                signal.signal(signal.SIGCHLD, _handle_sigchld)
             return cls._instance
 
     def __init__(self) -> None:
