@@ -152,3 +152,12 @@ def test_stdin_redirect(execparams: ExecutorTestParams) -> None:
             contents = outf.read()
 
         assert contents == rnd_str
+
+
+def test_list(execparams: ExecutorTestParams) -> None:
+    job = Job(JobSpec(executable='/bin/sleep', arguments=['4']))
+    ex = _get_executor_instance(execparams, job)
+    ex.submit(job)
+    assert job.native_id is not None
+    ids = ex.list()
+    assert job.native_id in ids

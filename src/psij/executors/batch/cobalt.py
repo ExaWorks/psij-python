@@ -111,6 +111,10 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
                 index += 1
         return job_statuses
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return [_QSTAT_COMMAND, '-u', self._current_user(), '--header', 'JobId']
+
     def job_id_from_submit_output(self, out: str) -> str:
         """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
         match = _QSUB_REGEX.search(out)

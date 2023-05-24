@@ -127,3 +127,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)[5:-1]
+
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return [_BJOBS_COMMAND, '-a', '-noheader', '-o', 'jobid', '-u', self._current_user()]

@@ -84,6 +84,9 @@ class _TestJobExecutor(BatchSchedulerExecutor):
             r[native_id] = JobStatus(state, message=msg)
         return r
 
+    def get_list_command(self) -> List[str]:
+        return [sys.executable, QSTAT_PATH]
+
     def _get_state(self, state: str) -> JobState:
         assert state in _TestJobExecutor._STATE_MAP
         return _TestJobExecutor._STATE_MAP[state]

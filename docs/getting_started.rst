@@ -19,7 +19,7 @@ Install from pip
 
 .. code-block:: console
 
-    pip install psij
+    pip install psij-python
 
 Install from Source
 ^^^^^^^^^^^^^^^^^^^
