@@ -1,0 +1,23 @@
+import logging
+from threading import Thread
+import psij
+
+
+def func():
+    # Get logs from PSI/J
+    logger = logging.getLogger()
+    logger.setLevel("DEBUG")
+    logger.addHandler(logging.StreamHandler())
+
+    exe = psij.JobExecutor.get_instance("local")
+    job = psij.Job(psij.JobSpec("test", "echo", arguments=["foo"]))
+    exe.submit(job)
+
+    # This hangs
+    job.wait()
+
+if __name__ == "__main__":
+    p = Thread(target=func)
+    p.start()
+    p.join()
+
