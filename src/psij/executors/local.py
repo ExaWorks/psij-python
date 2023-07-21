@@ -18,8 +18,15 @@ from psij import JobExecutor
 logger = logging.getLogger(__name__)
 
 
+if threading.current_thread() != threading.main_thread():
+    raise ImportError('The psij module must be imported from the main thread.')
+
+
 def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
     _ProcessReaper.get_instance()._handle_sigchld()
+
+
+signal.signal(signal.SIGCHLD, _handle_sigchld)
 
 
 _REAPER_SLEEP_TIME = 0.2
