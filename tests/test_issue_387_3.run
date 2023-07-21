@@ -1,3 +1,6 @@
+# This test must be run in a separate process, since it is sensitive
+# to threading and process context.
+
 import logging
 from threading import Thread
 import psij
