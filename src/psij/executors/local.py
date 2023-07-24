@@ -19,18 +19,18 @@ from psij.utils import SingletonThread
 logger = logging.getLogger(__name__)
 
 
-if threading.current_thread() != threading.main_thread():
-    raise ImportError('The psij module must be imported from the main thread.')
-
-
 def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
     _ProcessReaper.get_instance()._handle_sigchld()
 
 
-signal.signal(signal.SIGCHLD, _handle_sigchld)
+if threading.current_thread() != threading.main_thread():
+    logger.warning('The psij module is being imported from a non-main thread. This prevents the'
+                   'use of signals in the local executor, which will slow things down a bit.')
+else:
+    signal.signal(signal.SIGCHLD, _handle_sigchld)
 
 
-_REAPER_SLEEP_TIME = 0.2
+_REAPER_SLEEP_TIME = 0.1
 
 
 class _ProcessEntry(ABC):
