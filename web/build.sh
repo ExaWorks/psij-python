@@ -21,6 +21,7 @@ fi
 
 cp -r web/_layouts/ web-build/
 cp -r web/_includes/ web-build/
+cp -r web/images/ web-build/
 
 echo -n "var DOC_VERSIONS_RAW = [" >web-build/versions.js
 for V in `ls web-build/docs/v`; do
