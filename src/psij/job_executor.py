@@ -105,6 +105,8 @@ class JobExecutor(ABC):
                         raise TypeError('environment key "%s" has non-string value (%s)'
                                         % (k, type(v).__name__))
 
+        if job.executor is not None:
+            raise InvalidJobException('Job is already associated with an executor')
         job.executor = self
         return spec
 
