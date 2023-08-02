@@ -100,16 +100,16 @@ class JobSpec(object):
         self._name = name
         self.executable = executable
         self.arguments = arguments
-        self.directory = directory
+        self.directory = Path(directory) if directory is not None else None
         self.inherit_environment = inherit_environment
         self.environment = environment
-        self.stdin_path = stdin_path
-        self.stdout_path = stdout_path
-        self.stderr_path = stderr_path
+        self.stdin_path = Path(stdin_path) if stdin_path is not None else None
+        self.stdout_path = Path(stdout_path) if stdout_path is not None else None
+        self.stderr_path = Path(stderr_path) if stderr_path is not None else None
         self.resources = resources
         self.attributes = attributes if attributes is not None else JobAttributes()
-        self.pre_launch = pre_launch
-        self.post_launch = post_launch
+        self.pre_launch = Path(pre_launch) if pre_launch is not None else None
+        self.post_launch = Path(post_launch) if post_launch is not None else None
         self.launcher = launcher
 
         # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
