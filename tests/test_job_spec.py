@@ -34,6 +34,9 @@ def test_environment_types() -> None:
     spec.environment = {'foo': 'bar'}
     assert spec.environment['foo'] == 'bar'
 
+    spec.environment = {'foo': 'biz'}
+    assert spec.environment['foo'] == 'biz'
+
     assert JobSpec(directory=os.path.join("test", "path")).directory == Path("test") / "path"
     assert JobSpec(stdin_path=os.path.join("test", "path")).directory == Path("test") / "path"
     assert JobSpec(stdout_path=os.path.join("test", "path")).directory == Path("test") / "path"
