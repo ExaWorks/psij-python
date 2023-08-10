@@ -510,7 +510,8 @@ class BatchSchedulerExecutor(JobExecutor):
             assert isinstance(self.config, BatchSchedulerExecutorConfig)
             if not self.config.keep_files:
                 submit_file_path = self.work_directory / (job.id + '.job')
-                submit_file_path.unlink()
+                if submit_file_path.exists():
+                    submit_file_path.unlink()
         except Exception as ex:
             logger.warning('Job %s: failed clean submit script: %s', job.id, ex)
 
