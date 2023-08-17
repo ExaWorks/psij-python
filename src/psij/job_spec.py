@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from typeguard import check_argument_types
 
@@ -11,16 +11,17 @@ from psij.resource_spec import ResourceSpec
 from psij.utils import path_object_to_full_path as o2p
 
 
+StrOrPath = Union[str, Path]
 class JobSpec(object):
     """A class to hold information about the characteristics of a:class:`~psij.Job`."""
 
     def __init__(self, name: Optional[str] = None, executable: Optional[str] = None,
-                 arguments: Optional[List[str]] = None, directory: Optional[str | Path] = None,
+                 arguments: Optional[List[str]] = None, directory: Optional[StrOrPath] = None,
                  inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
-                 stdin_path: Optional[str | Path] = None, stdout_path: Optional[str | Path] = None,
-                 stderr_path: Optional[str | Path] = None, resources: Optional[ResourceSpec] = None,
-                 attributes: Optional[JobAttributes] = None, pre_launch: Optional[str | Path] = None,
-                 post_launch: Optional[str | Path] = None, launcher: Optional[str] = None):
+                 stdin_path: Optional[StrOrPath] = None, stdout_path: Optional[StrOrPath] = None,
+                 stderr_path: Optional[StrOrPath] = None, resources: Optional[ResourceSpec] = None,
+                 attributes: Optional[JobAttributes] = None, pre_launch: Optional[StrOrPath] = None,
+                 post_launch: Optional[StrOrPath] = None, launcher: Optional[str] = None):
         """
         Constructs a `JobSpec` object while allowing its properties to be initialized.
 
