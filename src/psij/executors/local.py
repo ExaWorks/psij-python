@@ -7,13 +7,14 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from types import FrameType
-from typing import Optional, Dict, List, Type, Tuple
+from typing import Optional, Dict, List, Tuple, Type, cast
 
 import psutil
 
 from psij import InvalidJobException, SubmitException, Launcher
 from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
+from psij.utils import SingletonThread
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,14 @@ def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
     _ProcessReaper.get_instance()._handle_sigchld()
 
 
-_REAPER_SLEEP_TIME = 0.2
+if threading.current_thread() != threading.main_thread():
+    logger.warning('The psij module is being imported from a non-main thread. This prevents the'
+                   'use of signals in the local executor, which will slow things down a bit.')
+else:
+    signal.signal(signal.SIGCHLD, _handle_sigchld)
+
+
+_REAPER_SLEEP_TIME = 0.1
 
 
 class _ProcessEntry(ABC):
@@ -110,18 +118,11 @@ def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
         return spec.environment
 
 
-class _ProcessReaper(threading.Thread):
-    _instance: Optional['_ProcessReaper'] = None
-    _lock = threading.RLock()
+class _ProcessReaper(SingletonThread):
 
     @classmethod
     def get_instance(cls: Type['_ProcessReaper']) -> '_ProcessReaper':
-        with cls._lock:
-            if cls._instance is None:
-                cls._instance = _ProcessReaper()
-                cls._instance.start()
-                signal.signal(signal.SIGCHLD, _handle_sigchld)
-            return cls._instance
+        return cast('_ProcessReaper', super().get_instance())
 
     def __init__(self) -> None:
         super().__init__(name='Local Executor Process Reaper', daemon=True)
@@ -198,8 +199,15 @@ class LocalJobExecutor(JobExecutor):
     This job executor is intended to be used when there is no resource manager, only
     the operating system. Or when there is a resource manager, but it should be ignored.
 
-    Limitations: in Linux, attached jobs always appear to complete with a zero exit code regardless
+    Limitations:
+    - In Linux, attached jobs always appear to complete with a zero exit code regardless
     of the actual exit code.
+    - Instantiation of a local executor from both parent process and a `fork()`-ed process
+    is not guaranteed to work. In general, using `fork()` and multi-threading in Linux is unsafe,
+    as suggested by the `fork()` man page. While PSI/J attempts to minimize problems that can
+    arise when `fork()` is combined with threads (which are used by PSI/J), no guarantees can be
+    made and the chances of unexpected behavior are high. Please do not use PSI/J with `fork()`.
+    If you do, please be mindful that support for using PSI/J with `fork()` will be limited.
     """
 
     def __init__(self, url: Optional[str] = None,
