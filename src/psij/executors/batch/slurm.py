@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -175,3 +176,12 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     def job_id_from_submit_output(self, out: str) -> str:
         """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://slurm.schedmd.com/sbatch.html#OPT_time:
+        #   Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds",
+        #   "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+        days = ''
+        if d.days > 0:
+            days = str(d.days) + '-'
+        return days + "%s:%s:%s" % (d.seconds // 3600, (d.seconds // 60) % 60, d.seconds % 60)

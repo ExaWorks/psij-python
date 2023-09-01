@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 
@@ -145,3 +146,9 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     def _get_state(self, state: str) -> JobState:
         assert state in _STATE_MAP, f"PBS state {state} is not known to PSI/J"
         return _STATE_MAP[state]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # There isn't a clear specification for the walltime in
+        # https://help.altair.com/2022.1.0/PBS%20Professional/PBSReferenceGuide2022.1.pdf,
+        # but all examples use hh:mm:ss, which is the default in the base class
+        return super()._format_duration(d)

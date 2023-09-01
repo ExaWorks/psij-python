@@ -35,9 +35,9 @@
 {{/job.spec.resources}}
 
 
-{{#job_duration}}
+{{#formatted_job_duration}}
 #BSUB -W {{.}}
-{{/job_duration}}
+{{/formatted_job_duration}}
 
 {{#job.spec.attributes}}
     {{#queue_name}}

@@ -1,5 +1,5 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
-
+from datetime import timedelta
 from pathlib import Path
 from typing import Optional, Collection, List, Dict, TextIO
 import re
@@ -121,3 +121,10 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://trac.mcs.anl.gov/projects/cobalt/wiki/qsub.1.html:
+        #   The time may be specified as eitehr an integer number of minutes or a colon-delimited
+        #   value of the format: HH:MM:SS. Enter 0 to get the max allowed walltime.
+        # base class _format_duration is HH:MM:SS
+        return super()._format_duration(d)
