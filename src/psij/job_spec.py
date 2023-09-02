@@ -13,8 +13,8 @@ from psij.utils import path_object_to_full_path as o2p
 class JobSpec(object):
     """A class to hold information about the characteristics of a:class:`~psij.Job`."""
 
-    def __init__(self, name: Optional[str] = None, executable: Optional[str] = None,
-                 arguments: Optional[List[str]] = None, directory: Optional[Path] = None,
+    def __init__(self, executable: Optional[str] = None, arguments: Optional[List[str]] = None,
+                 directory: Optional[Path] = None, name: Optional[str] = None,
                  inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
                  stdin_path: Optional[Path] = None, stdout_path: Optional[Path] = None,
                  stderr_path: Optional[Path] = None, resources: Optional[ResourceSpec] = None,
@@ -62,14 +62,14 @@ class JobSpec(object):
             refer to files inside the job directory using relative paths.
 
 
-        :param name: A name for the job. The name plays no functional role except that
-            :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
-            job as presented by the underlying implementation.
         :param executable: An executable, such as "/bin/date".
         :param arguments: The argument list to be passed to the executable. Unlike with execve(),
             the first element of the list will correspond to `argv[1]` when accessed by the invoked
             executable.
         :param directory: The directory, on the compute side, in which the executable is to be run
+        :param name: A name for the job. The name plays no functional role except that
+            :class:`~psij.JobExecutor` implementations may attempt to use the name to label the
+            job as presented by the underlying implementation.
         :param inherit_environment: If this flag is set to `False`, the job starts with an empty
             environment. The only environment variables that will be accessible to the job are the
             ones specified by this property. If this flag is set to `True`, which is the default,
