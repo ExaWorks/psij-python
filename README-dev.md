@@ -1,6 +1,4 @@
-# Low Level Development Stuff
-
-## Building the Documentation
+# Building the Documentation
 
 There are two ways to build the documentation. One is the plain one, where
 the plain Sphinx output is desired, and the other is the themed version that
@@ -13,7 +11,7 @@ is meant to integrate with the website.
     resulting pages, such as pages being cut off at the bottom. Please use
     a simple http server as detailed below.
 
-### Building the Standalone Documentation
+## Building the Standalone Documentation
 
 1. Make sure you have the documentation dependencies installed:
     ```sh
@@ -28,7 +26,7 @@ is meant to integrate with the website.
 The output will be in `docs/.build`
 
 
-### Building the Themed Documentation
+## Building the Themed Documentation
 
 This builds the themed version of the docs as well as the website. The steps
 are:
@@ -68,7 +66,7 @@ web site. The themed documentation will be found under the "Documentation"
 tab.
 
 
-### Release Process
+## Release Process
 
 Here are the steps for putting out a fresh release to Pypi.
 

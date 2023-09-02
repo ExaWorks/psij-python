@@ -1,23 +1,23 @@
 # Quick Start Guide
 
-This document will guide you through the install procedure and your first hello world example.
+This document will guide you through the install procedure and your first Hello World example.
 
 - [Requirements](#requirements)
-- [Install psij](#install-psij)
+- [Install PSI/J](#install-psij)
 - [Hello World example](#hello-world)
 
 ## Requirements
 - python3.7+
 
-## Install psij
+## Install PSI/J
 
-If you have conda installed you might want to start from a fresh environment. This part is not installing psij but setting up a new environment with the specified python version:
+If you have conda installed you might want to start from a fresh environment. This part is not installing PSI/J but setting up a new environment with the specified python version:
 
 1. `conda create -n psij python=3.7`
 2. `conda activate psij`
 
 
-Install psij from the GitHub repository:
+Install PSI/J from the GitHub repository:
 
 1. Clone the repository into your working directory:
 
