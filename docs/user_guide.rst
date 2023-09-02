@@ -14,7 +14,7 @@ PSI/J simplifies your work.
 
 
 When Not to Use PSI/J
-^^^^^^^^^^^^^^
+-------------------------------
 
 If you are certain that you will only *ever* be launching jobs on ORNL's Summit
 system and you don't care about any other cluster or machine, it makes sense to 
@@ -53,7 +53,7 @@ What is a JobExecutor?
 
 A :class:`JobExecutor <psij.job_executor.JobExecutor>` represents a specific RM,
 e.g. Slurm, on which the job is being executed.  Generally, when jobs are
-submitted they will be queued depending on how
+submitted they will be queued for a variable period of time, depending on how
 busy the target machine is. Once the job is started, its executable is
 launched and runs to completion, and the job will be marked as completed.
 
@@ -81,7 +81,7 @@ reference the `developer documentation
 
 
 Submitting a Job
-------------
+----------------
 
 The most basic way to use PSI/J looks something like the following:
 
@@ -112,7 +112,7 @@ manager’s queue after running the example above.
 
 
 Submitting Multiple Jobs
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the last section we submitted a single job.  Submitting multiple jobs is as
 simple as adding a loop:
@@ -133,7 +133,7 @@ numbers of jobs (tested with up to 64k jobs).
 Configuring Your Job
 --------------------
 
-In the example above, the ``executable='/bin/date'`` tells PSI/J that we want
+In the example above, ``executable='/bin/date'`` tells PSI/J that we want
 the job to run the ``/bin/date`` command. But there are other parts of the job
 which can be configured:
 

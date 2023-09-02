@@ -5,7 +5,7 @@ The most important classes in this library are ``Job`` and ``JobExecutor``,
 followed by ``Launcher``.
 
 The Job Class and Its Modifiers
-----------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Job-related classes listed in this section (``Job``, ``JobSpec``,
 ``ResourceSpec``, and ``JobAttributes``) are independent of
@@ -26,7 +26,7 @@ configuration options.
     :noindex:
 
 Job Modifiers
-----------------
+^^^^^^^^^^^^^
 
 There can be a lot of configuration information that goes into each
 resource manager job, including its walltime, partition/queue, the number of nodes
@@ -53,7 +53,7 @@ scheduling policies.
 .. _executors:
 
 Executors
-----------------
+~~~~~~~~~
 
 Executors are concrete implementations of mechanisms that execute jobs.
 To get an instance of a specific executor, call

@@ -16,16 +16,16 @@ scheduler. PSI/J has a number of advantages:
 
 #. **Offers an asynchronous modern API for job management.** PSI/J is a clean Python API for requesting and managing jobs that works across a variety of HPC centers.
 
-#. **Supports common batch schedulers.** It's easy to test PSI/J on your systems—including multiple DOE supercomputer centers—and share the results with the community.
+#. **Supports the common batch schedulers:** We test PSI/J across multiple DOE supercomputer centers. It's easy to test PSI/J on your systems and share the results with the community.
 
 #. **Is built by the HPC community, for the HPC community:** PSI/J is based on a number of libraries used by state-of-the-art HPC workflow applications.
 
-#. **Leverages contributor expertise as an open source project:** We are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
+#. **PSI/J is an open source project:** We are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
 
 Most HPC centers feature multiple schedulers, rolling policy changes and
 deployments of software stacks, and subtle differences even across systems with
-similar architectures. **PSI/J tames this complexity** for
-computational scientists and workflow developers.
+similar architectures. **PSI/J is designed to tame this complexity** and provide
+computational scientists and workflow developers a common API for interacting
 
 
 

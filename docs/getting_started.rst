@@ -83,7 +83,7 @@ Local // Slurm // LSF // PBS // Cobalt
     job = Job(JobSpec(executable="/bin/date"))
     ex.submit(job)
 
-The ``executable="/bin/date")`` tells PSI/J that we want the job to run
+The ``executable="/bin/date"`` parameter tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
 (which should be almost as soon as the job starts, since ``date`` does very little work)
 the resource manager will mark the job as complete, triggering PSI/J to do the same.

@@ -27,7 +27,7 @@ For example, with PBS `qsub` and `qstat` commands are used to submit a request a
 To use BatchSchedulerExecutor for a new local resource manager that uses this command line interface, subclass BatchSchedulerExecutor and add in code that understands how to form the command lines necessary to submit a request for an allocation and to get allocation status. This tutorial will do that for PBSPro.
 
 Adding an Executor
-----------------
+------------------
 
 First set up a directory structure::
 
@@ -53,7 +53,7 @@ Prerequisites:
 First, we'll build a skeleton that won't work, and see that it doesn't work in the test suite. Then we'll build up to the full functionality.
 
 A Not-implemented Stub
-^^^^^^^^^^^^^^
+----------------------
 
 Add the project directory to the Python path directory::
 
