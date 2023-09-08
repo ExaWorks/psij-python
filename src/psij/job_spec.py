@@ -1,25 +1,39 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional, Union
 
 from typeguard import check_argument_types
 
 from psij.job_attributes import JobAttributes
 from psij.resource_spec import ResourceSpec
-
 from psij.utils import path_object_to_full_path as o2p
+
+
+StrOrPath = Union[str, Path]
+
+
+def _to_path(arg: Optional[StrOrPath]) -> Optional[Path]    :
+    if isinstance(arg, Path):
+        return arg
+    elif arg is None:
+        return None
+    else:
+        assert isinstance(arg, str)
+        return Path(arg)
 
 
 class JobSpec(object):
     """A class to hold information about the characteristics of a:class:`~psij.Job`."""
 
     def __init__(self, executable: Optional[str] = None, arguments: Optional[List[str]] = None,
-                 directory: Optional[Path] = None, name: Optional[str] = None,
+                 directory: Optional[StrOrPath] = None, name: Optional[str] = None,
                  inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
-                 stdin_path: Optional[Path] = None, stdout_path: Optional[Path] = None,
-                 stderr_path: Optional[Path] = None, resources: Optional[ResourceSpec] = None,
-                 attributes: Optional[JobAttributes] = None, pre_launch: Optional[Path] = None,
-                 post_launch: Optional[Path] = None, launcher: Optional[str] = None):
+                 stdin_path: Optional[StrOrPath] = None, stdout_path: Optional[StrOrPath] = None,
+                 stderr_path: Optional[StrOrPath] = None, resources: Optional[ResourceSpec] = None,
+                 attributes: Optional[JobAttributes] = None, pre_launch: Optional[StrOrPath] = None,
+                 post_launch: Optional[StrOrPath] = None, launcher: Optional[str] = None):
         """
         Constructs a `JobSpec` object while allowing its properties to be initialized.
 
@@ -100,16 +114,18 @@ class JobSpec(object):
         self._name = name
         self.executable = executable
         self.arguments = arguments
-        self.directory = directory
+        # I would do self.directory = directory, because that goes through the setter, which takes
+        # care of the conversion, but mypy gets confused
+        self._directory = _to_path(directory)
         self.inherit_environment = inherit_environment
         self.environment = environment
-        self.stdin_path = stdin_path
-        self.stdout_path = stdout_path
-        self.stderr_path = stderr_path
+        self._stdin_path = _to_path(stdin_path)
+        self._stdout_path = _to_path(stdout_path)
+        self._stderr_path = _to_path(stderr_path)
         self.resources = resources
         self.attributes = attributes if attributes is not None else JobAttributes()
-        self.pre_launch = pre_launch
-        self.post_launch = post_launch
+        self._pre_launch = _to_path(pre_launch)
+        self._post_launch = _to_path(post_launch)
         self.launcher = launcher
 
         # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
@@ -125,6 +141,53 @@ class JobSpec(object):
             return self._name
 
     @property
+    def directory(self) -> Optional[Path]:
+        return self._directory
+
+    @directory.setter
+    def directory(self, directory: Optional[StrOrPath]) -> None:
+        self._directory = _to_path(directory)
+
+    @property
+    def stdin_path(self) -> Optional[Path]:
+        return self._stdin_path
+
+    @stdin_path.setter
+    def stdin_path(self, stdin_path: Optional[StrOrPath]) -> None:
+        self._stdin_path = _to_path(stdin_path)
+
+    @property
+    def stdout_path(self) -> Optional[Path]:
+        return self._stdout_path
+
+    @stdout_path.setter
+    def stdout_path(self, stdout_path: Optional[StrOrPath]) -> None:
+        self._stdout_path = _to_path(stdout_path)
+
+    @property
+    def stderr_path(self) -> Optional[Path]:
+        return self._stderr_path
+
+    @stderr_path.setter
+    def stderr_path(self, stderr_path: Optional[StrOrPath]) -> None:
+        self._stderr_path = _to_path(stderr_path)
+
+    @property
+    def pre_launch(self) -> Optional[Path]:
+        return self._pre_launch
+
+    @pre_launch.setter
+    def pre_launch(self, pre_launch: Optional[StrOrPath]) -> None:
+        self._pre_launch = _to_path(pre_launch)
+
+    @property
+    def post_launch(self) -> Optional[Path]:
+        return self._post_launch
+
+    @post_launch.setter
+    def post_launch(self, post_launch: Optional[StrOrPath]) -> None:
+        self._post_launch = _to_path(post_launch)
+
     def _init_job_spec_dict(self) -> Dict[str, Any]:
         """Returns jobspec structure as dict."""
         # convention:

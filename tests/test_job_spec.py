@@ -1,7 +1,9 @@
+import os
+from pathlib import Path
 
 import pytest
 
-from psij import JobSpec, JobExecutor, Job
+from psij import Job, JobExecutor, JobSpec
 
 
 def _test_spec(spec: JobSpec) -> None:
@@ -34,6 +36,15 @@ def test_environment_types() -> None:
 
     spec.environment = {'foo': 'biz'}
     assert spec.environment['foo'] == 'biz'
+
+
+def test_path_conversion() -> None:
+    assert JobSpec(directory=os.path.join("test", "path")).directory == Path("test") / "path"
+    assert JobSpec(stdin_path=os.path.join("test", "path")).stdin_path == Path("test") / "path"
+    assert JobSpec(stdout_path=os.path.join("test", "path")).stdout_path == Path("test") / "path"
+    assert JobSpec(stderr_path=os.path.join("test", "path")).stderr_path == Path("test") / "path"
+    assert JobSpec(pre_launch=os.path.join("test", "path")).pre_launch == Path("test") / "path"
+    assert JobSpec(post_launch=os.path.join("test", "path")).post_launch == Path("test") / "path"
 
 
 test_environment_types()
