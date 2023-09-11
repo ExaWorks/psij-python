@@ -336,7 +336,7 @@ Here is an implementation for ``parse_status_output``, as well as a helper dicti
 
 ``parse_status_output`` is given both the stdout and the exit code of ``qstat`` and must either transcribe that into a dictionary of :py:class:`psij.JobStatus` objects describing the state of each job, or raise an exception.
 
-This implementation uses a helper, :py:meth:`psij.executors.batch.batch_scheduler_executor.check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``psij.JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`psij.JobState` via the ``_STATE_MAP`` dictionary.
+This implementation uses a helper, :func:`psij.executors.batch.batch_scheduler_executor.check_status_exit_code`, which will raise an exception if ``qstat`` exited with a non-zero exit code. Then, it assumes that the ``qstat`` output is JSON and deserialises, and for each job in the JSON, it uses two fields to create a ``psij.JobStatus`` object: a human readable message is taken from the PBS ``comment`` field, and a machine readable status is converted from a single letter PBS status (such as F for finished, or Q for queued) into a PSI/J :py:class:`psij.JobState` via the ``_STATE_MAP`` dictionary.
 
 With these status methods in place, the ``pytest`` command from before should execute to completion.
 
