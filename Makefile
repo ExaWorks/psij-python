@@ -58,6 +58,11 @@ web-docs:
 	rm -rf docs/.generated
 	rm -rf docs/.web-build
 	PSIJ_WEB_DOCS=1 sphinx-multiversion docs docs/.web-build
+.PHONY: web-docs-dev
+web-docs-dev:
+	rm -rf docs/.generated
+	rm -rf docs/.web-build
+	PSIJ_WEB_DOCS=1 sphinx-build --keep-going -n -W -b html docs docs/.web-build/v/dev
 
 .PHONY: style
 style:
