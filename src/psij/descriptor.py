@@ -5,13 +5,13 @@ T = TypeVar('T')
 
 
 class _VersionEntry(Generic[T]):
-    def __init__(self, version: Version,
-                 desc_path: Optional[str] = None,
+    def __init__(self, desc: 'Descriptor',
                  plugin_path: Optional[str] = None,
                  ecls: Optional[Type[T]] = None,
                  exc: Optional[Exception] = None) -> None:
-        self.version = version
-        self.desc_path = desc_path
+        self.desc = desc
+        self.version = desc.version
+        self.desc_path = desc.path
         self.plugin_path = plugin_path
         self.ecls = ecls
         self.exc = exc
@@ -81,7 +81,8 @@ class Descriptor(object):
     `psij.executors.local.LocalJobExecutor`.
     """
 
-    def __init__(self, name: str, version: StrictVersion, cls: str) -> None:
+    def __init__(self, name: str, version: StrictVersion, cls: str,
+                 aliases: Optional[List[str]] = None, nice_name: Optional[str] = None) -> None:
         """
         Parameters
         ----------
@@ -96,11 +97,20 @@ class Descriptor(object):
             single name.
         cls:
             A fully qualified name pointing to the class implementing an executor or launcher.
+        aliases:
+            An optional set of alternative names to make the executor available under as if
+            its `name` was the alias.
+        nice_name:
+            An optional string to use whenever a user-friendly name needs to be displayed to
+            a user. For example, a nice name for `pbs` would be `PBS` or `Portable Batch System`.
+            If not specified, the `nice_name` defaults to the value of the `name` parameter.
         """
         self.name = name
         self.version = version
         self.cls = cls
         self.path: Optional[str] = None
+        self.aliases = aliases
+        self.nice_name = nice_name if nice_name is not None else name
 
     def __repr__(self) -> str:
         """Returns a string representation of this descriptor."""
