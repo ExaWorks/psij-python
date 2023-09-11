@@ -106,7 +106,14 @@ intersphinx_mapping = {
 def run_apidoc(sphinx):
     read_version(sphinx.srcdir)  # this sets src_dir based on the version being compiled
     output_path = os.path.join(sphinx.srcdir, '.generated')
-    main(['-f', '-o', output_path, src_dir])
+    os.makedirs(output_path, exist_ok=True)
+    generate_path = os.path.join(sphinx.srcdir, 'generate.py')
+    if os.path.exists(generate_path):
+        # use the generate script if it exists
+        subprocess.run([sys.executable, generate_path], cwd=sphinx.srcdir, check=True, 
+                       env={'PYTHONPATH': src_dir})
+    else:
+        main(['-f', '-t', os.path.join(my_dir, '_sphinx'), '-o', output_path, src_dir])
 
 # launch setup
 def setup(app):

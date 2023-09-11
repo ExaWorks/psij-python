@@ -115,3 +115,17 @@ class Launcher(ABC):
     @staticmethod
     def _print_plugin_status() -> None:
         _print_plugin_status(Launcher._launchers, 'launcher')
+
+    @staticmethod
+    def get_launcher_names() -> Set[str]:
+        """
+        Returns a set of registered launcher names.
+
+        Names returned by this method can be passed to :func:`~psij.Launcher.get_instance` as
+        the `name` parameter.
+
+        Returns
+        -------
+        A set of launcher names corresponding to the known executors.
+        """
+        return set(Launcher._launchers.keys())
