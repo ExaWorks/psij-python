@@ -40,20 +40,19 @@ _STATE_MAP = {
 
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
-    """A configuration class for the PBS executor.
-
-    This doesn't have any fields in addition to BatchSchedulerExecutorConfig,
-    but it is expected that some will appear during further development.
-    """
+    """A configuration class for the PBS executor."""
 
     pass
 
 
 class PBSProJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for PBS Pro.
+    """A :class:`~psij.JobExecutor` for PBS.
 
-    `PBS Pro <https://www.altair.com/pbs-professional/>`_ is a resource manager
-    on certain machines at Argonne National Lab, among others.
+    PBS, originally developed by NASA, is one of the oldest resource managers still in use.
+    A number of variations are available: `PBS Pro <https://www.altair.com/pbs-professional/>`_,
+    `OpenPBS <https://openpbs.org>`_, and
+    `TORQUE <https://adaptivecomputing.com/cherry-services/torque-resource-manager/>`_.
+
 
     Uses the ``qsub``, ``qstat``, and ``qdel`` commands, respectively, to submit,
     monitor, and cancel jobs.
@@ -62,6 +61,13 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     """
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
+        """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
         """
         if not config:
             config = PBSProExecutorConfig()

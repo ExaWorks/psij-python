@@ -22,7 +22,20 @@ logger = logging.getLogger(__name__)
 
 
 def check_status_exit_code(command: str, exit_code: int, out: str) -> None:
-    """Check if exit_code is nonzero and if so raise a RuntimeError."""
+    """Check if exit_code is nonzero and, if so, raise a RuntimeError.
+
+    This function produces a somewhat user-friendly exception message that combines
+    the command that was run with its output.
+
+    Parameters
+    ----------
+    command
+        The command that was run. This is only used to format the error message.
+    exit_code
+        The exit code returned by running the ``command``.
+    out:
+        The output produced by ``command``.
+    """
     if exit_code != 0:
         raise RuntimeError(f'status command {command!r} exited '
                            f'with {exit_code} and output {out!r}')
@@ -353,8 +366,8 @@ class BatchSchedulerExecutor(JobExecutor):
         are two options:
 
         1. Instruct the cancel command to not fail on invalid state errors and have this
-        method always raise a :class:`psij.SubmitException`, since it is only invoked on
-        "other" errors.
+        method always raise a :class:`~psij.exceptions.SubmitException`, since it is only invoked
+        on "other" errors.
 
         2. Have the cancel command fail on both invalid state errors and other errors and
         interpret the output from the cancel command to distinguish between the two and raise
@@ -372,7 +385,7 @@ class BatchSchedulerExecutor(JobExecutor):
         InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
-        psij.SubmitException
+        SubmitException
             Raised for all other reasons.
         """
         pass

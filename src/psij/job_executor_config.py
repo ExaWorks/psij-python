@@ -5,8 +5,10 @@ from typing import Optional, Union
 class JobExecutorConfig(object):
     """An abstract configuration class for :class:`~psij.JobExecutor` instances."""
 
+    #: A default `JobExecutorConfig` used when none is specified.
     DEFAULT: 'JobExecutorConfig' = None  # type: ignore
 
+    #: The default work directory when a work directory is not explicitly specified.
     DEFAULT_WORK_DIRECTORY = Path.home() / '.psij' / 'work'
 
     def __init__(self, launcher_log_file: Optional[Path] = None,

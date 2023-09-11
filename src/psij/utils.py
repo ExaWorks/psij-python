@@ -31,10 +31,27 @@ class SingletonThread(threading.Thread):
     at most one thread. This is not safe. The safe thing, as pointed out by the fork() man page,
     is to not use fork() with threads. However, this is here in an attempt to make it slightly
     safer for when users really really want to take the risk against all advice.
+
+    This class is meant as an abstract class and should be used by subclassing and implementing
+    the `run` method.
     """
 
     _instances: Dict[int, 'SingletonThread'] = {}
     _lock = threading.RLock()
+
+    def __init__(self, name: Optional[str] = None, daemon: bool = False) -> None:
+        """
+        Instantiation of this class or one of its subclasses should be done through the
+        :meth:`get_instance` method rather than directly.
+
+        Parameters
+        ----------
+        name
+            An optional name for this thread.
+        daemon
+            A daemon thread does not prevent the process from exiting.
+        """
+        super().__init__(name=name, daemon=daemon)
 
     @classmethod
     def get_instance(cls: Type['SingletonThread']) -> 'SingletonThread':

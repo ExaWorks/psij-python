@@ -196,18 +196,20 @@ class LocalJobExecutor(JobExecutor):
     """
     A job executor that runs jobs locally using :class:`subprocess.Popen`.
 
-    This job executor is intended to be used when there is no resource manager, only
-    the operating system. Or when there is a resource manager, but it should be ignored.
+    This job executor is intended to be used either to run jobs directly on the same machine as the
+    PSI/J library or for testing purposes.
 
-    Limitations:
-    - In Linux, attached jobs always appear to complete with a zero exit code regardless
-    of the actual exit code.
-    - Instantiation of a local executor from both parent process and a `fork()`-ed process
-    is not guaranteed to work. In general, using `fork()` and multi-threading in Linux is unsafe,
-    as suggested by the `fork()` man page. While PSI/J attempts to minimize problems that can
-    arise when `fork()` is combined with threads (which are used by PSI/J), no guarantees can be
-    made and the chances of unexpected behavior are high. Please do not use PSI/J with `fork()`.
-    If you do, please be mindful that support for using PSI/J with `fork()` will be limited.
+    .. note::
+        In Linux, attached jobs always appear to complete with a zero exit code regardless
+        of the actual exit code.
+    .. warning::
+        Instantiation of a local executor from both parent process and a `fork()`-ed process
+        is not guaranteed to work. In general, using `fork()` and multi-threading in Linux is
+        unsafe, as suggested by the `fork()` man page. While PSI/J attempts to minimize problems
+        that can arise when `fork()` is combined with threads (which are used by PSI/J), no
+        guarantees can be made and the chances of unexpected behavior are high. Please do not use
+        PSI/J with `fork()`. If you do, please be mindful that support for using PSI/J with
+        `fork()` will be limited.
     """
 
     def __init__(self, url: Optional[str] = None,

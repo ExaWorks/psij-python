@@ -55,8 +55,15 @@ class ResourceSpecV1(ResourceSpec):
             node.
         :param cpu_cores_per_process: Request this many CPU cores for each process instance. This
             property is used by a backend to calculate the number of nodes from the `process_count`
-        :param gpu_cores_per_process:
-        :param exclusive_node_use:
+        :param gpu_cores_per_process: Request this many GPU cores for each process instance.
+        :param exclusive_node_use: If this parameter is set to `True`, the LRM is instructed to
+            allocate to this job only nodes that are not running any other jobs, even if this job
+            is requesting fewer cores than the total number of cores on a node. With this parameter
+            set to `False`, which is the default, the LRM is free to co-schedule multiple jobs
+            on a given node if the number of cores requested by those jobs total less than the
+            amount available on the node.
+
+        All constructor parameters are accessible as properties.
         """
         assert check_argument_types()
 

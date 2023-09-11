@@ -170,7 +170,7 @@ class ScriptBasedLauncher(Launcher):
         return dst_dir
 
     def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
-        """See :func:`~psij.job_launcher.Launcher.get_launch_command`."""
+        """See :func:`~psij.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
@@ -199,9 +199,9 @@ class ScriptBasedLauncher(Launcher):
         return []
 
     def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.job_launcher.Launcher.is_launcher_failure`."""
+        """See :func:`~psij.Launcher.is_launcher_failure`."""
         return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.job_launcher.Launcher.get_launcher_failure_message`."""
+        """See :func:`~psij.Launcher.get_launcher_failure_message`."""
         return '\n'.join(output.split('\n')[:-1])

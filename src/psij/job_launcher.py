@@ -1,7 +1,7 @@
 """This module contains the core classes of the launchers infrastructure."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Set
 
 from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
@@ -46,8 +46,8 @@ class Launcher(ABC):
 
         Returns
         -------
-            Returns `True` if the output
-
+            Returns `True` if the `output` parameter contains a string that represents a launncher
+            failure.
         """
         pass
 
@@ -56,8 +56,8 @@ class Launcher(ABC):
         """
         Extracts the launcher error message from the output of this launcher's invocation.
 
-        It is understood that the output is such that
-        :func:`~psij.job_launcher.Launcher.is_launcher_failure` returns `True` on it.
+        It is understood that the value of the `output` parameter is such that
+        :meth:`is_launcher_failure` returns `True` on it.
 
         Parameters
         ----------

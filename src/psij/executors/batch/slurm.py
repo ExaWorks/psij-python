@@ -110,6 +110,13 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
 
     def __init__(self, url: Optional[str] = None, config: Optional[SlurmExecutorConfig] = None):
         """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = SlurmExecutorConfig()
         super().__init__(config=config)

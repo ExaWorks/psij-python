@@ -1,5 +1,7 @@
-from distutils.version import StrictVersion, Version
-from typing import TypeVar, Generic, Optional, Type
+"""Executor/Launcher descriptor module."""
+
+from distutils.version import StrictVersion
+from typing import TypeVar, Generic, Optional, Type, List
 
 T = TypeVar('T')
 
@@ -46,8 +48,9 @@ class Descriptor(object):
 
     Executors wanting to register with PSI/J must place an instance of this class in a global
     module list named `__PSI_J_EXECUTORS__` or `__PSI_J_LAUNCHERS__` in a module placed in the
-    `psij-descriptors` package. In other words, in order to automatically register an executor or
-    launcher, a python file should be created inside a `psij-descriptors` package, such as:
+    `psij-descriptors` *namespace package*. In other words, in order to automatically register an
+    executor or launcher, a python file should be created inside a `psij-descriptors` package, such
+    as:
 
     .. code-block:: none
 
@@ -55,6 +58,11 @@ class Descriptor(object):
             src/
                 psij-descriptors/
                     descriptors_for_project.py
+
+    It is *essential* that the `psij-descriptors` package not contain an `__init__.py` file in
+    order for Python to treat the package as a namespace package. This allows Python to combine
+    multiple `psij-descriptors` directories into one, which, in turn, allows PSI/J to detect and
+    load all descriptors that can be found in Python's library search path.
 
     The contents of `descriptors_for_project.py` could then be as follows:
 
@@ -90,8 +98,8 @@ class Descriptor(object):
             The name of the executor or launcher. The automatic registration system will register
             the executor or launcher using this name. That is, the executor or launcher represented
             by this descriptor will be available for instantiation using either
-            :meth:`~psij.job_executor.JobExecutor.get_instance` or
-            :meth:`~psij.job_launcher.Launcher.get_instance`
+            :meth:`~psij.JobExecutor.get_instance` or
+            :meth:`~psij.Launcher.get_instance`
         version:
             The version of the executor/launcher. Multiple versions can be registered under a
             single name.

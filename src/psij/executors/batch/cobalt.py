@@ -51,6 +51,12 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         self, url: Optional[str] = None, config: Optional[CobaltExecutorConfig] = None
     ):
         """
+        Parameters
+        ----------
+        url
+            This parameter is not used and is only provided for compatibility reasons.
+        config
+            An optional configuration for this executor.
         """
         if not config:
             config = CobaltExecutorConfig()

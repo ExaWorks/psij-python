@@ -1,3 +1,4 @@
+"""A collection of exceptions used by PSI/J."""
 import psij
 from typing import Optional
 

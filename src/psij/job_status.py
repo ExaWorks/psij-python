@@ -12,11 +12,14 @@ class JobStatus(object):
                  metadata: Optional[Dict[str, object]] = None) -> None:
         """
         :param state: The :class:`~psij.JobState` of this status.
-        :param time: The time, as would be returned by :func:`time.time()` that the transition to
-            the new state occurred. If `None`, the current time will be used.
+        :param time: The time, as would be returned by :func:`time.time()`, at which the
+            transition to the new state occurred. If not specified, the time when this `JobStatus`
+            was instantiated will be used.
         :param message: An optional message associated with the transition.
         :param exit_code: An optional exit code for the job, if the job has completed.
         :param metadata: Optional metadata provided by the :class:`~psij.JobExecutor`.
+
+        All constructor parameters are accessible as properties.
         """
         self.state = state
         if time is not None:

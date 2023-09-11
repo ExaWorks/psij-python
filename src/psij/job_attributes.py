@@ -26,6 +26,8 @@ class JobAttributes(object):
         :param custom_attributes: Specifies a dictionary of custom attributes. Implementations of
             :class:`~psij.JobExecutor` define and are responsible for interpreting custom
             attributes.
+
+        All constructor parameters are accessible as properties.
         """
         assert check_argument_types()
 
