@@ -13,7 +13,7 @@ Requirements
 The only requirements are Python 3.7+ and pip, which almost always
 comes with Python.
 
-Install from pip
+Install from PIP
 ^^^^^^^^^^^^^^^^
 
 
@@ -49,8 +49,8 @@ depending on how busy the target machine is. Once a job is started, its
 executable is launched and runs to completion.
 
 In PSI/J, a job is submitted by :meth:`JobExecutor.submit(Job)
-<psij.job_executor.JobExecutor.submit>` which permanently binds the job to that
-executor and submits it to the underlying resource manager.
+<psij.JobExecutor.submit>` which permanently binds the job to that executor and
+submits it to the underlying resource manager.
 
 
 Basic Usage
@@ -75,13 +75,10 @@ for a very simple example showing how to submit a job for that resource manager.
 
 Local // Slurm // LSF // PBS // Cobalt
 
-.. code-block:: python
-
-    from psij import Job, JobExecutor, JobSpec
-
-    ex = JobExecutor.get_instance(execparams.executor)
-    job = Job(JobSpec(executable="/bin/date"))
-    ex.submit(job)
+.. literalinclude:: ../tests/getting_started/test_simple_example.py
+    :language: python
+    :dedent: 4
+    :lines: 7-11
 
 The ``executable="/bin/date"`` parameter tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
