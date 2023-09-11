@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
+# for some reason, Sphinx cannot find Path if imported directly
+# from pathlib import Path
+import pathlib
 from typing import Any, Dict, List, Optional, Union
 
 from typeguard import check_argument_types
@@ -11,29 +13,30 @@ from psij.resource_spec import ResourceSpec
 from psij.utils import path_object_to_full_path as o2p
 
 
-StrOrPath = Union[str, Path]
-
-
-def _to_path(arg: Optional[StrOrPath]) -> Optional[Path]    :
-    if isinstance(arg, Path):
+def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]    :
+    if isinstance(arg, pathlib.Path):
         return arg
     elif arg is None:
         return None
     else:
         assert isinstance(arg, str)
-        return Path(arg)
+        return pathlib.Path(arg)
 
 
 class JobSpec(object):
     """A class that describes the details of a job."""
 
     def __init__(self, executable: Optional[str] = None, arguments: Optional[List[str]] = None,
-                 directory: Optional[StrOrPath] = None, name: Optional[str] = None,
+                 directory: Union[str, pathlib.Path, None] = None, name: Optional[str] = None,
                  inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
-                 stdin_path: Optional[StrOrPath] = None, stdout_path: Optional[StrOrPath] = None,
-                 stderr_path: Optional[StrOrPath] = None, resources: Optional[ResourceSpec] = None,
-                 attributes: Optional[JobAttributes] = None, pre_launch: Optional[StrOrPath] = None,
-                 post_launch: Optional[StrOrPath] = None, launcher: Optional[str] = None):
+                 stdin_path: Union[str, pathlib.Path, None] = None,
+                 stdout_path: Union[str, pathlib.Path, None] = None,
+                 stderr_path: Union[str, pathlib.Path, None] = None,
+                 resources: Optional[ResourceSpec] = None,
+                 attributes: Optional[JobAttributes] = None,
+                 pre_launch: Union[str, pathlib.Path, None] = None,
+                 post_launch: Union[str, pathlib.Path, None] = None,
+                 launcher: Optional[str] = None):
         """
         :param executable: An executable, such as "/bin/date".
         :param arguments: The argument list to be passed to the executable. Unlike with execve(),
@@ -140,51 +143,51 @@ class JobSpec(object):
             return self._name
 
     @property
-    def directory(self) -> Optional[Path]:
+    def directory(self) -> Optional[pathlib.Path]:
         return self._directory
 
     @directory.setter
-    def directory(self, directory: Optional[StrOrPath]) -> None:
+    def directory(self, directory: Union[str, pathlib.Path, None]) -> None:
         self._directory = _to_path(directory)
 
     @property
-    def stdin_path(self) -> Optional[Path]:
+    def stdin_path(self) -> Optional[pathlib.Path]:
         return self._stdin_path
 
     @stdin_path.setter
-    def stdin_path(self, stdin_path: Optional[StrOrPath]) -> None:
+    def stdin_path(self, stdin_path: Union[str, pathlib.Path, None]) -> None:
         self._stdin_path = _to_path(stdin_path)
 
     @property
-    def stdout_path(self) -> Optional[Path]:
+    def stdout_path(self) -> Optional[pathlib.Path]:
         return self._stdout_path
 
     @stdout_path.setter
-    def stdout_path(self, stdout_path: Optional[StrOrPath]) -> None:
+    def stdout_path(self, stdout_path: Union[str, pathlib.Path, None]) -> None:
         self._stdout_path = _to_path(stdout_path)
 
     @property
-    def stderr_path(self) -> Optional[Path]:
+    def stderr_path(self) -> Optional[pathlib.Path]:
         return self._stderr_path
 
     @stderr_path.setter
-    def stderr_path(self, stderr_path: Optional[StrOrPath]) -> None:
+    def stderr_path(self, stderr_path: Union[str, pathlib.Path, None]) -> None:
         self._stderr_path = _to_path(stderr_path)
 
     @property
-    def pre_launch(self) -> Optional[Path]:
+    def pre_launch(self) -> Optional[pathlib.Path]:
         return self._pre_launch
 
     @pre_launch.setter
-    def pre_launch(self, pre_launch: Optional[StrOrPath]) -> None:
+    def pre_launch(self, pre_launch: Union[str, pathlib.Path, None]) -> None:
         self._pre_launch = _to_path(pre_launch)
 
     @property
-    def post_launch(self) -> Optional[Path]:
+    def post_launch(self) -> Optional[pathlib.Path]:
         return self._post_launch
 
     @post_launch.setter
-    def post_launch(self, post_launch: Optional[StrOrPath]) -> None:
+    def post_launch(self, post_launch: Union[str, pathlib.Path, None]) -> None:
         self._post_launch = _to_path(post_launch)
 
     def _init_job_spec_dict(self) -> Dict[str, Any]:
