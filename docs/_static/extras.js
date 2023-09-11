@@ -77,12 +77,19 @@ function detectAll(selectorType) {
         if (text == '"<&' + selectorType + '>"') {
             $(this).addClass(selectorType + "-item").addClass("psij-selector-value");
         }
-        if (text == "executor" && prevSpans.length == 2
-            && prevSpans[0].text() == "execparams" && prevSpans[1].text() == '.') {
+        if (prevSpans.length == 2 && prevSpans[0].text() == "execparams" && prevSpans[1].text() == '.') {
             // remove <span>execparams</span> and <span>.</span>
             prevSpans[0].remove();
             prevSpans[1].remove();
-            $(this).addClass(selectorType + "-item").addClass("psij-selector-value");
+            if (text == "executor") {
+                $(this).addClass(selectorType + "-item").addClass("psij-selector-value");
+            }
+            else if (text == "queue_name") {
+                $(this).text("QUEUE_NAME");
+            }
+            else if (text == "project_name") {
+                $(this).text("PROJECT_NAME");
+            }
         }
         prevSpans.push($(this));
         if (prevSpans.length > 2) {
