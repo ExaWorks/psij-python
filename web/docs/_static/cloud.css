@@ -484,8 +484,8 @@ div.body h1 {
 }
 
 
-div.body > .section > h1 {
-    margin: 24pt 0 8pt 0;
+div.body > section > h1 {
+    margin: 48pt 0 8pt 0;
 }
 
 
@@ -733,6 +733,10 @@ li > dl:only-child { margin-bottom: 0; }
 dd { margin-right: 10px; }
 
 dd ol { margin-bottom: 10px; }
+
+.psij-docs dd > p {
+    margin-top: 2pt;
+}
 
 dl.docutils > dt { font-size: 1.1em; margin-bottom: .5em; }
 dl.docutils > dd + dt { margin-top: 1.5em; }
@@ -988,6 +992,11 @@ div.deprecated, div.versionchanged, div.versionadded {
 
 span.versionmodified {
     font-weight: bold;
+}
+
+div.code-block-caption {
+    font-size: 110%;
+    margin-bottom: -16pt;
 }
 
 div.highlight {
@@ -1247,7 +1256,7 @@ em.sig-param,
 dl.field-list em {
     font-style: normal;
     font-weight: 400;
-    color: #802000;
+    color: #401000;
 }
 
 em.property, em.attribute {
