@@ -75,8 +75,8 @@ register the executor.
 If an error occurs after a descriptor is loaded but before the actual executor
 or launcher class is loaded, that error is stored. Successive attempts to
 instantiate that executor using
-:meth:`~psij.job_executor.JobExecutor.get_instance` or launcher using
-:meth:`~psij.job_launcher.Launcher.get_instance` will result in the
+:meth:`psij.JobExecutor.get_instance` or launcher using
+:meth:`psij.Launcher.get_instance` will result in the
 stored exception being raised. This prevents packages with broken
 implementations of executors or launchers from reporting errors unless there
 is an actual attempt to use them.
