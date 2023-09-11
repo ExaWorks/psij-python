@@ -35,6 +35,13 @@ $(document).ready(function() {
         
         initializeSelectors(selectorType, value);
     });
+    // Sphinx renders attributes differently from properties in that properties
+    // come with a nice "property" prefix in the heading, whereas attributes just
+    // have the name. This hacks the attribute headers to add a "attribute" text
+    // before the attribute name
+    $("dl.attribute > dt.sig").each(function() {
+        $(this).prepend("<em class=\"attribute\"><span class=\"pre\">attribute</span><span class=\"w\"></span></em>");
+    });
 });
 
 function detectAll(selectorType) {

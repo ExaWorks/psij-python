@@ -1174,6 +1174,12 @@ dl.staticmethod > dt {
     border-radius: 3px;
 }
 
+em.property:first-child > span.w,
+em.attribute:first-child > span.w {
+    display: inline-block;
+    width: 6pt;
+}
+
 code.xref.py-func > .pre,
 code.xref.py-class > .pre,
 code.xref.py-meth > .pre,
@@ -1244,12 +1250,12 @@ dl.field-list em {
     color: #802000;
 }
 
-em.property {
+em.property, em.attribute {
     font-style: normal;
     font-weight: 400;
 }
 
-dl.property > dt {
+dl.property > dt, dl.attribute > dt {
     background-color: #fae199;
     display: inline-block;
 }
