@@ -8,6 +8,7 @@ if [ ! -f web/build.sh ]; then
 fi
 
 if [ "$1" != "--quick" ]; then
+	rm -rf web-build/*
 	mkdir -p web-build
 
 	pip install -r requirements-docs.txt
