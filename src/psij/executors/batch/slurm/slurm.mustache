@@ -45,11 +45,11 @@
     {{/cpu_cores_per_process}}
 {{/job.spec.resources}}
 
-{{#job.spec.attributes}}
-    {{#duration}}
+{{#formatted_job_duration}}
 #SBATCH --time={{.}}
-    {{/duration}}
+{{/formatted_job_duration}}
 
+{{#job.spec.attributes}}
     {{#queue_name}}
 #SBATCH --partition="{{.}}"
     {{/queue_name}}

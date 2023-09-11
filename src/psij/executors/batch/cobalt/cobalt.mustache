@@ -13,10 +13,10 @@
 #COBALT --proccount={{.}}
     {{/process_count}}
 {{/job.spec.resources}}
-{{#job.spec.attributes}}
-    {{#duration}}
+{{#formatted_job_duration}}
 #COBALT --time={{duration}}
-    {{/duration}}
+{{/formatted_job_duration}}
+{{#job.spec.attributes}}
     {{#queue_name}}
 #COBALT --queue={{.}}
     {{/queue_name}}
