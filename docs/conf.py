@@ -118,10 +118,6 @@ def run_apidoc(sphinx):
     else:
         main(['-f', '-t', os.path.join(my_dir, '_sphinx'), '-o', output_path, src_dir])
 
-# launch setup
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
-
 
 # The following is a hack to allow returns in numpy style doctstrings to
 # not duplicate the return type specified by the normal type hints.
@@ -139,3 +135,29 @@ def _consume_returns_section(self) -> List[Tuple[str, str, List[str]]]:
 
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 NumpyDocstring._consume_returns_section = _consume_returns_section
+
+
+# And this is for "More than one target found for cross-reference"
+# See https://github.com/sphinx-doc/sphinx/issues/3866
+from sphinx.domains.python import PythonDomain
+
+class MyPythonDomain(PythonDomain):
+    def find_obj(self, env, modname, classname, name, type, searchmode=0):
+        """Ensures an object always resolves to the desired module if defined there."""
+        orig_matches = PythonDomain.find_obj(self, env, modname, classname, name, type, searchmode)
+        matches = []
+        for match in orig_matches:
+            match_name = match[0]
+            desired_name = 'psij.' + name.strip('.')
+            if match_name == desired_name:
+                matches.append(match)
+                break
+        if matches:
+            return matches
+        else:
+            return orig_matches
+
+# launch setup
+def setup(app):
+    app.add_domain(MyPythonDomain, override=True)
+    app.connect('builder-inited', run_apidoc)
