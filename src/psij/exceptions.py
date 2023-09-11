@@ -7,8 +7,6 @@ class InvalidJobException(Exception):
 
     def __init__(self, message: str, exception: Optional[Exception] = None) -> None:
         """
-        Constructs an `InvalidJobException` while allowing properties to be initialized.
-
         :param message: see the :attr:`message` property
         :param exception: see the :attr:`exception` property
         """
@@ -35,8 +33,6 @@ class SubmitException(Exception):
     def __init__(self, message: str, exception: Optional[Exception] = None,
                  transient: bool = False) -> None:
         """
-        Constructs a `SubmitException` and allows properties to be initialized.
-
         :param message: see :attr:`message`
         :param exception: see :attr:`exception`
         :param transient: see :attr:`transient`
@@ -78,8 +74,6 @@ class UnreachableStateException(Exception):
 
     def __init__(self, status: 'psij.JobStatus') -> None:
         """
-        Constructs an `UnreachableStateException`.
-
         :param status: The :class:`~psij.JobStatus` that the job was in when
             :func:`~psij.Job.wait` was called and which prevents the desired states to be
             reached.

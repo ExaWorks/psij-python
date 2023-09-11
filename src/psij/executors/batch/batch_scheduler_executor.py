@@ -69,8 +69,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
                  initial_queue_polling_delay: int = 2,
                  queue_polling_error_threshold: int = 2,
                  keep_files: bool = False):
-        """Initializes a base batch scheduler executor configuration.
-
+        """
         Parameters
         ----------
         launcher_log_file
@@ -172,8 +171,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[BatchSchedulerExecutorConfig] = None):
-        """Initializes a `BatchSchedulerExecutor`.
-
+        """
         Parameters
         ----------
         url

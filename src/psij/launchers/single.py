@@ -11,8 +11,6 @@ class SingleLauncher(ScriptBasedLauncher):
 
     def __init__(self, config: Optional[JobExecutorConfig] = None):
         """
-        Initializes this launcher using an optional configuration.
-
         :param config: An optional configuration.
         """
         super().__init__(Path(__file__).parent / 'scripts' / 'single_launch.sh', config)

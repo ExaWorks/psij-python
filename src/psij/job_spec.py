@@ -35,7 +35,6 @@ class JobSpec(object):
                  attributes: Optional[JobAttributes] = None, pre_launch: Optional[StrOrPath] = None,
                  post_launch: Optional[StrOrPath] = None, launcher: Optional[str] = None):
         """
-        Constructs a `JobSpec` object while allowing its properties to be initialized.
 
         .. note::
             A note about paths.

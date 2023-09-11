@@ -50,7 +50,8 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
     def __init__(
         self, url: Optional[str] = None, config: Optional[CobaltExecutorConfig] = None
     ):
-        """Initializes a :class:`~CobaltJobExecutor`."""
+        """
+        """
         if not config:
             config = CobaltExecutorConfig()
         super().__init__(config=config)

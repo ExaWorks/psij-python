@@ -31,8 +31,6 @@ class RPJobExecutor(JobExecutor):
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Initializes a `RPJobExecutor`.
-
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `RPJobExecutor` does not have any configuration options.
         :type config: psij.JobExecutorConfig

@@ -83,8 +83,6 @@ class Descriptor(object):
 
     def __init__(self, name: str, version: StrictVersion, cls: str) -> None:
         """
-        Initializes a descriptor.
-
         Parameters
         ----------
         name

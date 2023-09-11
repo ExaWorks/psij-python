@@ -12,8 +12,6 @@ class JobExecutorConfig(object):
     def __init__(self, launcher_log_file: Optional[Path] = None,
                  work_directory: Optional[Path] = None) -> None:
         """
-        Initializes a configuration object.
-
         Parameters
         ----------
         launcher_log_file

@@ -32,7 +32,6 @@ class Job(object):
 
     def __init__(self, spec: Optional[JobSpec] = None) -> None:
         """
-        Constructs a `Job` object.
 
         The object can optionally be initialized with the given
         :class:`~psij.JobSpec`. After construction, the job will be in the

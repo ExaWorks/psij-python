@@ -12,8 +12,6 @@ class JobAttributes(object):
                  reservation_id: Optional[str] = None,
                  custom_attributes: Optional[Dict[str, object]] = None) -> None:
         """
-        Constructs a `JobAttributes` instance while allowing its various fields to be initialized.
-
         :param duration: Specifies the duration (walltime) of the job. A job whose execution
             exceeds its walltime can be terminated forcefully.
         :param queue_name: If a backend supports multiple queues, this parameter can be used to

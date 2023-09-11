@@ -36,11 +36,33 @@ max-line-length = 100
 # See https://www.python.org/dev/peps/pep-0008/#should-a-line-break-before-or-after-a-binary-operator
 # for a discussion about the issue and why we disable this.
 
-ignore = B902, D401, D100, W503
+# D205 - "1 blank line required between summary line and description"
+# D400 - "First line should end with a period"
+#
+# Sphinx (autoclass) has three modes of operation when it comes to
+# documenting classes: 'class', 'init', and 'both'. This pertains to how
+# docstrings for the class and init method are handled. Autoclass does
+# not produce a separate text for the class and init methods, but the
+# options above describe where the constructor documentation comes from.
+# This can be either the class docstring (autoclass_content = 'class')
+# or the __init__ docstring or both concatenated. The 'class' options
+# results in empty decriptions for the __init__ parameters. The
+# 'init' option ignores the class docstring, so, in order to get that
+# part into the output, it would need to be duplicated in the __init__
+# docstring. The better option is 'both'. However saying something like
+# "This class..." in the class docstring and "Initializes..." in the
+# __init__ docstring results in awkward phrasing when put together.
+# One can omit the description on the __init__ docstring and simply
+# document the parameters, but then flake8 complains about the
+# structure of the __init__ doctsring. The D205 and D400 errors are
+# precisely those complains. We disable these in order to have a
+# sane way of documenting classes with Sphinx' autoclass.
+
+
+ignore = B902, D205, D400, D401, D100, W503
 
 # D103 - Missing docstring in public function
 #
 # Ignore docstrings requirement in tests
 
 per-file-ignores = tests/*:D103
-

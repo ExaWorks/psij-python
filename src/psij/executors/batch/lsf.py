@@ -53,7 +53,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str], config: Optional[LsfExecutorConfig] = None):
-        """Initializes a :class:`~LsfJobExecutor`."""
+        """
         if not config:
             config = LsfExecutorConfig()
         super().__init__(config=config)

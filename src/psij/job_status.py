@@ -11,8 +11,6 @@ class JobStatus(object):
                  message: Optional[str] = None, exit_code: Optional[int] = None,
                  metadata: Optional[Dict[str, object]] = None) -> None:
         """
-        Constructs a `JobStatus` object.
-
         :param state: The :class:`~psij.JobState` of this status.
         :param time: The time, as would be returned by :func:`time.time()` that the transition to
             the new state occurred. If `None`, the current time will be used.

@@ -62,7 +62,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     """
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
-        """Initializes a :class:`~PBSProJobExecutor`."""
+        """
         if not config:
             config = PBSProExecutorConfig()
         super().__init__(url=url, config=config)

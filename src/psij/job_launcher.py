@@ -17,8 +17,6 @@ class Launcher(ABC):
 
     def __init__(self, config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Base constructors for launchers.
-
         :param config: An optional configuration. If not specified,
             :attr:`~psij.JobExecutorConfig.DEFAULT` is used.
         """

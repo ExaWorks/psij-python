@@ -55,8 +55,6 @@ class FluxJobExecutor(JobExecutor):
         self, url: Optional[str] = None, config: Optional[JobExecutorConfig] = None
     ) -> None:
         """
-        Initializes a `FluxJobExecutor`.
-
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `FluxJobExecutor` does not have any configuration options.
         """

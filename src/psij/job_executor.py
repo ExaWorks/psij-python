@@ -27,8 +27,6 @@ class JobExecutor(ABC):
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None):
         """
-        Initializes this executor using an optional `url` and an optional configuration.
-
         :param url: The URL is a string that a `JobExecutor` implementation can interpret as the
             location of a backend.
         :param config: An configuration specific to each `JobExecutor` implementation. This

@@ -86,8 +86,6 @@ class ScriptBasedLauncher(Launcher):
 
     def __init__(self, script_path: Path, config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Initializes this launcher.
-
         Parameters
         ----------
         script_path

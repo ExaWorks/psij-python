@@ -39,8 +39,6 @@ class ResourceSpecV1(ResourceSpec):
                  gpu_cores_per_process: Optional[int] = None,
                  exclusive_node_use: bool = True) -> None:
         """
-        Constructs a `ResourceSpecV1` object and optionally initializes its properties.
-
         Some of the properties of this class are constrained. Specifically,
         `process_count = node_count * processes_per_node`. Specifying all constrained properties
         in a way that does not satisfy the constraint will result in an error. Specifying some
