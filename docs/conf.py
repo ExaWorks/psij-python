@@ -74,6 +74,9 @@ if web_docs:
 
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
+autodoc_default_options = {
+    'show-inheritance': True
+}
 
 release = None
 version = None
