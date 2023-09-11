@@ -64,7 +64,7 @@ class Job(object):
 
     @property
     def native_id(self) -> Optional[str]:
-        """A read-only property conaining the native ID of the job.
+        """A read-only property containing the native ID of the job.
 
         The native ID is the ID assigned to the job by the underlying implementation. The native ID
         may not be available until after the job is submitted to a :class:`~psij.JobExecutor`, in
