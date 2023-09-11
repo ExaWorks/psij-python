@@ -11,7 +11,7 @@ PSI/J Core
         psij.serialize.Export
         psij.serialize.Import
     
-    Miscelaneous
+    Miscellaneous
         psij.utils
         psij.version
         psij.descriptor.Descriptor
