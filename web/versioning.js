@@ -19,7 +19,7 @@ function versionSplit(v) {
     var parts = v.split(".", 4);
     
     if (parts.length < 3) {
-        throw new Error("Invalid version: " + v);
+        return {version: v, nparts: [v], suffix: "", raw: v};
     }
     
     var nparts = [];
@@ -56,6 +56,12 @@ function versionSplit(v) {
  *                       positive number otherwise.
  */
 function compareVN(v1, v2) {
+    if (v1.nparts.length < 3) {
+        return -1;
+    }
+    if (v2.nparts.length < 3) {
+        return 1;
+    }
     for (var i = 0; i < 3; i++) {
         var d = v1.nparts[i] - v2.nparts[i];
         if (d != 0) {
@@ -140,7 +146,12 @@ function initVersions() {
     }
     
     DOC_SORTED_VERSIONS.sort(compareVN);
-    DOC_LATEST_VERSION = DOC_SORTED_VERSIONS[0].version;
+    if (DOC_SORTED_VERSIONS.length == 1 || DOC_SORTED_VERSIONS[0].nparts.length != 1) {
+        DOC_LATEST_VERSION = DOC_SORTED_VERSIONS[0].version;
+    }
+    else {
+        DOC_LATEST_VERSION = DOC_SORTED_VERSIONS[1].version;
+    }
     DOC_VERSIONS = vs;
 }
 
