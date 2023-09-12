@@ -144,6 +144,7 @@ class JobSpec(object):
 
     @property
     def directory(self) -> Optional[pathlib.Path]:
+        """The directory, on the compute side, in which the executable is to be run."""
         return self._directory
 
     @directory.setter
@@ -152,6 +153,7 @@ class JobSpec(object):
 
     @property
     def stdin_path(self) -> Optional[pathlib.Path]:
+        """A path to a file whose contents will be sent to the job's standard input."""
         return self._stdin_path
 
     @stdin_path.setter
@@ -160,6 +162,7 @@ class JobSpec(object):
 
     @property
     def stdout_path(self) -> Optional[pathlib.Path]:
+        """A path to a file in which to place the standard output stream of the job."""
         return self._stdout_path
 
     @stdout_path.setter
@@ -168,6 +171,7 @@ class JobSpec(object):
 
     @property
     def stderr_path(self) -> Optional[pathlib.Path]:
+        """A path to a file in which to place the standard error stream of the job."""
         return self._stderr_path
 
     @stderr_path.setter
@@ -176,6 +180,7 @@ class JobSpec(object):
 
     @property
     def pre_launch(self) -> Optional[pathlib.Path]:
+        """An optional path to a pre-launch script."""
         return self._pre_launch
 
     @pre_launch.setter
@@ -184,6 +189,7 @@ class JobSpec(object):
 
     @property
     def post_launch(self) -> Optional[pathlib.Path]:
+        """An optional path to a post-launch script."""
         return self._post_launch
 
     @post_launch.setter
