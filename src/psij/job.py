@@ -2,11 +2,11 @@ import logging
 import threading
 from abc import ABC, abstractmethod
 from datetime import timedelta, datetime
-from typing import Optional, Sequence, Union, Callable
+from typing import Optional, Sequence, Union, Callable, Set
 from uuid import uuid4
 
 import psij
-from psij.exceptions import SubmitException, UnreachableStateException
+from psij.exceptions import SubmitException
 from psij.job_spec import JobSpec
 from psij.job_state import JobState, JobStateOrder
 from psij.job_status import JobStatus
@@ -161,8 +161,23 @@ class Job(object):
         else:
             self.executor.cancel(self)
 
+    def _all_greater(self, states: Optional[Union[JobState, Sequence[JobState]]]) \
+            -> Optional[Set[JobState]]:
+        if states is None:
+            return None
+        if isinstance(states, JobState):
+            states = [states]
+        ts = set()
+        for state1 in states:
+            ts.add(state1)
+            for state2 in JobState:
+                if state2.is_greater_than(state1):
+                    ts.add(state2)
+        return ts
+
     def wait(self, timeout: Optional[timedelta] = None,
-             target_states: Optional[Sequence[JobState]] = None) -> Optional[JobStatus]:
+             target_states: Optional[Union[JobState, Sequence[JobState]]] = None) \
+            -> Optional[JobStatus]:
         """
         Waits for the job to reach certain states.
 
@@ -186,15 +201,15 @@ class Job(object):
             timeout = LARGE_TIMEOUT
         end = start + timeout
 
+        ts = self._all_greater(target_states)
+
         while True:
             with self._status_cv:
                 status = self._status
                 state = status.state
-                if target_states:
-                    if state in target_states:
+                if ts:
+                    if state.final or state in ts:
                         return status
-                    elif state.final:
-                        raise UnreachableStateException(status)
                     else:
                         pass  # wait
                 else:

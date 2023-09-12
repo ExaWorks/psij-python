@@ -7,7 +7,7 @@ import sys
 from typing import Callable, TypeVar
 
 from psij.descriptor import Descriptor
-from .exceptions import SubmitException, InvalidJobException, UnreachableStateException
+from .exceptions import SubmitException, InvalidJobException
 from .job import Job, JobStatusCallback
 from .job_attributes import JobAttributes
 from .job_executor import JobExecutor
