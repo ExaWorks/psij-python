@@ -13,7 +13,7 @@ from psij.resource_spec import ResourceSpec
 from psij.utils import path_object_to_full_path as o2p
 
 
-def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]    :
+def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
     if isinstance(arg, pathlib.Path):
         return arg
     elif arg is None:
