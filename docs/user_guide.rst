@@ -298,6 +298,28 @@ is launched and after all the job processes complete, respectively. The
 and are *sourced*. That means that any environment variables exported by the
 ``pre_launch`` script will be made available to the job.
 
+Module Loading
+++++++++++++++
+
+A typical and frequent task that ``pre_launch`` is supposed to address is that
+of loading `environment modules <https://modules.sourceforge.net/>`_. Running
+``module load`` is somewhat resources expensive and doing so on each compute
+node for a large job can exacerbate this. Consequently, the recommended way
+of loading modules is on the lead node, before the job is launched, as the
+following example shows:
+
+.. literalinclude:: ../tests/user_guide/test_prelaunch.py
+    :language: python
+    :dedent: 4
+    :lines: 10-16
+
+where the contents of ``pre_launch.sh`` is
+
+.. literalinclude:: ../tests/user_guide/pre_launch.sh
+    :language: bash
+    :lines: 1, 20-21
+
+
 
 Scheduler Information
 ^^^^^^^^^^^^^^^^^^^^^
