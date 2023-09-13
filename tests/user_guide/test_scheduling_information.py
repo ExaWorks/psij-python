@@ -5,7 +5,7 @@ from executor_test_params import ExecutorTestParams
 from _test_tools import assert_completed
 
 
-def test_getting_started_scheduling_info(execparams: ExecutorTestParams) -> None:
+def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
     executor = JobExecutor.get_instance(execparams.executor)
 
     job = Job(

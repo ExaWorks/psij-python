@@ -4,7 +4,7 @@ from executor_test_params import ExecutorTestParams
 from _test_tools import assert_completed
 
 
-def test_getting_started_resourcespec(execparams: ExecutorTestParams) -> None:
+def test_user_guide_resourcespec(execparams: ExecutorTestParams) -> None:
     ex = JobExecutor.get_instance(execparams.executor)
     job = Job(
         JobSpec(

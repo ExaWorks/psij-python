@@ -3,7 +3,7 @@ from psij import Job, JobSpec, JobExecutor
 from _test_tools import assert_completed
 
 
-def test_getting_started_multiple_jobs() -> None:
+def test_user_guide_multiple_jobs() -> None:
     ex = JobExecutor.get_instance('local')
     spec = JobSpec('/bin/sleep', ['5'])
 

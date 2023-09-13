@@ -1,7 +1,7 @@
 from psij import Job, JobSpec, JobExecutor, JobState
 
 
-def test_user_guide_plain_job() -> None:
+def test_user_guide_job_wait_active() -> None:
     ex = JobExecutor.get_instance('local')
     job = Job(JobSpec(executable='/bin/date'))
     ex.submit(job)

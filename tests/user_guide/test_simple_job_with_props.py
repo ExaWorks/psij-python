@@ -2,7 +2,7 @@ from psij import Job, JobSpec, JobExecutor
 from _test_tools import assert_completed
 
 
-def test_user_guide_simple_job_props() -> None:
+def test_user_guide_simple_job_with_props() -> None:
     ex = JobExecutor.get_instance('local')
 
     spec = JobSpec()
