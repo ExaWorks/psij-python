@@ -1,6 +1,7 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import shlex
 import signal
 import subprocess
 import threading
@@ -18,6 +19,15 @@ from psij import JobExecutor
 from psij.utils import SingletonThread
 
 logger = logging.getLogger(__name__)
+
+
+def _format_shell_cmd(args: List[str]) -> str:
+    """Formats an argument list in a way that allows it to be pasted in a shell."""
+    cmd = ''
+    for arg in args:
+        cmd += shlex.quote(arg)
+        cmd += ' '
+    return cmd
 
 
 def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
@@ -279,7 +289,8 @@ class LocalJobExecutor(JobExecutor):
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
-            logger.debug('Running %s,  out=%s, err=%s', args, spec.stdout_path, spec.stderr_path)
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug('Running %s', _format_shell_cmd(args))
             nodefile = self._generate_nodefile(job, p)
             env = _get_env(spec, nodefile)
             p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
