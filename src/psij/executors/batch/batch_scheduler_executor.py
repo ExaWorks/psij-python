@@ -152,6 +152,10 @@ class BatchSchedulerExecutor(JobExecutor):
         2. store the exit code of the launch command in the *exit code file* named
         `<native_id>.ec`, also inside `<script_dir>`.
 
+    Additionally, where appropriate, the submit script should set the environment variable named
+    ``PSIJ_NODEFILE`` to point to a file containing a list of nodes that are allocated for the job,
+    one per line, with a total number of lines matching the process count of the job.
+
     Once the submit script is generated, the executor renders the submit command using
     :func:`~get_submit_command` and executes it. Its output is then parsed using
     :func:`~job_id_from_submit_output` to retrieve the `native_id` of the job. Subsequently, the

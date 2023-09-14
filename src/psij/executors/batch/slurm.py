@@ -185,3 +185,7 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         if d.days > 0:
             days = str(d.days) + '-'
         return days + "%s:%s:%s" % (d.seconds // 3600, (d.seconds // 60) % 60, d.seconds % 60)
+
+    def _clean_submit_script(self, job: Job) -> None:
+        super()._clean_submit_script(job)
+        self._delete_aux_file(job, '.nodefile')

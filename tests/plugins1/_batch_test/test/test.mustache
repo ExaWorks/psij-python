@@ -22,6 +22,14 @@ export {{key}}="{{value}}"
     {{/custom_attributes.test}}
 {{/job.spec.attributes}}
 
+HOSTNAME=`hostname`
+PSIJ_NODEFILE="{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.nodefile"
+rm -f "$PSIJ_NODEFILE"
+for NODE in $(seq 1 1 "$PSIJ_TEST_BATCH_EXEC_COUNT"); do
+    echo  "$HOSTNAME-$NODE" >> "$PSIJ_NODEFILE"
+done
+
+export PSIJ_NODEFILE
 {{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}
 {{name}}="{{value}}" \
 {{/env}}{{#psij.launch_command}}{{.}} {{/psij.launch_command}}

@@ -73,6 +73,11 @@ only results in empty files that are not cleaned up}}
 #SBATCH -e /dev/null
 #SBATCH -o /dev/null
 
+PSIJ_NODEFILE="{{psij.script_dir}}/$SLURM_JOB_ID.nodefile"
+scontrol show hostnames >"$PSIJ_NODEFILE"
+export PSIJ_NODEFILE
+
+
 {{#env}}
 #SBATCH --export={{name}}={{value}}
 {{/env}}

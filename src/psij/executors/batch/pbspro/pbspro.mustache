@@ -40,6 +40,9 @@ only results in empty files that are not cleaned up}}
 #PBS -v {{name}}={{value}}
 {{/env}}
 
+PSIJ_NODEFILE="$PBS_NODEFILE"
+export PSIJ_NODEFILE
+
 
 {{#job.spec.directory}}
 cd "{{.}}"
