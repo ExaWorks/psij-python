@@ -87,7 +87,7 @@ terminal:
 
 
 JobExecutor Base Class
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 The ``psij.JobExecutor`` class is abstract, but offers concrete static methods
 for registering, fetching, and listing subclasses of itself.
@@ -216,7 +216,7 @@ multiple
     :noindex:
 
 Other Package Contents
-----------------
+----------------------
 
 .. automodule:: psij.exceptions
     :members:

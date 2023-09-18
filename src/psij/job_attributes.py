@@ -51,8 +51,44 @@ class JobAttributes(object):
             return None
         return self._custom_attributes[name]
 
+    @property
+    def custom_attributes(self) -> Optional[Dict[str, object]]:
+        """Returns a dictionary with the custom attributes."""
+        return self._custom_attributes
+
+    @custom_attributes.setter
+    def custom_attributes(self, attrs: Optional[Dict[str, object]]) -> None:
+        """
+        Sets all custom attributes from the given dictionary.
+
+        Existing custom attributes defined on this instance of `JobAttributes`
+        are removed.
+
+        Parameters
+        ----------
+        attrs
+            A dictionary with the custom attributes to set.
+        """
+        self._custom_attributes = attrs
+
     def __repr__(self) -> str:
         """Returns a string representation of this object."""
         return 'JobAttributes(duration={}, queue_name={}, project_name={}, reservation_id={}, ' \
                'custom_attributes={})'.format(self.duration, self.queue_name, self.project_name,
                                               self.reservation_id, self._custom_attributes)
+
+    def __eq__(self, o: object) -> bool:
+        """
+        Tests if this JobAttributes object is equal to another object.
+
+        The objects are equal if all their properties are equal.
+        """
+        if not isinstance(o, JobAttributes):
+            return False
+
+        for prop_name in ['duration', 'queue_name', 'project_name', 'reservation_id',
+                          'custom_attributes']:
+            if getattr(self, prop_name) != getattr(o, prop_name):
+                return False
+
+        return True

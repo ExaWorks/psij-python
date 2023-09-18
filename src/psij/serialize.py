@@ -1,107 +1,326 @@
-from pathlib import Path
-from typing import Optional, Dict, Any
-from psij.job_spec import JobSpec
-from psij.job_attributes import JobAttributes
+import inspect
 import json
+import re
+import typing
+from abc import ABC, abstractmethod
+from datetime import timedelta
+from io import StringIO, TextIOBase
+from pathlib import Path
+from typing import Optional, Dict, Union, List, IO, AnyStr, TextIO
+import typing_compat
+
+from psij import ResourceSpec
+from psij.job_attributes import JobAttributes
+from psij.job_spec import JobSpec
 
 
-# TODO: fix dosctrings
-class Export(object):
-    """A class for exporting psij data types."""
-
-    def __init__(self) -> None:
-        """Initializes an export object."""
-        self.version = ''
-        self.name = ''
-
-    def envelope(self, type: Optional[str] = None) -> Dict[str, Any]:
-        """TODO."""
-        envelope: Dict[str, Any]
-
-        envelope = {
-            'version': 0.1,
-            'type': type,
-            'data': None
-        }
-
-        return envelope
-
-    def to_dict(self, obj: object) -> Dict[str, Any]:
-        """Returns a dictionary representation of an object."""
-        new_dict = {}
-
-        if not isinstance(obj, JobSpec):
-            raise TypeError("Can't create dict, type " + type(obj).__name__ + " not supported")
-
-        new_dict = obj.to_dict
-
-        return new_dict
-
-    def export(self, obj: object, dest: str) -> bool:
-        """Serializes an object to a file."""
-        source_type = type(obj).__name__
-        d = self.to_dict(obj)
-
-        envelope = self.envelope(type=source_type)
-        envelope['data'] = d
-
-        with open(dest, 'w', encoding='utf-8') as f:
-            json.dump(envelope, f, ensure_ascii=False, indent=4)
-
-        return True
+NoneType = type(None)
 
 
-class Import():
-    """A class for importing psij data types."""
+class Serializer(ABC):
+    """
+    A base class for serializers.
 
-    def _dict2spec(self, d: Dict[str, Any]) -> object:
-        """Read a JobSpec from a dicttionary."""
-        # Initial spec object
-        spec = JobSpec()
+    This class takes care of converting a :class:`~psij.JobSpec` instance, including all its
+    properties, into an intermediate representation consisting of a tree of standard dictionaries
+    and lists, where dictionary keys are guaranteed to be strings and values are limited to
+    dictionaries, lists, `str`, `int`, and `bool`. It also takes care of making the reverse
+    conversion. Concrete implementations of serializers should extend this class and implement the
+    `_dump_dict` and `_load_dict` methods, which convert the intermediate representation to the
+    actual serialized format.
 
-        # Map properties to keys
-        spec._name = d['name'] if 'name' in d else d['_name']
-        spec.executable = d['executable']
-        spec.arguments = d['arguments']
+    Serializer implementations can also directly override the `dump`, `dumps`, `load`, and `loads`
+    methods to bypass the intermediate representations and implement (de)serialization directly.
+    """
 
-        spec.directory = Path(d['directory']) if ('directory' in d) and d['directory'] else None
-        spec.inherit_environment = d['inherit_environment']
-        spec.environment = d['environment']
-        spec.stdin_path = Path(d['stdin_path']) if (
-            'stdin_path' in d) and d['stdin_path'] else None
-        spec.stdout_path = Path(d['stdout_path']) if (
-            'stdout_path' in d) and d['stdout_path'] else None
-        spec.stderr_path = Path(d['stderr_path']) if (
-            'stderr_path' in d) and d['stderr_path'] else None
-        spec.resources = d['resources']
+    def dump(self, spec: JobSpec, stream: IO[AnyStr]) -> None:
+        """
+        Serialize the given :class:`~psij.JobSpec` and write the results to `stream`.
 
-        # Handle attributes property
-        if d['attributes']:
-            ja = JobAttributes()
+        Parameters
+        ----------
+        spec
+            The :class:`~psij.JobSpec` to serialize.
+        stream
+            A stream to write the serialized `JobSpec` to. Concrete serializers may require that
+            the stream be a binary or text stream.
+        """
+        # all `_from_*` methods relate to serialization
+        self._dump_dict(self._from_spec(spec), stream)
 
-            attributes = d['attributes']
-            ja.duration = attributes['duration']
-            ja.queue_name = attributes['queue_name']
-            ja.reservation_id = attributes['reservation_id']
-            ja._custom_attributes = attributes['custom_attributes'] \
-                if "custom_attributes" in attributes else None
+    def load(self, stream: IO[AnyStr]) -> JobSpec:
+        """
+        Deserialize the contents of a stream to an instance of :class:`~psij.JobSpec`.
 
-            spec.attributes = ja
+        Parameters
+        ----------
+        stream
+            A stream to read the serialized `JobSpec` from. Concrete serializers may require that
+            the stream be a binary or text stream.
+        Returns
+        -------
+        The deserialized `JobSpec` instance.
+        """
+        # all `_tp_*` methods relate to deserialization
+        return self._to_spec(self._load_dict(stream))
 
-        return spec
+    def dumps(self, spec: JobSpec) -> str:
+        """
+        Serialize the given :class:`~psij.JobSpec` to a string.
 
-    def from_dict(self, hash: Dict[str, Any], target_type: str) -> object:
-        """Reads an object from a dict."""
-        if target_type != "JobSpec":
-            raise TypeError("Can't create object, type " + target_type + " not supported")
-        return self._dict2spec(hash)
+        Serializer implementations that use a binary protocol must override this method and raise
+        an error.
 
-    def load(self, src: str) -> object:
-        """Loads an object from a file."""
-        envelope = None
-        with open(src, 'r', encoding='utf-8') as f:
-            envelope = json.load(f)
+        Parameters
+        ----------
+        spec
+            The :class:`~psij.JobSpec` to serialize.
+        Returns
+        -------
+        A string representation of the `spec`.
+        """
+        f = StringIO()
+        self.dump(spec, f)
+        return f.getvalue()
 
-        obj = self.from_dict(envelope['data'], target_type=envelope['type'])
+    def loads(self, s: str) -> JobSpec:
+        """
+        Deserialize a :class:`~psij.JobSpec` from a string.
 
-        return obj
+        Serializer implementations that use a binary protocol must override this method and raise
+        an error.
+
+        Parameters
+        ----------
+        s
+            The string containing the serialized representation of a `JobSpec`.
+        Returns
+        -------
+        The deserialized `JobSpec` instance.
+        """
+        f = StringIO(s)
+        return self.load(f)
+
+    @abstractmethod
+    def _dump_dict(self, dict: Dict[str, object], stream: IO[AnyStr]) -> None:
+        pass
+
+    @abstractmethod
+    def _load_dict(self, stream: IO[AnyStr]) -> Dict[str, object]:
+        pass
+
+    def _from_spec(self, o: JobSpec) -> Dict[str, object]:
+        return self._from_psij_object(o)
+
+    def _from_psij_object(self, o: Union[JobSpec, JobAttributes, ResourceSpec]) \
+            -> Dict[str, object]:
+        r = {}
+
+        sig = inspect.signature(o.__class__.__init__)
+        types = typing.get_type_hints(o.__class__.__init__)
+
+        for name, param in sig.parameters.items():
+            if name == 'self':
+                continue
+            t = self._canonicalize_type(types[name])
+            value = getattr(o, name)
+            if value != param.default:
+                # only explicitly serialize if it's not the default
+                r[name] = self._from_object(value, t)
+
+        # special handling for things with versions, such as ResourceSpec
+        if hasattr(o, 'version'):
+            r['__version'] = getattr(o, 'version')
+
+        return r
+
+    def _canonicalize_type(self, t: object) -> object:
+        # generics don't appear to be subclasses of Type, so we can't really use Type for t
+        origin = typing_compat.get_origin(t)
+        if origin == Optional:
+            # Python converts Optional[T] to Union[T, None], so this shouldn't happen
+            return typing_compat.get_args(t)[0]
+        elif origin == Union:
+            args = typing_compat.get_args(t)
+            if args[0] == NoneType:
+                return args[1]
+            elif args[1] == NoneType:
+                return args[0]
+            else:
+                return t
+        else:
+            return t
+
+    def _from_object(self, o: object, t: object) -> object:
+        if isinstance(t, type) and inspect.isclass(t):
+            if issubclass(t, JobAttributes):
+                assert isinstance(o, JobAttributes)
+                return self._from_psij_object(o)
+            if issubclass(t, ResourceSpec):
+                assert isinstance(o, ResourceSpec)
+                return self._from_psij_object(o)
+            if str == t or Path == t:
+                return str(o)
+            if bool == t:
+                return bool(o)
+            if int == t:
+                assert isinstance(o, int)
+                return o
+            if issubclass(t, timedelta):
+                assert isinstance(o, timedelta)
+                return self._from_timedelta(o)
+        else:
+            if t == Union[str, Path] or t == Optional[Union[str, Path]]:
+                return str(o)
+            if typing_compat.get_origin(t) == dict:
+                assert isinstance(o, dict)
+                return self._from_dict(o)
+            if typing_compat.get_origin(t) == list:
+                assert isinstance(o, list)
+                return self._from_list(o)
+        raise ValueError('Cannot convert type "%s".' % t)
+
+    def _from_dict(self, d: Dict[object, object]) -> Dict[str, object]:
+        r = {}
+        for k, v in d.items():
+            if not isinstance(k, str):
+                raise ValueError('Cannot convert dictionary with non-string keys. '
+                                 'Offending key was "%s"' % k)
+            # we don't have an expected type here, so use the type of the object
+            r[k] = self._from_object(v, type(v))
+        return r
+
+    def _from_list(self, lst: List[object]) -> List[object]:
+        return [self._from_object(v, type(v)) for v in lst]
+
+    def _from_timedelta(self, t: timedelta) -> str:
+        return "%s s" % t.total_seconds()
+
+    def _to_spec(self, d: Dict[str, object]) -> JobSpec:
+        r = self._to_psij_object(d, JobSpec)
+        assert isinstance(r, JobSpec)
+        return r
+
+    def _to_psij_object(self, d: Dict[str, object], expected_type: type) -> object:
+        processed_keys = set()
+
+        if '__version' in d:
+            assert hasattr(expected_type, 'get_instance')
+            r = getattr(expected_type, 'get_instance')(d['__version'])
+            expected_type = r.__class__
+            processed_keys.add('__version')
+        else:
+            r = expected_type()
+
+        sig = inspect.signature(getattr(expected_type, '__init__'))
+        types = typing.get_type_hints(getattr(expected_type, '__init__'))
+
+        for name, param in sig.parameters.items():
+            if name == 'self' or name.startswith('__') or name not in d:
+                continue
+            t = self._canonicalize_type(types[name])
+            value = d[name]
+            if value != param.default:
+                print(name)
+                setattr(r, name, self._to_object(value, t))
+            processed_keys.add(name)
+
+        for name in d.keys():
+            if name not in processed_keys:
+                raise ValueError('Unexpected key "%s"' % name)
+
+        return r
+
+    def _to_object(self, s: object, t: object) -> object:
+        if isinstance(t, type) and inspect.isclass(t):
+            if issubclass(t, JobAttributes) or issubclass(t, ResourceSpec):
+                assert isinstance(s, dict)
+                return self._to_psij_object(s, t)
+            if str == t or Path == t:
+                return str(s)
+            if bool == t:
+                return bool(s)
+            if int == t:
+                assert isinstance(s, int)
+                return s
+            if issubclass(t, timedelta):
+                assert isinstance(s, str)
+                return self._to_timedelta(s)
+        else:
+            if t == Union[str, Path] or t == Optional[Union[str, Path]]:
+                assert isinstance(s, str)
+                return Path(s)
+            if typing_compat.get_origin(t) == dict:
+                assert isinstance(s, dict)
+                return self._to_dict(s)
+            if typing_compat.get_origin(t) == list:
+                assert isinstance(s, list)
+                return self._to_list(s)
+        raise ValueError('Cannot convert type "%s".' % t)
+
+    def _to_dict(self, d: Dict[str, object]) -> Dict[str, object]:
+        r = {}
+
+        for k, v in d.items():
+            if not isinstance(k, str):
+                raise ValueError('Cannot convert dictionary with non-string keys. '
+                                 'Offending key was "%s"' % k)
+            # we don't have an expected type here, so use the type of the object
+            r[k] = self._to_object(v, type(v))
+
+        return r
+
+    def _to_list(self, lst: List[object]) -> List[object]:
+        return [self._to_object(v, type(v)) for v in lst]
+
+    _TIMEDELTA_FMT_ERROR = 'Unknown time interval format: %s. Accepted formats are hh:mm:ss, ' \
+                           'hh:mm, mm, or n\\s*[h|m|s].'
+
+    def _to_timedelta(self, s: str) -> timedelta:
+        # we accept multiple formats here:
+        #   hh:mm:ss
+        #   hh:mm
+        #   mm
+        #   n\s*[y|M|d|h|m\s]
+
+        if ':' in s:
+            parts = s.split(':')
+            seconds = 0
+            if len(parts) == 3:
+                seconds = int(parts[2])
+            if len(parts) <= 3:
+                return timedelta(hours=int(parts[0]), minutes=int(parts[1]), seconds=seconds)
+            else:
+                raise ValueError(Serializer._TIMEDELTA_FMT_ERROR % s)
+        if s.isdigit():
+            return timedelta(minutes=int(s))
+        m = re.search(r'(\d+)\s*([hms])', s)
+        if m:
+            digits = m.group(1)
+            unit = m.group(2)
+            val = int(digits)
+            if unit == 'h':
+                return timedelta(hours=val)
+            elif unit == 'm':
+                return timedelta(minutes=val)
+            elif unit == 's':
+                return timedelta(seconds=val)
+        raise ValueError(Serializer._TIMEDELTA_FMT_ERROR % s)
+
+
+class JSONSerializer(Serializer):
+    """A JSON serializer."""
+
+    def _dump_dict(self, d: Dict[str, object], stream: IO[AnyStr]) -> None:
+        assert isinstance(stream, TextIO) or isinstance(stream, TextIOBase), \
+            'The JSON serializer requires a text stream.'
+
+        json.dump(d, stream)
+
+    def _load_dict(self, stream: IO[AnyStr]) -> Dict[str, object]:
+        assert isinstance(stream, TextIO) or isinstance(stream, TextIOBase), \
+            'The JSON serializer requires a text stream.'
+
+        r = json.load(stream)
+        assert isinstance(r, dict)
+        return r
