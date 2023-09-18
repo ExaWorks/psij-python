@@ -11,11 +11,11 @@
 #PBS -V
 {{/job.spec.inherit_environment}}
 
-{{#job.spec.attributes}}
-    {{#duration}}
+{{#formatted_job_duration}}
 #PBS -l walltime={{.}}
-# TODO: unclear what the syntax is here for times... its always a mess
-    {{/duration}}
+{{/formatted_job_duration}}
+
+{{#job.spec.attributes}}
     {{#projectName}}
 #PBS -P {{.}}
     {{/projectName}}

@@ -4,6 +4,7 @@ import subprocess
 import time
 import traceback
 from abc import abstractmethod
+from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
 from typing import Optional, List, Dict, Collection, cast, TextIO, Union
@@ -14,7 +15,6 @@ from psij.launchers.script_based_launcher import ScriptBasedLauncher
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
-
 
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
@@ -471,7 +471,17 @@ class BatchSchedulerExecutor(JobExecutor):
                 'script_dir': str(self.work_directory)
             }
         }
+        assert job.spec is not None
+        if job.spec.attributes:
+            duration = job.spec.attributes.duration
+            if duration is not None:
+                ctx['formatted_job_duration'] = self._format_duration(duration)
         return ctx
+
+    def _format_duration(self, d: timedelta) -> str:
+        # the default is hh:mm:ss, with hh not limited to 24; this is the least ambiguous
+        # choice
+        return '%s:%s:%s' % (d.total_seconds() // 3600, (d.seconds // 60) % 60, d.seconds % 60)
 
     def _run_command(self, cmd: List[str]) -> str:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -510,7 +520,8 @@ class BatchSchedulerExecutor(JobExecutor):
             assert isinstance(self.config, BatchSchedulerExecutorConfig)
             if not self.config.keep_files:
                 submit_file_path = self.work_directory / (job.id + '.job')
-                submit_file_path.unlink()
+                if submit_file_path.exists():
+                    submit_file_path.unlink()
         except Exception as ex:
             logger.warning('Job %s: failed clean submit script: %s', job.id, ex)
 

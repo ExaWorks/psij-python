@@ -1,5 +1,5 @@
 """Defines the LsfJobExecutor class and its config class."""
-
+from datetime import timedelta
 from pathlib import Path
 import re
 import json
@@ -131,3 +131,8 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     def get_list_command(self) -> List[str]:
         """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
         return [_BJOBS_COMMAND, '-a', '-noheader', '-o', 'jobid', '-u', self._current_user()]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=o-w-1:
+        #   bsub -W [hour:]minute[/host_name | /host_model]
+        return "%s:%s" % (d.total_seconds() // 3600, (d.seconds // 60) % 60)
