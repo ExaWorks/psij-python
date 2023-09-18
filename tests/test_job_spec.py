@@ -45,6 +45,3 @@ def test_path_conversion() -> None:
     assert JobSpec(stderr_path=os.path.join("test", "path")).stderr_path == Path("test") / "path"
     assert JobSpec(pre_launch=os.path.join("test", "path")).pre_launch == Path("test") / "path"
     assert JobSpec(post_launch=os.path.join("test", "path")).post_launch == Path("test") / "path"
-
-
-test_environment_types()
