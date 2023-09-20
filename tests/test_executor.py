@@ -195,6 +195,8 @@ def _check_str_attrs(ex: BatchSchedulerExecutor, job: Job, names: List[str],
 
 
 _PREFIX_TR = {'pbspro': 'pbs'}
+
+
 def _get_attr_prefix(exec_name: str) -> str:
     if exec_name in _PREFIX_TR:
         return _PREFIX_TR[exec_name]
