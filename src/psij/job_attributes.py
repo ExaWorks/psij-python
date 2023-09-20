@@ -1,7 +1,12 @@
+import re
 from datetime import timedelta
 from typing import Optional, Dict
 
 from typeguard import check_argument_types
+
+
+_WALLTIME_FMT_ERROR = 'Unknown walltime format: %s. Accepted formats are hh:mm:ss, ' \
+                      'hh:mm, mm, or n\\s*[h|m|s].'
 
 
 class JobAttributes(object):
@@ -92,3 +97,48 @@ class JobAttributes(object):
                 return False
 
         return True
+
+    @staticmethod
+    def parse_walltime(walltime: str) -> timedelta:
+        r"""
+        Parses a walltime string into a :class:`~datetime.timedelta`.
+
+        The accepted walltime strings formats are:
+        * hh:mm:ss
+        * hh:mm
+        * mm
+        * n\s*[y|M|d|h|m\s]
+
+        Parameters
+        ----------
+        walltime
+            A string in one of the above formats representing a time duration
+
+        Returns
+        -------
+        A :class:`~datetime.timedelta` representing the same time duration as the ``walltime``
+        parameter.
+        """
+        if ':' in walltime:
+            parts = walltime.split(':')
+            seconds = 0
+            if len(parts) == 3:
+                seconds = int(parts[2])
+            if len(parts) <= 3:
+                return timedelta(hours=int(parts[0]), minutes=int(parts[1]), seconds=seconds)
+            else:
+                raise ValueError(_WALLTIME_FMT_ERROR % walltime)
+        if walltime.isdigit():
+            return timedelta(minutes=int(walltime))
+        m = re.search(r'(\d+)\s*([hms])', walltime)
+        if m:
+            digits = m.group(1)
+            unit = m.group(2)
+            val = int(digits)
+            if unit == 'h':
+                return timedelta(hours=val)
+            elif unit == 'm':
+                return timedelta(minutes=val)
+            elif unit == 's':
+                return timedelta(seconds=val)
+        raise ValueError(_WALLTIME_FMT_ERROR % walltime)

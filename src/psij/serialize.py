@@ -1,6 +1,5 @@
 import inspect
 import json
-import re
 import typing
 from abc import ABC, abstractmethod
 from datetime import timedelta
@@ -245,7 +244,7 @@ class Serializer(ABC):
                 return s
             if issubclass(t, timedelta):
                 assert isinstance(s, str)
-                return self._to_timedelta(s)
+                return JobAttributes.parse_walltime(s)
         else:
             if t == Union[str, Path] or t == Optional[Union[str, Path]]:
                 assert isinstance(s, str)
@@ -272,40 +271,6 @@ class Serializer(ABC):
 
     def _to_list(self, lst: List[object]) -> List[object]:
         return [self._to_object(v, type(v)) for v in lst]
-
-    _TIMEDELTA_FMT_ERROR = 'Unknown time interval format: %s. Accepted formats are hh:mm:ss, ' \
-                           'hh:mm, mm, or n\\s*[h|m|s].'
-
-    def _to_timedelta(self, s: str) -> timedelta:
-        # we accept multiple formats here:
-        #   hh:mm:ss
-        #   hh:mm
-        #   mm
-        #   n\s*[y|M|d|h|m\s]
-
-        if ':' in s:
-            parts = s.split(':')
-            seconds = 0
-            if len(parts) == 3:
-                seconds = int(parts[2])
-            if len(parts) <= 3:
-                return timedelta(hours=int(parts[0]), minutes=int(parts[1]), seconds=seconds)
-            else:
-                raise ValueError(Serializer._TIMEDELTA_FMT_ERROR % s)
-        if s.isdigit():
-            return timedelta(minutes=int(s))
-        m = re.search(r'(\d+)\s*([hms])', s)
-        if m:
-            digits = m.group(1)
-            unit = m.group(2)
-            val = int(digits)
-            if unit == 'h':
-                return timedelta(hours=val)
-            elif unit == 'm':
-                return timedelta(minutes=val)
-            elif unit == 's':
-                return timedelta(seconds=val)
-        raise ValueError(Serializer._TIMEDELTA_FMT_ERROR % s)
 
 
 class JSONSerializer(Serializer):
