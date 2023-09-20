@@ -3,7 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 import re
 import json
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import (
@@ -62,7 +62,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         )
 
     def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: TextIO
+        self, job: Job, context: Dict[str, object], submit_file: IO[str]
     ) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         assert job.spec is not None

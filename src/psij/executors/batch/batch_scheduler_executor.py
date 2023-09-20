@@ -7,7 +7,7 @@ from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO, Union
+from typing import Optional, List, Dict, Collection, cast, Union, IO
 
 from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
@@ -268,7 +268,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     @abstractmethod
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """Called to generate a submit script for a job.
 
         Concrete implementations of batch scheduler executors must override this method in
