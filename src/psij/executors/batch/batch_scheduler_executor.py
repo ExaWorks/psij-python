@@ -38,6 +38,8 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
     for k, v in job.spec.attributes._custom_attributes.items():
         ks = k.split('.', maxsplit=1)
         if len(ks) == 2:
+            # always use lower case here
+            ks[0] = ks[0].lower()
             if ks[0] not in r:
                 r[ks[0]] = []
             cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
