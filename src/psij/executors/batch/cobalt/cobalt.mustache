@@ -20,13 +20,22 @@
     {{#queue_name}}
 #COBALT --queue={{.}}
     {{/queue_name}}
+    {{!Like PBS, Cobalt uses specially named queues for reservations, so we send the job to the
+    respective queue when a reservation ID is specified.}}
+    {{#reservation_id}}
+#COBALT --queue={{.}}
+    {{/reservation_id}}
     {{#project_name}}
 #COBALT --project={{.}}
     {{/project_name}}
-    {{#custom_attributes.COBALT}}
-#COBALT --{{key}}="{{value}}"
-    {{/custom_attributes.COBALT}}
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#cobalt}}
+#COBALT --{{key}}="{{value}}"
+    {{/cobalt}}
+{{/custom_attributes}}
+
 
 {{#env}}
 #COBALT --env {{name}}={{value}}

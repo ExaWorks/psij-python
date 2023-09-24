@@ -28,6 +28,22 @@ class ResourceSpec(ABC):
         """Returns the version of this resource specification class."""
         pass
 
+    @staticmethod
+    def get_instance(version: int) -> 'ResourceSpec':
+        """
+        Creates an instance of a `ResourceSpec` of the specified version.
+
+        Parameters
+        ----------
+        version
+            The version of `ResourceSpec` to instantiate. For example, if `version == 1`, this
+            method will return a new instance of `ResourceSpecV1`.
+        """
+        if version == 1:
+            return ResourceSpecV1()
+        else:
+            raise ValueError()
+
 
 class ResourceSpecV1(ResourceSpec):
     """This class implements V1 of the PSI/J resource specification."""
@@ -168,3 +184,20 @@ class ResourceSpecV1(ResourceSpec):
     def version(self) -> int:
         """Returns the version of this `ResourceSpec`, which is 1 for this class."""
         return 1
+
+    def __eq__(self, o: object) -> bool:
+        """
+        Tests if this ResourceSpecV1 is equal to another object.
+
+        The objects are equal if all their properties are equal.
+        """
+        if not isinstance(o, ResourceSpecV1):
+            return False
+
+        for prop_name in ['node_count', 'process_count', 'processes_per_node',
+                          'cpu_cores_per_process', 'gpu_cores_per_process',
+                          'exclusive_node_use']:
+            if getattr(self, prop_name) != getattr(o, prop_name):
+                return False
+
+        return True

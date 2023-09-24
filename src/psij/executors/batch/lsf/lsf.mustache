@@ -59,6 +59,13 @@
 
 {{/job.spec.attributes}}
 
+{{#custom_attributes}}
+    {{#lsf}}
+#BSUB -{{key}} "{{value}}"
+    {{/lsf}}
+{{/custom_attributes}}
+
+
 {{!since we redirect the output manually, below, tell LSF not to do its own thing, since it
 only results in empty files that are not cleaned up}}
 #BSUB -e /dev/null

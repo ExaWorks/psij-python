@@ -108,6 +108,10 @@ class JobState(bytes, Enum):
         """All states are consider true-ish."""
         return True
 
+    def __hash__(self) -> int:
+        """Returns a hash for this object."""
+        return self._value_  # type: ignore
+
 
 class JobStateOrder:
     """A class that can be used to reconstruct missing states."""

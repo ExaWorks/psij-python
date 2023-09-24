@@ -61,12 +61,13 @@
     {{#reservation_id}}
 #SBATCH --reservation="{{.}}"
     {{/reservation_id}}
-
-    {{#custom_attributes.slurm}}
-#SBATCH --{{key}}="{{value}}"
-    {{/custom_attributes.slurm}}
-
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#slurm}}
+#SBATCH --{{key}}="{{value}}"
+    {{/slurm}}
+{{/custom_attributes}}
 
 {{!since we redirect the output manually, below, tell slurm not to do its own thing, since it
 only results in empty files that are not cleaned up}}

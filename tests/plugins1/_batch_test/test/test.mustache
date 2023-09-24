@@ -13,14 +13,23 @@ export PSIJ_TEST_BATCH_EXEC_COUNT={{.}}
 {{/job.spec.resources}}
 
 {{#job.spec.attributes}}
+    {{#queue_name}}
+export PSIJ_TEST_BATCH_EXEC_QUEUE="{{.}}"
+    {{/queue_name}}
     {{#project_name}}
 export PSIJ_TEST_BATCH_EXEC_PROJECT="{{.}}"
     {{/project_name}}
-
-    {{#custom_attributes.test}}
-export {{key}}="{{value}}"
-    {{/custom_attributes.test}}
+    {{#reservation_id}}
+export PSIJ_TEST_BATCH_EXEC_RES_ID="{{.}}"
+    {{/reservation_id}}
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#batch-test}}
+export {{key}}="{{value}}"
+    {{/batch-test}}
+{{/custom_attributes}}
+
 
 HOSTNAME=`hostname`
 PSIJ_NODEFILE="{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.nodefile"
