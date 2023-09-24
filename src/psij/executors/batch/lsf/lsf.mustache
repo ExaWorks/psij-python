@@ -71,6 +71,9 @@ only results in empty files that are not cleaned up}}
 #BSUB -e /dev/null
 #BSUB -o /dev/null
 
+PSIJ_NODEFILE="$LSB_HOSTS"
+export PSIJ_NODEFILE
+
 {{!redirect output here instead of through #BSUB directive since LSB_JOBID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the
 same as for the exit code file.}}

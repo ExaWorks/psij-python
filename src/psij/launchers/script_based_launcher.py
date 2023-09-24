@@ -202,8 +202,9 @@ class ScriptBasedLauncher(Launcher):
 
     def is_launcher_failure(self, output: str) -> bool:
         """See :func:`~psij.job_launcher.Launcher.is_launcher_failure`."""
-        return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
+        # last line should be an empty line
+        return output.split('\n')[-2] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
         """See :func:`~psij.job_launcher.Launcher.get_launcher_failure_message`."""
-        return '\n'.join(output.split('\n')[:-1])
+        return '\n'.join(output.split('\n')[:-2])

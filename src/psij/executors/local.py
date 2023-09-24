@@ -1,22 +1,33 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import shlex
 import signal
 import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
+from tempfile import mkstemp
 from types import FrameType
 from typing import Optional, Dict, List, Tuple, Type, cast
 
 import psutil
 
-from psij import InvalidJobException, SubmitException, Launcher
+from psij import InvalidJobException, SubmitException, Launcher, ResourceSpecV1
 from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
 from psij.utils import SingletonThread
 
 logger = logging.getLogger(__name__)
+
+
+def _format_shell_cmd(args: List[str]) -> str:
+    """Formats an argument list in a way that allows it to be pasted in a shell."""
+    cmd = ''
+    for arg in args:
+        cmd += shlex.quote(arg)
+        cmd += ' '
+    return cmd
 
 
 def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
@@ -67,6 +78,7 @@ class _ChildProcessEntry(_ProcessEntry):
     def __init__(self, job: Job, executor: 'LocalJobExecutor',
                  launcher: Optional[Launcher]) -> None:
         super().__init__(job, executor, launcher)
+        self.nodefile: Optional[str] = None
 
     def kill(self) -> None:
         super().kill()
@@ -75,6 +87,8 @@ class _ChildProcessEntry(_ProcessEntry):
         assert self.process is not None
         exit_code = self.process.poll()
         if exit_code is not None:
+            if self.nodefile:
+                os.unlink(self.nodefile)
             if self.process.stdout:
                 return exit_code, self.process.stdout.read().decode('utf-8')
             else:
@@ -103,19 +117,30 @@ class _AttachedProcessEntry(_ProcessEntry):
             return None, None
 
 
-def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
+def _get_env(spec: JobSpec, nodefile: Optional[str]) -> Optional[Dict[str, str]]:
+    env: Optional[Dict[str, str]] = None
     if spec.inherit_environment:
-        if not spec.environment:
+        if spec.environment is None and nodefile is None:
             # if env is none in Popen, it inherits env from parent
             return None
         else:
             # merge current env with spec env
             env = os.environ.copy()
-            env.update(spec.environment)
+            if spec.environment:
+                env.update(spec.environment)
+            if nodefile is not None:
+                env['PSIJ_NODEFILE'] = nodefile
             return env
     else:
         # only spec env
-        return spec.environment
+        if nodefile is None:
+            env = spec.environment
+        else:
+            env = {'PSIJ_NODEFILE': nodefile}
+            if spec.environment:
+                env.update(spec.environment)
+
+        return env
 
 
 class _ProcessReaper(SingletonThread):
@@ -222,6 +247,26 @@ class LocalJobExecutor(JobExecutor):
         super().__init__(url=url, config=config if config else JobExecutorConfig())
         self._reaper = _ProcessReaper.get_instance()
 
+    def _generate_nodefile(self, job: Job, p: _ChildProcessEntry) -> Optional[str]:
+        assert job.spec is not None
+        if job.spec.resources is None:
+            return None
+        if job.spec.resources.version == 1:
+            assert isinstance(job.spec.resources, ResourceSpecV1)
+            n = job.spec.resources.computed_process_count
+            if n == 1:
+                # as a bit of an optimization, we don't generate a nodefile when doing "single
+                # node" jobs on local.
+                return None
+            (file, p.nodefile) = mkstemp(suffix='.nodelist')
+            for i in range(n):
+                os.write(file, 'localhost\n'.encode())
+            os.close(file)
+            return p.nodefile
+        else:
+            raise SubmitException('Cannot handle resource specification with version %s'
+                                  % job.spec.resources.version)
+
     def submit(self, job: Job) -> None:
         """
         Submits the specified :class:`~psij.Job` to be run locally.
@@ -244,9 +289,12 @@ class LocalJobExecutor(JobExecutor):
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
-            logger.debug('Running %s,  out=%s, err=%s', args, spec.stdout_path, spec.stderr_path)
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug('Running %s', _format_shell_cmd(args))
+            nodefile = self._generate_nodefile(job, p)
+            env = _get_env(spec, nodefile)
             p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                         close_fds=True, cwd=spec.directory, env=_get_env(spec))
+                                         close_fds=True, cwd=spec.directory, env=env)
             self._reaper.register(p)
             job._native_id = p.process.pid
             self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),

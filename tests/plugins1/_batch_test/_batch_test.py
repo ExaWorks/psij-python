@@ -91,6 +91,10 @@ class _TestJobExecutor(BatchSchedulerExecutor):
         assert state in _TestJobExecutor._STATE_MAP
         return _TestJobExecutor._STATE_MAP[state]
 
+    def _clean_submit_script(self, job: Job):
+        super()._clean_submit_script(job)
+        self._delete_aux_file(job, '.nodefile')
+
 
 class _TestLauncher(MultipleLauncher):
     def __init__(self, config: Optional[JobExecutorConfig] = None):
