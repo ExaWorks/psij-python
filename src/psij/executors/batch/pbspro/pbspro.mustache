@@ -16,17 +16,25 @@
 {{/formatted_job_duration}}
 
 {{#job.spec.attributes}}
-    {{#projectName}}
+    {{#project_name}}
 #PBS -P {{.}}
-    {{/projectName}}
-    {{#queueName}}
+    {{/project_name}}
+    {{#queue_name}}
 #PBS -q {{.}}
-    {{/queueName}}
-    {{#custom_attributes.pbs}}
-#PBS -{{key}} "{{value}}"
-    {{/custom_attributes.pbs}}
-
+    {{/queue_name}}
+    {{!PBS uses specially named queues for reservations, so we send the job to the respective
+    queue when a reservation ID is specified.}}
+    {{#reservation_id}}
+#PBS -q {{.}}
+    {{/reservation_id}}
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#pbs}}
+#PBS -{{key}} "{{value}}"
+    {{/pbs}}
+{{/custom_attributes}}
+
 
 {{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
 only results in empty files that are not cleaned up}}

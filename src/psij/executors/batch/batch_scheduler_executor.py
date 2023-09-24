@@ -7,7 +7,7 @@ from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO, Union
+from typing import Optional, List, Dict, Collection, cast, Union, IO
 
 from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
@@ -38,6 +38,8 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
     for k, v in job.spec.attributes._custom_attributes.items():
         ks = k.split('.', maxsplit=1)
         if len(ks) == 2:
+            # always use lower case here
+            ks[0] = ks[0].lower()
             if ks[0] not in r:
                 r[ks[0]] = []
             cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
@@ -268,7 +270,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     @abstractmethod
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """Called to generate a submit script for a job.
 
         Concrete implementations of batch scheduler executors must override this method in

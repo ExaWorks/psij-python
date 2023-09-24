@@ -1,7 +1,7 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 import re
 import os
 import stat
@@ -59,7 +59,7 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         )
 
     def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: TextIO
+        self, job: Job, context: Dict[str, object], submit_file: IO[str]
     ) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)

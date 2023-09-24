@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO, cast
+from typing import Optional, Collection, List, Dict, IO, cast
 
 from psij import Job, JobStatus, JobState, SubmitException, JobExecutorConfig, ResourceSpecV1
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
@@ -48,7 +48,7 @@ class _TestJobExecutor(BatchSchedulerExecutor):
                                                   / 'test.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         self.generator.generate_submit_script(job, context, submit_file)
 
     def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
