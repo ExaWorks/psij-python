@@ -8,4 +8,4 @@ def test_user_guide_attach() -> None:
     p = subprocess.run([sys.executable, os.path.join(my_dir, 'submit.py')], check=True,
                        capture_output=True)
     subprocess.run([sys.executable, os.path.join(my_dir, '/attach.py')], input=p.stdout,
-                   check=True)
+                   check=True, capture_output=True)
