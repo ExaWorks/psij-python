@@ -32,16 +32,12 @@ class Job(object):
 
     def __init__(self, spec: Optional[JobSpec] = None) -> None:
         """
-        Constructs a `Job` object.
+        When constructed, a job is in the :attr:`~psij.JobState.NEW` state.
 
-        The object can optionally be initialized with the given
-        :class:`~psij.JobSpec`. After construction, the job will be in the
-        :attr:`~psij.JobState.NEW` state.
-
-        :param spec: an optional :class:`~psij.JobSpec`
+        :param spec: an optional :class:`~psij.JobSpec` that describes the details of the job.
         """
         self.spec = spec
-        """The job specification for this job. A valid job requires a valid specification."""
+        """The job specification of this job."""
         self._id = _generate_id()
         self._status = JobStatus(JobState.NEW)
         # need indirect ref to avoid a circular reference
@@ -57,7 +53,7 @@ class Job(object):
     @property
     def id(self) -> str:
         """
-        This job’s ID, read-only.
+        A read-only property containing the PSI/J job ID.
 
         The ID is assigned automatically by the implementation when this `Job` object is
         constructed. The ID is guaranteed to be unique on the machine on which the `Job` object
@@ -68,11 +64,11 @@ class Job(object):
 
     @property
     def native_id(self) -> Optional[str]:
-        """
-        The ID of this job according to the underlying LRM, read-only.
+        """A read-only property containing the native ID of the job.
 
-        The native ID may not be available until after the job is submitted to a
-        :class:`~psij.JobExecutor`, in which case the attribute is ``None``.
+        The native ID is the ID assigned to the job by the underlying implementation. The native ID
+        may not be available until after the job is submitted to a :class:`~psij.JobExecutor`, in
+        which case the value of this property is ``None``.
         """
         if self._native_id is None:
             return None
@@ -82,7 +78,7 @@ class Job(object):
     @property
     def status(self) -> JobStatus:
         """
-        Returns the current status of the job.
+        Contains the current status of the job.
 
         It is guaranteed that the status returned by this method is monotonic in time with respect
         to the partial ordering of :class:`~psij.JobStatus` types. That is, if
@@ -128,17 +124,16 @@ class Job(object):
         """
         Registers a status callback with this job.
 
-        The callback can either be a subclass of :class:`~psij.JobStatusCallback` or a function
-        accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus` and
-        returning nothing.
+        The callback can either be a subclass of :class:`~psij.job.JobStatusCallback` or a
+        procedure accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus`.
 
-        The callback will be invoked whenever a status change occurs for this job, independent of
-        any callback registered on the job's :class:`~psij.JobExecutor`.  To remove the callback,
-        set it to `None`.
+        The callback is invoked whenever a status change occurs for this job, independent of
+        any callback registered on the job's :class:`~psij.JobExecutor`.  The callback can be
+        removed by setting this property to ``None``.
 
-        :param cb: An instance of :class:`~psij.JobStatusCallback` or a callable with two
-            parameters, job of type :class:`~psij.Job` and job_status of type
-            :class:`~psij.JobStatus` returning nothing.
+        :param cb: An instance of :class:`~psij.job.JobStatusCallback` or a callable with two
+            parameters, ``job`` of type :class:`~psij.Job`, ``job_status`` of type
+            :class:`~psij.JobStatus`, and returning nothing.
         """
         if isinstance(cb, JobStatusCallback):
             self._cb = cb
@@ -152,7 +147,7 @@ class Job(object):
         The job is canceled by calling :func:`~psij.JobExecutor.cancel` on the job
         executor that was used to submit this job.
 
-        :raises psij.SubmitException: if the job has not yet been submitted.
+        :raises SubmitException: if the job has not yet been submitted.
         """
         if self.status.final:
             return
@@ -181,13 +176,12 @@ class Job(object):
         """
         Waits for the job to reach certain states.
 
-        This method returns either when the job reaches one of the `target_states` or when an
-        amount of time indicated by the `timeout` parameter, if specified, passes. Returns the
-        :class:`~psij.JobStatus` object that has one of the desired `target_states` or `None` if
-        the timeout is reached. If none of the states in `target_states` can be reached (such as,
-        for example, because the job has entered the :attr:`~psij.JobState.FAILED` state while
-        `target_states` consists of :attr:`~psij.JobState.COMPLETED`), this method throws an
-        :class:`~psij.UnreachableStateException`.
+        This method returns either when the job reaches one of the `target_states`, a state
+        following one of the `target_states`, a final state, or when an amount of time indicated by
+        the `timeout` parameter, if specified, passes. Returns the :class:`~psij.JobStatus` object
+        that has one of the desired states or `None` if the timeout is reached. For example,
+        `wait(target_states = [JobState.QUEUED]` waits until the job is in any of the `QUEUED`,
+        `ACTIVE`, `COMPLETED`, `FAILED`, or `CANCELED` states.
 
         :param timeout: An optional timeout after which this method returns even if none of the
             `target_states` was reached. If not specified, wait indefinitely.

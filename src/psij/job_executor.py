@@ -27,8 +27,6 @@ class JobExecutor(ABC):
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None):
         """
-        Initializes this executor using an optional `url` and an optional configuration.
-
         :param url: The URL is a string that a `JobExecutor` implementation can interpret as the
             location of a backend.
         :param config: An configuration specific to each `JobExecutor` implementation. This
@@ -123,17 +121,17 @@ class JobExecutor(ABC):
 
         A successful return of this method guarantees that the job's `native_id` property is set.
 
-        :raises ~psij.InvalidJobException: Thrown if the job specification cannot be understood.
+        :raises InvalidJobException: Thrown if the job specification cannot be understood.
             This exception is fatal in that submitting another job with the exact same details will
-            also fail with an `~psij.InvalidJobException`. In principle, the underlying
+            also fail with an `InvalidJobException`. In principle, the underlying
             implementation / LRM is the entity ultimately responsible for interpreting a
             specification and reporting any errors associated with it. However, in many cases, this
             reporting may come after a significant delay. In the interest of failing fast, library
             implementations should make an effort of validating specifications early and throwing
             this exception as soon as possible if that validation fails.
 
-        :raises ~psij.SubmitException: Thrown if the request cannot be sent to the underlying
-            implementation. Unlike `~psij.InvalidJobException`, this exception can occur for
+        :raises SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation. Unlike `InvalidJobException`, this exception can occur for
             reasons that are transient.
         """
         pass
@@ -158,14 +156,18 @@ class JobExecutor(ABC):
 
         :param job: The job to be canceled.
 
-        :raises ~psij.SubmitException: Thrown if the request cannot be sent to the underlying
+        :raises SubmitException: Thrown if the request cannot be sent to the underlying
             implementation.
         """
         pass
 
     @abstractmethod
     def list(self) -> List[str]:
-        """List native IDs of all jobs known to the backend."""
+        """List native IDs of all jobs known to the backend.
+
+        This method is meant to return a list of native IDs for jobs submitted to the backend
+        by any means, not necessarily through this executor or through PSI/J.
+        """
         pass
 
     @abstractmethod
@@ -184,17 +186,16 @@ class JobExecutor(ABC):
         """
         Registers a status callback with this executor.
 
-        The callback can either be a subclass of :class:`~psij.JobStatusCallback` or a function
-        accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus` and
-        returning nothing.
+        The callback can either be a subclass of :class:`~psij.job.JobStatusCallback` or a
+        procedure accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus`.
 
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`.
 
-        :param cb: An instance of :class:`~psij.JobStatusCallback` or a callable with two
-            parameters, job of type :class:`~psij.Job` and job_status of type
-            :class:`~psij.JobStatus` returning nothing.
+        :param cb: An instance of :class:`~psij.job.JobStatusCallback` or a callable with two
+            parameters: job of type :class:`~psij.Job` and job_status of type
+            :class:`~psij.JobStatus`.
         """
         if isinstance(cb, JobStatusCallback):
             self._cb = cb

@@ -43,7 +43,7 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
         a dictionary where the registered plugins are being stored
     """
     module, cls_name = _split_cls_name(desc.cls)
-    cls = None
+    cls: Optional[Type[Any]] = None
     exc = None
     mod_path = root_path + '/' + module.replace('.', '/') + '.py'
     try:
@@ -53,17 +53,27 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)  # type: ignore
         cls = getattr(mod, cls_name)
-        cls.__psij_file__ = mod_path
+        cls.__psij_file__ = mod_path  # type: ignore
     except Exception as ex:
         s = str(ex)
         logger.info(s)
         exc = ex
 
-    if desc.name not in store:
-        store[desc.name] = []
-    existing = store[desc.name]
-    entry: _VersionEntry[T] = _VersionEntry(desc.version, desc_path=desc.path,
-                                            plugin_path=mod_path, ecls=cls, exc=exc)
+    entry: _VersionEntry[T] = _VersionEntry(desc=desc, plugin_path=mod_path, ecls=cls, exc=exc)
+
+    _insert(store, desc.name, type, entry, desc, cls)
+    if desc.aliases is not None:
+        for alias in desc.aliases:
+            _insert(store, alias, type, entry, desc, cls)
+
+
+def _insert(store: Dict[str, List[_VersionEntry[T]]], name: str, type: str, entry: _VersionEntry[T],
+            desc: Descriptor, cls: Optional[Type[T]]) -> None:
+    name = desc.name.lower()
+    if name not in store:
+        store[name] = []
+    existing = store[name]
+
     # check if an object with this version already exists
     index = bisect_left(existing, entry)
     if index != len(existing) and existing[index].version == desc.version:
@@ -77,7 +87,7 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
         else:
             txt = 'A launcher'
         raise ValueError(('%s by the name "%s" with version %s is already '
-                          'registered. Existing path: %s; current path: %s' % (txt, desc.name,
+                          'registered. Existing path: %s; current path: %s' % (txt, name,
                                                                                desc.version,
                                                                                p1, p2)))
     existing.insert(index, entry)
@@ -99,6 +109,7 @@ def _get_names(store: Dict[str, Any]) -> str:
 
 def _get_plugin_class(name: str, version_constraint: Optional[str], type: str,
                       store: Dict[str, List[_VersionEntry[T]]]) -> _VersionEntry[T]:
+    name = name.lower()
     if name not in store:
         raise ValueError('No such {} "{}". Available {}s: {}'.format(type, name, type,
                                                                      _get_names(store)))

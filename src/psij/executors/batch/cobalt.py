@@ -47,10 +47,16 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         "killing": JobState.FAILED,
     }
 
-    def __init__(
-        self, url: Optional[str] = None, config: Optional[CobaltExecutorConfig] = None
-    ):
-        """Initializes a :class:`~CobaltJobExecutor`."""
+    def __init__(self, url: Optional[str] = None,
+                 config: Optional[CobaltExecutorConfig] = None) -> None:
+        """
+        Parameters
+        ----------
+        url
+            This parameter is not used and is only provided for compatibility reasons.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = CobaltExecutorConfig()
         super().__init__(config=config)
@@ -58,9 +64,8 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
             config, Path(__file__).parent / "cobalt" / "cobalt.mustache"
         )
 
-    def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: IO[str]
-    ) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object],
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 

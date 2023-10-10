@@ -8,10 +8,16 @@ if [ ! -f web/build.sh ]; then
 fi
 
 if [ "$1" != "--quick" ]; then
+	rm -rf web-build/*
 	mkdir -p web-build
 
 	pip install -r requirements-docs.txt
-	make web-docs
+
+	if [ "$1" == "--dev" ]; then
+	    make web-docs-dev
+	else
+		make web-docs
+	fi
 
 	mkdir -p web-build/docs
 	echo "Copying docs..."

@@ -53,7 +53,14 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str], config: Optional[LsfExecutorConfig] = None):
-        """Initializes a :class:`~LsfJobExecutor`."""
+        """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = LsfExecutorConfig()
         super().__init__(config=config)
@@ -61,9 +68,8 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             config, Path(__file__).parent / "lsf" / "lsf.mustache"
         )
 
-    def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: IO[str]
-    ) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object],
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         assert job.spec is not None
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)

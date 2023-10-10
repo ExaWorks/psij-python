@@ -17,8 +17,7 @@ class SubmitScriptGenerator(ABC):
     """
 
     def __init__(self, config: JobExecutorConfig) -> None:
-        """Initializes this `SubmitScriptGenerator` with an executor configuration.
-
+        """
         Parameters
         ----------
         config
@@ -59,8 +58,7 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
 
     def __init__(self, config: JobExecutorConfig, template_path: pathlib.Path,
                  escape: Callable[[object], str] = bash_escape) -> None:
-        """Initializes this script generator.
-
+        """
         Parameters
         ----------
         config

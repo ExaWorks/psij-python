@@ -74,6 +74,9 @@ if web_docs:
 
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
+autodoc_default_options = {
+    'show-inheritance': True
+}
 
 release = None
 version = None
@@ -106,11 +109,14 @@ intersphinx_mapping = {
 def run_apidoc(sphinx):
     read_version(sphinx.srcdir)  # this sets src_dir based on the version being compiled
     output_path = os.path.join(sphinx.srcdir, '.generated')
-    main(['-f', '-o', output_path, src_dir])
-
-# launch setup
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
+    os.makedirs(output_path, exist_ok=True)
+    generate_path = os.path.join(sphinx.srcdir, 'generate.py')
+    if os.path.exists(generate_path):
+        # use the generate script if it exists
+        subprocess.run([sys.executable, generate_path], cwd=sphinx.srcdir, check=True, 
+                       env={'PYTHONPATH': src_dir})
+    else:
+        main(['-f', '-t', os.path.join(my_dir, '_sphinx'), '-o', output_path, src_dir])
 
 
 # The following is a hack to allow returns in numpy style doctstrings to
@@ -129,3 +135,29 @@ def _consume_returns_section(self) -> List[Tuple[str, str, List[str]]]:
 
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 NumpyDocstring._consume_returns_section = _consume_returns_section
+
+
+# And this is for "More than one target found for cross-reference"
+# See https://github.com/sphinx-doc/sphinx/issues/3866
+from sphinx.domains.python import PythonDomain
+
+class MyPythonDomain(PythonDomain):
+    def find_obj(self, env, modname, classname, name, type, searchmode=0):
+        """Ensures an object always resolves to the desired module if defined there."""
+        orig_matches = PythonDomain.find_obj(self, env, modname, classname, name, type, searchmode)
+        matches = []
+        for match in orig_matches:
+            match_name = match[0]
+            desired_name = 'psij.' + name.strip('.')
+            if match_name == desired_name:
+                matches.append(match)
+                break
+        if matches:
+            return matches
+        else:
+            return orig_matches
+
+# launch setup
+def setup(app):
+    app.add_domain(MyPythonDomain, override=True)
+    app.connect('builder-inited', run_apidoc)

@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="11in"
+   height="8.5in"
+   viewBox="0 0 279.4 215.9"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (1:1.3+202307231459+0e150ed6c4)"
+   sodipodi:docname="psij_arch.svg"
+   inkscape:export-filename="psij_arch.png"
+   inkscape:export-xdpi="85.55"
+   inkscape:export-ydpi="85.55"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="true"
+     inkscape:zoom="0.78038721"
+     inkscape:cx="616.36069"
+     inkscape:cy="501.03333"
+     inkscape:window-width="1810"
+     inkscape:window-height="1053"
+     inkscape:window-x="110"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="92.558219,170.46849"
+       orientation="0,-1"
+       id="guide2"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="8.653557,136.20354"
+       orientation="1,0"
+       id="guide4"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="202.57705,55.779162"
+       orientation="0,-1"
+       id="guide40"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g26"
+       transform="translate(0,-1.0583333)">
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1"
+         width="50"
+         height="20"
+         x="8.7535572"
+         y="45.531513"
+         ry="3"
+         rx="3" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3"
+         width="200"
+         height="20"
+         x="64.464645"
+         y="45.531509"
+         rx="3"
+         ry="3" />
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2"
+         width="20"
+         height="20"
+         x="56.052143"
+         y="45.531513" />
+      <text
+         xml:space="preserve"
+         style="font-size:5.64444px;line-height:125%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="42.167469"
+         y="53.451534"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-opacity:1"
+           x="42.167469"
+           y="53.451534">Local execution</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-opacity:1"
+           x="42.167469"
+           y="60.507084"
+           id="tspan4">(shell)</tspan></text>
+    </g>
+    <g
+       id="g41">
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1-5"
+         width="50"
+         height="30"
+         x="8.7535572"
+         y="66.589851"
+         ry="3"
+         rx="3" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3-2"
+         width="200"
+         height="30"
+         x="64.464645"
+         y="66.589844"
+         rx="3"
+         ry="3" />
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-6"
+         width="20"
+         height="30"
+         x="56.052143"
+         y="66.589851" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:125%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="42.167469"
+       y="79.040459"
+       id="text3-9"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-opacity:1"
+         x="42.167469"
+         y="79.040459"
+         id="tspan4-2">Local Resource </tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-opacity:1"
+         x="42.167469"
+         y="86.096008"
+         id="tspan5">Manager (LRM)</tspan></text>
+    <g
+       id="g45">
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1-0"
+         width="50"
+         height="47"
+         x="8.7535572"
+         y="98.706512"
+         ry="3"
+         rx="3" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3-6"
+         width="200"
+         height="47"
+         x="64.464645"
+         y="98.706505"
+         rx="3"
+         ry="3" />
+      <rect
+         style="fill:#7b1b40;fill-opacity:1;fill-rule:evenodd;stroke:#7b1b40;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-62"
+         width="20"
+         height="47"
+         x="56.052143"
+         y="98.706512" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:125%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="41.98262"
+       y="124.24619"
+       id="text3-1"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-opacity:1"
+         x="41.98262"
+         y="124.24619"
+         id="tspan4-7">PSI/J</tspan></text>
+    <rect
+       style="fill:#ffc500;fill-opacity:0.303464;fill-rule:evenodd;stroke:none;stroke-width:0.331743;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="rect30"
+       width="163.38837"
+       height="8"
+       x="82.678696"
+       y="50.470352"
+       rx="2"
+       ry="2" />
+    <rect
+       style="fill:#ff0000;fill-opacity:0.303464;fill-rule:evenodd;stroke:none;stroke-width:0.156098;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="rect30-4"
+       width="36.175114"
+       height="8"
+       x="109.40273"
+       y="68.589851"
+       rx="2"
+       ry="2" />
+    <rect
+       style="fill:#ffc500;fill-opacity:0.303464;fill-rule:evenodd;stroke:none;stroke-width:0.223644;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="rect30-6"
+       width="74.255745"
+       height="8"
+       x="98.21566"
+       y="85.585564"
+       rx="2"
+       ry="2" />
+    <rect
+       style="fill:#ff009c;fill-opacity:0.303464;fill-rule:evenodd;stroke:none;stroke-width:0.286487;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="rect30-6-9"
+       width="121.8501"
+       height="8"
+       x="109.53751"
+       y="76.993797"
+       rx="2"
+       ry="2" />
+    <rect
+       style="fill:#ffc500;fill-opacity:0.3019608;fill-rule:evenodd;stroke:none;stroke-width:0.250972;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       id="rect30-3-6"
+       width="93.511978"
+       height="8"
+       x="147.36644"
+       y="68.589851"
+       rx="2"
+       ry="2" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:125%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="84.751228"
+       y="55.850418"
+       id="text28"><tspan
+         sodipodi:role="line"
+         id="tspan28"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+         x="84.751228"
+         y="55.850418">Hello.sh Peter Parker 1&gt;message.log 2&gt;error.log</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:150%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="83.217812"
+       y="74.315132"
+       id="text28-7"><tspan
+         sodipodi:role="line"
+         id="tspan28-8"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:150%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+         x="83.217812"
+         y="74.315132">#SBATCH --nodes=10 -o message.log -e error.log</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:150%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+         x="83.217812"
+         y="82.781792"
+         id="tspan31">#SBATCH --partition debug --account pj32201</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:150%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+         x="83.217812"
+         y="91.248451"
+         id="tspan30">srun Hello.sh Peter Parker</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:150%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+         x="83.217812"
+         y="99.715111"
+         id="tspan29" /></text>
+    <g
+       id="g46"
+       transform="translate(2.6458333)">
+      <rect
+         style="fill:#ffc500;fill-opacity:0.303464;fill-rule:evenodd;stroke:none;stroke-width:0.577118;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect30-6-5"
+         width="91.581001"
+         height="43.194805"
+         x="80.305557"
+         y="100.52187"
+         rx="2"
+         ry="2" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:140%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="82.760605"
+         y="106.86566"
+         id="text32"><tspan
+           sodipodi:role="line"
+           id="tspan32"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="82.760605"
+           y="106.86566">JobSpec</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;line-height:140%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="84.55909"
+         y="116.39052"
+         id="text33"><tspan
+           sodipodi:role="line"
+           id="tspan33"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="84.55909"
+           y="116.39052">executable='Hello.sh'</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="84.55909"
+           y="123.30496"
+           id="tspan34">arguments=['Peter', 'Parker']</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="84.55909"
+           y="130.21941"
+           id="tspan35">stdout_path='message.log'</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="84.55909"
+           y="137.13385"
+           id="tspan36">stderr_path='error.log'</tspan></text>
+    </g>
+    <g
+       id="g47"
+       transform="translate(5.2916666)">
+      <rect
+         style="fill:#ff009c;fill-opacity:0.301961;fill-rule:evenodd;stroke:none;stroke-width:0.380404;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect30-6-5-1"
+         width="70.906181"
+         height="24.239012"
+         x="176.0401"
+         y="100.52187"
+         rx="2"
+         ry="2" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:140%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="178.49515"
+         y="106.86566"
+         id="text32-5"><tspan
+           sodipodi:role="line"
+           id="tspan32-9"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="178.49515"
+           y="106.86566">JobAttributes</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;line-height:140%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="180.44621"
+         y="114.84334"
+         id="text33-4"><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="180.44621"
+           y="114.84334"
+           id="tspan36-1">queue_name='debug'</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="180.44621"
+           y="121.75778"
+           id="tspan39">project_name='pj32201'</tspan></text>
+    </g>
+    <g
+       id="g44"
+       transform="translate(5.2916666,-16.404165)">
+      <rect
+         style="fill:#ff0000;fill-opacity:0.301961;fill-rule:evenodd;stroke:none;stroke-width:0.318862;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="rect30-6-5-1-9"
+         width="70.906181"
+         height="17.030622"
+         x="176.09427"
+         y="143.09021"
+         rx="2"
+         ry="2" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;line-height:140%;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="178.54932"
+         y="148.90485"
+         id="text32-5-7"><tspan
+           sodipodi:role="line"
+           id="tspan32-9-7"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:5.64444px;font-family:'Nunito Sans';-inkscape-font-specification:'Nunito Sans Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="178.54932"
+           y="148.90485">ResourceSpec</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;line-height:140%;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="181.02956"
+         y="156.61794"
+         id="text33-4-6"><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:4.93889px;font-family:'Source Code Pro';-inkscape-font-specification:'Source Code Pro Semi-Bold';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583px"
+           x="181.02956"
+           y="156.61794"
+           id="tspan39-3">node_count=10</tspan></text>
+    </g>
+  </g>
+</svg>

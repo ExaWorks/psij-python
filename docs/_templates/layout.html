@@ -11,13 +11,13 @@
 {% endblock %}
 
 {% block header %}
-    <v-app id="psij-app">
+    <v-app id="psij-app" class="psij-docs">
         {% include "../../web/_includes/menu.html" %}
         {{ super() }}
 {% endblock %}
 
 {% block rootrellink %}
-    <li><a href="{{ pathto(theme_roottarget) }}">{{shorttitle|e}}</a>{% if versions %}{% include "../../web/_includes/versionselect.html" %}{% endif %}{{reldelim1}}</li>
+    <li><a href="{{ pathto(theme_roottarget) }}">{{shorttitle|e}}</a>{% include "../../web/_includes/versionselect.html" %}{{reldelim1}}</li>
 {% endblock %}
 
 

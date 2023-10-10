@@ -5,15 +5,22 @@ from typing import Optional, Dict
 class ExecutorTestParams:
     """A class holding executor, launcher, url pairs."""
 
-    def __init__(self, spec: str, custom_attributes: Optional[Dict[str, object]] = None) -> None:
+    def __init__(self, spec: str, queue_name: Optional[str] = None,
+                 project_name: Optional[str] = None,
+                 custom_attributes: Optional[Dict[str, object]] = None) -> None:
         """
         Construct a new instance.
 
         Parameters
         ----------
-        spec:
+        spec
             A string in the format "<executor>[:<launcher>[:<url>]]". If only the executor and the
             url are specified, the string should be formatted as "<executor>::<url>".
+        queue_name
+            An optional queue to submit the job to
+        project_name
+            An optional project name to associate the job with
+        custom_attributes
         """
         spec_l = re.split(':', spec, maxsplit=2)
         self.executor = spec_l[0]
@@ -26,6 +33,8 @@ class ExecutorTestParams:
         else:
             self.url = None
 
+        self.queue_name = queue_name
+        self.project_name = project_name
         self.custom_attributes = custom_attributes
 
     def __repr__(self) -> str:
