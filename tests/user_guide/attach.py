@@ -10,7 +10,7 @@ def attach() -> None:
     ex.attach(job, native_id)
     # The status may not be updated immediately after the attach() call, so
     # we wait until we get a non-NEW status.
-    status = job.wait(target_states=[JobState.QUEUED])
+    status = job.wait(target_states=[JobState.QUEUED, JobState.ACTIVE, JobState.COMPLETED])
     print(status)
 
 
