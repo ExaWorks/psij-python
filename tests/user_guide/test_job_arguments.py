@@ -7,7 +7,7 @@ def test_user_guide_job_arguments() -> None:
     job = Job(
         JobSpec(
             executable='/bin/date',
-            arguments=['-utc']
+            arguments=['--utc']
         )
     )
     ex.submit(job)
