@@ -1,6 +1,6 @@
 import os
 import threading
-from typing import Type, Dict
+from typing import Type, Dict, Optional
 
 
 class SingletonThread(threading.Thread):
