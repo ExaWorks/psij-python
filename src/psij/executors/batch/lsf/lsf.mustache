@@ -59,10 +59,20 @@
 
 {{/job.spec.attributes}}
 
+{{#custom_attributes}}
+    {{#lsf}}
+#BSUB -{{key}} "{{value}}"
+    {{/lsf}}
+{{/custom_attributes}}
+
+
 {{!since we redirect the output manually, below, tell LSF not to do its own thing, since it
 only results in empty files that are not cleaned up}}
 #BSUB -e /dev/null
 #BSUB -o /dev/null
+
+PSIJ_NODEFILE="$LSB_HOSTS"
+export PSIJ_NODEFILE
 
 {{!redirect output here instead of through #BSUB directive since LSB_JOBID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the

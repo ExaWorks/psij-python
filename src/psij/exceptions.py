@@ -63,24 +63,3 @@ class SubmitException(Exception):
         conditions such an error would persist across subsequent re-tries until correct credentials
         are used.
         """
-
-
-class UnreachableStateException(Exception):
-    """
-    Indicates that a job state being waited for cannot be reached.
-
-    This exception is thrown when the :func:`~psij.Job.wait` method is called with a set of
-    states that cannot be reached by the job when the call is made.
-    """
-
-    def __init__(self, status: 'psij.JobStatus') -> None:
-        """
-        :param status: The :class:`~psij.JobStatus` that the job was in when
-            :func:`~psij.Job.wait` was called and which prevents the desired states to be
-            reached.
-        """
-        self.status = status
-        """
-        Returns the job status that has caused an implementation to determine that the desired
-        states passed to the :func:`~psij.Job.wait` method cannot be reached.
-        """
