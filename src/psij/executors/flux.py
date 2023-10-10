@@ -156,7 +156,7 @@ class FluxJobExecutor(JobExecutor):
         if spec.stdin_path:
             flux_jobspec.stdin = spec.stdin_path
         if spec.stderr_path:
-            flux.jobspec.stderr = spec.stderr_path
+            flux_jobspec.stderr = spec.stderr_path
         flux_jobspec.duration = spec.attributes.duration.total_seconds()
         fut = self._flux_executor.submit(flux_jobspec)
         self._add_flux_callbacks(job, fut)
