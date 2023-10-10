@@ -176,13 +176,12 @@ class Job(object):
         """
         Waits for the job to reach certain states.
 
-        This method returns either when the job reaches one of the `target_states` or when an
-        amount of time indicated by the `timeout` parameter, if specified, passes. Returns the
-        :class:`~psij.JobStatus` object that has one of the desired `target_states` or `None` if
-        the timeout is reached. If none of the states in `target_states` can be reached (such as,
-        for example, because the job has entered the :attr:`~psij.JobState.FAILED` state while
-        `target_states` consists of :attr:`~psij.JobState.COMPLETED`), this method throws an
-        :exc:`~psij.exceptions.UnreachableStateException`.
+        This method returns either when the job reaches one of the `target_states`, a state
+        following one of the `target_states`, a final state, or when an amount of time indicated by
+        the `timeout` parameter, if specified, passes. Returns the :class:`~psij.JobStatus` object
+        that has one of the desired states or `None` if the timeout is reached. For example,
+        `wait(target_states = [JobState.QUEUED]` waits until the job is in any of the `QUEUED`,
+        `ACTIVE`, `COMPLETED`, `FAILED`, or `CANCELED` states.
 
         :param timeout: An optional timeout after which this method returns even if none of the
             `target_states` was reached. If not specified, wait indefinitely.
