@@ -34,8 +34,9 @@ def assert_completed(job: Job, status: Optional[JobStatus]) -> None:
         assert job.spec is not None
         stdout = _read_file(job.spec.stdout_path)
         stderr = _read_file(job.spec.stderr_path)
-        raise AssertionError('Job not completed. Status message: %s, stdout: %s, stderr: %s'
-                             % (status.message, stdout, stderr))
+        raise AssertionError('Job not completed. Exit code: %s, Status message: %s, '
+                             'stdout: %s, stderr: %s'
+                             % (status.exit_code, status.message, stdout, stderr))
 
 
 def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) -> JobExecutor:

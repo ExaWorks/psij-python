@@ -7,7 +7,7 @@ from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO, Union
+from typing import Optional, List, Dict, Collection, cast, Union, IO
 
 from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
@@ -51,6 +51,8 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
     for k, v in job.spec.attributes._custom_attributes.items():
         ks = k.split('.', maxsplit=1)
         if len(ks) == 2:
+            # always use lower case here
+            ks[0] = ks[0].lower()
             if ks[0] not in r:
                 r[ks[0]] = []
             cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
@@ -163,6 +165,10 @@ class BatchSchedulerExecutor(JobExecutor):
 
         2. store the exit code of the launch command in the *exit code file* named
         `<native_id>.ec`, also inside `<script_dir>`.
+
+    Additionally, where appropriate, the submit script should set the environment variable named
+    ``PSIJ_NODEFILE`` to point to a file containing a list of nodes that are allocated for the job,
+    one per line, with a total number of lines matching the process count of the job.
 
     Once the submit script is generated, the executor renders the submit command using
     :func:`~get_submit_command` and executes it. Its output is then parsed using
@@ -279,7 +285,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     @abstractmethod
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """Called to generate a submit script for a job.
 
         Concrete implementations of batch scheduler executors must override this method in

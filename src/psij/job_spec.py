@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-import sys
 # for some reason, Sphinx cannot find Path if imported directly
 # from pathlib import Path
 import pathlib
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from typeguard import check_argument_types
 
-from psij.job_attributes import JobAttributes
-from psij.resource_spec import ResourceSpec
-from psij.utils import path_object_to_full_path as o2p
+import psij.resource_spec
+import psij.job_attributes
 
 
 def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
@@ -27,13 +25,20 @@ class JobSpec(object):
     """A class that describes the details of a job."""
 
     def __init__(self, executable: Optional[str] = None, arguments: Optional[List[str]] = None,
+                 # For some odd reason, and only in the constructor, if Path is used directly,
+                 # sphinx fails to find the class. Using Path in the getters and setters does not
+                 # appear to trigger a problem.
                  directory: Union[str, pathlib.Path, None] = None, name: Optional[str] = None,
                  inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
                  stdin_path: Union[str, pathlib.Path, None] = None,
                  stdout_path: Union[str, pathlib.Path, None] = None,
                  stderr_path: Union[str, pathlib.Path, None] = None,
-                 resources: Optional[ResourceSpec] = None,
-                 attributes: Optional[JobAttributes] = None,
+                 # Importing ResourceSpec directly used to work, but for some unclear reason
+                 # sphinx started complaining about finding duplicate ResourceSpec classes,
+                 # psij.resource_spec.ResourceSpec and psij.ResourceSpec, despite the latter not
+                 # being imported.
+                 resources: Optional[psij.resource_spec.ResourceSpec] = None,
+                 attributes: Optional[psij.job_attributes.JobAttributes] = None,
                  pre_launch: Union[str, pathlib.Path, None] = None,
                  post_launch: Union[str, pathlib.Path, None] = None,
                  launcher: Optional[str] = None):
@@ -125,7 +130,8 @@ class JobSpec(object):
         self._stdout_path = _to_path(stdout_path)
         self._stderr_path = _to_path(stderr_path)
         self.resources = resources
-        self.attributes = attributes if attributes is not None else JobAttributes()
+        self.attributes = attributes if attributes is not None else \
+            psij.job_attributes.JobAttributes()
         self._pre_launch = _to_path(pre_launch)
         self._post_launch = _to_path(post_launch)
         self.launcher = launcher
@@ -141,6 +147,10 @@ class JobSpec(object):
             return self.executable
         else:
             return self._name
+
+    @name.setter
+    def name(self, value: Optional[str]) -> None:
+        self._name = value
 
     @property
     def directory(self) -> Optional[pathlib.Path]:
@@ -180,7 +190,12 @@ class JobSpec(object):
 
     @property
     def pre_launch(self) -> Optional[pathlib.Path]:
-        """An optional path to a pre-launch script."""
+        """
+        An optional path to a pre-launch script.
+
+        The pre-launch script is sourced before the launcher is invoked. It, therefore, runs on
+        the service node of the job rather than on all of the compute nodes allocated to the job.
+        """
         return self._pre_launch
 
     @pre_launch.setter
@@ -189,105 +204,32 @@ class JobSpec(object):
 
     @property
     def post_launch(self) -> Optional[pathlib.Path]:
-        """An optional path to a post-launch script."""
+        """
+        An optional path to a post-launch script.
+
+        The post-launch script is sourced after all the ranks of the job executable complete and
+        is sourced on the same node as the pre-launch script.
+        """
         return self._post_launch
 
     @post_launch.setter
     def post_launch(self, post_launch: Union[str, pathlib.Path, None]) -> None:
         self._post_launch = _to_path(post_launch)
 
-    def _init_job_spec_dict(self) -> Dict[str, Any]:
-        """Returns jobspec structure as dict."""
-        # convention:
-        #  - if expected value is a string then the dict is initialized with an empty string
-        # - if the expected value is an object than the key is initialzied with None
+    def __eq__(self, o: object) -> bool:
+        """
+        Tests if this JobSpec is equal to another.
 
-        job_spec: Dict[str, Any]
-        job_spec = {
-            'name': '',
-            'executable': '',
-            'arguments': [],
-            'directory': None,
-            'inherit_environment': True,
-            'environment': {},
-            'stdin_path': None,
-            'stdout_path': None,
-            'stderr_path': None,
-            'resources': None,
-            'attributes': None,
-            'launcher': None
-        }
+        Two job specifications are equal if they represent the same job. That is, if all
+        properties are pair-wise equal.
+        """
+        if not isinstance(o, JobSpec):
+            return False
 
-        return job_spec
+        for prop_name in ['name', 'executable', 'arguments', 'directory', 'inherit_environment',
+                          'environment', 'stdin_path', 'stdout_path', 'stderr_path', 'resources',
+                          'attributes', 'pre_launch', 'post_launch', 'launcher']:
+            if getattr(self, prop_name) != getattr(o, prop_name):
+                return False
 
-    @property
-    def to_dict(self) -> Dict[str, Any]:
-        """Returns a dictionary representation of this object."""
-        d = self._init_job_spec_dict
-
-        # Map properties to keys
-        d['name'] = self.name
-        d['executable'] = self.executable
-        d['arguments'] = self.arguments
-        d['directory'] = o2p(self.directory)
-        d['inherit_environment'] = self.inherit_environment
-        d['environment'] = self.environment
-        d['stdin_path'] = o2p(self.stdin_path)
-        d['stdout_path'] = o2p(self.stdout_path)
-        d['stderr_path'] = o2p(self.stderr_path)
-        d['resources'] = self.resources
-
-        # Handle attributes property
-        if self.attributes:
-            d['attributes'] = {
-                'duration': '',
-                'queue_name': '',
-                'project_name': '',
-                'reservation_id': '',
-                'custom_attributes': {},
-            }
-            for k, v in self.attributes.__dict__.items():
-                if k in ['duration', 'queue_name', 'project_name', 'reservation_id']:
-                    if v:
-                        d['attributes'][k] = str(v)
-                    else:
-                        d['attributes'][k] = v
-                elif k == "_custom_attributes":
-                    if v:
-                        for ck, cv in v.items():
-                            if not type(cv).__name__ in ['str',
-                                                         'list',
-                                                         'dict',
-                                                         'NoneType',
-                                                         'bool',
-                                                         'int']:
-                                sys.stderr.write("Unsupported type "
-                                                 + type(cv).__name__
-                                                 + " in JobAttributes.custom_attributes for key "
-                                                 + ck
-                                                 + ", skipping\n")
-                        else:
-                            if ck:
-                                d['attributes']['custom_attributes'][ck] = str(cv)
-                            else:
-                                d['attributes']['custom_attributes'][ck] = cv
-                else:
-                    sys.stderr.write("Unsupported attribute " + k + ", skipping attribute\n")
-        else:
-            d['attributes'] = None
-
-        if self.resources:
-
-            d['resources'] = {
-                'node_count': None,
-                'process_count': None,
-                'process_per_node': None,
-                'cpu_cores_per_process': None,
-                'gpu_cores_per_process': None,
-                'exclusive_node_use': None
-            }
-            r = self.resources.__dict__
-            for k in d['resources'].keys():
-                d['resources'][k] = r[k] if k in r else None
-
-        return d
+        return True

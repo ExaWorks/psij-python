@@ -20,13 +20,22 @@
     {{#queue_name}}
 #COBALT --queue={{.}}
     {{/queue_name}}
+    {{!Like PBS, Cobalt uses specially named queues for reservations, so we send the job to the
+    respective queue when a reservation ID is specified.}}
+    {{#reservation_id}}
+#COBALT --queue={{.}}
+    {{/reservation_id}}
     {{#project_name}}
 #COBALT --project={{.}}
     {{/project_name}}
-    {{#custom_attributes.COBALT}}
-#COBALT --{{key}}="{{value}}"
-    {{/custom_attributes.COBALT}}
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#cobalt}}
+#COBALT --{{key}}="{{value}}"
+    {{/cobalt}}
+{{/custom_attributes}}
+
 
 {{#env}}
 #COBALT --env {{name}}={{value}}
@@ -37,6 +46,9 @@ only results in empty files that are not cleaned up}}
 #COBALT -e /dev/null
 #COBALT -o /dev/null
 
+{{!like PBS, this is also cheap and there is not need to check setting}}
+PSIJ_NODEFILE="$COBALT_NODEFILE"
+export PSIJ_NODEFILE
 
 {{!redirect output here instead of through #COBALT directive since COBALT_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the

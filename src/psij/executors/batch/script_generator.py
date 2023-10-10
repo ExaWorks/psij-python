@@ -1,6 +1,6 @@
 import pathlib
 from abc import ABC
-from typing import TextIO, Dict, Callable
+from typing import Dict, Callable, IO
 
 import pystache
 
@@ -28,7 +28,7 @@ class SubmitScriptGenerator(ABC):
         """
         self.config = config
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object], out: TextIO) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
         """Generates a job submit script.
 
         Concerete implementations of submit script generators must implement this method. Its
@@ -74,7 +74,7 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
             self.template = pystache.parse(template_file.read())
         self.renderer = pystache.Renderer(escape=escape)
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object], out: TextIO) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
         """See :func:`~SubmitScriptGenerator.generate_submit_script`.
 
         Renders a submit script using the template specified when this generator was constructed.
