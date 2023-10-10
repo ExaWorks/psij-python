@@ -64,7 +64,7 @@ class ScriptBasedLauncher(Launcher):
     * sets the variables _PSI_J_JOB_ID, _PSI_J_LOG_FILE, _PSI_J_PRE_LAUNCH, and
       _PSI_J_POST_LAUNCH from the first arguments, as specified above.
     * saves the current stdout and stderr in descriptors 3 and 4, respectively
-    * redirects stdout and stderr to the log file, while pre-pending a timestamp and the
+    * redirects stdout and stderr to the log file, while prepending a timestamp and the
       job ID to each line
     * defines the commands "pre_launch" and "post_launch", which can be invoked by the main
       script.

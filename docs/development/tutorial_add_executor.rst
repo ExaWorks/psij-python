@@ -134,7 +134,7 @@ Now running the same pytest command will give a different error further along in
 
 This default BatchSchedulerExecutor code needs a configuration object and none was supplied.
 
-A configuration object can contain configuration specific to this particular executor. For now we are not going to specify a custom configuration object and instead will re-use
+A configuration object can contain configuration specific to this particular executor. For now we are not going to specify a custom configuration object and instead will reuse
 the BatchSchedulerExecutorConfig supplied by the PSI/J core.
 
 Define a new __init__ method that will define a default configuration::
