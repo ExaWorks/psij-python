@@ -170,6 +170,7 @@ class JobSpec(object):
                 else:
                     self._environment[k] = v
 
+    @property
     def directory(self) -> Optional[pathlib.Path]:
         """The directory, on the compute side, in which the executable is to be run."""
         return self._directory
