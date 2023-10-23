@@ -64,6 +64,10 @@ def pytest_addoption(parser):
                      help='Externally supplied run ID.')
     parser.addoption('--branch-name-override', action='store', default=None,
                      help='Pretend that the current git branch is this value.')
+    parser.addoption('--queue-name', action='store', default=None,
+                     help='A queue to run the batch jobs in.')
+    parser.addoption('--project-name', action='store', default=None,
+                     help='A project/account name to associate the batch jobs with.')
     parser.addoption('--custom-attributes', action='store', default=None,
                      help='A set of custom attributes to pass to jobs.')
     parser.addoption('--minimal-uploads', action='store_true', default=False,
@@ -139,10 +143,14 @@ def _translate_launcher(config: Dict[str, str], exec: str, launcher: str) -> str
 def pytest_generate_tests(metafunc):
     if 'execparams' in metafunc.fixturenames:
 
-        metafunc.parametrize('execparams',
-                             [ExecutorTestParams(x, metafunc.config.option.custom_attributes)
-                              for x in _get_executors(metafunc.config)],
-                             ids=lambda x: str(x))
+        etps = []
+        for x in _get_executors((metafunc.config)):
+            etp = ExecutorTestParams(x, queue_name=metafunc.config.option.queue_name,
+                                     project_name=metafunc.config.option.project_name,
+                                     custom_attributes=metafunc.config.option.custom_attributes)
+            etps.append(etp)
+
+        metafunc.parametrize('execparams', etps, ids=lambda x: str(x))
 
 
 def _set_root_logger(logger):
@@ -249,13 +257,20 @@ def _cache(file_path, fn):
 
 
 def _get_key(config):
-    key = config.getoption('key')
-    if key == 'random':
-        return _cache(KEY_FILE, secrets.token_hex)
-    elif key[0] == '"' and key[-1] == '"':
-        return key[1:-1]
+    if Path('~/.psij/key').exists():
+        with open('~/.psij/key') as f:
+            return f.read().strip()
     else:
-        raise ValueError('Invalid value for --key argument: "%s"' % key)
+        # use legacy if needed
+        key = config.getoption('key')
+        logger.warning('Legacy keys are deprecated. Please go to https://testing.psij.io/auth.html '
+                       'to obtain an authentication key.')
+        if key == 'random':
+            return _cache(KEY_FILE, secrets.token_hex)
+        elif key[0] == '"' and key[-1] == '"':
+            return key[1:-1]
+        else:
+            raise ValueError('Invalid value for --key argument: "%s"' % key)
 
 
 def _get_id(config):

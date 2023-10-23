@@ -1,0 +1,43 @@
+# This test must be run in a separate process, since it is sensitive
+# to threading and process context.
+
+import logging
+import os
+from multiprocessing import Process, set_start_method
+from threading import Thread
+
+import psij
+
+
+def func():
+    # Get logs from PSI/J
+    logger = logging.getLogger()
+    logger.setLevel("DEBUG")
+    logger.addHandler(logging.StreamHandler())
+
+    exe = psij.JobExecutor.get_instance("local")
+    job = psij.Job(psij.JobSpec("test", "echo", arguments=["foo"]))
+    exe.submit(job)
+    print(job, flush=True)
+
+    # This hangs on the second round
+    job.wait()
+    print(job, flush=True)
+
+
+def fn():
+    print(os.getpid())
+
+
+if __name__ == "__main__":
+    Thread(target=fn).start()
+    set_start_method("fork")
+    p = Process(target=func)
+    p.start()
+    p.join()
+
+    print("Done, and again...")
+
+    p = Process(target=func)
+    p.start()
+    p.join()

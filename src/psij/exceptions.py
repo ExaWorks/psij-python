@@ -1,4 +1,4 @@
-import psij
+"""A collection of exceptions used by PSI/J."""
 from typing import Optional
 
 
@@ -7,8 +7,6 @@ class InvalidJobException(Exception):
 
     def __init__(self, message: str, exception: Optional[Exception] = None) -> None:
         """
-        Constructs an `InvalidJobException` while allowing properties to be initialized.
-
         :param message: see the :attr:`message` property
         :param exception: see the :attr:`exception` property
         """
@@ -35,8 +33,6 @@ class SubmitException(Exception):
     def __init__(self, message: str, exception: Optional[Exception] = None,
                  transient: bool = False) -> None:
         """
-        Constructs a `SubmitException` and allows properties to be initialized.
-
         :param message: see :attr:`message`
         :param exception: see :attr:`exception`
         :param transient: see :attr:`transient`
@@ -65,27 +61,4 @@ class SubmitException(Exception):
         for a temporary defect in a service to cause such a failure, under normal operating
         conditions such an error would persist across subsequent re-tries until correct credentials
         are used.
-        """
-
-
-class UnreachableStateException(Exception):
-    """
-    Indicates that a job state being waited for cannot be reached.
-
-    This exception is thrown when the :func:`~psij.Job.wait` method is called with a set of
-    states that cannot be reached by the job when the call is made.
-    """
-
-    def __init__(self, status: 'psij.JobStatus') -> None:
-        """
-        Constructs an `UnreachableStateException`.
-
-        :param status: The :class:`~psij.JobStatus` that the job was in when
-            :func:`~psij.Job.wait` was called and which prevents the desired states to be
-            reached.
-        """
-        self.status = status
-        """
-        Returns the job status that has caused an implementation to determine that the desired
-        states passed to the :func:`~psij.Job.wait` method cannot be reached.
         """

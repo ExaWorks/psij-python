@@ -65,3 +65,4 @@ include:
     - _modules
     - .generated
     - .doctrees
+    - images

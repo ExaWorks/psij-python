@@ -11,22 +11,30 @@
 #PBS -V
 {{/job.spec.inherit_environment}}
 
-{{#job.spec.attributes}}
-    {{#duration}}
+{{#formatted_job_duration}}
 #PBS -l walltime={{.}}
-# TODO: unclear what the syntax is here for times... its always a mess
-    {{/duration}}
-    {{#projectName}}
-#PBS -P {{.}}
-    {{/projectName}}
-    {{#queueName}}
-#PBS -q {{.}}
-    {{/queueName}}
-    {{#custom_attributes.pbs}}
-#PBS -{{key}} "{{value}}"
-    {{/custom_attributes.pbs}}
+{{/formatted_job_duration}}
 
+{{#job.spec.attributes}}
+    {{#project_name}}
+#PBS -P {{.}}
+    {{/project_name}}
+    {{#queue_name}}
+#PBS -q {{.}}
+    {{/queue_name}}
+    {{!PBS uses specially named queues for reservations, so we send the job to the respective
+    queue when a reservation ID is specified.}}
+    {{#reservation_id}}
+#PBS -q {{.}}
+    {{/reservation_id}}
 {{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#pbs}}
+#PBS -{{key}} "{{value}}"
+    {{/pbs}}
+{{/custom_attributes}}
+
 
 {{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
 only results in empty files that are not cleaned up}}
@@ -39,6 +47,9 @@ only results in empty files that are not cleaned up}}
 {{#env}}
 #PBS -v {{name}}={{value}}
 {{/env}}
+
+PSIJ_NODEFILE="$PBS_NODEFILE"
+export PSIJ_NODEFILE
 
 
 {{#job.spec.directory}}

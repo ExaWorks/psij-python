@@ -40,6 +40,7 @@ ul, ol {
 
 div.relbar-top {
     background-color: #e0e0e0;
+    border-bottom: 1px solid var(--color-fg-lines);
 }
 
 
@@ -106,13 +107,13 @@ div.body {
     line-height: 1.5em;
     padding: 30px 20px;
     min-width: 0;
-    max-width: 8in;
+    max-width: calc(8in + max((100% - 14in) / 2, 8pt));
     border-left: 1px solid var(--color-fg-lines);
-    padding-left: max(calc((100% - 14in) / 2), 8pt);
+    padding-left: calc(max((100% - 14in) / 2, 8pt));
 }
 
 div.sphinxsidebar {
-    margin-top: 32pt;
+    margin-top: 4pt;
     width: 3in;
     font-size: 90%;
     line-height: 1.25em;
@@ -123,7 +124,7 @@ div.document.sidebar-hidden div.sphinxsidebar {
 }
 
 div.sphinxsidebarwrapper {
-    padding: 1em 0 0 10px;
+    padding: 0 0 0 10px;
 }
 
 div.sphinxsidebar h3, div.sphinxsidebar h4 {
@@ -483,8 +484,8 @@ div.body h1 {
 }
 
 
-div.body > .section > h1 {
-    margin: 24pt 0 8pt 0;
+div.body > section > h1 {
+    margin: 48pt 0 8pt 0;
 }
 
 
@@ -732,6 +733,10 @@ li > dl:only-child { margin-bottom: 0; }
 dd { margin-right: 10px; }
 
 dd ol { margin-bottom: 10px; }
+
+.psij-docs dd > p {
+    margin-top: 2pt;
+}
 
 dl.docutils > dt { font-size: 1.1em; margin-bottom: .5em; }
 dl.docutils > dd + dt { margin-top: 1.5em; }
@@ -989,6 +994,11 @@ span.versionmodified {
     font-weight: bold;
 }
 
+div.code-block-caption {
+    font-size: 110%;
+    margin-bottom: -16pt;
+}
+
 div.highlight {
     background: none;
     margin: 1.5em 0;
@@ -1173,6 +1183,12 @@ dl.staticmethod > dt {
     border-radius: 3px;
 }
 
+em.property:first-child > span.w,
+em.attribute:first-child > span.w {
+    display: inline-block;
+    width: 6pt;
+}
+
 code.xref.py-func > .pre,
 code.xref.py-class > .pre,
 code.xref.py-meth > .pre,
@@ -1240,15 +1256,15 @@ em.sig-param,
 dl.field-list em {
     font-style: normal;
     font-weight: 400;
-    color: #802000;
+    color: #401000;
 }
 
-em.property {
+em.property, em.attribute {
     font-style: normal;
     font-weight: 400;
 }
 
-dl.property > dt {
+dl.property > dt, dl.attribute > dt {
     background-color: #fae199;
     display: inline-block;
 }

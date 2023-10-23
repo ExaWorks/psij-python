@@ -8,6 +8,10 @@ import sys
 import sphinx_rtd_theme
 from sphinx.ext.apidoc import main
 
+web_docs = False
+if 'PSIJ_WEB_DOCS' in os.environ:
+	web_docs = True
+
 needs_sphinx = '1.6'
 
 # Set Sphinx variables
@@ -15,11 +19,11 @@ master_doc = 'index'
 
 project = u'PSI/J'
 copyright = u'The ExaWorks Team'
-release = u'0.0.1'
-version = release
-
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+if web_docs:
+	html_theme = 'cloud'
+else:
+	html_theme = 'sphinx_rtd_theme'
+	html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
 autoclass_content = 'both'
 add_module_names = False
@@ -29,6 +33,25 @@ nitpick_ignore = [
     ('py:class', 'distutils.version.StrictVersion'),
     ('py:class', 'distutils.version.Version')
 ]
+
+if web_docs:
+    templates_path = ['_templates']
+    # Unfortunately sphinx-multiversion does not properly deal with 
+    # setting the title to the proper version. You either get some
+    # default like "0.0.1" or you get whatever the current conf.py
+    # sets (i.e., the latest version).
+    # See, e.g., https://github.com/Holzhaus/sphinx-multiversion/issues/61
+    #
+    # But we already have the version selector that displays the version,
+    # so we can display that where the broken version would otherwise
+    # have appeared.
+    html_title = "PSI/J"
+    # Multi-version
+    smv_branch_whitelist = '^matchmeifyoucan$'
+    smv_remote_whitelist = None
+    smv_released_pattern = r'^\d+\.\d+\.\d+(\..*)?$'
+    smv_outputdir_format = 'v/{ref.name}'
+
 
 html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
 
@@ -46,18 +69,32 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
+if web_docs:
+    extensions.append('sphinx_multiversion')
+
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
+autodoc_default_options = {
+    'show-inheritance': True
+}
+
+release = None
+version = None
+src_dir = None
+
+def read_version(docs_dir):
+    global release, version, src_dir
+    src_dir = os.path.abspath(os.path.join(docs_dir, '../src'))
+
+    sys.path.insert(0, src_dir)
+
+    import psij
+    release = psij.__version__
+    version = release
 
 
-script_dir = os.path.normpath(os.path.dirname(__file__))
-src_dir = os.path.abspath(os.path.join(script_dir, '../src'))
-
-print(src_dir + "/")
-
-sys.path.insert(0, src_dir)
-
-import psij
+my_dir = os.path.normpath(os.path.dirname(__file__))
+read_version(my_dir)
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
@@ -69,15 +106,17 @@ intersphinx_mapping = {
 # Copied from https://github.com/readthedocs/readthedocs.org/issues/1139
 
 # run api doc
-def run_apidoc(_):
-    output_path = os.path.join(script_dir, '.generated')
-    print(f"OUTPUT PATH = {output_path}")
-    #exclusions = [os.path.join(src_dir, 'setup.py'),]
-    main(['-f', '-o', output_path, src_dir])
-
-# launch setup
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
+def run_apidoc(sphinx):
+    read_version(sphinx.srcdir)  # this sets src_dir based on the version being compiled
+    output_path = os.path.join(sphinx.srcdir, '.generated')
+    os.makedirs(output_path, exist_ok=True)
+    generate_path = os.path.join(sphinx.srcdir, 'generate.py')
+    if os.path.exists(generate_path):
+        # use the generate script if it exists
+        subprocess.run([sys.executable, generate_path], cwd=sphinx.srcdir, check=True, 
+                       env={'PYTHONPATH': src_dir})
+    else:
+        main(['-f', '-t', os.path.join(my_dir, '_sphinx'), '-o', output_path, src_dir])
 
 
 # The following is a hack to allow returns in numpy style doctstrings to
@@ -96,3 +135,29 @@ def _consume_returns_section(self) -> List[Tuple[str, str, List[str]]]:
 
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 NumpyDocstring._consume_returns_section = _consume_returns_section
+
+
+# And this is for "More than one target found for cross-reference"
+# See https://github.com/sphinx-doc/sphinx/issues/3866
+from sphinx.domains.python import PythonDomain
+
+class MyPythonDomain(PythonDomain):
+    def find_obj(self, env, modname, classname, name, type, searchmode=0):
+        """Ensures an object always resolves to the desired module if defined there."""
+        orig_matches = PythonDomain.find_obj(self, env, modname, classname, name, type, searchmode)
+        matches = []
+        for match in orig_matches:
+            match_name = match[0]
+            desired_name = 'psij.' + name.strip('.')
+            if match_name == desired_name:
+                matches.append(match)
+                break
+        if matches:
+            return matches
+        else:
+            return orig_matches
+
+# launch setup
+def setup(app):
+    app.add_domain(MyPythonDomain, override=True)
+    app.connect('builder-inited', run_apidoc)

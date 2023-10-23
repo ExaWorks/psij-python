@@ -1,5 +1,6 @@
+from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
@@ -39,20 +40,19 @@ _STATE_MAP = {
 
 
 class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
-    """A configuration class for the PBS executor.
-
-    This doesn't have any fields in addition to BatchSchedulerExecutorConfig,
-    but it is expected that some will appear during further development.
-    """
+    """A configuration class for the PBS executor."""
 
     pass
 
 
 class PBSProJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for PBS Pro.
+    """A :class:`~psij.JobExecutor` for PBS.
 
-    `PBS Pro <https://www.altair.com/pbs-professional/>`_ is a resource manager
-    on certain machines at Argonne National Lab, among others.
+    PBS, originally developed by NASA, is one of the oldest resource managers still in use.
+    A number of variations are available: `PBS Pro <https://www.altair.com/pbs-professional/>`_,
+    `OpenPBS <https://openpbs.org>`_, and
+    `TORQUE <https://adaptivecomputing.com/cherry-services/torque-resource-manager/>`_.
+
 
     Uses the ``qsub``, ``qstat``, and ``qdel`` commands, respectively, to submit,
     monitor, and cancel jobs.
@@ -61,7 +61,14 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     """
 
     def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
-        """Initializes a :class:`~PBSProJobExecutor`."""
+        """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = PBSProExecutorConfig()
         super().__init__(url=url, config=config)
@@ -71,7 +78,7 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     # Submit methods
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
@@ -134,6 +141,20 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
 
         return r
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return ['qstat', '-u', self._current_user()]
+
+    def parse_list_output(self, out: str) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.parse_list_output`."""
+        return [s.split()[0].strip() for s in out.splitlines()[2:]]
+
     def _get_state(self, state: str) -> JobState:
         assert state in _STATE_MAP, f"PBS state {state} is not known to PSI/J"
         return _STATE_MAP[state]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # There isn't a clear specification for the walltime in
+        # https://help.altair.com/2022.1.0/PBS%20Professional/PBSReferenceGuide2022.1.pdf,
+        # but all examples use hh:mm:ss, which is the default in the base class
+        return super()._format_duration(d)

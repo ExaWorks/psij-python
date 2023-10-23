@@ -64,7 +64,7 @@ class ScriptBasedLauncher(Launcher):
     * sets the variables _PSI_J_JOB_ID, _PSI_J_LOG_FILE, _PSI_J_PRE_LAUNCH, and
       _PSI_J_POST_LAUNCH from the first arguments, as specified above.
     * saves the current stdout and stderr in descriptors 3 and 4, respectively
-    * redirects stdout and stderr to the log file, while pre-pending a timestamp and the
+    * redirects stdout and stderr to the log file, while prepending a timestamp and the
       job ID to each line
     * defines the commands "pre_launch" and "post_launch", which can be invoked by the main
       script.
@@ -86,8 +86,6 @@ class ScriptBasedLauncher(Launcher):
 
     def __init__(self, script_path: Path, config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Initializes this launcher.
-
         Parameters
         ----------
         script_path
@@ -110,6 +108,7 @@ class ScriptBasedLauncher(Launcher):
 
             deploy_dir = self._deploy_files(self._files_to_deploy())
             self._deployed_script_path = deploy_dir / self._script_path.name
+            self._deployed = True
 
     def _files_to_deploy(self) -> List[Path]:
         return [
@@ -171,7 +170,7 @@ class ScriptBasedLauncher(Launcher):
         return dst_dir
 
     def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
-        """See :func:`~psij.job_launcher.Launcher.get_launch_command`."""
+        """See :func:`~psij.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
 
@@ -200,9 +199,9 @@ class ScriptBasedLauncher(Launcher):
         return []
 
     def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.job_launcher.Launcher.is_launcher_failure`."""
-        return output.split('\n')[-1] != '_PSI_J_LAUNCHER_DONE'
+        """See :func:`~psij.Launcher.is_launcher_failure`."""
+        return output.split('\n')[-2] != '_PSI_J_LAUNCHER_DONE'
 
     def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.job_launcher.Launcher.get_launcher_failure_message`."""
-        return '\n'.join(output.split('\n')[:-1])
+        """See :func:`~psij.Launcher.get_launcher_failure_message`."""
+        return '\n'.join(output.split('\n')[:-2])

@@ -1,7 +1,7 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
-
+from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 import re
 import os
 import stat
@@ -47,10 +47,16 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         "killing": JobState.FAILED,
     }
 
-    def __init__(
-        self, url: Optional[str] = None, config: Optional[CobaltExecutorConfig] = None
-    ):
-        """Initializes a :class:`~CobaltJobExecutor`."""
+    def __init__(self, url: Optional[str] = None,
+                 config: Optional[CobaltExecutorConfig] = None) -> None:
+        """
+        Parameters
+        ----------
+        url
+            This parameter is not used and is only provided for compatibility reasons.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = CobaltExecutorConfig()
         super().__init__(config=config)
@@ -58,9 +64,8 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
             config, Path(__file__).parent / "cobalt" / "cobalt.mustache"
         )
 
-    def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: TextIO
-    ) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object],
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
@@ -111,9 +116,20 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
                 index += 1
         return job_statuses
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return [_QSTAT_COMMAND, '-u', self._current_user(), '--header', 'JobId']
+
     def job_id_from_submit_output(self, out: str) -> str:
         """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
         match = _QSUB_REGEX.search(out)
         if match is None:
             raise SubmitException(out)
         return match.group(0)
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://trac.mcs.anl.gov/projects/cobalt/wiki/qsub.1.html:
+        #   The time may be specified as eitehr an integer number of minutes or a colon-delimited
+        #   value of the format: HH:MM:SS. Enter 0 to get the max allowed walltime.
+        # base class _format_duration is HH:MM:SS
+        return super()._format_duration(d)

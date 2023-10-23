@@ -4,9 +4,10 @@ import subprocess
 import time
 import traceback
 from abc import abstractmethod
+from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, TextIO, Union
+from typing import Optional, List, Dict, Collection, cast, Union, IO
 
 from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
@@ -15,14 +16,26 @@ from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException,
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
 
-
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
 logger = logging.getLogger(__name__)
 
 
 def check_status_exit_code(command: str, exit_code: int, out: str) -> None:
-    """Check if exit_code is nonzero and if so raise a RuntimeError."""
+    """Check if exit_code is nonzero and, if so, raise a RuntimeError.
+
+    This function produces a somewhat user-friendly exception message that combines
+    the command that was run with its output.
+
+    Parameters
+    ----------
+    command
+        The command that was run. This is only used to format the error message.
+    exit_code
+        The exit code returned by running the ``command``.
+    out:
+        The output produced by ``command``.
+    """
     if exit_code != 0:
         raise RuntimeError(f'status command {command!r} exited '
                            f'with {exit_code} and output {out!r}')
@@ -38,6 +51,8 @@ def _attrs_to_mustache(job: Job) -> Dict[str, Union[object, List[Dict[str, objec
     for k, v in job.spec.attributes._custom_attributes.items():
         ks = k.split('.', maxsplit=1)
         if len(ks) == 2:
+            # always use lower case here
+            ks[0] = ks[0].lower()
             if ks[0] not in r:
                 r[ks[0]] = []
             cast(List[Dict[str, object]], r[ks[0]]).append({'key': ks[1], 'value': v})
@@ -69,8 +84,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
                  initial_queue_polling_delay: int = 2,
                  queue_polling_error_threshold: int = 2,
                  keep_files: bool = False):
-        """Initializes a base batch scheduler executor configuration.
-
+        """
         Parameters
         ----------
         launcher_log_file
@@ -152,6 +166,10 @@ class BatchSchedulerExecutor(JobExecutor):
         2. store the exit code of the launch command in the *exit code file* named
         `<native_id>.ec`, also inside `<script_dir>`.
 
+    Additionally, where appropriate, the submit script should set the environment variable named
+    ``PSIJ_NODEFILE`` to point to a file containing a list of nodes that are allocated for the job,
+    one per line, with a total number of lines matching the process count of the job.
+
     Once the submit script is generated, the executor renders the submit command using
     :func:`~get_submit_command` and executes it. Its output is then parsed using
     :func:`~job_id_from_submit_output` to retrieve the `native_id` of the job. Subsequently, the
@@ -172,8 +190,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[BatchSchedulerExecutorConfig] = None):
-        """Initializes a `BatchSchedulerExecutor`.
-
+        """
         Parameters
         ----------
         url
@@ -268,7 +285,7 @@ class BatchSchedulerExecutor(JobExecutor):
 
     @abstractmethod
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """Called to generate a submit script for a job.
 
         Concrete implementations of batch scheduler executors must override this method in
@@ -355,8 +372,8 @@ class BatchSchedulerExecutor(JobExecutor):
         are two options:
 
         1. Instruct the cancel command to not fail on invalid state errors and have this
-        method always raise a :class:`psij.SubmitException`, since it is only invoked on
-        "other" errors.
+        method always raise a :class:`~psij.exceptions.SubmitException`, since it is only invoked
+        on "other" errors.
 
         2. Have the cancel command fail on both invalid state errors and other errors and
         interpret the output from the cancel command to distinguish between the two and raise
@@ -374,7 +391,7 @@ class BatchSchedulerExecutor(JobExecutor):
         InvalidJobStateError
             Raised if the job cancellation has failed because the job was in a completed or failed
             state at the time when the cancellation command was invoked.
-        psij.SubmitException
+        SubmitException
             Raised for all other reasons.
         """
         pass
@@ -420,6 +437,38 @@ class BatchSchedulerExecutor(JobExecutor):
         """
         pass
 
+    @abstractmethod
+    def get_list_command(self) -> List[str]:
+        """Constructs a command to retrieve the list of jobs known to the LRM for the current user.
+
+        Concrete implementations of batch scheduler executors must override this method. Upon
+        running the command, the output can be parsed with :func:`~parse_list_output`.
+
+        Returns
+        -------
+        A list of strings representing the executable and arguments to invoke in order to obtain
+        the list of jobs the LRM knows for the current user.
+        """
+        pass
+
+    def parse_list_output(self, out: str) -> List[str]:
+        """Parses the output of the command obtained from :func:`~get_list_command`.
+
+        The default implementation of this method assumes that the output has no header and
+        consists of native IDs, one per line, possibly surrounded by whitespace. Concrete
+        implementations should override this method if a different format is expected.
+
+        Parameters
+        ----------
+        out
+            The output from the "list" command as returned by :func:`~get_list_command`.
+        Returns
+        -------
+        A list of strings representing the native IDs of the jobs known to the LRM for the current
+        user.
+        """
+        return [s.strip() for s in out.splitlines()]
+
     def _create_script_context(self, job: Job) -> Dict[str, object]:
         launcher = self._get_launcher_from_job(job)
         if isinstance(launcher, ScriptBasedLauncher) and logger.isEnabledFor(logging.DEBUG):
@@ -439,7 +488,17 @@ class BatchSchedulerExecutor(JobExecutor):
                 'script_dir': str(self.work_directory)
             }
         }
+        assert job.spec is not None
+        if job.spec.attributes:
+            duration = job.spec.attributes.duration
+            if duration is not None:
+                ctx['formatted_job_duration'] = self._format_duration(duration)
         return ctx
+
+    def _format_duration(self, d: timedelta) -> str:
+        # the default is hh:mm:ss, with hh not limited to 24; this is the least ambiguous
+        # choice
+        return '%s:%s:%s' % (d.total_seconds() // 3600, (d.seconds // 60) % 60, d.seconds % 60)
 
     def _run_command(self, cmd: List[str]) -> str:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -478,7 +537,8 @@ class BatchSchedulerExecutor(JobExecutor):
             assert isinstance(self.config, BatchSchedulerExecutorConfig)
             if not self.config.keep_files:
                 submit_file_path = self.work_directory / (job.id + '.job')
-                submit_file_path.unlink()
+                if submit_file_path.exists():
+                    submit_file_path.unlink()
         except Exception as ex:
             logger.warning('Job %s: failed clean submit script: %s', job.id, ex)
 
@@ -551,7 +611,10 @@ class BatchSchedulerExecutor(JobExecutor):
         Implementations are encouraged to restrict the results to jobs accessible by the current
         user.
         """
-        raise NotImplementedError()
+        return self.parse_list_output(self._run_command(self.get_list_command()))
+
+    def _current_user(self) -> str:
+        return os.getlogin()
 
 
 class _QueuePollThread(Thread):

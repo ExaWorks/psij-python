@@ -1,9 +1,9 @@
 """Defines the LsfJobExecutor class and its config class."""
-
+from datetime import timedelta
 from pathlib import Path
 import re
 import json
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import (
@@ -53,7 +53,14 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str], config: Optional[LsfExecutorConfig] = None):
-        """Initializes a :class:`~LsfJobExecutor`."""
+        """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = LsfExecutorConfig()
         super().__init__(config=config)
@@ -61,9 +68,8 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             config, Path(__file__).parent / "lsf" / "lsf.mustache"
         )
 
-    def generate_submit_script(
-        self, job: Job, context: Dict[str, object], submit_file: TextIO
-    ) -> None:
+    def generate_submit_script(self, job: Job, context: Dict[str, object],
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         assert job.spec is not None
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)
@@ -127,3 +133,12 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         if match is None:
             raise SubmitException(out)
         return match.group(0)[5:-1]
+
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return [_BJOBS_COMMAND, '-a', '-noheader', '-o', 'jobid', '-u', self._current_user()]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=o-w-1:
+        #   bsub -W [hour:]minute[/host_name | /host_model]
+        return "%s:%s" % (d.total_seconds() // 3600, (d.seconds // 60) % 60)

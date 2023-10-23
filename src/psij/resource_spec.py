@@ -28,6 +28,22 @@ class ResourceSpec(ABC):
         """Returns the version of this resource specification class."""
         pass
 
+    @staticmethod
+    def get_instance(version: int) -> 'ResourceSpec':
+        """
+        Creates an instance of a `ResourceSpec` of the specified version.
+
+        Parameters
+        ----------
+        version
+            The version of `ResourceSpec` to instantiate. For example, if `version == 1`, this
+            method will return a new instance of `ResourceSpecV1`.
+        """
+        if version == 1:
+            return ResourceSpecV1()
+        else:
+            raise ValueError()
+
 
 class ResourceSpecV1(ResourceSpec):
     """This class implements V1 of the PSI/J resource specification."""
@@ -39,8 +55,6 @@ class ResourceSpecV1(ResourceSpec):
                  gpu_cores_per_process: Optional[int] = None,
                  exclusive_node_use: bool = True) -> None:
         """
-        Constructs a `ResourceSpecV1` object and optionally initializes its properties.
-
         Some of the properties of this class are constrained. Specifically,
         `process_count = node_count * processes_per_node`. Specifying all constrained properties
         in a way that does not satisfy the constraint will result in an error. Specifying some
@@ -57,8 +71,15 @@ class ResourceSpecV1(ResourceSpec):
             node.
         :param cpu_cores_per_process: Request this many CPU cores for each process instance. This
             property is used by a backend to calculate the number of nodes from the `process_count`
-        :param gpu_cores_per_process:
-        :param exclusive_node_use:
+        :param gpu_cores_per_process: Request this many GPU cores for each process instance.
+        :param exclusive_node_use: If this parameter is set to `True`, the LRM is instructed to
+            allocate to this job only nodes that are not running any other jobs, even if this job
+            is requesting fewer cores than the total number of cores on a node. With this parameter
+            set to `False`, which is the default, the LRM is free to co-schedule multiple jobs
+            on a given node if the number of cores requested by those jobs total less than the
+            amount available on the node.
+
+        All constructor parameters are accessible as properties.
         """
         assert check_argument_types()
 
@@ -168,3 +189,20 @@ class ResourceSpecV1(ResourceSpec):
     def version(self) -> int:
         """Returns the version of this `ResourceSpec`, which is 1 for this class."""
         return 1
+
+    def __eq__(self, o: object) -> bool:
+        """
+        Tests if this ResourceSpecV1 is equal to another object.
+
+        The objects are equal if all their properties are equal.
+        """
+        if not isinstance(o, ResourceSpecV1):
+            return False
+
+        for prop_name in ['node_count', 'process_count', 'processes_per_node',
+                          'cpu_cores_per_process', 'gpu_cores_per_process',
+                          'exclusive_node_use']:
+            if getattr(self, prop_name) != getattr(o, prop_name):
+                return False
+
+        return True

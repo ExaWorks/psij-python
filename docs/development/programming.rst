@@ -11,15 +11,15 @@ which should be read first.
 
 The PSI/J specification splits implementations into two main parts:
 
-    - The core classes, containing scheduler-agnostic code. Client code, wanting
+    - **Core classes** containing scheduler-agnostic code. Client code,
       to maintain portability, should only directly reference the core classes.
-    - Executors and launchers, which are specific to scheduler implementations
+    - **Executors and launchers**, which are specific to scheduler implementations
       and can be used interchangeably, provided that the underlying scheduler or
       launcher implementation exists.
 
 Nearly all of the core classes described in the PSI/J Specification are simple
 property containers and the behavior of the few exceptions is thoroughly
-documented therein. There are, however, a few areas that are specific to the
+documented therein. There are, however, a few areas specific to the
 current PSI/J Python implementation which are mostly a matter of implementation
 and are not documented by the specification. These are:
 
@@ -74,9 +74,9 @@ register the executor.
 
 If an error occurs after a descriptor is loaded but before the actual executor
 or launcher class is loaded, that error is stored. Successive attempts to
-instantiate that executor/launcher using
-:meth:`~psij.job_executor.JobExecutor.get_instance` or
-:meth:`~psij.job_launcher.Launcher.get_instance` will result in the
+instantiate that executor using
+:meth:`psij.JobExecutor.get_instance` or launcher using
+:meth:`psij.Launcher.get_instance` will result in the
 stored exception being raised. This prevents packages with broken
 implementations of executors or launchers from reporting errors unless there
 is an actual attempt to use them.
@@ -93,7 +93,7 @@ a Local Resource Manager (LRM) that allows job submission by pointing a
 *submit* command (a tool accessible through a standard POSIX `exec()`) to a
 file that contains all relevant job information. It also assumes that there
 exist commands for cancelling the job and for querying for the status of one
-or more jobs previously submitted.
+or more previously submitted jobs.
 
 The general workflow used by the batch scheduler executor to submit a job is as
 follows:
@@ -104,7 +104,7 @@ follows:
     the `name` of the implementing class. The submit script is generated using
     the
     :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script`
-    method of the implementing class.
+    method of the implementing class. 
 
     2. Execute the command returned by
     :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command` to
@@ -150,7 +150,7 @@ launchers. Consequently, launcher scripts also take care of redirecting the
 standard streams of the actual launcher tool, which is assumed to properly
 aggregate the output streams of the job ranks.
 
-In addition to the functions above, PSI/J launchers also take care of invoking
+In addition to the functions above, PSI/J launchers also invoke
 the pre- and post-launch scripts.
 
 Since script based launchers are interchangeable, they must have a well

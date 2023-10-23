@@ -1,22 +1,47 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import shlex
+import signal
 import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, List, Type, Tuple
+from tempfile import mkstemp
+from types import FrameType
+from typing import Optional, Dict, List, Tuple, Type, cast
 
 import psutil
 
-from psij import InvalidJobException, SubmitException, Launcher
+from psij import InvalidJobException, SubmitException, Launcher, ResourceSpecV1
 from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
+from psij.utils import SingletonThread
 
 logger = logging.getLogger(__name__)
 
 
-_REAPER_SLEEP_TIME = 0.2
+def _format_shell_cmd(args: List[str]) -> str:
+    """Formats an argument list in a way that allows it to be pasted in a shell."""
+    cmd = ''
+    for arg in args:
+        cmd += shlex.quote(arg)
+        cmd += ' '
+    return cmd
+
+
+def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
+    _ProcessReaper.get_instance()._handle_sigchld()
+
+
+if threading.current_thread() != threading.main_thread():
+    logger.warning('The psij module is being imported from a non-main thread. This prevents the'
+                   'use of signals in the local executor, which will slow things down a bit.')
+else:
+    signal.signal(signal.SIGCHLD, _handle_sigchld)
+
+
+_REAPER_SLEEP_TIME = 0.1
 
 
 class _ProcessEntry(ABC):
@@ -53,6 +78,7 @@ class _ChildProcessEntry(_ProcessEntry):
     def __init__(self, job: Job, executor: 'LocalJobExecutor',
                  launcher: Optional[Launcher]) -> None:
         super().__init__(job, executor, launcher)
+        self.nodefile: Optional[str] = None
 
     def kill(self) -> None:
         super().kill()
@@ -61,6 +87,8 @@ class _ChildProcessEntry(_ProcessEntry):
         assert self.process is not None
         exit_code = self.process.poll()
         if exit_code is not None:
+            if self.nodefile:
+                os.unlink(self.nodefile)
             if self.process.stdout:
                 return exit_code, self.process.stdout.read().decode('utf-8')
             else:
@@ -89,37 +117,43 @@ class _AttachedProcessEntry(_ProcessEntry):
             return None, None
 
 
-def _get_env(spec: JobSpec) -> Optional[Dict[str, str]]:
+def _get_env(spec: JobSpec, nodefile: Optional[str]) -> Optional[Dict[str, str]]:
+    env: Optional[Dict[str, str]] = None
     if spec.inherit_environment:
-        if not spec.environment:
+        if spec.environment is None and nodefile is None:
             # if env is none in Popen, it inherits env from parent
             return None
         else:
             # merge current env with spec env
             env = os.environ.copy()
-            env.update(spec.environment)
+            if spec.environment:
+                env.update(spec.environment)
+            if nodefile is not None:
+                env['PSIJ_NODEFILE'] = nodefile
             return env
     else:
         # only spec env
-        return spec.environment
+        if nodefile is None:
+            env = spec.environment
+        else:
+            env = {'PSIJ_NODEFILE': nodefile}
+            if spec.environment:
+                env.update(spec.environment)
+
+        return env
 
 
-class _ProcessReaper(threading.Thread):
-    _instance: Optional['_ProcessReaper'] = None
-    _lock = threading.RLock()
+class _ProcessReaper(SingletonThread):
 
     @classmethod
     def get_instance(cls: Type['_ProcessReaper']) -> '_ProcessReaper':
-        with cls._lock:
-            if cls._instance is None:
-                cls._instance = _ProcessReaper()
-                cls._instance.start()
-            return cls._instance
+        return cast('_ProcessReaper', super().get_instance())
 
     def __init__(self) -> None:
         super().__init__(name='Local Executor Process Reaper', daemon=True)
         self._jobs: Dict[Job, _ProcessEntry] = {}
         self._lock = threading.RLock()
+        self._cvar = threading.Condition()
 
     def register(self, entry: _ProcessEntry) -> None:
         logger.debug('Registering process %s', entry)
@@ -128,17 +162,40 @@ class _ProcessReaper(threading.Thread):
 
     def run(self) -> None:
         logger.debug('Started {}'.format(self))
+        done: List[_ProcessEntry] = []
         while True:
             with self._lock:
-                try:
-                    self._check_processes()
-                except Exception as ex:
-                    logger.error('Error polling for process status', ex)
-            time.sleep(_REAPER_SLEEP_TIME)
+                for entry in done:
+                    del self._jobs[entry.job]
+                jobs = dict(self._jobs)
+            try:
+                done = self._check_processes(jobs)
+            except Exception as ex:
+                logger.error('Error polling for process status', ex)
+            with self._cvar:
+                self._cvar.wait(_REAPER_SLEEP_TIME)
 
-    def _check_processes(self) -> None:
+    def _handle_sigchld(self) -> None:
+        with self._cvar:
+            try:
+                self._cvar.notify_all()
+            except RuntimeError:
+                # In what looks like rare cases, notify_all(), seemingly when combined with
+                # signal handling, raises `RuntimeError: release unlocked lock`.
+                # There appears to be an unresolved Python bug about this:
+                #    https://bugs.python.org/issue34486
+                # We catch the exception here and log it. It is hard to tell if that will not lead
+                # to further issues. It would seem like it shouldn't: after all, all we're doing is
+                # making sure we don't sleep too much, but, even if we do, the consequence is a
+                # small delay in processing a completed job. However, since this exception seems
+                # to be a logical impossibility when looking at the code in threading.Condition,
+                # there is really no telling what else could go wrong.
+                logger.debug('Exception in Condition.notify_all()')
+
+    def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> List[_ProcessEntry]:
         done: List[_ProcessEntry] = []
-        for entry in self._jobs.values():
+
+        for entry in jobs.values():
             if entry.kill_flag:
                 entry.kill()
 
@@ -148,9 +205,11 @@ class _ProcessReaper(threading.Thread):
                 entry.done_time = time.time()
                 entry.out = out
                 done.append(entry)
+
         for entry in done:
-            del self._jobs[entry.job]
             entry.executor._process_done(entry)
+
+        return done
 
     def cancel(self, job: Job) -> None:
         with self._lock:
@@ -162,24 +221,51 @@ class LocalJobExecutor(JobExecutor):
     """
     A job executor that runs jobs locally using :class:`subprocess.Popen`.
 
-    This job executor is intended to be used when there is no resource manager, only
-    the operating system. Or when there is a resource manager, but it should be ignored.
+    This job executor is intended to be used either to run jobs directly on the same machine as the
+    PSI/J library or for testing purposes.
 
-    Limitations: in Linux, attached jobs always appear to complete with a zero exit code regardless
-    of the actual exit code.
+    .. note::
+        In Linux, attached jobs always appear to complete with a zero exit code regardless
+        of the actual exit code.
+    .. warning::
+        Instantiation of a local executor from both parent process and a `fork()`-ed process
+        is not guaranteed to work. In general, using `fork()` and multi-threading in Linux is
+        unsafe, as suggested by the `fork()` man page. While PSI/J attempts to minimize problems
+        that can arise when `fork()` is combined with threads (which are used by PSI/J), no
+        guarantees can be made and the chances of unexpected behavior are high. Please do not use
+        PSI/J with `fork()`. If you do, please be mindful that support for using PSI/J with
+        `fork()` will be limited.
     """
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Initializes a `LocalJobExecutor`.
-
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `LocalJobExecutor` does not have any configuration options.
         :type config: psij.JobExecutorConfig
         """
         super().__init__(url=url, config=config if config else JobExecutorConfig())
         self._reaper = _ProcessReaper.get_instance()
+
+    def _generate_nodefile(self, job: Job, p: _ChildProcessEntry) -> Optional[str]:
+        assert job.spec is not None
+        if job.spec.resources is None:
+            return None
+        if job.spec.resources.version == 1:
+            assert isinstance(job.spec.resources, ResourceSpecV1)
+            n = job.spec.resources.computed_process_count
+            if n == 1:
+                # as a bit of an optimization, we don't generate a nodefile when doing "single
+                # node" jobs on local.
+                return None
+            (file, p.nodefile) = mkstemp(suffix='.nodelist')
+            for i in range(n):
+                os.write(file, 'localhost\n'.encode())
+            os.close(file)
+            return p.nodefile
+        else:
+            raise SubmitException('Cannot handle resource specification with version %s'
+                                  % job.spec.resources.version)
 
     def submit(self, job: Job) -> None:
         """
@@ -203,9 +289,12 @@ class LocalJobExecutor(JobExecutor):
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
-            logger.debug('Running %s,  out=%s, err=%s', args, spec.stdout_path, spec.stderr_path)
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug('Running %s', _format_shell_cmd(args))
+            nodefile = self._generate_nodefile(job, p)
+            env = _get_env(spec, nodefile)
             p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                         close_fds=True, cwd=spec.directory, env=_get_env(spec))
+                                         close_fds=True, cwd=spec.directory, env=env)
             self._reaper.register(p)
             job._native_id = p.process.pid
             self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),

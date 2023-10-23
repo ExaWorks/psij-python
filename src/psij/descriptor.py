@@ -1,17 +1,19 @@
-from distutils.version import StrictVersion, Version
-from typing import TypeVar, Generic, Optional, Type
+"""Executor/Launcher descriptor module."""
+
+from distutils.version import StrictVersion
+from typing import TypeVar, Generic, Optional, Type, List
 
 T = TypeVar('T')
 
 
 class _VersionEntry(Generic[T]):
-    def __init__(self, version: Version,
-                 desc_path: Optional[str] = None,
+    def __init__(self, desc: 'Descriptor',
                  plugin_path: Optional[str] = None,
                  ecls: Optional[Type[T]] = None,
                  exc: Optional[Exception] = None) -> None:
-        self.version = version
-        self.desc_path = desc_path
+        self.desc = desc
+        self.version = desc.version
+        self.desc_path = desc.path
         self.plugin_path = plugin_path
         self.ecls = ecls
         self.exc = exc
@@ -46,8 +48,9 @@ class Descriptor(object):
 
     Executors wanting to register with PSI/J must place an instance of this class in a global
     module list named `__PSI_J_EXECUTORS__` or `__PSI_J_LAUNCHERS__` in a module placed in the
-    `psij-descriptors` package. In other words, in order to automatically register an executor or
-    launcher, a python file should be created inside a `psij-descriptors` package, such as:
+    `psij-descriptors` *namespace package*. In other words, in order to automatically register an
+    executor or launcher, a python file should be created inside a `psij-descriptors` package, such
+    as:
 
     .. code-block:: none
 
@@ -55,6 +58,11 @@ class Descriptor(object):
             src/
                 psij-descriptors/
                     descriptors_for_project.py
+
+    It is *essential* that the `psij-descriptors` package not contain an `__init__.py` file in
+    order for Python to treat the package as a namespace package. This allows Python to combine
+    multiple `psij-descriptors` directories into one, which, in turn, allows PSI/J to detect and
+    load all descriptors that can be found in Python's library search path.
 
     The contents of `descriptors_for_project.py` could then be as follows:
 
@@ -81,28 +89,36 @@ class Descriptor(object):
     `psij.executors.local.LocalJobExecutor`.
     """
 
-    def __init__(self, name: str, version: StrictVersion, cls: str) -> None:
+    def __init__(self, name: str, version: StrictVersion, cls: str,
+                 aliases: Optional[List[str]] = None, nice_name: Optional[str] = None) -> None:
         """
-        Initializes a descriptor.
-
         Parameters
         ----------
         name
             The name of the executor or launcher. The automatic registration system will register
             the executor or launcher using this name. That is, the executor or launcher represented
             by this descriptor will be available for instantiation using either
-            :meth:`~psij.job_executor.JobExecutor.get_instance` or
-            :meth:`~psij.job_launcher.Launcher.get_instance`
+            :meth:`~psij.JobExecutor.get_instance` or
+            :meth:`~psij.Launcher.get_instance`
         version:
             The version of the executor/launcher. Multiple versions can be registered under a
             single name.
         cls:
             A fully qualified name pointing to the class implementing an executor or launcher.
+        aliases:
+            An optional set of alternative names to make the executor available under as if
+            its `name` was the alias.
+        nice_name:
+            An optional string to use whenever a user-friendly name needs to be displayed to
+            a user. For example, a nice name for `pbs` would be `PBS` or `Portable Batch System`.
+            If not specified, the `nice_name` defaults to the value of the `name` parameter.
         """
         self.name = name
         self.version = version
         self.cls = cls
         self.path: Optional[str] = None
+        self.aliases = aliases
+        self.nice_name = nice_name if nice_name is not None else name
 
     def __repr__(self) -> str:
         """Returns a string representation of this descriptor."""

@@ -18,6 +18,11 @@ tests:
 coverage-tests:
 	PYTHONPATH=$(CWD)/src:$(CWD)/tests/plugins1:$(CWD)/tests/plugins2:${PYTHONPATH} \
 		${PYTHON} -m pytest -v --cov $(TESTARGS)
+		
+.PHONY: html-coverage-report
+html-coverage-report:
+	PYTHONPATH=$(CWD)/src:$(CWD)/tests/plugins1:$(CWD)/tests/plugins2:${PYTHONPATH} \
+		${PYTHON} -m pytest -v --cov --cov-report html
 
 .PHONY: verbose-tests
 verbose-tests:
@@ -39,7 +44,7 @@ stylecheck:
 	flake8 src tests
 
 .PHONY: checks
-checks: typecheck stylecheck
+checks: typecheck stylecheck docs
 
 .PHONY: docs
 docs:
@@ -51,7 +56,16 @@ docs:
 .PHONY: web-docs
 web-docs:
 	rm -rf docs/.generated
-	sphinx-build -W -b html -D html_theme='cloud' -D templates_path='_templates' docs docs/.web-build/
+	rm -rf docs/.web-build
+	git fetch --all --tags
+	PSIJ_WEB_DOCS=1 sphinx-multiversion docs docs/.web-build
+	PSIJ_WEB_DOCS=1 sphinx-build --keep-going -n -W -b html docs docs/.web-build/v/dev
+
+.PHONY: web-docs-dev
+web-docs-dev:
+	rm -rf docs/.generated
+	rm -rf docs/.web-build
+	PSIJ_WEB_DOCS=1 sphinx-build --keep-going -n -W -b html docs docs/.web-build/v/dev
 
 .PHONY: style
 style:

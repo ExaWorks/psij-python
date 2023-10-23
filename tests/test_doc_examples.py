@@ -4,7 +4,7 @@ This file contains tests for PSI/J which can also be used as examples.
 Since they are actively tested against, they are certain to be
 up-to-date and to work as intended.
 """
-
+import threading
 import time
 import pathlib
 import typing
@@ -60,14 +60,16 @@ def test_run_n_throttle_m() -> None:
             self.current_job_index = 0
             self.total_jobs = total_jobs
             self.max_active_jobs = max_active_jobs
+            self.lock = threading.RLock()
             if total_jobs < 1 or max_active_jobs < 1:
                 raise ValueError("total_jobs and max_active_jobs must be > 0")
 
         def submit_next(self) -> None:
             """Submit the next job in the queue."""
-            if self.current_job_index < self.total_jobs:
-                self.jex.submit(self.jobs[self.current_job_index])
-                self.current_job_index += 1
+            with self.lock:
+                if self.current_job_index < self.total_jobs:
+                    self.jex.submit(self.jobs[self.current_job_index])
+                    self.current_job_index += 1
 
         def start(self) -> None:
             """Begin submission of jobs."""

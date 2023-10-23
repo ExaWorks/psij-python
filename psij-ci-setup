@@ -206,6 +206,60 @@ check_email() {
     fi
 }
 
+check_key() {
+    if ! -f ~/.psij/key ; then
+        BASE_URL=`egrep '^[^#]*server_url.*' ./testing.conf |awk '{split($0, a, "="); print a[2]}'|xargs`
+        AUTH_URL="${BASE_URL}/auth.html"
+
+        echo
+        echo "================================================================"
+        echo "There is no upload key (~/.psij/key). An upload key is needed   "
+        echo "to upload results to the results site. To obtain a key, please  "
+        echo "go to ${AUTH_URL}/auth.html in a browser and follow "
+        echo "the instructions on that page.                                  "
+        echo "================================================================"
+        echo
+
+        RESPONSE=""
+        DONE="0"
+
+        while [ "$DONE" == "0" ]; do
+            echo "1. (C)ontinue without a key                                 "
+            echo "2. E(x)it?                                                  "
+            echo "3. (E)nter a key here to be placed in ~/.psij/key           "
+            if [ "$XDG_CURRENT_DESKTOP" != "" ]; then
+                echo "4. (O)pen $AUTH_URL in a browser    "
+            fi
+            read -n1 RESPONSE
+            echo
+            RESPONSE=${RESPONSE^}
+
+            if [ "$RESPONSE" == "C" ] || [ "$RESPONSE" == "1" ]; then
+                DONE=1
+            elif [ "$RESPONSE" == "X" ] || [ "$RESPONSE" == "2" ]; then
+                echo "Operation canceled"
+                exit 1
+            elif [ "$RESPONSE" == "E" ] || [ "$RESPONSE" == "3" ]; then
+                RESPONSE=""
+                while [ "$RESPONSE" != "Y" ]; do
+                    echo -n "Enter key: "
+                    read KEY
+                    echo "You entered '$KEY'."
+                    echo "Is this correct (Y/N)?"
+                    read -n1 RESPONSE
+                    RESPONSE=${RESPONSE^}
+                done
+                echo "$KEY" > ~/.psij/key
+                chmod 600 ~/.psij/key
+                DONE=1
+            elif [ "$RESPONSE" == "O" ] || [ "$RESPONSE" == "4" ]; then
+                xdg-open "$AUTH_URL"
+            fi
+        done
+
+    fi
+}
+
 FORCE=0
 
 if [ "$1" == "-f" ]; then
@@ -229,6 +283,8 @@ echo
 continue_or_exit
 
 check_email
+
+check_key
 
 cd "$MYPATH"
 

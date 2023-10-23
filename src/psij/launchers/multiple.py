@@ -22,9 +22,10 @@ class MultipleLauncher(ScriptBasedLauncher):
     def __init__(self, script_path: Path = Path(__file__).parent / 'scripts' / 'multi_launch.sh',
                  config: Optional[JobExecutorConfig] = None):
         """
-        Initializes this launcher using an optional configuration.
-
-        :param config: An optional configuration.
+        Parameters
+        ----------
+        config
+            An optional configuration.
         """
         super().__init__(script_path=script_path, config=config)
 

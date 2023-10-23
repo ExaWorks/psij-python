@@ -1,10 +1,23 @@
 
     <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
         v = new Vue({
             el: '#psij-app',
             vuetify: new Vuetify(),
             data: {
-                maintabs: {{ page.tab }}
+                maintabs: {{ page.tab }},
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
             }
         });
 

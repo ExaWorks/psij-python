@@ -8,10 +8,14 @@ def walltime_to_minutes(walltime: Union[timedelta, int, str]) -> int:
     The walltime can either be a Python :class:`~datetime.timedelta`, an integer, in which case
     it is interpreted directly as a number of minutes, or a string with a format of either
     `HH:MM:SS`, `HH:MM`, or `MM`.
+
     Parameters
     ----------
     walltime
         the walltime to convert
+    Returns
+    -------
+    The number of minutes represented by the `walltime` parameter.
     """
     if isinstance(walltime, timedelta):
         return int(walltime.total_seconds() / 60)

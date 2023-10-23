@@ -13,9 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class RPJobExecutor(JobExecutor):
-    """A job executor that runs jobs via radical.pilot.
-
-    The `RADICAL Pilot system
+    """
+    A job executor that runs jobs via the `RADICAL Pilot system
     <https://radical-cybertools.github.io/radical-pilot/>`_.
     """
 
@@ -31,11 +30,8 @@ class RPJobExecutor(JobExecutor):
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None) -> None:
         """
-        Initializes a `RPJobExecutor`.
-
         :param url: Not used, but required by the spec for automatic initialization.
         :param config: The `RPJobExecutor` does not have any configuration options.
-        :type config: psij.JobExecutorConfig
         """
         # TODO: url is not passed
         # if not url.startswith('rp://'):

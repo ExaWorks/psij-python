@@ -1,11 +1,20 @@
 ---
 permalink: /404.html
 layout: default
+tab: 100
 ---
 
 <div class="container">
-  <h1>404</h1>
+    <div v-if="isDocsPage()">
+        <h1>404</h1>
+        <p><strong>Page not found</strong></p>
+        <p>This version of the documentation does not contain this page. Please go to the <a :href="getMainDocsPage()">main documentation page</a>.
+    </div>
+    <div v-else>
 
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
+        <h1>404</h1>
+
+        <p><strong>Page not found</strong></p>
+        <p>The requested page could not be found.</p>
+    </div>
 </div>

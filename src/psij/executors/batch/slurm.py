@@ -1,5 +1,6 @@
+from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, TextIO
+from typing import Optional, Collection, List, Dict, IO
 
 from psij import Job, JobStatus, JobState, SubmitException
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
@@ -108,7 +109,14 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     }
 
     def __init__(self, url: Optional[str] = None, config: Optional[SlurmExecutorConfig] = None):
-        """Initializes a :class:`~SlurmJobExecutor`."""
+        """
+        Parameters
+        ----------
+        url
+            Not used, but required by the spec for automatic initialization.
+        config
+            An optional configuration for this executor.
+        """
         if not config:
             config = SlurmExecutorConfig()
         super().__init__(config=config)
@@ -116,7 +124,7 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
                                                   / 'slurm.mustache')
 
     def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: TextIO) -> None:
+                               submit_file: IO[str]) -> None:
         """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
         self.generator.generate_submit_script(job, context, submit_file)
 
@@ -160,6 +168,10 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
 
         return r
 
+    def get_list_command(self) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        return ['squeue', '--me', '-o', '%i', '-h', '-r', '-t', 'all']
+
     def _get_state(self, state: str) -> JobState:
         assert state in SlurmJobExecutor._STATE_MAP
         return SlurmJobExecutor._STATE_MAP[state]
@@ -171,3 +183,16 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     def job_id_from_submit_output(self, out: str) -> str:
         """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
         return out.strip().split()[-1]
+
+    def _format_duration(self, d: timedelta) -> str:
+        # https://slurm.schedmd.com/sbatch.html#OPT_time:
+        #   Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds",
+        #   "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+        days = ''
+        if d.days > 0:
+            days = str(d.days) + '-'
+        return days + "%s:%s:%s" % (d.seconds // 3600, (d.seconds // 60) % 60, d.seconds % 60)
+
+    def _clean_submit_script(self, job: Job) -> None:
+        super()._clean_submit_script(job)
+        self._delete_aux_file(job, '.nodefile')

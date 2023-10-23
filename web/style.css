@@ -230,3 +230,86 @@ pre {
     width: 100%;
     font-weight: 900 !important;
 }
+
+
+/*** Versioning ***/
+
+#version-selector {
+    display: inline-block;
+    margin: 0;
+}
+
+#version-selector .v-input__control, #version-selector .v-input__slot,
+#version-selector .v-select__slot, #version-selector .v-select__selection {
+    width: fit-content;
+    text-overflow: none;
+}
+
+#version-selector .v-input__control {
+    height: 18pt;
+}
+
+#version-selector .v-text-field__prefix {
+    height: 20px;
+    margin-left: 4pt;
+}
+
+#version-selector .v-text-field__prefix, #version-selector .v-select__selections {
+    font-size: 10pt;
+}
+
+#version-selector .v-input {
+    margin: 0;
+    padding: 0;
+}
+
+#version-selector .v-select__selections {
+    line-height: 14pt;
+}
+
+#version-selector .v-select__selection--comma {
+    margin: 1pt 8pt 1pt 0;
+}
+
+#version-selector input {
+    max-width: 0px;
+    border: none;
+}
+
+#version-selector .v-text-field>.v-input__control>.v-input__slot:before {
+    border-color: transparent;
+}
+
+#version-selector .v-input__append-inner {
+    border-top: 0;
+}
+
+#version-selector .v-input__slot {
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+#version-selector .v-input__slot:hover {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.v-menu__content .v-list-item__content {
+    padding: 4pt 0;
+}
+
+.v-menu__content .v-list-item {
+    max-height: 24pt;
+    min-height: 10pt;
+}
+
+.v-menu__content .v-list-item__title {
+    font-size: 10pt;
+    color: var(--color-fg-norm-1);
+}
+
+#psij-app .v-menu__content .v-list-item--active {
+    background-color: rgba(red(var(--color-fg-lines)), green(var(--color-fg-lines)), blue(var(--color-fg-lines)), 0.12);
+}
+
+#psij-app .v-menu__content .v-list-item:hover {
+    background-color: rgba(0, 0, 0, 0.12);
+}
