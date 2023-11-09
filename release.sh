@@ -59,7 +59,7 @@ fi
 # There are mutable operations from here on
 
 echo "Creating release branch"
-git checkout -b "release_$TARGET_VERSION"
+git checkout -b "releases/$TARGET_VERSION"
 
 # Update the two version files and push them
 echo "Updating version and tagging..."
@@ -73,7 +73,7 @@ VERSION = '$TARGET_VERSION'
 EOF
 
 git commit -m "Updated version files to $TARGET_VERSION." RELEASE src/psij/version.py
-git push --set-upstream origin release_$TARGET_VERSION
+git push --set-upstream origin releases/$TARGET_VERSION
 
 git tag -a "$TARGET_VERSION" -m "Tagging $TARGET_VERSION"
 git push origin --tags
@@ -83,7 +83,7 @@ python3 setup.py sdist
 python3 setup.py bdist_wheel
 
 echo "Releasing PyPi package..."
-twine upload dist/*
+#twine upload dist/*
 
 echo "Triggering web docs build..."
 git commit --allow-empty -m "Trigger web build for $TARGET_VERSION"
