@@ -79,10 +79,3 @@ install:
 .PHONY: develop
 develop:
 	$(PYTHON) setup.py develop
-
-
-.PHONY: tag-and-release
-tag-and-release: ## create a tag in git. to run, do a 'make VERSION="version string" tag-and-release
-	./tag_and_release.sh create_tag $(VERSION)
-	./tag_and_release.sh package
-	./tag_and_release.sh release
