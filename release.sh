@@ -83,7 +83,7 @@ python3 setup.py sdist
 python3 setup.py bdist_wheel
 
 echo "Releasing PyPi package..."
-#twine upload dist/*
+twine upload dist/*
 
 echo "Triggering web docs build..."
 git commit --allow-empty -m "Trigger web build for $TARGET_VERSION"
