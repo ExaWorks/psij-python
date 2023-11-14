@@ -9,7 +9,6 @@ from pathlib import Path
 from threading import Thread, RLock
 from typing import Optional, List, Dict, Collection, cast, Union, IO
 
-from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
