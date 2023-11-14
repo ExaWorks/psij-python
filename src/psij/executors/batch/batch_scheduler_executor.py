@@ -9,7 +9,6 @@ from pathlib import Path
 from threading import Thread, RLock
 from typing import Optional, List, Dict, Collection, cast, Union, IO
 
-from .escape_functions import bash_escape
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
@@ -68,7 +67,7 @@ def _env_to_mustache(job: Job) -> List[Dict[str, str]]:
 
     r = []
     for k, v in job.spec.environment.items():
-        r.append({'name': k, 'value': bash_escape(v)})
+        r.append({'name': k, 'value': v})
     return r
 
 
