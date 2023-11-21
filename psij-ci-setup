@@ -249,6 +249,7 @@ check_key() {
                     read -n1 RESPONSE
                     RESPONSE=${RESPONSE^}
                 done
+                mkdir -p ~/.psij
                 echo "$KEY" > ~/.psij/key
                 chmod 600 ~/.psij/key
                 DONE=1
