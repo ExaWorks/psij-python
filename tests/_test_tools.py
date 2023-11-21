@@ -44,4 +44,8 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) ->
         assert job.spec is not None
         job.spec.launcher = ep.launcher
         job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
+        if ep.project_name is not None:
+            job.spec.attributes.project_name = ep.project_name
+        if ep.queue_name is not None:
+            job.spec.attributes.queue_name = ep.queue_name
     return JobExecutor.get_instance(ep.executor, url=ep.url)
