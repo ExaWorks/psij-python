@@ -4,9 +4,9 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from _test_tools import assert_completed
+from _test_tools import assert_completed, _get_executor_instance
 from executor_test_params import ExecutorTestParams
-from psij import Job, JobSpec, JobExecutor, ResourceSpecV1
+from psij import Job, JobSpec, ResourceSpecV1
 
 NOT_TESTED = set(['rp', 'flux'])
 
@@ -24,7 +24,7 @@ def test_nodefile(execparams: ExecutorTestParams) -> None:
                        stdout_path=outp)
         job = Job(spec)
         spec.resources = ResourceSpecV1(process_count=N_PROC)
-        ex = JobExecutor.get_instance(execparams.executor)
+        ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait()
         assert_completed(job, status)

@@ -254,7 +254,7 @@ processes on each node, for a total of 8 processes:
 .. literalinclude:: ../tests/user_guide/test_resourcespec.py
     :language: python
     :dedent: 4
-    :lines: 9-17
+    :lines: 8-16
 
 .. note::
     All processes of a job will share at most one MPI communicator
@@ -332,7 +332,7 @@ and an instance of the
 .. literalinclude:: ../tests/user_guide/test_scheduling_information.py
     :language: python
     :dedent: 4
-    :lines: 11-19
+    :lines: 10-18,21-22
 
 where `QUEUE_NAME` is the LRM queue where the job should be sent and
 `PROJECT_NAME` is a project/account that may need to be specified for

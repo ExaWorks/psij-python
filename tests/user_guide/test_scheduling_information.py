@@ -1,12 +1,11 @@
-from psij import Job, JobSpec, JobExecutor, JobAttributes
+from psij import Job, JobSpec, JobAttributes
 # from psij import JobAttributes
 from executor_test_params import ExecutorTestParams
 
-from _test_tools import assert_completed
+from _test_tools import assert_completed, _get_executor_instance
 
 
 def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
-    executor = JobExecutor.get_instance(execparams.executor)
 
     job = Job(
         JobSpec(
@@ -17,6 +16,8 @@ def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
             )
         )
     )
+
+    executor = _get_executor_instance(execparams, job)
 
     executor.submit(job)
     status = job.wait()

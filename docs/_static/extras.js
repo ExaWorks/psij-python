@@ -67,7 +67,6 @@ function detectAll(selectorType) {
     // simple_value_2. However, if either "B" or "C" are selected in either selector,
     // we want to change both.
 
-    console.log("type:" + selectorType);
     $("p." + selectorType + "-selector").addClass(selectorType + "-item");
     var prevSpans = [];
     $("span").each(function() {
@@ -90,6 +89,28 @@ function detectAll(selectorType) {
             else if (text == "project_name") {
                 $(this).text("PROJECT_NAME");
             }
+        }
+        if (text == '_get_executor_instance') {
+            // replace _get_executor_instance(execparams, job) with selector value
+            // the spans are: "_get_executor_instance", "(", "execparams",   ",", "job",    ")"
+            // we need:       "JobExecutor",            ".", "get_instance", "(", selector, ")"
+            // the classes happen to match, so just replace the text
+            // also, remove the space after the comma, which is rendered by sphinx as a text
+            // node rather than span like everything else
+            var crt = $(this);
+            var space = $(this).next().next().next().get(0).nextSibling;
+            if (space.nodeType == 3) {
+                space.nodeValue = "";
+            }
+            else {
+                console.log("Expected a text node: ", space);
+            }
+            var newText = ["JobExecutor", ".", "get_instance", "("];
+            for (var i = 0; i < 4; i++) {
+                crt.text(newText[i]);
+                crt = crt.next();
+            }
+            crt.addClass(selectorType + "-item").addClass("psij-selector-value");
         }
         prevSpans.push($(this));
         if (prevSpans.length > 2) {
