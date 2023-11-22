@@ -76,8 +76,9 @@ def get_core_pr_branches(conf: Dict[str, str]) -> List[str]:
     resp.raise_for_status()
     branches = ['main']
     for pr in resp.json():
-        if pr['head']['repo']['full_name'] == repo:
+        if pr['head']['repo']['full_name'] == repo and not pr['draft']:
             branches.append(pr['head']['ref'])
+    print('Branches that will be tested: %s' % branches)
     return branches
 
 
