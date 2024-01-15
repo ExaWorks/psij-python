@@ -123,6 +123,12 @@ def _translate_executor(config: Dict[str, str], executor: str) -> List[str]:
     if executor == 'auto_q':
         if config.option.environment.get('has_slurm'):
             return ['slurm']
+        elif config.option.environment.get('has_pbs'):
+            return ['pbs']
+        elif config.option.environment.get('has_lsf'):
+            return ['lsf']
+        elif config.option.environment.get('has_cobalt'):
+            return ['cobalt']
         elif config.option.environment.get('has_flux'):
             return ['flux']
         else:
@@ -408,6 +414,10 @@ def _discover_environment(config):
             logger.warning('Cannot get git repository information.')
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
+        if 'has_slurm' not in env:
+            env['has_pbs'] = shutil.which('qsub') is not None
+        env['has_lsf'] = shutil.which('bsub') is not None
+        env['has_cobalt'] = shutil.which('cqsub') is not None
         env['has_mpirun'] = shutil.which('mpirun') is not None
         env['has_flux'] = _has_flux()
         env['can_ssh_to_localhost'] = _try_run_command(['ssh', '-oBatchMode=yes',
