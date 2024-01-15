@@ -153,7 +153,7 @@ class JobSpec(object):
         self._name = value
 
     @property
-    def environment(self) -> Optional[Dict[str, Union[str, int]]]:
+    def environment(self) -> Optional[Dict[str, str]]:
         """Return the environment dict."""
         return self._environment
 
