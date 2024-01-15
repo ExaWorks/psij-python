@@ -497,7 +497,7 @@ class BatchSchedulerExecutor(JobExecutor):
     def _format_duration(self, d: timedelta) -> str:
         # the default is hh:mm:ss, with hh not limited to 24; this is the least ambiguous
         # choice
-        return '%s:%s:%s' % (d.total_seconds() // 3600, (d.seconds // 60) % 60, d.seconds % 60)
+        return '%s:%s:%s' % (int(d.total_seconds()) // 3600, (d.seconds // 60) % 60, d.seconds % 60)
 
     def _run_command(self, cmd: List[str]) -> str:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

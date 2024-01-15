@@ -141,4 +141,4 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     def _format_duration(self, d: timedelta) -> str:
         # https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=o-w-1:
         #   bsub -W [hour:]minute[/host_name | /host_model]
-        return "%s:%s" % (d.total_seconds() // 3600, (d.seconds // 60) % 60)
+        return "%s:%s" % (int(d.total_seconds()) // 3600, (d.seconds // 60) % 60)
