@@ -35,6 +35,7 @@ LOG_FORMATTER = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s\n',
 LOG_FORMATTER.converter = time.gmtime
 SETTINGS_DIR = Path.home() / '.psij'
 KEY_FILE = SETTINGS_DIR / '.key'
+NEW_KEY_FILE = SETTINGS_DIR / 'key'
 ID_FILE = SETTINGS_DIR / '.id'
 RESULTS_ROOT = Path('tests') / 'results'
 
@@ -257,8 +258,8 @@ def _cache(file_path, fn):
 
 
 def _get_key(config):
-    if Path('~/.psij/key').exists():
-        with open('~/.psij/key') as f:
+    if Path(NEW_KEY_FILE).exists():
+        with open(NEW_KEY_FILE) as f:
             return f.read().strip()
     else:
         # use legacy if needed

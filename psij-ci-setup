@@ -57,7 +57,17 @@ cron_install() {
     echo "The following line will be installed in your crontab:"
     echo "$LINE"
     echo "================================================================"
-    { crontab_list && echo "$LINE"; } | crontab -
+
+    CRT_CRONTAB=`crontab -l 2>&1`
+    if [ "$?" != "0" ]; then
+        if echo "$CRT_CRONTAB" | grep "no crontab for" >/dev/null 2>&1 ; then
+            CRT_CRONTAB=""
+        else
+            echo "Error updating crontab: $CRT_CRONTAB"
+            exit 2
+        fi
+    fi
+    { echo "$CRT_CRONTAB"; echo "$LINE"; } | crontab -
     
     declare -x | egrep -v "^declare -x (BASH_VERSINFO|DISPLAY|EUID|GROUPS|SHELLOPTS|TERM|UID|_)=" >psij-ci-env
 }
@@ -249,6 +259,7 @@ check_key() {
                     read -n1 RESPONSE
                     RESPONSE=${RESPONSE^}
                 done
+                mkdir -p ~/.psij
                 echo "$KEY" > ~/.psij/key
                 chmod 600 ~/.psij/key
                 DONE=1
