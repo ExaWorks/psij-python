@@ -11,7 +11,7 @@ Sphinx==4.5.0
 sphinx_rtd_theme
 sphinx-tabs==3.2.0
 sphinx-multiversion
-sphinxcontrib-applehelp=1.0.7
+sphinxcontrib-applehelp==1.0.7
 
 # For the web version of the docs
 cloud_sptheme == 1.10.1.post20200504175005
