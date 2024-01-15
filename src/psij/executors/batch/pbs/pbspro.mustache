@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: job.spec.resources
-# TODO: job.spec.attributes
 
 {{#job.name}}
 #PBS -N="{{.}}"
@@ -10,6 +8,18 @@
 {{#job.spec.inherit_environment}}
 #PBS -V
 {{/job.spec.inherit_environment}}
+
+{{#job.spec.resources}}
+    {{#process_count}}
+#PBS -l select={{job.spec.resources.computed_node_count}}:ncpus={{.}}
+    {{/process_count}}
+    {{#exclusive_node_use}}
+#PBS -l place=scatter:exclhost
+    {{/exclusive_node_use}}
+    {{^exclusive_node_use}}
+#PBS -l place=scatter:shared
+    {{/exclusive_node_use}}
+{{/job.spec.resources}}
 
 {{#formatted_job_duration}}
 #PBS -l walltime={{.}}

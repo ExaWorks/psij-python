@@ -194,7 +194,7 @@ def _check_str_attrs(ex: BatchSchedulerExecutor, job: Job, names: List[str],
                 pytest.fail('Script generation failed for %s' % name)
 
 
-_PREFIX_TR = {'pbspro': 'pbs'}
+_PREFIX_TR = {'pbspro': 'pbs', 'pbs_classic': 'pbs'}
 
 
 def _get_attr_prefix(exec_name: str) -> str:
