@@ -228,6 +228,11 @@ class BatchSchedulerExecutor(JobExecutor):
             self._set_job_status(job, JobStatus(JobState.QUEUED,
                                                 metadata={'native_id': job.native_id}))
         except subprocess.CalledProcessError as ex:
+            if logger.isEnabledFor(logging.DEBUG):
+                with submit_file_path.open('r') as submit_file:
+                    script = submit_file.read()
+                logger.debug('Job %s: submit script is: %s' % (job.id, script))
+
             raise SubmitException(ex.output) from None
 
         self._queue_poll_thread.register_job(job)
