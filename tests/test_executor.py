@@ -47,7 +47,7 @@ def test_attach(execparams: ExecutorTestParams) -> None:
     job2 = Job()
     ex.attach(job2, native_id)
     status2 = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(job2, status2)
+    assert_completed(job2, status2, attached=True)
     status1 = job1.wait(timeout=_get_timeout(execparams))
     assert_completed(job1, status1)
 
@@ -64,7 +64,7 @@ def test_attach2(execparams: ExecutorTestParams) -> None:
     ex2 = _get_executor_instance(execparams)
     ex2.attach(job2, native_id)
     status = job2.wait(timeout=_get_timeout(execparams))
-    assert_completed(job2, status)
+    assert_completed(job2, status, attached=True)
 
 
 def test_cancel(execparams: ExecutorTestParams) -> None:
