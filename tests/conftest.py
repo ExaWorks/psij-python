@@ -154,7 +154,7 @@ def pytest_generate_tests(metafunc):
         for x in _get_executors((metafunc.config)):
             etp = ExecutorTestParams(x, queue_name=metafunc.config.option.queue_name,
                                      project_name=metafunc.config.option.project_name,
-                                     custom_attributes=metafunc.config.option.custom_attributes)
+                                     custom_attributes_raw=metafunc.config.option.custom_attributes)
             etps.append(etp)
 
         metafunc.parametrize('execparams', etps, ids=lambda x: str(x))
@@ -361,7 +361,13 @@ def _parse_custom_attributes(s: Optional[str]) -> Dict[str, object]:
     if s is None:
         return None
     else:
-        return json.loads('{' + s + '}')
+        attrspec = json.loads('[' + s + ']')
+        d = {}
+        for item in attrspec:
+            if item['filter'] not in d:
+                d[item['filter']] = {}
+            d[item['filter']].update(item['value'])
+        return d
 
 
 def _strip_home(path: List[str]) -> List[str]:
@@ -434,8 +440,29 @@ def _now():
     return datetime.datetime.now(tz=datetime.timezone.utc).isoformat(' ')
 
 
+def _process_custom_attributes(item):
+    if not hasattr(item, 'callspec'):
+        return
+    ep: Optional[List[Dict[str, Dict[str, object]]]] = item.callspec.params['execparams']
+    if ep.custom_attributes_raw is None:
+        return
+    if ep is None:
+        return
+    test_name = item.name
+    for filter, attrs in ep.custom_attributes_raw.items():
+        if re.match(filter, test_name):
+            ep.custom_attributes.update(attrs)
+
+
+def _set_attrs(execparams, attrs):
+    for k, v in attrs.items():
+        execparams.customattributes[k] = v
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
+    _process_custom_attributes(item)
+
     outcome = yield
     report = outcome.get_result()
 
@@ -588,6 +615,8 @@ def _upload_report(config, data):
     env = config.option.environment
 
     url = config.getoption('server_url')
+    if not url:
+        return
     minimal = config.getoption('minimal_uploads')
     if minimal:
         data = _sanitize(data)

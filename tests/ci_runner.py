@@ -35,7 +35,7 @@ def read_line(f: TextIO) -> Optional[str]:
 
 
 def read_conf(fname: str) -> Dict[str, str]:
-    conf = {}
+    conf: Dict[str, str] = {}
     with open(fname, 'r') as f:
         line = read_line(f)
         while line is not None:
@@ -47,9 +47,26 @@ def read_conf(fname: str) -> Dict[str, str]:
                 kv = line.split('=', 2)
                 if len(kv) != 2:
                     raise ValueError('Invalid line in configuration file: "%s"' % line)
-                conf[kv[0].strip()] = kv[1].strip()
+                add_conf(conf, kv[0].strip(), kv[1].strip())
             line = read_line(f)
     return conf
+
+
+def add_conf(conf: Dict[str, str], key: str, value: str) -> None:
+    if key.startswith('custom_attributes'):
+        if not key.startswith('custom_attributes['):
+            key = key + '[.*]'
+        if not key.endswith(']'):
+            raise ValueError('Invalid custom_attributes entry. Missing closing bracket.')
+        filter = key[len('custom_attributes['):-1]
+        key = 'custom_attributes'
+        value = '{"filter": "%s", "value": {%s}}' % (filter.replace('\\', '\\\\'), value)
+        if key in conf:
+            conf[key] = conf[key] + ', ' + value
+        else:
+            conf[key] = value
+    else:
+        conf[key] = value
 
 
 def run(*args: str, cwd: Optional[str] = None) -> str:
