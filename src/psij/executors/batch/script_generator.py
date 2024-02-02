@@ -72,7 +72,8 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
         super().__init__(config)
         with template_path.open('r') as template_file:
             self.template = pystache.parse(template_file.read())
-        self.renderer = pystache.Renderer(escape=escape)
+        common_dir = pathlib.Path(__file__).parent / 'common'
+        self.renderer = pystache.Renderer(escape=escape, search_dirs=[str(common_dir)])
 
     def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
         """See :func:`~SubmitScriptGenerator.generate_submit_script`.

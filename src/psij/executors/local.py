@@ -1,22 +1,26 @@
 """This module contains the local :class:`~psij.JobExecutor`."""
 import logging
 import os
+import pathlib
+import platform
 import shlex
+import shutil
 import signal
 import subprocess
 import threading
 import time
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from tempfile import mkstemp
-from types import FrameType
-from typing import Optional, Dict, List, Tuple, Type, cast
+from typing import Optional, Dict, List, Tuple, TypeVar, Set, Callable
 
 import psutil
+from psutil import NoSuchProcess
 
-from psij import InvalidJobException, SubmitException, Launcher, ResourceSpecV1
+from psij import InvalidJobException, SubmitException, ResourceSpecV1
 from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
-from psij.utils import SingletonThread
+from psij.exceptions import CompositeException, LauncherException, JobException
+from psij.staging import StageIn, StagingMode, StageOut, StageOutFlags
 
 logger = logging.getLogger(__name__)
 
@@ -30,91 +34,317 @@ def _format_shell_cmd(args: List[str]) -> str:
     return cmd
 
 
-def _handle_sigchld(signum: int, frame: Optional[FrameType]) -> None:
-    _ProcessReaper.get_instance()._handle_sigchld()
-
-
-if threading.current_thread() != threading.main_thread():
-    logger.warning('The psij module is being imported from a non-main thread. This prevents the'
-                   'use of signals in the local executor, which will slow things down a bit.')
-else:
-    signal.signal(signal.SIGCHLD, _handle_sigchld)
-
-
-_REAPER_SLEEP_TIME = 0.1
-
-
-class _ProcessEntry(ABC):
-    def __init__(self, job: Job, executor: 'LocalJobExecutor', launcher: Optional[Launcher]):
-        self.job = job
+class _JobThread(threading.Thread):
+    def __init__(self, job: Job, executor: JobExecutor) -> None:
+        super().__init__(name = 'LocalJobThread-' + job.id)
         self.executor = executor
-        self.exit_code: Optional[int] = None
-        self.done_time: Optional[float] = None
-        self.out: Optional[str] = None
-        self.kill_flag = False
-        self.process: Optional[subprocess.Popen[bytes]] = None
-        self.launcher = launcher
+        self.cancel_flag = False
 
     @abstractmethod
-    def kill(self) -> None:
-        assert self.process is not None
-        root = psutil.Process(self.process.pid)
-        for proc in root.children(recursive=True):
-            proc.kill()
-        self.process.kill()
-
-    @abstractmethod
-    def poll(self) -> Tuple[Optional[int], Optional[str]]:
+    def cancel(self):
         pass
 
-    def __repr__(self) -> str:
-        pid = '-'
-        if self.process:
-            pid = str(self.process.pid)
-        return '{}[jobid: {}, pid: {}]'.format(self.__class__.__name__, self.job.id, pid)
-
-
-class _ChildProcessEntry(_ProcessEntry):
-    def __init__(self, job: Job, executor: 'LocalJobExecutor',
-                 launcher: Optional[Launcher]) -> None:
-        super().__init__(job, executor, launcher)
-        self.nodefile: Optional[str] = None
-
-    def kill(self) -> None:
-        super().kill()
-
-    def poll(self) -> Tuple[Optional[int], Optional[str]]:
-        assert self.process is not None
-        exit_code = self.process.poll()
-        if exit_code is not None:
-            if self.nodefile:
-                os.unlink(self.nodefile)
-            if self.process.stdout:
-                return exit_code, self.process.stdout.read().decode('utf-8')
+    def _get_state_from_ec(self, ec: int) -> Tuple[JobState, Optional[Exception]]:
+        if ec is None or ec == 0:
+            return JobState.COMPLETED, None
+        elif ec < 0:
+            if self.cancel_flag:
+                return JobState.CANCELED, None
             else:
-                return exit_code, None
+                return JobState.FAILED, JobException(ec)
         else:
-            return None, None
-
-
-class _AttachedProcessEntry(_ProcessEntry):
-    def __init__(self, job: Job, process: psutil.Process, executor: 'LocalJobExecutor'):
-        super().__init__(job, executor, None)
-        self.process = process
-
-    def kill(self) -> None:
-        super().kill()
-
-    def poll(self) -> Tuple[Optional[int], Optional[str]]:
-        try:
-            assert self.process
-            ec: Optional[int] = self.process.wait(timeout=0)
-            if ec is None:
-                return 0, None
+            # ec > 0
+            # It is not quite clear what happens in Windows. Windows allows the user
+            # to specify an exit code when killing a process, exit code which will become
+            # the exit code of the terminated process. However, psutil does not specify what
+            # is being done for that on Windows. The psutil sources suggest that signal.SIGTERM
+            # is used, so we check for that.
+            if platform.system() == 'Windows' and ec == signal.SIGTERM and self.cancel_flag:
+                return JobState.CANCELED, None
             else:
-                return ec, None
-        except psutil.TimeoutExpired:
-            return None, None
+                return JobState.FAILED, JobException(ec)
+
+
+# The addition of file staging makes fully asynchronous job management difficult, since we don't
+# really have much in the way of something reasonably supporting true async file copying. So since
+# we have to use threads anyway, and since the local executor is not really meant to scale, we use
+# them for attached processes also.
+class _AttachedJobThread(_JobThread):
+    def __init__(self, job: Job, pid: int, executor: JobExecutor) -> None:
+        super().__init__(job, executor)
+        self.job = job
+        self.pid = pid
+        self._attach()
+
+    def _attach(self):
+        with self.job._status_cv:
+            try:
+                self.process = psutil.Process(self.pid)
+            except NoSuchProcess:
+                # will check in run() and set status
+                self.process = None
+            except Exception as ex:
+                raise SubmitException('Cannot attach to pid %s' % self.pid, exception=ex)
+
+    def run(self) -> None:
+        # We assume that the native_id above is a PID that was obtained at some point using
+        # list(). If so, the process is either still running or has completed. Either way, we must
+        # bring it up to ACTIVE state
+        self.executor._set_job_status(self.job, JobStatus(JobState.QUEUED, time=time.time()))
+        self.executor._set_job_status(self.job, JobStatus(JobState.ACTIVE, time=time.time()))
+        try:
+            self._wait_for_job()
+        except Exception:
+            pass
+
+    def _wait_for_job(self):
+        message = None
+        if self.process is None:
+            state = JobState.COMPLETED
+        else:
+            ec = self.process.wait()
+            state = self._get_state_from_ec(ec)
+
+            if state == JobState.FAILED:
+                message = 'Job failed with exit code %s' % ec
+
+        self.executor._set_job_status(self.job, JobStatus(state, message=message, time=time.time()))
+
+    def cancel(self):
+        with self.job._status_cv:
+            self.cancel_flag = True
+            if self.process:
+                self.process.kill()
+
+
+class _JobCanceled(Exception):
+    pass
+
+
+T = TypeVar('T')
+
+
+class _ChildJobThread(_JobThread):
+
+    FLAG_MAP = {JobState.COMPLETED: StageOutFlags.ON_SUCCESS,
+                JobState.FAILED: StageOutFlags.ON_ERROR,
+                JobState.CANCELED: StageOutFlags.ON_CANCEL}
+
+    def __init__(self, job: Job, spec: JobSpec, executor: JobExecutor) -> None:
+        super().__init__(job, executor)
+        self.job = job
+        self.spec = spec
+        if spec.directory is None:
+            self.jobdir = pathlib.Path('/tmp')
+        else:
+            self.jobdir = spec.directory
+        self.state = None
+        # set for any error; the overall job is automatically considered failed if set
+        self.exception = None
+        self.exit_code = None
+        self.process = None
+
+    def run(self):
+        # The following workflow is based on the idea that no error should go unreported. The
+        # flow is as follows:
+        # - if there is an error in staging, fail immediately (i.e., do not perform cleanup or
+        # any other steps).
+        # - if there is an internal error (i.e., not an executable failure), treat as above and
+        # fail immediately
+        # - if a job is canceled during stage in, clean up. If there is an error in cleanup,
+        # the job will fail instead.
+        # - if a job is canceled while running, stage out and clean up. If there is an error in
+        # stage out and/or cleanup, the job will instead fail.
+        # - if the job fails and there is a subsequent error in staging or cleanup, a compound
+        # error is created
+        # - cancellation is ignored during and after stageout
+
+        try:
+            try:
+                self.stage_in()
+                self.run_job()
+                self.stage_out()
+            except _JobCanceled:
+                # only stage_in and run_job (but before the job is actually started)
+                # are allowed to raise _JobCanceled
+                self.state = JobState.CANCELED
+            self.cleanup()
+        except Exception as ex:
+            self.fail_job(ex)
+
+        self.update_job_status()
+
+    def update_job_status(self):
+        if self.exception:
+            self.executor._set_job_status(self.job,
+                                          JobStatus(JobState.FAILED, time=time.time(),
+                                                    message=str(self.exception),
+                                                    metadata={'exception': self.exception},
+                                                    exit_code=self.exit_code))
+        else:
+            # failed without an exception set is not allowed
+            assert self.state != JobState.FAILED
+            self.executor._set_job_status(self.job, JobStatus(self.state, time=time.time()))
+
+    def fail_job(self, ex: Exception) -> None:
+        if self.state == JobState.FAILED:
+            if self.exception is None:
+                self.exception = ex
+            else:
+                if not isinstance(self.exception, CompositeException):
+                    self.exception = CompositeException(self.exception)
+                self.exception.add_exception(ex)
+        else:
+            self.state = JobState.FAILED
+            self.exception = ex
+
+    def stage_in(self) -> None:
+        self.executor._set_job_status(self.job, JobStatus(JobState.STAGE_IN, time=time.time()))
+        self._map(self._stage_in_one, self.spec.stage_in)
+
+    def stage_out(self):
+        self.executor._set_job_status(self.job, JobStatus(JobState.STAGE_OUT, time=time.time()))
+        self._map(self._stage_out_one, self.spec.stage_out)
+
+    def cleanup(self):
+        self.executor._set_job_status(self.job, JobStatus(JobState.CLEANUP, time=time.time()))
+        self._map(self._cleanup_one, self.spec.cleanup)
+
+    @staticmethod
+    def _map(fn: Callable[[T], None], s: Optional[Set[T]], ) -> None:
+        if s is None:
+            return
+        for o in s:
+            fn(o)
+
+    def _stage_in_one(self, stage_in: StageIn) -> None:
+        if self.cancel_flag:
+            raise _JobCanceled()
+        src = stage_in.source
+        scheme = src.scheme
+        if scheme == '':
+            scheme = 'file'
+        if scheme == 'file':
+            self._local_copy(pathlib.Path(src.path), self._job_rel(stage_in.target),
+                             stage_in.mode, False)
+        else:
+            self.fail_job(ValueError('Unsupported scheme "%s" for %s' % (scheme, src)))
+
+    def _stage_out_one(self, stage_out: StageOut) -> None:
+        dst = stage_out.target
+        scheme = dst.scheme
+        if scheme == '':
+            scheme = 'file'
+        if scheme == 'file':
+            flags = stage_out.flags
+            state = _ChildJobThread.FLAG_MAP[self.state]
+            if state in flags:
+                self._local_copy(self._job_rel(stage_out.source), pathlib.Path(dst.path),
+                                 stage_out.mode, StageOutFlags.IF_PRESENT in stage_out.flags)
+        else:
+            self.fail_job(ValueError('Unsupported scheme "%s" for %s' % (scheme, dst)))
+
+    def _cleanup_one(self, cleanup: pathlib.Path) -> None:
+        # do some sanity checks
+        cleanup = self._job_rel(cleanup)
+        if cleanup.samefile(pathlib.Path('/')):
+            raise ValueError('Refusing to clean root directory.')
+        if cleanup.samefile(pathlib.Path.home()):
+            raise ValueError('Refusing to clean user home directory.')
+        if cleanup.is_dir():
+            shutil.rmtree(str(cleanup))
+        else:
+            cleanup.unlink(missing_ok=True)
+
+    def _job_rel(self, path: pathlib.Path) -> pathlib.Path:
+        path = path.expanduser()
+        if not path.is_absolute():
+            path = self.jobdir / path
+        return path.absolute()
+
+    def _local_copy(self, source: pathlib.Path, target: pathlib.Path, mode: StagingMode,
+                    if_present=False):
+        if if_present and not os.path.exists(source):
+            return
+        if mode == StagingMode.COPY:
+            if source.is_dir():
+                shutil.copytree(source, target)
+            else:
+                shutil.copy(source, target)
+        elif mode == StagingMode.MOVE:
+            shutil.move(source, target)
+        elif mode == StagingMode.LINK:
+            os.symlink(source, target)
+
+    def run_job(self):
+        launcher = self.executor._get_launcher(self._get_launcher_name(self.spec))
+        args = launcher.get_launch_command(self.job)
+
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug('Running %s', _format_shell_cmd(args))
+        nodefile = self._generate_nodefile(self.job)
+        try:
+            env = _get_env(self.spec, nodefile)
+            with self.job._status_cv:
+                if self.cancel_flag:
+                    raise _JobCanceled()
+                self.process = subprocess.Popen(args, stdout=subprocess.PIPE,
+                                                stderr=subprocess.STDOUT, close_fds=True,
+                                                cwd=self.spec.directory, env=env)
+            self.job._native_id = self.process.pid
+            self.executor._set_job_status(self.job,
+                                          JobStatus(JobState.ACTIVE, time=time.time(),
+                                                    metadata={'nativeId': self.job._native_id}))
+            self.exit_code = self.process.wait()
+
+            # We want to capture errors in the launcher scripts. Since, under normal circumstances,
+            # the exit code of the launcher is the exit code of the job, we must use a different
+            # mechanism to distinguish between job errors and launcher errors. So we delegate to
+            # the launcher implementation to figure out if the error belongs to the job or not
+            if self.process.stdout:
+                out = self.process.stdout.read().decode('utf-8')
+            else:
+                out = None
+            if out and launcher.is_launcher_failure(out):
+                message = self.process.launcher.get_launcher_failure_message(out)
+                self.fail_job(LauncherException(message))
+            else:
+                self.state, self.exception = self._get_state_from_ec(self.exit_code)
+        finally:
+            if nodefile:
+                os.remove(nodefile)
+
+    def cancel(self):
+        with self.job._status_cv:
+            self.cancel_flag = True
+            if self.process is not None:
+                self.process.kill()
+
+    def _generate_nodefile(self, job: Job) -> Optional[str]:
+        assert job.spec is not None
+        if job.spec.resources is None:
+            return None
+        if job.spec.resources.version == 1:
+            assert isinstance(job.spec.resources, ResourceSpecV1)
+            n = job.spec.resources.computed_process_count
+            if n == 1:
+                # as a bit of an optimization, we don't generate a nodefile when doing "single
+                # node" jobs on local.
+                return None
+            (file, nodefile) = mkstemp(suffix='.nodelist')
+            for i in range(n):
+                os.write(file, 'localhost\n'.encode())
+            os.close(file)
+            return nodefile
+        else:
+            raise SubmitException('Cannot handle resource specification with version %s'
+                                  % job.spec.resources.version)
+
+    def _get_launcher_name(self, spec: JobSpec) -> str:
+        if spec.launcher is None:
+            return 'single'
+        else:
+            return spec.launcher
 
 
 def _get_env(spec: JobSpec, nodefile: Optional[str]) -> Optional[Dict[str, str]]:
@@ -141,80 +371,6 @@ def _get_env(spec: JobSpec, nodefile: Optional[str]) -> Optional[Dict[str, str]]
                 env.update(spec.environment)
 
         return env
-
-
-class _ProcessReaper(SingletonThread):
-
-    @classmethod
-    def get_instance(cls: Type['_ProcessReaper']) -> '_ProcessReaper':
-        return cast('_ProcessReaper', super().get_instance())
-
-    def __init__(self) -> None:
-        super().__init__(name='Local Executor Process Reaper', daemon=True)
-        self._jobs: Dict[Job, _ProcessEntry] = {}
-        self._lock = threading.RLock()
-        self._cvar = threading.Condition()
-
-    def register(self, entry: _ProcessEntry) -> None:
-        logger.debug('Registering process %s', entry)
-        with self._lock:
-            self._jobs[entry.job] = entry
-
-    def run(self) -> None:
-        logger.debug('Started {}'.format(self))
-        done: List[_ProcessEntry] = []
-        while True:
-            with self._lock:
-                for entry in done:
-                    del self._jobs[entry.job]
-                jobs = dict(self._jobs)
-            try:
-                done = self._check_processes(jobs)
-            except Exception as ex:
-                logger.error('Error polling for process status', ex)
-            with self._cvar:
-                self._cvar.wait(_REAPER_SLEEP_TIME)
-
-    def _handle_sigchld(self) -> None:
-        with self._cvar:
-            try:
-                self._cvar.notify_all()
-            except RuntimeError:
-                # In what looks like rare cases, notify_all(), seemingly when combined with
-                # signal handling, raises `RuntimeError: release unlocked lock`.
-                # There appears to be an unresolved Python bug about this:
-                #    https://bugs.python.org/issue34486
-                # We catch the exception here and log it. It is hard to tell if that will not lead
-                # to further issues. It would seem like it shouldn't: after all, all we're doing is
-                # making sure we don't sleep too much, but, even if we do, the consequence is a
-                # small delay in processing a completed job. However, since this exception seems
-                # to be a logical impossibility when looking at the code in threading.Condition,
-                # there is really no telling what else could go wrong.
-                logger.debug('Exception in Condition.notify_all()')
-
-    def _check_processes(self, jobs: Dict[Job, _ProcessEntry]) -> List[_ProcessEntry]:
-        done: List[_ProcessEntry] = []
-
-        for entry in jobs.values():
-            if entry.kill_flag:
-                entry.kill()
-
-            exit_code, out = entry.poll()
-            if exit_code is not None:
-                entry.exit_code = exit_code
-                entry.done_time = time.time()
-                entry.out = out
-                done.append(entry)
-
-        for entry in done:
-            entry.executor._process_done(entry)
-
-        return done
-
-    def cancel(self, job: Job) -> None:
-        with self._lock:
-            p = self._jobs[job]
-            p.kill_flag = True
 
 
 class LocalJobExecutor(JobExecutor):
@@ -245,27 +401,8 @@ class LocalJobExecutor(JobExecutor):
         :type config: psij.JobExecutorConfig
         """
         super().__init__(url=url, config=config if config else JobExecutorConfig())
-        self._reaper = _ProcessReaper.get_instance()
-
-    def _generate_nodefile(self, job: Job, p: _ChildProcessEntry) -> Optional[str]:
-        assert job.spec is not None
-        if job.spec.resources is None:
-            return None
-        if job.spec.resources.version == 1:
-            assert isinstance(job.spec.resources, ResourceSpecV1)
-            n = job.spec.resources.computed_process_count
-            if n == 1:
-                # as a bit of an optimization, we don't generate a nodefile when doing "single
-                # node" jobs on local.
-                return None
-            (file, p.nodefile) = mkstemp(suffix='.nodelist')
-            for i in range(n):
-                os.write(file, 'localhost\n'.encode())
-            os.close(file)
-            return p.nodefile
-        else:
-            raise SubmitException('Cannot handle resource specification with version %s'
-                                  % job.spec.resources.version)
+        self._threads_lock = threading.RLock()
+        self.threads: Dict[str, _JobThread] = {}
 
     def submit(self, job: Job) -> None:
         """
@@ -281,27 +418,16 @@ class LocalJobExecutor(JobExecutor):
         """
         spec = self._check_job(job)
 
-        p = _ChildProcessEntry(job, self, self._get_launcher(self._get_launcher_name(spec)))
-        assert p.launcher
-        args = p.launcher.get_launch_command(job)
+        self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
 
-        try:
-            with job._status_cv:
-                if job.status.state == JobState.CANCELED:
-                    raise SubmitException('Job canceled')
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug('Running %s', _format_shell_cmd(args))
-            nodefile = self._generate_nodefile(job, p)
-            env = _get_env(spec, nodefile)
-            p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                         close_fds=True, cwd=spec.directory, env=env)
-            self._reaper.register(p)
-            job._native_id = p.process.pid
-            self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
-                                                metadata={'nativeId': job._native_id}))
-            self._set_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
-        except Exception as ex:
-            raise SubmitException('Failed to submit job', exception=ex)
+        with job._status_cv:
+            if job.status.state == JobState.CANCELED:
+                raise SubmitException('Job canceled')
+            job_thread = _ChildJobThread(job, spec, self)
+
+        with self._threads_lock:
+            self.threads[job.id] = job_thread
+            job_thread.start()
 
     def cancel(self, job: Job) -> None:
         """
@@ -309,27 +435,17 @@ class LocalJobExecutor(JobExecutor):
 
         :param job: The job to cancel.
         """
-        self._set_job_status(job, JobStatus(JobState.CANCELED))
-        self._reaper.cancel(job)
 
-    def _process_done(self, p: _ProcessEntry) -> None:
-        assert p.exit_code is not None
-        message = None
-        if p.exit_code == 0:
-            state = JobState.COMPLETED
-        elif p.exit_code < 0 and p.kill_flag:
-            state = JobState.CANCELED
-        else:
-            # We want to capture errors in the launcher scripts. Since, under normal circumstances,
-            # the exit code of the launcher is the exit code of the job, we must use a different
-            # mechanism to distinguish between job errors and launcher errors. So we delegate to
-            # the launcher implementation to figure out if the error belongs to the job or not
-            if p.launcher and p.out and p.launcher.is_launcher_failure(p.out):
-                message = p.launcher.get_launcher_failure_message(p.out)
-            state = JobState.FAILED
-
-        self._set_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
-                                              message=message))
+        with self._threads_lock:
+            try:
+                job_thread = self.threads[job.id]
+            except KeyError:
+                raise ValueError('The job %s is not managed by this executor.' % job.id)
+        with job._status_cv:
+            if job_thread is not None:
+                job_thread.cancel()
+            else:
+                self._set_job_status(job, JobStatus(JobState.CANCELED))
 
     def list(self) -> List[str]:
         """
@@ -364,15 +480,11 @@ class LocalJobExecutor(JobExecutor):
         job.executor = self
         pid = int(native_id)
 
-        self._reaper.register(_AttachedProcessEntry(job, psutil.Process(pid), self))
-        # We assume that the native_id above is a PID that was obtained at some point using
-        # list(). If so, the process is either still running or has completed. Either way, we must
-        # bring it up to ACTIVE state
-        self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time()))
-        self._set_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
+        with job._status_cv:
+            if job.status.state == JobState.CANCELED:
+                raise SubmitException('Job canceled')
+            job_thread = _AttachedJobThread(job, pid, self)
 
-    def _get_launcher_name(self, spec: JobSpec) -> str:
-        if spec.launcher is None:
-            return 'single'
-        else:
-            return spec.launcher
+        with self._threads_lock:
+            self.threads[job.id] = job_thread
+            job_thread.start()

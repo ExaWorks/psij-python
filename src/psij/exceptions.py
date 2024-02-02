@@ -62,3 +62,21 @@ class SubmitException(Exception):
         conditions such an error would persist across subsequent re-tries until correct credentials
         are used.
         """
+
+class CompositeException(Exception):
+    def __init__(self, ex: Exception) -> None:
+        self.exceptions = [ex]
+
+    def add_exception(self, ex: Exception) -> None:
+        self.exceptions.append(ex)
+
+
+class LauncherException(Exception):
+    def __init__(self, message: str) -> None:
+        super().__init__('Launcher failure: %s' % message)
+
+
+class JobException(Exception):
+    def __init__(self, exit_code: int) -> None:
+        super().__init__('Job exited with exit code %s' % exit_code)
+        self.exit_code = exit_code

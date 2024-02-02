@@ -1,5 +1,12 @@
+import atexit
+import fcntl
+import io
 import logging
 import os
+import tempfile
+
+import psutil
+import socket
 import subprocess
 import time
 import traceback
@@ -14,6 +21,7 @@ from psij.launchers.script_based_launcher import ScriptBasedLauncher
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
+from psij.utils import SingletonThread
 
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
@@ -265,6 +273,8 @@ class BatchSchedulerExecutor(JobExecutor):
             except SubmitException:
                 # re-raise
                 raise
+        finally:
+            self._status_update_thread.unregister_job(job)
 
     def attach(self, job: Job, native_id: str) -> None:
         """Attaches a job to a native job.
@@ -531,9 +541,11 @@ class BatchSchedulerExecutor(JobExecutor):
             # is_greater_than returns T/F if the states are comparable and None if not, so
             # we have to check explicitly for the boolean value rather than truthiness
             return
-        if status.state.final and job.native_id:
-            self._clean_submit_script(job)
-            self._read_aux_files(job, status)
+        if status.state.final:
+            self._status_update_thread.unregister_job(job)
+            if job.native_id:
+                self._clean_submit_script(job)
+                self._read_aux_files(job, status)
         super()._set_job_status(job, status)
 
     def _clean_submit_script(self, job: Job) -> None:
@@ -638,13 +650,19 @@ class _QueuePollThread(Thread):
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()
+        self._status_updater = _StatusUpdater(config, executor)
 
     def run(self) -> None:
         logger.debug('Executor %s: queue poll thread started', self.executor)
         time.sleep(self.config.initial_queue_polling_delay)
         while True:
             self._poll()
-            time.sleep(self.config.queue_polling_interval)
+            start = time.time()
+            now = start
+            while now - start < self.config.queue_polling_interval:
+                self._status_updater.step()
+                time.sleep(1)
+                now = time.time()
 
     def _poll(self) -> None:
         with self._jobs_lock:
@@ -686,6 +704,8 @@ class _QueuePollThread(Thread):
                 if status.state.final:
                     with self._jobs_lock:
                         del self._jobs[native_id]
+                    for job in job_list:
+                        self._status_updater.unregister_job(job)
         except Exception as ex:
             msg = traceback.format_exc()
             self._handle_poll_error(True, ex, 'Error updating job statuses {}'.format(msg))
@@ -713,9 +733,11 @@ class _QueuePollThread(Thread):
                 self._jobs.clear()
             for job_list in jobs_copy.values():
                 for job in job_list:
+                    self._status_updater.unregister_job(job)
                     self.executor._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
 
     def register_job(self, job: Job) -> None:
+        self._status_updater.register_job(job)
         assert job.native_id
         logger.info('Job %s: registering', job.id)
         with self._jobs_lock:
@@ -724,3 +746,91 @@ class _QueuePollThread(Thread):
                 self._jobs[native_id] = [job]
             else:
                 self._jobs[job.native_id].append(job)
+
+class _StatusUpdater:
+    # we are expecting short messages in the form <jobid> <status>
+    RECV_BUFSZ = 2048
+
+    def __init__(self, config: BatchSchedulerExecutorConfig,
+                 executor: BatchSchedulerExecutor) -> None:
+        self.config = config
+        self.executor = executor
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.setblocking(False)
+        self.socket.bind(('', 0))
+        self.port = self.socket.getsockname()[1]
+        self.ips = self._get_ips()
+        print('IPS: %s' % self.ips)
+        print('Port: %s' % self.port)
+        self._create_update_file()
+        print('Update file: %s' % self.update_file.name)
+        self.partial_file_data = ''
+        self.partial_net_data = ''
+        self._jobs = {}
+        self._jobs_lock = RLock()
+
+    def _get_ips(self) -> List[str]:
+        addrs = psutil.net_if_addrs()
+        r = []
+        for name, l in addrs.items():
+            if name == 'lo':
+                continue
+            for a in l:
+                if a.family == socket.AddressFamily.AF_INET:
+                    r.append(a.address)
+        return r
+
+    def _create_update_file(self) -> None:
+        f = tempfile.NamedTemporaryFile(dir=self.config.work_directory, prefix='supd_',
+                                        delete=False)
+        name = f.name
+        atexit.register(os.remove, name)
+        f.close()
+        self.update_file = open(name, 'r+b')
+        self.update_file.seek(0, io.SEEK_END)
+        self.update_file_pos = self.update_file.tell()
+
+    def register_job(self, job: Job) -> None:
+        with self._jobs_lock:
+            self._jobs[job.id] = job
+
+    def unregister_job(self, job: Job) -> None:
+        with self._jobs_lock:
+            del self._jobs[job.id]
+
+    def step(self) -> None:
+        self.update_file.seek(0, io.SEEK_END)
+        pos = self.update_file.tell()
+        if pos > self.update_file_pos:
+            self.update_file.seek(self.update_file_pos, io.SEEK_SET)
+            n = pos - self.update_file_pos
+            self._process_update_data(self.update_file.read(n))
+            self.update_file_pos = pos
+        else:
+            try:
+                data = self.socket.recv(_StatusUpdater.RECV_BUFSZ)
+                self._process_update_data(data)
+            except socket.error as e:
+                pass
+
+    def _process_update_data(self, data: bytes) -> None:
+        sdata = data.decode('utf-8')
+        lines = sdata.splitlines()
+        for line in lines:
+            print('Status update line: %s' % line)
+            els = line.split()
+            if len(els) != 2:
+                logger.warning('Invalid status update message received: %s' % line)
+                continue
+            job_id = els[0]
+            state = JobState.from_name(els[1])
+            job = None
+            with self._jobs_lock:
+                try:
+                    job = self._jobs[job_id]
+                except KeyError:
+                    logger.warning('Received status updated for inexistent job with id %s' % job_id)
+            if job:
+                self.executor._set_job_status(job, JobStatus(state))
+
+

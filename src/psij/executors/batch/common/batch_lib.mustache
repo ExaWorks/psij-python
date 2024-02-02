@@ -1,0 +1,80 @@
+_UPDATE_MODE="none"
+
+update_status() {
+    STATUS="$1"
+    if [ "$_UPDATE_MODE" == "none" ]; then
+        if which nc >/dev/null; then
+            $_UPDATE_MODE="nc"
+        else
+            $_UPDATE_MODE="file"
+        fi
+    fi
+
+    if [ "$_UPDATE_MODE" == "nc" ]; then
+        for ADDR in "{{psij.us_addrs}}"; do
+            echo "{{psij.job_id}} $STATUS" | nc -q0 -w0 -4 -u $ADDR {{psij.us_port}}
+        done
+    else
+        echo "{{psij.job_id}} $STATUS" >> {{psij.us_file}}
+    fi
+}
+
+do_stagein() {
+    do_stage "$@" 0
+}
+
+do_stage() {
+    SOURCE="$1"
+    TARGET="$2"
+    MODE="$3"
+    MISSING_OK="$4"
+
+    if [ ! -a "$SOURCE" ] && [ "$MISSING_OK" == "0" ]; then
+        echo "Missing source file: $SOURCE"
+        exit 1
+    fi
+
+    if [ "$MODE" == "1" ]; then
+        # copy
+        cp -r -T "$SOURCE" "$TARGET"
+    elif [ "$MODE" == "2" ]; tben
+        # link
+        ln -s "$SOURCE" "$TARGET"
+    elif [ "$MODE" == "3" ]; then
+        # move
+        mv -T -f "$SOURCE" "$TARGET"
+    fi
+}
+
+_FLAG_IF_PRESENT=1
+_FLAG_ON_SUCCESS=2
+_FLAG_ON_ERROR=4
+_FLAG_ON_CANCEL=8
+
+do_stageout() {
+    SOURCE="$1"
+    TARGET="$2"
+    MODE="$3"
+    FLAGS="$4"
+    FAILED="$5"
+
+    if [ "$FAILED" == "0" ] && $((FLAGS & _FLAG_ON_SUCCESS)) ; then
+        do_stage "$SOURCE" "$TARGET" "$MODE" $((FLAGS & _FLAG_IF_PRESENT))
+    elif [ "$FAILED" != "0" ] && $((FLAGS & _FLAG_ON_ERROR)) ; then
+        do_stage "$SOURCE" "$TARGET" "$MODE" $((FLAGS & _FLAG_IF_PRESENT))
+    fi
+}
+
+do_cleanup() {
+    TARGET="$1"
+
+    case "$TARGET" in
+        "{{job.spec.directory}}"*)
+            echo "rm -rf $TARGET" >>~/cleanup.log
+            ;;
+        *)
+            echo "Cannot clean $TARGET outside of job directory {{job.spec.directory}}"
+            exit 1
+            ;;
+    esac
+}

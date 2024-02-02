@@ -3,12 +3,13 @@ from __future__ import annotations
 # for some reason, Sphinx cannot find Path if imported directly
 # from pathlib import Path
 import pathlib
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Set
 
 from typeguard import check_argument_types
 
 import psij.resource_spec
 import psij.job_attributes
+from psij.staging import StageIn, StageOut
 
 
 def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
@@ -32,6 +33,9 @@ def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Optional[Dict[
             ret[k] = v
     return ret
 
+def _all_to_path(s: Set[Union[str, pathlib.Path]]) -> Set[pathlib.Path]:
+    return set(map(_to_path, s))
+
 
 class JobSpec(object):
     """A class that describes the details of a job."""
@@ -54,7 +58,11 @@ class JobSpec(object):
                  attributes: Optional[psij.job_attributes.JobAttributes] = None,
                  pre_launch: Union[str, pathlib.Path, None] = None,
                  post_launch: Union[str, pathlib.Path, None] = None,
-                 launcher: Optional[str] = None):
+                 launcher: Optional[str] = None,
+                 stage_in: Optional[Set[StageIn]] = None,
+                 stage_out: Optional[Set[StageOut]] = None,
+                 cleanup: Optional[Set[Union[str, pathlib.Path]]] = None,
+                 cleanup_on_failure: bool = True):
         """
         :param executable: An executable, such as "/bin/date".
         :param arguments: The argument list to be passed to the executable. Unlike with execve(),
@@ -88,6 +96,10 @@ class JobSpec(object):
             node as the pre-launch script.
         :param launcher: The name of a launcher to use, such as "mpirun", "srun", "single", etc.
             For a list of available launchers, see :ref:`Available Launchers <available-launchers>`.
+        :param stage_in: Specifies a set of files to be staged in before the job is launched.
+        :param stage_out: Specifies a set of files to be staged out after the job terminates.
+        :param cleanup: Specifies a set of files to remove after the stage out process.
+
 
         All constructor parameters are accessible as properties.
 
@@ -148,6 +160,9 @@ class JobSpec(object):
         self._pre_launch = _to_path(pre_launch)
         self._post_launch = _to_path(post_launch)
         self.launcher = launcher
+        self.stage_in = stage_in
+        self.stage_out = stage_out
+        self._cleanup = _all_to_path(cleanup)
 
         # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
         #       connector trying to access `job.spec.resources.process_count`
@@ -238,6 +253,14 @@ class JobSpec(object):
     @post_launch.setter
     def post_launch(self, post_launch: Union[str, pathlib.Path, None]) -> None:
         self._post_launch = _to_path(post_launch)
+
+    @property
+    def cleanup(self) -> Set[pathlib.Path]:
+        return self._cleanup
+
+    @cleanup.setter
+    def cleanup(self, cleanup: Set[Union[str, pathlib.Path]]) -> None:
+        self._cleanup = _all_to_path(cleanup)
 
     def __eq__(self, o: object) -> bool:
         """
