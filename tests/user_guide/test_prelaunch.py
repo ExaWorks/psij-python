@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from _test_tools import assert_completed
-from psij import Job, JobSpec, JobExecutor, JobState
+from psij import Job, JobSpec, JobExecutor
 
 
 def test_user_guide_pre_launch() -> None:

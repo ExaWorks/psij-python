@@ -28,7 +28,7 @@ def _read_file(path: Optional[Path]) -> str:
         return f.read()
 
 
-def assert_completed(job: Job, status: Optional[JobStatus], attached=False) -> None:
+def assert_completed(job: Job, status: Optional[JobStatus], attached: bool = False) -> None:
     assert status is not None
     if status.state != JobState.COMPLETED:
         if not attached:
@@ -41,6 +41,7 @@ def assert_completed(job: Job, status: Optional[JobStatus], attached=False) -> N
         else:
             raise AssertionError('Job not completed. Exit code: %s, Status message: %s'
                                  % (status.exit_code, status.message))
+
 
 def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) -> JobExecutor:
     if job is not None:
