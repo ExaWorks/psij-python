@@ -443,7 +443,7 @@ def _now():
 def _process_custom_attributes(item):
     if not hasattr(item, 'callspec'):
         return
-    if not 'execparams' in item.callspec.params:
+    if 'execparams' not in item.callspec.params:
         return
     ep: Optional[List[Dict[str, Dict[str, object]]]] = item.callspec.params['execparams']
     if ep.custom_attributes_raw is None:
