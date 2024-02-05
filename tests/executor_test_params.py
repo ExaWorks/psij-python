@@ -7,7 +7,8 @@ class ExecutorTestParams:
 
     def __init__(self, spec: str, queue_name: Optional[str] = None,
                  project_name: Optional[str] = None,
-                 custom_attributes: Optional[Dict[str, object]] = None) -> None:
+                 custom_attributes_raw: Optional[Dict[str, Dict[str, object]]] = None) \
+            -> None:
         """
         Construct a new instance.
 
@@ -35,7 +36,8 @@ class ExecutorTestParams:
 
         self.queue_name = queue_name
         self.project_name = project_name
-        self.custom_attributes = custom_attributes
+        self.custom_attributes_raw = custom_attributes_raw
+        self.custom_attributes: Dict[str, object] = {}
 
     def __repr__(self) -> str:
         """Returns a string representation of this object."""
