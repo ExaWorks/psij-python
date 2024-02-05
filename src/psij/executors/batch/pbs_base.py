@@ -11,7 +11,7 @@ import json
 
 _QSTAT_COMMAND = 'qstat'
 
-# This table maps PBS Pro state codes to the corresponding PSI/J
+# This table maps PBS state codes to the corresponding PSI/J
 # JobState.
 # See https://www.altair.com/pdfs/pbsworks/PBSReferenceGuide2021.1.pdf
 # page 361, section 8.1 "Job States"
@@ -39,14 +39,14 @@ _STATE_MAP = {
 }
 
 
-class PBSProExecutorConfig(BatchSchedulerExecutorConfig):
-    """A configuration class for the PBS executor."""
+class PBSExecutorConfig(BatchSchedulerExecutorConfig):
+    """A generic configuration class for PBS-type executors."""
 
     pass
 
 
-class PBSProJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for PBS.
+class GenericPBSJobExecutor(BatchSchedulerExecutor):
+    """A generic :class:`~psij.JobExecutor` for PBS-type schedulers.
 
     PBS, originally developed by NASA, is one of the oldest resource managers still in use.
     A number of variations are available: `PBS Pro <https://www.altair.com/pbs-professional/>`_,
@@ -60,7 +60,8 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
     Creates a batch script with #PBS directives when submitting a job.
     """
 
-    def __init__(self, url: Optional[str] = None, config: Optional[PBSProExecutorConfig] = None):
+    def __init__(self, generator: TemplatedScriptGenerator, url: Optional[str] = None,
+                 config: Optional[PBSExecutorConfig] = None) -> None:
         """
         Parameters
         ----------
@@ -69,11 +70,8 @@ class PBSProJobExecutor(BatchSchedulerExecutor):
         config
             An optional configuration for this executor.
         """
-        if not config:
-            config = PBSProExecutorConfig()
         super().__init__(url=url, config=config)
-        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbspro'
-                                                  / 'pbspro.mustache')
+        self.generator = generator
 
     # Submit methods
 
