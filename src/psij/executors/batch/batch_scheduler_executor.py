@@ -567,7 +567,11 @@ class BatchSchedulerExecutor(JobExecutor):
                 if status.message is None:
                     # only read output from submit script if another error message is not
                     # already present
-                    status.message = self._read_aux_file(job, '.out')
+                    out = self._read_aux_file(job, '.out')
+                    if out:
+                        launcher = self._get_launcher_from_job(job)
+                        if launcher.is_launcher_failure(out):
+                            status.message = launcher.get_launcher_failure_message(out)
                     logger.debug('Output from launcher: %s', status.message)
                 else:
                     self._delete_aux_file(job, '.out')
