@@ -8,13 +8,6 @@
 #SBATCH --chdir="{{.}}"
 {{/job.spec.directory}}
 
-{{#job.spec.inherit_environment}}
-#SBATCH --export=ALL
-{{/job.spec.inherit_environment}}
-{{^job.spec.inherit_environment}}
-#SBATCH --export=NONE
-{{/job.spec.inherit_environment}}
-
 {{#job.spec.resources}}
     {{#exclusive_node_use}}
 #SBATCH --exclusive
@@ -80,8 +73,16 @@ export PSIJ_NODEFILE
 
 
 {{#env}}
-#SBATCH --export={{name}}={{value}}
+export {{name}}={{value}}
 {{/env}}
+
+{{#job.spec.inherit_environment}}
+#SBATCH --export=ALL{{#env}},{{name}}{{/env}}
+{{/job.spec.inherit_environment}}
+{{^job.spec.inherit_environment}}
+#SBATCH --export={{#env}}{{name}},{{/env}}
+{{/job.spec.inherit_environment}}
+
 
 {{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the
