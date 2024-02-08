@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 {{#job.name}}
 #SBATCH --job-name="{{.}}"
 {{/job.name}}
@@ -67,21 +68,44 @@ only results in empty files that are not cleaned up}}
 #SBATCH -e /dev/null
 #SBATCH -o /dev/null
 
-PSIJ_NODEFILE="{{psij.script_dir}}/$SLURM_JOB_ID.nodefile"
-scontrol show hostnames >"$PSIJ_NODEFILE"
-export PSIJ_NODEFILE
-
+{{#job.spec.inherit_environment}}
+#SBATCH --export=ALL
+{{/job.spec.inherit_environment}}
+{{^job.spec.inherit_environment}}
+#SBATCH --export=NONE
+{{/job.spec.inherit_environment}}
 
 {{#env}}
 export {{name}}={{value}}
 {{/env}}
 
-{{#job.spec.inherit_environment}}
-#SBATCH --export=ALL{{#env}},{{name}}{{/env}}
-{{/job.spec.inherit_environment}}
-{{^job.spec.inherit_environment}}
-#SBATCH --export={{#env}}{{name}},{{/env}}
-{{/job.spec.inherit_environment}}
+{{#job.spec.resources}}
+    {{#process_count}}
+_PSIJ_PC={{.}}
+    {{/process_count}}
+    {{#processes_per_node}}
+_PSIJ_PPN={{.}}
+    {{/processes_per_node}}
+{{/job.spec.resources}}
+
+_PSIJ_NC=`scontrol show hostnames | wc -l`
+
+{{!Unlike PBS, Slurm only lists the nodes once in the nodelist, so, to bring it to uniform PBS
+form, we need to duplicate each node line by PPN, which we need to calculate}}
+if [ "$_PSIJ_PPN" == "" ]; then
+    if [ "$_PSIJ_NC" != "" ] && [ "$_PSIJ_PC" != "" ]; then
+        $_PSIJ_PPN=$((_PSIJ_PC/_PSIJ_NC))
+    fi
+fi
+
+PSIJ_NODEFILE="{{psij.script_dir}}/$SLURM_JOB_ID.nodefile"
+if [ "$_PSIJ_PPN" == "" ]; then
+    scontrol show hostnames >"$PSIJ_NODEFILE"
+else
+    scontrol show hostnames | while read NODE; do for _ in $(seq 1 1 $_PSIJ_PPN); do echo "$NODE"; done; done > "$PSIJ_NODEFILE"
+fi
+export PSIJ_NODEFILE
+
 
 
 {{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
