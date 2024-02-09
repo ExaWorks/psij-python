@@ -23,7 +23,7 @@ def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
 
 def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Dict[str, str]:
     if arg is None:
-        return dict()
+        return None
     ret = dict()
     for k, v in arg.items():
         if isinstance(v, int):
