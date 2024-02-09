@@ -32,7 +32,7 @@ def test_environment_types() -> None:
     spec.environment = {'foo': 'bar'}
     assert spec.environment['foo'] == 'bar'
 
-    spec.environment = {'foo': 'biz', 'bar': 42}
+    spec.environment = {'foo': 'biz', 'bar': 42}  # type: ignore
     assert spec.environment['foo'] == 'biz'
     assert spec.environment['bar'] == '42'
 

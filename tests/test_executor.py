@@ -126,7 +126,7 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
                           arguments=['-c', 'env > /tmp/t; echo -n $TEST_VAR$TEST_INT'],
                           stdout_path=outp))
         assert job.spec is not None
-        job.spec.environment = {'TEST_INT': 1, 'TEST_VAR': '_y_'}
+        job.spec.environment = {'TEST_INT': 1, 'TEST_VAR': '_y_'}  # type: ignore
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
