@@ -25,7 +25,7 @@ def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Dict[str, str]
     if arg is None:
         return dict()
     ret = dict()
-    for k,v in arg.items():
+    for k, v in arg.items():
         if isinstance(v, int):
             ret[k] = str(v)
         else:
@@ -41,7 +41,8 @@ class JobSpec(object):
                  # sphinx fails to find the class. Using Path in the getters and setters does not
                  # appear to trigger a problem.
                  directory: Union[str, pathlib.Path, None] = None, name: Optional[str] = None,
-                 inherit_environment: bool = True, environment: Optional[Dict[str, Union[str, int]]] = None,
+                 inherit_environment: bool = True,
+                 environment: Optional[Dict[str, Union[str, int]]] = None,
                  stdin_path: Union[str, pathlib.Path, None] = None,
                  stdout_path: Union[str, pathlib.Path, None] = None,
                  stderr_path: Union[str, pathlib.Path, None] = None,
