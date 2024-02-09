@@ -1,0 +1,71 @@
+#!/bin/bash
+
+
+{{#job.name}}
+#PBS -N="{{.}}"
+{{/job.name}}
+
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+
+{{#job.spec.resources}}
+    {{#process_count}}
+#PBS -l nodes={{job.spec.resources.computed_node_count}}:ppn={{.}}{{#job.spec.resources.gpu_cores_per_process}}:gpus={{.}}{{/job.spec.resources.gpu_cores_per_process}}
+    {{/process_count}}
+    {{#exclusive_node_use}}
+#PBS -n
+    {{/exclusive_node_use}}
+{{/job.spec.resources}}
+
+{{#formatted_job_duration}}
+#PBS -l walltime={{.}}
+{{/formatted_job_duration}}
+
+{{#job.spec.attributes}}
+    {{#project_name}}
+#PBS -P {{.}}
+    {{/project_name}}
+    {{#queue_name}}
+#PBS -q {{.}}
+    {{/queue_name}}
+    {{!PBS uses specially named queues for reservations, so we send the job to the respective
+    queue when a reservation ID is specified.}}
+    {{#reservation_id}}
+#PBS -q {{.}}
+    {{/reservation_id}}
+{{/job.spec.attributes}}
+
+{{#custom_attributes}}
+    {{#pbs}}
+#PBS -{{key}} "{{value}}"
+    {{/pbs}}
+{{/custom_attributes}}
+
+
+{{!since we redirect the output manually, below, tell pbs not to do its own thing, since it
+only results in empty files that are not cleaned up}}
+#PBS -e /dev/null
+#PBS -o /dev/null
+
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+{{#env}}
+#PBS -v {{name}}={{value}}
+{{/env}}
+
+PSIJ_NODEFILE="$PBS_NODEFILE"
+export PSIJ_NODEFILE
+
+
+{{#job.spec.directory}}
+cd "{{.}}"
+{{/job.spec.directory}}
+
+exec &>> "{{psij.script_dir}}/$PBS_JOBID.out"
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+{{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
+echo "$?" > "{{psij.script_dir}}/$PBS_JOBID.ec"

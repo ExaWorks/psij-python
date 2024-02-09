@@ -12,6 +12,15 @@ sphinx_rtd_theme
 sphinx-tabs==3.2.0
 sphinx-multiversion
 
+# These are not requirements for PSI/J, but we must pin the version
+# since Sphinx 4.5.0 does not properly do so and later versions of
+# these plugins require Sphinx >= 5.0.0
+sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-qthelp==1.0.3
+
 # For the web version of the docs
 cloud_sptheme == 1.10.1.post20200504175005
 # sphinx-autodoc-typehints

@@ -228,6 +228,11 @@ class BatchSchedulerExecutor(JobExecutor):
             self._set_job_status(job, JobStatus(JobState.QUEUED,
                                                 metadata={'native_id': job.native_id}))
         except subprocess.CalledProcessError as ex:
+            if logger.isEnabledFor(logging.DEBUG):
+                with submit_file_path.open('r') as submit_file:
+                    script = submit_file.read()
+                logger.debug('Job %s: submit script is: %s' % (job.id, script))
+
             raise SubmitException(ex.output) from None
 
         self._queue_poll_thread.register_job(job)
@@ -497,7 +502,7 @@ class BatchSchedulerExecutor(JobExecutor):
     def _format_duration(self, d: timedelta) -> str:
         # the default is hh:mm:ss, with hh not limited to 24; this is the least ambiguous
         # choice
-        return '%s:%s:%s' % (d.total_seconds() // 3600, (d.seconds // 60) % 60, d.seconds % 60)
+        return '%s:%s:%s' % (int(d.total_seconds()) // 3600, (d.seconds // 60) % 60, d.seconds % 60)
 
     def _run_command(self, cmd: List[str]) -> str:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -562,7 +567,11 @@ class BatchSchedulerExecutor(JobExecutor):
                 if status.message is None:
                     # only read output from submit script if another error message is not
                     # already present
-                    status.message = self._read_aux_file(job, '.out')
+                    out = self._read_aux_file(job, '.out')
+                    if out:
+                        launcher = self._get_launcher_from_job(job)
+                        if launcher.is_launcher_failure(out):
+                            status.message = launcher.get_launcher_failure_message(out)
                     logger.debug('Output from launcher: %s', status.message)
                 else:
                     self._delete_aux_file(job, '.out')
