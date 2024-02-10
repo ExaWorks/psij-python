@@ -67,6 +67,7 @@ def _deploy(path: Union[Path, str]) -> Iterator[Path]:
         path = Path(path)
     with tempfile.NamedTemporaryFile(dir=Path.home() / '.psij' / 'test', delete=False) as df:
         try:
+            df.close()
             shutil.copyfile(path, df.name)
             yield Path(df.name)
         finally:
