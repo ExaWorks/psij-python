@@ -11,7 +11,7 @@ def test_user_guide_pre_launch() -> None:
     with _deploy(Path(script_dir) / 'pre_launch.sh') as pre_launch_sh_path:
         # START
         ex = JobExecutor.get_instance('local')
-        spec = JobSpec('/bin/bash', ['-c', 'module is-loaded test'])
+        spec = JobSpec('/bin/bash', ['-c', 'xmodule is-loaded test'])
         spec.pre_launch = pre_launch_sh_path
 
         job = Job(spec)

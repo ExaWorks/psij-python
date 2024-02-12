@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module() {
+xmodule() {
     case "$1" in
         load)
             export MODULE_TEST_LOADED="1"
@@ -16,6 +16,6 @@ module() {
      esac
 }
 
-export -f module
+export -f xmodule
 
-module load test
+xmodule load test
