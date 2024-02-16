@@ -21,7 +21,7 @@ def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
         return pathlib.Path(arg)
 
 
-def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Dict[str, str]:
+def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Optional[Dict[str, str]]:
     if arg is None:
         return None
     ret = dict()
