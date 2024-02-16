@@ -94,7 +94,7 @@ _PSIJ_NC=`scontrol show hostnames | wc -l`
 form, we need to duplicate each node line by PPN, which we need to calculate}}
 if [ "$_PSIJ_PPN" == "" ]; then
     if [ "$_PSIJ_NC" != "" ] && [ "$_PSIJ_PC" != "" ]; then
-        $_PSIJ_PPN=$((_PSIJ_PC/_PSIJ_NC))
+        _PSIJ_PPN=$((_PSIJ_PC/_PSIJ_NC))
     fi
 fi
 

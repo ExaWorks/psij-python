@@ -311,7 +311,7 @@ following example shows:
 .. literalinclude:: ../tests/user_guide/test_prelaunch.py
     :language: python
     :dedent: 4
-    :lines: 12-18
+    :lines: 13-19
 
 where the contents of ``pre_launch.sh`` is
 

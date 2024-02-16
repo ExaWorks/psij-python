@@ -1,6 +1,10 @@
+import os
+import shutil
+import tempfile
+from contextlib import contextmanager
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union, Iterator
 
 from executor_test_params import ExecutorTestParams
 
@@ -53,3 +57,18 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) ->
         if ep.queue_name is not None:
             job.spec.attributes.queue_name = ep.queue_name
     return JobExecutor.get_instance(ep.executor, url=ep.url)
+
+
+@contextmanager
+def _deploy(path: Union[Path, str]) -> Iterator[Path]:
+    # Copies `path` to a directory assumed to be on a shared FS (~/.psij/test) and
+    # returns the resulting path
+    if isinstance(path, str):
+        path = Path(path)
+    with tempfile.NamedTemporaryFile(dir=Path.home() / '.psij' / 'test', delete=False) as df:
+        try:
+            df.close()
+            shutil.copyfile(path, df.name)
+            yield Path(df.name)
+        finally:
+            os.unlink(df.name)
