@@ -65,7 +65,7 @@ class JobExecutor(ABC):
         Verifies that various aspects of the job are correctly specified. This includes precisely
         the following checks:
         * the job has a non-null specification
-        * job.spec.environment is a Dict[str, str]
+        * job.spec.environment is a Dict[str, [str | int]]
 
         While this method makes a fair attempt at ensuring the validity of the job, it makes no
         such guarantees. Specifically, if an executor implementation requires checks not listed
@@ -99,9 +99,9 @@ class JobExecutor(ABC):
                     if not isinstance(k, str):
                         raise TypeError('environment key "%s" is not a string (%s)'
                                         % (k, type(k).__name__))
-                    if not isinstance(v, str):
-                        raise TypeError('environment key "%s" has non-string value (%s)'
-                                        % (k, type(v).__name__))
+                    if not isinstance(v, (str, int)):
+                        raise TypeError('environment value for key "%s" must be string '
+                                        'or int type (%s)' % (k, type(v).__name__))
 
         if job.executor is not None:
             raise InvalidJobException('Job is already associated with an executor')

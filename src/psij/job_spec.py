@@ -21,6 +21,18 @@ def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
         return pathlib.Path(arg)
 
 
+def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Optional[Dict[str, str]]:
+    if arg is None:
+        return None
+    ret = dict()
+    for k, v in arg.items():
+        if isinstance(v, int):
+            ret[k] = str(v)
+        else:
+            ret[k] = v
+    return ret
+
+
 class JobSpec(object):
     """A class that describes the details of a job."""
 
@@ -29,7 +41,8 @@ class JobSpec(object):
                  # sphinx fails to find the class. Using Path in the getters and setters does not
                  # appear to trigger a problem.
                  directory: Union[str, pathlib.Path, None] = None, name: Optional[str] = None,
-                 inherit_environment: bool = True, environment: Optional[Dict[str, str]] = None,
+                 inherit_environment: bool = True,
+                 environment: Optional[Dict[str, Union[str, int]]] = None,
                  stdin_path: Union[str, pathlib.Path, None] = None,
                  stdout_path: Union[str, pathlib.Path, None] = None,
                  stderr_path: Union[str, pathlib.Path, None] = None,
@@ -125,7 +138,7 @@ class JobSpec(object):
         # care of the conversion, but mypy gets confused
         self._directory = _to_path(directory)
         self.inherit_environment = inherit_environment
-        self.environment = environment
+        self.environment = _to_env_dict(environment)
         self._stdin_path = _to_path(stdin_path)
         self._stdout_path = _to_path(stdout_path)
         self._stderr_path = _to_path(stderr_path)
@@ -151,6 +164,16 @@ class JobSpec(object):
     @name.setter
     def name(self, value: Optional[str]) -> None:
         self._name = value
+
+    @property
+    def environment(self) -> Optional[Dict[str, str]]:
+        """Return the environment dict."""
+        return self._environment
+
+    @environment.setter
+    def environment(self, env: Optional[Dict[str, Union[str, int]]]) -> None:
+        """Ensure env dict values to be string typed."""
+        self._environment = _to_env_dict(env)
 
     @property
     def directory(self) -> Optional[pathlib.Path]:

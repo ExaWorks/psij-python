@@ -122,10 +122,11 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
     _make_test_dir()
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
         outp = Path(td, 'stdout.txt')
-        job = Job(JobSpec(executable='/bin/bash', arguments=['-c', 'echo -n $TEST_VAR'],
+        job = Job(JobSpec(executable='/bin/bash',
+                          arguments=['-c', 'env > /tmp/t; echo -n $TEST_VAR$TEST_INT'],
                           stdout_path=outp))
         assert job.spec is not None
-        job.spec.environment = {'TEST_VAR': '_y_'}
+        job.spec.environment = {'TEST_INT': 1, 'TEST_VAR': '_y_'}  # type: ignore
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))
@@ -133,7 +134,7 @@ def test_env_var(execparams: ExecutorTestParams) -> None:
         f = outp.open("r")
         contents = f.read()
         f.close()
-        assert contents == '_y_'
+        assert contents == '_y_1'
 
 
 def test_stdin_redirect(execparams: ExecutorTestParams) -> None:

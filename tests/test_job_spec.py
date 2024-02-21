@@ -12,16 +12,14 @@ def _test_spec(spec: JobSpec) -> None:
 
 
 def test_environment_types() -> None:
-    with pytest.raises(TypeError):
-        _test_spec(JobSpec(environment={'foo': 1}))  # type: ignore
 
     with pytest.raises(TypeError):
-        _test_spec(JobSpec(environment={1: 'foo'}))  # type: ignore
+        _test_spec(JobSpec(executable='true', environment={1: 'foo'}))  # type: ignore
 
     with pytest.raises(TypeError):
-        spec = JobSpec()
+        spec = JobSpec(executable='true')
         spec.environment = {'foo': 'bar'}
-        spec.environment['buz'] = 2  # type: ignore
+        spec.environment['buz'] = [2]  # type: ignore
         _test_spec(spec)
 
     spec = JobSpec()
@@ -34,8 +32,9 @@ def test_environment_types() -> None:
     spec.environment = {'foo': 'bar'}
     assert spec.environment['foo'] == 'bar'
 
-    spec.environment = {'foo': 'biz'}
+    spec.environment = {'foo': 'biz', 'bar': 42}  # type: ignore
     assert spec.environment['foo'] == 'biz'
+    assert spec.environment['bar'] == '42'
 
 
 def test_path_conversion() -> None:
