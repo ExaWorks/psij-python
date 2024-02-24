@@ -126,7 +126,7 @@ class _StatusUpdater(SingletonThread):
             try:
                 del self._jobs[job.id]
             except KeyError:
-                # There are cases when it's difficult to esnure that this method is only called
+                # There are cases when it's difficult to ensure that this method is only called
                 # once for each job. Instead, ignore errors here, since the ultimate goal is to
                 # remove the job from the _jobs dictionary.
                 pass
