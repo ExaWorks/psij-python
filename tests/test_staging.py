@@ -92,8 +92,8 @@ def test_stageout(execparams: ExecutorTestParams, mode: StagingMode) -> None:
 def test_stageout_flags1(execparams: ExecutorTestParams) -> None:
     if execparams.executor != 'local' and execparams.launcher != 'single':
         pytest.skip()
-    with (_temppath() as out1_path, _temppath() as out2_path, _temppath() as err_path,
-          _tempdir() as dir):
+    with _temppath() as out1_path, _temppath() as out2_path, _temppath() as err_path, \
+            _tempdir() as dir:
 
         out2_path.unlink()
         job = Job(JobSpec('/bin/echo', ['-n', 'ABC123'],
