@@ -44,26 +44,16 @@ done
 
 export PSIJ_NODEFILE
 
-update_status STAGEIN
-{{#stagein_set}}
-    do_stagein "{{source}}" "{{target}}" {{mode}}
-{{/stagein_set}}
-
+{{> stagein}}
 update_status ACTIVE
+
 {{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}
 {{name}}="{{value}}" \{{/env}}
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
-_EC="$?"
+_PSIJ_JOB_EC="$?"
 
-update_status STAGEOUT
-{{#stageout_set}}
-    do_stageout "{{source}}" "{{target}}" {{mode}} {{flags}} $_EC
-{{/stageout_set}}
+{{> stageout}}
+{{> cleanup}}
 
-update_status CLEANUP
-{{#cleanup_set}}
-    do_cleanup {{.}}
-{{/cleanup_set}}
 
-echo "$_EC" > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"
->>>>>>> 554b43e (Initial staging commit)
+echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"

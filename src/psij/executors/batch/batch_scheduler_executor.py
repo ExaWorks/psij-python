@@ -1,12 +1,7 @@
-import atexit
-import fcntl
-import io
 import logging
 import os
-import tempfile
+import weakref
 
-import psutil
-import socket
 import subprocess
 import time
 import traceback
@@ -14,14 +9,14 @@ from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, Union, IO
+from typing import Optional, List, Dict, Collection, cast, Union, IO, Set
 
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
-from psij.utils import SingletonThread
+from psij.utils import _StatusUpdater
 
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
@@ -207,18 +202,14 @@ class BatchSchedulerExecutor(JobExecutor):
             configuration is used.
         """
         super().__init__(url=url, config=config if config else BatchSchedulerExecutorConfig())
+        self._queue_poll_thread = self._start_queue_poll_thread()
         assert config
         self.work_directory = config.work_directory / self.name
-        self._queue_poll_thread = self._start_queue_poll_thread()
-
-    def _ensure_work_dir(self) -> None:
         self.work_directory.mkdir(parents=True, exist_ok=True)
 
     def submit(self, job: Job) -> None:
         """See :func:`~psij.JobExecutor.submit`."""
         logger.info('Job %s: submitting', job.id)
-        self._ensure_work_dir()
-
         self._check_job(job)
 
         context = self._create_script_context(job)
@@ -273,8 +264,6 @@ class BatchSchedulerExecutor(JobExecutor):
             except SubmitException:
                 # re-raise
                 raise
-        finally:
-            self._status_update_thread.unregister_job(job)
 
     def attach(self, job: Job, native_id: str) -> None:
         """Attaches a job to a native job.
@@ -499,7 +488,10 @@ class BatchSchedulerExecutor(JobExecutor):
             'psij': {
                 'lib': FUNCTION_LIBRARY,
                 'launch_command': launch_command,
-                'script_dir': str(self.work_directory)
+                'script_dir': str(self.work_directory),
+                'us_file': self._queue_poll_thread.status_updater.update_file_name,
+                'us_port': self._queue_poll_thread.status_updater.update_port,
+                'us_addrs': ', '.join(self._queue_poll_thread.status_updater.ips)
             }
         }
         assert job.spec is not None
@@ -542,7 +534,7 @@ class BatchSchedulerExecutor(JobExecutor):
             # we have to check explicitly for the boolean value rather than truthiness
             return
         if status.state.final:
-            self._status_update_thread.unregister_job(job)
+            self._queue_poll_thread.unregister_job(job)
             if job.native_id:
                 self._clean_submit_script(job)
                 self._read_aux_files(job, status)
@@ -643,35 +635,46 @@ class _QueuePollThread(Thread):
         super().__init__()
         self.name = name
         self.daemon = True
-        self.config = config
-        self.executor = executor
+        # We don't at this time cache executor instances. Even if we did, it may be wise
+        # to shut down queue polling threads when their executors (the only entities that
+        # use them) are garbage collected. So we wrap the references to the executor and
+        # config in a weak ref and exit when the ref becomes invalid.
+        self.config = weakref.ref(config)
+        self.executor = weakref.ref(executor)
         # native_id -> job
-        self._jobs: Dict[str, List[Job]] = {}
+        self._jobs: Dict[str, Set[Job]] = {}
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()
-        self._status_updater = _StatusUpdater(config, executor)
+        self.status_updater = cast(_StatusUpdater, _StatusUpdater.get_instance())
+        self.active = True
 
     def run(self) -> None:
         logger.debug('Executor %s: queue poll thread started', self.executor)
-        time.sleep(self.config.initial_queue_polling_delay)
-        while True:
-            self._poll()
-            start = time.time()
-            now = start
-            while now - start < self.config.queue_polling_interval:
-                self._status_updater.step()
-                time.sleep(1)
-                now = time.time()
+        try:
+            time.sleep(self.get_config().initial_queue_polling_delay)
+            while self.active:
+                self._poll()
+                start = time.time()
+                now = start
+                while now - start < self.get_config().queue_polling_interval:
+                    time.sleep(1)
+                    now = time.time()
+        except StopIteration:
+            logger.info('Thread %s exiting due to executor collection' % self)
+
+    def stop(self) -> None:
+        self.active = False
 
     def _poll(self) -> None:
+        executor = self.get_executor()
         with self._jobs_lock:
             if len(self._jobs) == 0:
                 return
             jobs_copy = dict(self._jobs)
         logger.info('Polling for %s jobs', len(jobs_copy))
         try:
-            out = self.executor._run_command(self.executor.get_status_command(jobs_copy.keys()))
+            out = executor._run_command(executor.get_status_command(jobs_copy.keys()))
         except subprocess.CalledProcessError as ex:
             out = ex.output
             exit_code = ex.returncode
@@ -685,27 +688,23 @@ class _QueuePollThread(Thread):
             self._poll_error_count = 0
         logger.debug('Output from status command: %s', out)
         try:
-            status_map = self.executor.parse_status_output(exit_code, out)
+            status_map = executor.parse_status_output(exit_code, out)
         except Exception as ex:
             self._handle_poll_error(False,
                                     ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
         try:
-            for native_id, job_list in jobs_copy.items():
+            for native_id, job_set in jobs_copy.items():
                 try:
                     status = self._get_job_status(native_id, status_map)
                 except Exception:
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())
-                for job in job_list:
-                    self.executor._set_job_status(job, status)
-                if status.state.final:
-                    with self._jobs_lock:
-                        del self._jobs[native_id]
-                    for job in job_list:
-                        self._status_updater.unregister_job(job)
+
+                for job in job_set:
+                    executor._set_job_status(job, status)
         except Exception as ex:
             msg = traceback.format_exc()
             self._handle_poll_error(True, ex, 'Error updating job statuses {}'.format(msg))
@@ -719,7 +718,7 @@ class _QueuePollThread(Thread):
     def _handle_poll_error(self, immediate: bool, ex: Exception, msg: str) -> None:
         logger.warning('Polling error: %s', msg)
         self._poll_error_count += 1
-        if immediate or (self._poll_error_count > self.config.queue_polling_error_threshold):
+        if immediate or (self._poll_error_count > self.get_config().queue_polling_error_threshold):
             self._poll_error_count = 0
             # fail all jobs
             with self._jobs_lock:
@@ -731,106 +730,47 @@ class _QueuePollThread(Thread):
                 assert len(self._jobs) > 0
                 jobs_copy = dict(self._jobs)
                 self._jobs.clear()
-            for job_list in jobs_copy.values():
-                for job in job_list:
-                    self._status_updater.unregister_job(job)
-                    self.executor._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
+            for job_set in jobs_copy.values():
+                for job in job_set:
+                    self.unregister_job(job)
+                    self.get_executor()._set_job_status(job, JobStatus(JobState.FAILED,
+                                                                       message=msg))
 
     def register_job(self, job: Job) -> None:
-        self._status_updater.register_job(job)
+        self.status_updater.register_job(job, self.get_executor())
         assert job.native_id
         logger.info('Job %s: registering', job.id)
         with self._jobs_lock:
             native_id = job.native_id
-            if native_id not in self._jobs:
-                self._jobs[native_id] = [job]
-            else:
-                self._jobs[job.native_id].append(job)
-
-class _StatusUpdater:
-    # we are expecting short messages in the form <jobid> <status>
-    RECV_BUFSZ = 2048
-
-    def __init__(self, config: BatchSchedulerExecutorConfig,
-                 executor: BatchSchedulerExecutor) -> None:
-        self.config = config
-        self.executor = executor
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.setblocking(False)
-        self.socket.bind(('', 0))
-        self.port = self.socket.getsockname()[1]
-        self.ips = self._get_ips()
-        print('IPS: %s' % self.ips)
-        print('Port: %s' % self.port)
-        self._create_update_file()
-        print('Update file: %s' % self.update_file.name)
-        self.partial_file_data = ''
-        self.partial_net_data = ''
-        self._jobs = {}
-        self._jobs_lock = RLock()
-
-    def _get_ips(self) -> List[str]:
-        addrs = psutil.net_if_addrs()
-        r = []
-        for name, l in addrs.items():
-            if name == 'lo':
-                continue
-            for a in l:
-                if a.family == socket.AddressFamily.AF_INET:
-                    r.append(a.address)
-        return r
-
-    def _create_update_file(self) -> None:
-        f = tempfile.NamedTemporaryFile(dir=self.config.work_directory, prefix='supd_',
-                                        delete=False)
-        name = f.name
-        atexit.register(os.remove, name)
-        f.close()
-        self.update_file = open(name, 'r+b')
-        self.update_file.seek(0, io.SEEK_END)
-        self.update_file_pos = self.update_file.tell()
-
-    def register_job(self, job: Job) -> None:
-        with self._jobs_lock:
-            self._jobs[job.id] = job
+            try:
+                self._jobs[native_id].add(job)
+            except KeyError:
+                self._jobs[native_id] = {job}
 
     def unregister_job(self, job: Job) -> None:
+        self.status_updater.unregister_job(job)
+        assert job.native_id
+        logger.info('Job %s: unregistering', job.id)
         with self._jobs_lock:
-            del self._jobs[job.id]
-
-    def step(self) -> None:
-        self.update_file.seek(0, io.SEEK_END)
-        pos = self.update_file.tell()
-        if pos > self.update_file_pos:
-            self.update_file.seek(self.update_file_pos, io.SEEK_SET)
-            n = pos - self.update_file_pos
-            self._process_update_data(self.update_file.read(n))
-            self.update_file_pos = pos
-        else:
+            native_id = job.native_id
             try:
-                data = self.socket.recv(_StatusUpdater.RECV_BUFSZ)
-                self._process_update_data(data)
-            except socket.error as e:
+                del self._jobs[native_id]
+            except KeyError:
+                # If two or more jobs are attached to the same native ID, the
+                # first one being unregistered would already have removed
+                # the dict entry
                 pass
 
-    def _process_update_data(self, data: bytes) -> None:
-        sdata = data.decode('utf-8')
-        lines = sdata.splitlines()
-        for line in lines:
-            print('Status update line: %s' % line)
-            els = line.split()
-            if len(els) != 2:
-                logger.warning('Invalid status update message received: %s' % line)
-                continue
-            job_id = els[0]
-            state = JobState.from_name(els[1])
-            job = None
-            with self._jobs_lock:
-                try:
-                    job = self._jobs[job_id]
-                except KeyError:
-                    logger.warning('Received status updated for inexistent job with id %s' % job_id)
-            if job:
-                self.executor._set_job_status(job, JobStatus(state))
+    def get_config(self) -> BatchSchedulerExecutorConfig:
+        config = self.config()
+        if config:
+            return config
+        else:
+            raise StopIteration()
 
-
+    def get_executor(self) -> BatchSchedulerExecutor:
+        ex = self.executor()
+        if ex:
+            return ex
+        else:
+            raise StopIteration()

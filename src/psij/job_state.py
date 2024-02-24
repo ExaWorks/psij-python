@@ -4,6 +4,7 @@ from typing import Optional
 
 _NAME_MAP = {}
 
+
 class JobState(bytes, Enum):
     """
     An enumeration holding the possible job states.
@@ -130,6 +131,11 @@ class JobState(bytes, Enum):
 
     @staticmethod
     def from_name(name: str) -> 'JobState':
+        """
+        Returns a `JobState` object corresponding to its string representation.
+
+        This method is such that `state == JobState.from_name(str(state))`.
+        """
         return _NAME_MAP[name]
 
 
@@ -144,6 +150,7 @@ _PREV_STATE = {
     JobState.FAILED: None,
     JobState.CANCELED: None
 }
+
 
 class JobStateOrder:
     """A class that can be used to reconstruct missing states."""

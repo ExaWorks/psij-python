@@ -17,3 +17,4 @@ psi_j_python.egg-info/
 venv*
 .venv*
 build/
+.packages/

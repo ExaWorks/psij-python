@@ -13,10 +13,15 @@ from psij.staging import StageIn, StageOut
 
 
 def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
+    if arg is None:
+        return None
+    else:
+        return _to_path_strict(arg)
+
+
+def _to_path_strict(arg: Union[str, pathlib.Path]) -> pathlib.Path:
     if isinstance(arg, pathlib.Path):
         return arg
-    elif arg is None:
-        return None
     else:
         assert isinstance(arg, str)
         return pathlib.Path(arg)
@@ -33,8 +38,11 @@ def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Optional[Dict[
             ret[k] = v
     return ret
 
-def _all_to_path(s: Set[Union[str, pathlib.Path]]) -> Set[pathlib.Path]:
-    return set(map(_to_path, s))
+
+def _all_to_path(s: Optional[Set[Union[str, pathlib.Path]]]) -> Optional[Set[pathlib.Path]]:
+    if s is None:
+        return None
+    return {_to_path_strict(x) for x in s if x is not None}
 
 
 class JobSpec(object):
@@ -163,6 +171,7 @@ class JobSpec(object):
         self.stage_in = stage_in
         self.stage_out = stage_out
         self._cleanup = _all_to_path(cleanup)
+        self.cleanup_on_failure = cleanup_on_failure
 
         # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
         #       connector trying to access `job.spec.resources.process_count`
@@ -255,7 +264,8 @@ class JobSpec(object):
         self._post_launch = _to_path(post_launch)
 
     @property
-    def cleanup(self) -> Set[pathlib.Path]:
+    def cleanup(self) -> Optional[Set[pathlib.Path]]:
+        """An optional set of cleanup directives."""
         return self._cleanup
 
     @cleanup.setter

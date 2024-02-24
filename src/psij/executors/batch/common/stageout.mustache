@@ -1,0 +1,5 @@
+update_status STAGE_OUT
+{{#job.spec.stage_out}}
+do_stageout "{{source}}" "{{target.path}}" {{mode}} {{flags}} $_PSIJ_JOB_EC \
+    "{{{target.scheme}}}" "{{#target.hostname}}{{{.}}}{{#target.port}}:{{{.}}}{{/target.port}}{{/target.hostname}}"
+{{/job.spec.stage_out}}

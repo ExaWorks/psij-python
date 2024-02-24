@@ -46,9 +46,14 @@ only results in empty files that are not cleaned up}}
 #COBALT -e /dev/null
 #COBALT -o /dev/null
 
+{{> batch_lib}}
+
 {{!like PBS, this is also cheap and there is not need to check setting}}
 PSIJ_NODEFILE="$COBALT_NODEFILE"
 export PSIJ_NODEFILE
+
+{{> stagein}}
+update_status ACTIVE
 
 {{!redirect output here instead of through #COBALT directive since COBALT_JOB_ID is not available
 when the directives are evaluated; the reason for using the job id in the first place being the
@@ -56,6 +61,10 @@ same as for the exit code file.}}
 exec &>> "{{psij.script_dir}}/$COBALT_JOBID.out"
 
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+_PSIJ_JOB_EC=$?
+
+{{> stageout}}
+{{> cleanup}}
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
-echo "$?" > "{{psij.script_dir}}/$COBALT_JOBID.ec"
+echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$COBALT_JOBID.ec"
