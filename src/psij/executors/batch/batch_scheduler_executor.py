@@ -541,8 +541,12 @@ class BatchSchedulerExecutor(JobExecutor):
             assert isinstance(self.config, BatchSchedulerExecutorConfig)
             if not self.config.keep_files:
                 submit_file_path = self.work_directory / (job.id + '.job')
-                if submit_file_path.exists():
+                try:
                     submit_file_path.unlink()
+                except FileNotFoundError:
+                    # this can reasonably happen for attached jobs when the main
+                    # job cleans up the script instead
+                    pass
         except Exception as ex:
             logger.warning('Job %s: failed clean submit script: %s', job.id, ex)
 
