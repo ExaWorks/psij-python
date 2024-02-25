@@ -8,11 +8,13 @@ import os
 import re
 import secrets
 import shutil
+import signal
 import socket
 import subprocess
 import sys
 import threading
 import time
+import traceback
 from functools import partial
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -74,6 +76,22 @@ def pytest_addoption(parser):
     parser.addoption('--minimal-uploads', action='store_true', default=False,
                      help='Enables minimal uploads mode, which restricts the information that '
                           'is uploaded to the test aggregation server. ')
+
+
+def debug(sig, frame):
+    with open('/tmp/python-dump.txt', 'w') as f:
+        f.write('Test')
+        try:
+            for thr in threading.enumerate():
+                f.write(str(thr))
+                f.write('\n')
+                traceback.print_stack(sys._current_frames()[thr.ident], file=f)
+                f.write('\n\n')
+        except Exception as ex:
+            f.write(str(ex))
+
+
+signal.signal(signal.SIGUSR1, debug)  # Register handler
 
 
 def _get_executors(config: Dict[str, str]) -> List[str]:
