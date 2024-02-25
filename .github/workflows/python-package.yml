@@ -55,6 +55,7 @@ jobs:
           chmod 600 "$HOME/.ssh/authorized_keys"
           ls -la /etc/init.d/
           sudo /etc/init.d/ssh start
+          curl https://api.ipify.org
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-connector-radical.txt
