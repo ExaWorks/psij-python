@@ -145,12 +145,18 @@ class _StatusUpdater(SingletonThread):
                 self._process_update_data(data)
             except TimeoutError:
                 pass
+            except socket.timeout:
+                # before 3.10, this was a separate exception from TimeoutError
+                pass
             except BlockingIOError:
                 pass
 
     def run(self) -> None:
         while True:
-            self.step()
+            try:
+                self.step()
+            except Exception:
+                logger.exception('Exception in status updater thread. Ignoring.')
 
     def flush(self) -> None:
         # Ensures that, upon return from this call, all updates available before this call have
