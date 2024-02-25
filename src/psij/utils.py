@@ -162,7 +162,9 @@ class _StatusUpdater(SingletonThread):
         # Ensures that, upon return from this call, all updates available before this call have
         # been processed. To do so, we send a UDP packet to the socket to wake it up and wait until
         # it is received. This does not guarantee that file-based updates are necessarily
-        # processes, since that depends on many factors.
+        # processed, since that depends on many factors.
+        # On the minus side, this method, as implemented, can cause deadlocks if the socket
+        # reads fail for unexpected reasons. This should probably be accounted for.
         token = '_SYNC ' + str(random.getrandbits(128))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
@@ -170,6 +172,7 @@ class _StatusUpdater(SingletonThread):
         while token not in self._sync_ids:
             time.sleep(delay)
             delay *= 2
+        self._sync_ids.remove(token)
 
     def _process_update_data(self, data: bytes) -> None:
         sdata = data.decode('utf-8')
