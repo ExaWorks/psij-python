@@ -18,6 +18,7 @@ class TestCallbacks(TestCase):
 
     def state_cb(self, job: psij.Job, status: psij.JobStatus) -> None:
         """State callback."""
+        print('status change: %s' % status)
         self._cb_states.append(status.state)
 
     def test_job_callbacks(self) -> None:
@@ -28,6 +29,8 @@ class TestCallbacks(TestCase):
         jex = psij.JobExecutor.get_instance(name='local')
         jex.submit(job)
         job.wait()
+
+        print('States: %s' % self._cb_states)
 
         self.assertEqual(len(self._cb_states), 6)
         self.assertIn(psij.JobState.QUEUED, self._cb_states)
@@ -60,6 +63,8 @@ class TestCallbacks(TestCase):
         jex.set_job_status_callback(self.state_cb)
         jex.submit(job)
         job.wait()
+
+        print('States: %s' % self._cb_states)
 
         self.assertEqual(len(self._cb_states), 6)
         self.assertIn(psij.JobState.QUEUED, self._cb_states)
