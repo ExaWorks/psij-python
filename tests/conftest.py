@@ -79,6 +79,7 @@ def pytest_addoption(parser):
 
 
 def debug(sig, frame):
+    print('Dumping thread info')
     with open('/tmp/python-dump.txt', 'w') as f:
         try:
             for thr in threading.enumerate():
@@ -87,6 +88,7 @@ def debug(sig, frame):
                 traceback.print_stack(sys._current_frames()[thr.ident], file=f)
                 f.write('\n\n')
         except Exception as ex:
+            logger.exception('Failed to dump thread info')
             f.write(str(ex))
 
 
