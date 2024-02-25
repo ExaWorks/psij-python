@@ -8,4 +8,4 @@ def test_user_guide_job_wait_active() -> None:
     status = job.wait(target_states=[JobState.ACTIVE])
     assert status is not None
     assert status.state == JobState.ACTIVE
-    job.wait() # prevent logging messages from showing up after test completes
+    job.wait()  # prevent logging messages from showing up after test completes
