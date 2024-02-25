@@ -38,10 +38,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Test with pytest
-      uses: lhotari/action-upterm@v1
+    - uses: lhotari/action-upterm@v1
       with:
         limit-access-to-actor: true
-      uses: addnab/docker-run-action@v3
+    - uses: addnab/docker-run-action@v3
       with:
         image: fluxrm/flux-core:focal
         options: -v ${{ github.workspace }}:/workspace -u root
