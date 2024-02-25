@@ -80,7 +80,6 @@ def pytest_addoption(parser):
 
 def debug(sig, frame):
     with open('/tmp/python-dump.txt', 'w') as f:
-        f.write('Test')
         try:
             for thr in threading.enumerate():
                 f.write(str(thr))
@@ -91,7 +90,8 @@ def debug(sig, frame):
             f.write(str(ex))
 
 
-signal.signal(signal.SIGUSR1, debug)  # Register handler
+signal.signal(signal.SIGUSR1, debug)
+print('SIGUSR1 handler installed.')
 
 
 def _get_executors(config: Dict[str, str]) -> List[str]:
