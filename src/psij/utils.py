@@ -201,6 +201,6 @@ class _StatusUpdater(SingletonThread):
                 try:
                     (job, executor) = self._jobs[job_id]
                 except KeyError:
-                    logger.debug('Received status updated for inexistent job with id %s' % job_id)
+                    pass
             if job:
                 executor._set_job_status(job, JobStatus(state))
