@@ -38,15 +38,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Test with pytest
-      uses: addnab/docker-run-action@v3
+      uses: |
+        addnab/docker-run-action@v3
+        lhotari/action-upterm@v1
       with:
         image: fluxrm/flux-core:focal
         options: -v ${{ github.workspace }}:/workspace -u root
+        limit-access-to-actor: true
         run: |
           cd /workspace
           echo "Running in ${PWD}"
           sudo apt update
-          sudo apt install -y openssh-server openssh-client curl
+          sudo apt install -y openssh-server openssh-client
           mkdir -p "$HOME/.ssh"
           chmod 0755 "$HOME"
           chmod 0700 "$HOME/.ssh"
@@ -55,7 +58,6 @@ jobs:
           chmod 600 "$HOME/.ssh/authorized_keys"
           ls -la /etc/init.d/
           sudo /etc/init.d/ssh start
-          curl https://api.ipify.org
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           pip install -r requirements-connector-radical.txt
