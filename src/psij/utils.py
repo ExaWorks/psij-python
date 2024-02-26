@@ -132,6 +132,19 @@ class _StatusUpdater(SingletonThread):
                 pass
 
     def step(self) -> None:
+        self._poll_file()
+        try:
+            data = self.socket.recv(_StatusUpdater.RECV_BUFSZ)
+            self._process_update_data(data)
+        except TimeoutError:
+            pass
+        except socket.timeout:
+            # before 3.10, this was a separate exception from TimeoutError
+            pass
+        except BlockingIOError:
+            pass
+
+    def _poll_file(self) -> None:
         self.update_file.seek(0, io.SEEK_END)
         pos = self.update_file.tell()
         if pos > self.update_file_pos:
@@ -139,17 +152,6 @@ class _StatusUpdater(SingletonThread):
             n = pos - self.update_file_pos
             self._process_update_data(self.update_file.read(n))
             self.update_file_pos = pos
-        else:
-            try:
-                data = self.socket.recv(_StatusUpdater.RECV_BUFSZ)
-                self._process_update_data(data)
-            except TimeoutError:
-                pass
-            except socket.timeout:
-                # before 3.10, this was a separate exception from TimeoutError
-                pass
-            except BlockingIOError:
-                pass
 
     def run(self) -> None:
         while True:
@@ -168,6 +170,7 @@ class _StatusUpdater(SingletonThread):
         token = '_SYNC ' + str(random.getrandbits(128))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        self._poll_file()
         delay = 0.0001
         while token not in self._sync_ids:
             time.sleep(delay)
