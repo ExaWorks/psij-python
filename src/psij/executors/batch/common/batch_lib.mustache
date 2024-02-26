@@ -13,7 +13,7 @@ update_status() {
     if [ "$_UPDATE_MODE" == "nc" ]; then
         ADDRS={{psij.us_addrs}}
         for ADDR in ${ADDRS//,/ }; do
-            echo "{{job.id}} $STATUS" | nc -q0 -w0 -4 -u $ADDR {{psij.us_port}}
+            echo "{{job.id}} $STATUS" | nc -4 -u $ADDR {{psij.us_port}}
         done
     else
         echo "{{job.id}} $STATUS" >> {{psij.us_file}}
