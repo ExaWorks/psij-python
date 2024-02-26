@@ -612,7 +612,10 @@ class BatchSchedulerExecutor(JobExecutor):
             assert suffix
             path = self.work_directory / (job.native_id + suffix)
         if force or path.exists():
-            path.unlink()
+            try:
+                path.unlink()
+            except FileNotFonudError:
+                pass  # see above; attached job may race with original job
 
     def list(self) -> List[str]:
         """Returns a list of jobs known to the underlying implementation.
