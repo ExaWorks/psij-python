@@ -1,34 +1,10 @@
-_UPDATE_MODE="none"
-
 update_status() {
     STATUS="$1"
-    if [ "$_UPDATE_MODE" == "none" ]; then
-        NCPROBE=`nc -h 2>&1`
-        EC=$?
-        if [ "$EC" == "0" ]; then
-            if echo $NCPROBE | grep "send-only" >/dev/null 2>&1 ; then
-                _UPDATE_MODE="nc1"
-            else
-                _UPDATE_MODE="nc2"
-            fi
-        else
-            _UPDATE_MODE="file"
-        fi
-    fi
 
-    if [ "$_UPDATE_MODE" == "nc1" ]; then
-        ADDRS={{psij.us_addrs}}
-        for ADDR in ${ADDRS//,/ }; do
-            echo "{{job.id}} $STATUS" | nc --send-only -4 -u $ADDR {{psij.us_port}}
-        done
-    elif [ "$_UPDATE_MODE" == "nc2" ]; then
-        ADDRS={{psij.us_addrs}}
-        for ADDR in ${ADDRS//,/ }; do
-            echo "{{job.id}} $STATUS" | nc -q0 -u $ADDR {{psij.us_port}}
-        done
-    else
-        echo "{{job.id}} $STATUS" >> {{psij.us_file}}
-    fi
+    ADDRS={{psij.us_addrs}}
+    for ADDR in ${ADDRS//,/ }; do
+        echo "{{job.id}} $STATUS" >/dev/udp/$ADDR/{{psij.us_port}}
+    done
 }
 
 fail() {
