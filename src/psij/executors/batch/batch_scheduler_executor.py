@@ -614,7 +614,7 @@ class BatchSchedulerExecutor(JobExecutor):
         if force or path.exists():
             try:
                 path.unlink()
-            except FileNotFonudError:
+            except FileNotFoundError:
                 pass  # see above; attached job may race with original job
 
     def list(self) -> List[str]:
