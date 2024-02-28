@@ -573,9 +573,8 @@ class BatchSchedulerExecutor(JobExecutor):
                     # already present
                     out = self._read_aux_file(job, '.out')
                     if out:
-                        launcher = self._get_launcher_from_job(job)
-                        if launcher.is_launcher_failure(out):
-                            status.message = launcher.get_launcher_failure_message(out)
+                        if '_PSIJ_SCRIPT_DONE' not in out:
+                            status.message = out
                     logger.debug('Output from launcher: %s', status.message)
                 else:
                     self._delete_aux_file(job, '.out')

@@ -71,6 +71,12 @@ only results in empty files that are not cleaned up}}
 #BSUB -e /dev/null
 #BSUB -o /dev/null
 
+{{!redirect output here instead of through #BSUB directive since LSB_JOBID is not available
+when the directives are evaluated; the reason for using the job id in the first place being the
+same as for the exit code file.}}
+exec &>> "{{psij.script_dir}}/$LSB_JOBID.out"
+
+
 {{> batch_lib}}
 
 PSIJ_NODEFILE="$LSB_HOSTS"
@@ -78,11 +84,6 @@ export PSIJ_NODEFILE
 
 {{> stagein}}
 update_status ACTIVE
-
-{{!redirect output here instead of through #BSUB directive since LSB_JOBID is not available
-when the directives are evaluated; the reason for using the job id in the first place being the
-same as for the exit code file.}}
-exec &>> "{{psij.script_dir}}/$LSB_JOBID.out"
 
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 _PSIJ_JOB_EC=$?
@@ -92,3 +93,4 @@ _PSIJ_JOB_EC=$?
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
 echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$LSB_JOBID.ec"
+echo "_PSIJ_SCRIPT_DONE"

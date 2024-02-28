@@ -335,8 +335,8 @@ class LocalJobExecutor(JobExecutor):
             # the exit code of the launcher is the exit code of the job, we must use a different
             # mechanism to distinguish between job errors and launcher errors. So we delegate to
             # the launcher implementation to figure out if the error belongs to the job or not
-            if p.launcher and p.out and p.launcher.is_launcher_failure(p.out):
-                message = p.launcher.get_launcher_failure_message(p.out)
+            if p.out and '_PSIJ_SCRIPT_DONE' not in p.out:
+                message = p.out
             state = JobState.FAILED
 
         # We need to ensure that the status updater has processed all updates that

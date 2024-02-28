@@ -197,15 +197,3 @@ class ScriptBasedLauncher(Launcher):
         :param job: The job that is being launched.
         """
         return []
-
-    def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.Launcher.is_launcher_failure`."""
-        lines = output.split('\n')
-        return lines[-2] != '_PSI_J_LAUNCHER_DONE' or lines[-1] != ''
-
-    def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.Launcher.get_launcher_failure_message`."""
-        # Errors can occur in the job script after the launcher is done (e.g., stageout),
-        # so we need to filter the launcher tag
-        lines = output.split('\n')
-        return '\n'.join(filter(lambda x: x != '_PSI_J_LAUNCHER_DONE', lines))

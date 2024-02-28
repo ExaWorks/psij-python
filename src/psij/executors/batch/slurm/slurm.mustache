@@ -88,6 +88,12 @@ _PSIJ_PPN={{.}}
     {{/processes_per_node}}
 {{/job.spec.resources}}
 
+{{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
+when the directives are evaluated; the reason for using the job id in the first place being the
+same as for the exit code file.}}
+exec &>> "{{psij.script_dir}}/$SLURM_JOB_ID.out"
+
+
 {{> batch_lib}}
 
 _PSIJ_NC=`scontrol show hostnames | wc -l`
@@ -111,11 +117,6 @@ export PSIJ_NODEFILE
 {{> stagein}}
 update_status ACTIVE
 
-{{!redirect output here instead of through #SBATCH directive since SLURM_JOB_ID is not available
-when the directives are evaluated; the reason for using the job id in the first place being the
-same as for the exit code file.}}
-exec &>> "{{psij.script_dir}}/$SLURM_JOB_ID.out"
-
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 _PSIJ_JOB_EC=$?
 
@@ -124,3 +125,4 @@ _PSIJ_JOB_EC=$?
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
 echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$SLURM_JOB_ID.ec"
+echo "_PSIJ_SCRIPT_DONE"
