@@ -115,15 +115,16 @@ do_cleanup() {
     if [ "$FAILED" == "0" ] || [ "{{job.spec.cleanup_on_failure}}" != "0" ]; then
 
         TARGET=`readlink -m "$TARGET"`
+        DIR=`readlink -m "{{job.spec.directory}}"`
 
         [ "{{psij.debug}}" != "0" ] && update_status "LOG Cleaning up $TARGET"
 
         case "$TARGET" in
-            "{{job.spec.directory}}"*)
+            "$DIR"*)
                 rm -rf "$TARGET"
                 ;;
             *)
-                fail 121 "Cannot clean $TARGET outside of job directory {{job.spec.directory}}"
+                fail 121 "Cannot clean $TARGET outside of job directory $DIR"
                 ;;
         esac
     fi
