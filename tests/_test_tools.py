@@ -117,7 +117,8 @@ def _temppath() -> Iterator[Path]:
 @contextmanager
 def _tempdir(keep: bool = False) -> Iterator[Path]:
     _make_test_dir()
-    d = tempfile.mkdtemp(dir=Path.cwd())
+    test_dir = Path.home() / '.psij' / 'test'
+    d = tempfile.mkdtemp(dir=test_dir)
     try:
         yield Path(d)
         shutil.rmtree(d)
