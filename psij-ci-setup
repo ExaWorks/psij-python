@@ -217,7 +217,7 @@ check_email() {
 }
 
 check_key() {
-    if ! -f ~/.psij/key ; then
+    if [ ! -f ~/.psij/key ]; then
         BASE_URL=`egrep '^[^#]*server_url.*' ./testing.conf |awk '{split($0, a, "="); print a[2]}'|xargs`
         AUTH_URL="${BASE_URL}/auth.html"
 
