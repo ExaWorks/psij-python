@@ -311,6 +311,7 @@ else
     echo "Done"
 fi
 
+export PYTHONPATH=`pwd`/.packages:$PYTHONPATH
 
 HOUR=`echo $(($RANDOM % 24))`
 MINUTE=`echo $(($RANDOM % 60))`
