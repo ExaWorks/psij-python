@@ -36,6 +36,10 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
     monitor, and cancel jobs.
 
     Creates a batch script with #COBALT directives when submitting a job.
+
+    Custom attributes prefixed with `cobalt.` are rendered as long-form directives in the script.
+    For example, setting `custom_attributes['cobalt.m'] = 'co'` results in the `#COBALT --m=co`
+    directive being placed in the submit script.
     """
 
     # see https://Cobalt.schedmd.com/squeue.html
