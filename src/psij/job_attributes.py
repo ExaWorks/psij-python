@@ -31,6 +31,14 @@ class JobAttributes(object):
         :param custom_attributes: Specifies a dictionary of custom attributes. Implementations of
             :class:`~psij.JobExecutor` define and are responsible for interpreting custom
             attributes.
+            The typical usage scenario for custom attributes is to pass information to the executor
+            or underlying job execution mechanism that cannot otherwise be passed using the classes
+            and properties provided by PSI/J. A specific example is that of the subclasses of
+            :class:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor`, which
+            look for custom attributes prefixed with their name and a dot (e.g., `slurm.constraint`,
+            `pbs.c`, `lsf.core_isolation`) and translate them into the corresponding batch
+            scheduler directives (e.g., `#SLURM --constraint=...`, `#PBS -c ...`,
+            `#BSUB -core_isolation ...`).
 
         All constructor parameters are accessible as properties.
         """

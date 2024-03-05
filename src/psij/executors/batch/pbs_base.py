@@ -58,6 +58,10 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
     monitor, and cancel jobs.
 
     Creates a batch script with #PBS directives when submitting a job.
+
+    Custom attributes prefixed with `pbs.` are rendered as directives in the script.
+    For example, setting `custom_attributes['pbs.c'] = 'n'` results in the `#PBS -c n`
+    directive being placed in the submit script, which disables checkpointing.
     """
 
     def __init__(self, generator: TemplatedScriptGenerator, url: Optional[str] = None,

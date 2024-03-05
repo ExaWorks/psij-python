@@ -28,6 +28,11 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     monitor, and cancel jobs.
 
     Creates a batch script with #SBATCH directives when submitting a job.
+
+    Renders all custom attributes set on a job's attributes with a `slurm.` prefix into
+    corresponding Slurm directives with long-form parameters. For example,
+    `job.spec.attributes.custom_attributes['slurm.qos'] = 'debug'` causes a directive
+    `#SBATCH --qos=debug` to be placed in the submit script.
     """
 
     # see https://slurm.schedmd.com/squeue.html

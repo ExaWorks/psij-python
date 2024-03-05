@@ -17,3 +17,5 @@ psi_j_python.egg-info/
 venv*
 .venv*
 build/
+docs/.web-build
+web-build/
