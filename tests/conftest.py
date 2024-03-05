@@ -420,7 +420,7 @@ def _discover_environment(config):
             logger.warning('Cannot get git repository information.')
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
-        if 'has_slurm' not in env:
+        if not env['has_slurm']:
             env['has_pbs'] = shutil.which('qsub') is not None
         env['has_lsf'] = shutil.which('bsub') is not None
         env['has_cobalt'] = shutil.which('cqsub') is not None
