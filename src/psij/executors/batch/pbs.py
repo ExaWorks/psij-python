@@ -22,6 +22,6 @@ class PBSJobExecutor(GenericPBSJobExecutor):
         """
         if not config:
             config = PBSExecutorConfig()
-        generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbspro'
+        generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbs'
                                              / 'pbspro.mustache')
         super().__init__(generator, url=url, config=config)
