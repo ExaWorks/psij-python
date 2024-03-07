@@ -141,6 +141,11 @@ def _translate_launcher(config: Dict[str, str], exec: str, launcher: str) -> str
     if launcher == 'auto_l':
         if exec == 'slurm':
             return 'srun'
+        elif exec == 'pbs':
+            return 'mpirun'
+        elif exec == 'lsf':
+            return 'ibrun'
+
         else:
             raise ValueError('Don\'t know how to get launcher for executor "' + exec + '"')
     else:
