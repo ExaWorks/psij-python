@@ -204,10 +204,10 @@ def pytest_configure(config):
 
     _purge_old_results(config)
     start_time = _now()
-    (env, key), log = _capture_log(partial(_discover_environment, config))
+    config.option.key = _get_key(config)
+    env, log = _capture_log(partial(_discover_environment, config))
     save = config.getoption('save_results')
     upload = config.getoption('upload_results')
-    config.option.key = key
     end_time = _now()
     data = {}
     if save or upload:
@@ -399,7 +399,6 @@ def _discover_environment(config):
     conf['pythonpath'] = _strip_home(sys.path)
     conf['executors'] = config.getoption('executors')
     conf['maintainer_email'] = config.getoption('maintainer_email')
-    key = _get_key(config)
     env['start_time'] = _now()
     env['run_id'] = _get_run_id(config)
     env['in_conda'] = _get_env('CONDA_SHLVL') != '' and _get_env('CONDA_SHLVL') != '0'
@@ -438,7 +437,7 @@ def _discover_environment(config):
         env['error'] = str(ex)
     config.option.environment = env
     env['computed_executors'] = _get_executors(config)
-    return env, key
+    return env
 
 
 def _now():
