@@ -10,9 +10,7 @@
 {{/job.spec.inherit_environment}}
 
 {{#job.spec.resources}}
-    {{#process_count}}
-#PBS -l select={{job.spec.resources.computed_node_count}}:ncpus={{.}}
-    {{/process_count}}
+#PBS -l select={{computed_node_count}}:ncpus={{computed_processes_per_node}}:mpiprocs={{computed_processes_per_node}}
     {{#exclusive_node_use}}
 #PBS -l place=scatter:exclhost
     {{/exclusive_node_use}}
@@ -54,8 +52,9 @@ only results in empty files that are not cleaned up}}
 {{#job.spec.inherit_environment}}
 #PBS -V
 {{/job.spec.inherit_environment}}
+
 {{#env}}
-#PBS -v {{name}}={{value}}
+export {{name}}={{value}}
 {{/env}}
 
 PSIJ_NODEFILE="$PBS_NODEFILE"
