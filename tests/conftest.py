@@ -161,6 +161,11 @@ def _translate_launcher(config: Dict[str, str], exec: str, launcher: str) -> str
     if launcher == 'auto_l':
         if exec == 'slurm':
             return 'srun'
+        elif exec == 'pbs':
+            return 'mpirun'
+        elif exec == 'lsf':
+            return 'ibrun'
+
         else:
             raise ValueError('Don\'t know how to get launcher for executor "' + exec + '"')
     else:
@@ -219,10 +224,10 @@ def pytest_configure(config):
 
     _purge_old_results(config)
     start_time = _now()
-    (env, key), log = _capture_log(partial(_discover_environment, config))
+    config.option.key = _get_key(config)
+    env, log = _capture_log(partial(_discover_environment, config))
     save = config.getoption('save_results')
     upload = config.getoption('upload_results')
-    config.option.key = key
     end_time = _now()
     data = {}
     if save or upload:
@@ -414,7 +419,6 @@ def _discover_environment(config):
     conf['pythonpath'] = _strip_home(sys.path)
     conf['executors'] = config.getoption('executors')
     conf['maintainer_email'] = config.getoption('maintainer_email')
-    key = _get_key(config)
     env['start_time'] = _now()
     env['run_id'] = _get_run_id(config)
     env['in_conda'] = _get_env('CONDA_SHLVL') != '' and _get_env('CONDA_SHLVL') != '0'
@@ -440,7 +444,7 @@ def _discover_environment(config):
             logger.warning('Cannot get git repository information.')
     try:
         env['has_slurm'] = shutil.which('sbatch') is not None
-        if 'has_slurm' not in env:
+        if not env['has_slurm']:
             env['has_pbs'] = shutil.which('qsub') is not None
         env['has_lsf'] = shutil.which('bsub') is not None
         env['has_cobalt'] = shutil.which('cqsub') is not None
@@ -453,7 +457,7 @@ def _discover_environment(config):
         env['error'] = str(ex)
     config.option.environment = env
     env['computed_executors'] = _get_executors(config)
-    return env, key
+    return env
 
 
 def _now():

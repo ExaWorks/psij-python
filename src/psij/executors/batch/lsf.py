@@ -35,6 +35,11 @@ class LsfJobExecutor(BatchSchedulerExecutor):
     monitor, and cancel jobs.
 
     Creates a batch script with #BSUB directives when submitting a job.
+
+    Renders all custom attributes of the form `lsf.<name>` into the corresponding
+    LSF directive. For example, setting
+    `job.spec.attributes.custom_attributes['lsf.core_isolation'] = '0' results in a
+    `#BSUB -core_isolation 0` directive being placed in the submit script.
     """
 
     # see https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bjobs-description

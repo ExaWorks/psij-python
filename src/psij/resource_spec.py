@@ -100,7 +100,7 @@ class ResourceSpecV1(ResourceSpec):
             # nothing specified
             self._computed_process_count = 1
             self._computed_node_count = 1
-            self._commputed_ppn = 1
+            self._computed_ppn = 1
         elif nulls == 2:
             if self.process_count is not None:
                 self._computed_node_count = 1
