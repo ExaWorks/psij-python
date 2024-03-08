@@ -51,8 +51,9 @@ only results in empty files that are not cleaned up}}
 {{#job.spec.inherit_environment}}
 #PBS -V
 {{/job.spec.inherit_environment}}
+
 {{#env}}
-#PBS -v {{name}}={{value}}
+export {{name}}={{value}}
 {{/env}}
 
 PSIJ_NODEFILE="$PBS_NODEFILE"
