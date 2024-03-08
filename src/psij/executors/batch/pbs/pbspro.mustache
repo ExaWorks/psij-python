@@ -11,7 +11,7 @@
 
 {{#job.spec.resources}}
     {{#process_count}}
-#PBS -l select={{job.spec.resources.computed_node_count}}:ncpus={{.}}
+#PBS -l select={{job.spec.resources.computed_node_count}}:ncpus={{.}}:mpiprocs={{.}}
     {{/process_count}}
     {{#exclusive_node_use}}
 #PBS -l place=scatter:exclhost
