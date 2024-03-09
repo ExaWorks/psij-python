@@ -78,5 +78,5 @@ _PSIJ_JOB_EC=$?
 {{> cleanup}}
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
-echo "$?" > "{{psij.script_dir}}/$PBS_JOBID.ec"
+echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$PBS_JOBID.ec"
 echo "_PSIJ_SCRIPT_DONE"
