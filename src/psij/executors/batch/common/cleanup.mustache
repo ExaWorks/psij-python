@@ -1,0 +1,5 @@
+update_status CLEANUP
+
+{{#job.spec.cleanup}}
+do_cleanup {{.}} $_PSIJ_JOB_EC
+{{/job.spec.cleanup}}
