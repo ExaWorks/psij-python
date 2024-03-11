@@ -68,11 +68,11 @@ Create a simple BatchSchedulerExecutor subclass that does nothing new in `psijpb
 
 and create a descriptor file to tell PSI/J about this, ``psij-descriptors/pbspro.py``::
 
-  from distutils.version import StrictVersion
+  from packaging.version import Version
 
   from psij._descriptor import _Descriptor
 
-  __PSI_J_EXECUTORS__ = [_Descriptor(name='pbspro', version=StrictVersion('0.0.1'),
+  __PSI_J_EXECUTORS__ = [_Descriptor(name='pbspro', version=Version('0.0.1'),
                                      cls='psijpbs.pbspro.PBSProJobExecutor')]
 
 Now, run the test suite. It should fail with an error reporting that the resource manager specific methods of BatchSchedulerExecutor have not been implemented::

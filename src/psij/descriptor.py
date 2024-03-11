@@ -1,6 +1,6 @@
 """Executor/Launcher descriptor module."""
 
-from distutils.version import StrictVersion
+from packaging.version import Version
 from typing import TypeVar, Generic, Optional, Type, List
 
 T = TypeVar('T')
@@ -68,17 +68,17 @@ class Descriptor(object):
 
     .. code-block:: python
 
-        from distutils.version import StrictVersion
+        from packaging.version import Version
         from psij.descriptor import Descriptor
 
         __PSI_J_EXECUTORS__ = [
-            Descriptor(name=<name>, version=StrictVersion(<version_str>),
+            Descriptor(name=<name>, version=Version(<version_str>),
                        cls=<fqn_str>),
             ...
         ]
 
         __PSI_J_LAUNCHERS__ = [
-            Descriptor(name=<name>, version=StrictVersion(<version_str>),
+            Descriptor(name=<name>, version=Version(<version_str>),
                        cls=<fqn_str>),
             ...
         ]
@@ -89,7 +89,7 @@ class Descriptor(object):
     `psij.executors.local.LocalJobExecutor`.
     """
 
-    def __init__(self, name: str, version: StrictVersion, cls: str,
+    def __init__(self, name: str, version: Version, cls: str,
                  aliases: Optional[List[str]] = None, nice_name: Optional[str] = None) -> None:
         """
         Parameters

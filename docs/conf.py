@@ -31,7 +31,8 @@ python_use_unqualified_type_names = True
 autodoc_mock_imports = ['flux']
 nitpick_ignore = [
     ('py:class', 'distutils.version.StrictVersion'),
-    ('py:class', 'distutils.version.Version')
+    ('py:class', 'distutils.version.Version'),
+    ('py:class', 'packaging.version.Version')
 ]
 
 if web_docs:

@@ -2,8 +2,7 @@
 
 # This is meant as a simple test file to check if psi/j was installed successfully
 
-from distutils.version import Version
-
+from packaging.version import Version
 from psij import JobExecutor
 
 
