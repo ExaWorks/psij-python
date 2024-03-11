@@ -68,17 +68,17 @@ class Descriptor(object):
 
     .. code-block:: python
 
-        from distutils.version import StrictVersion
+        from packaging.version import Version
         from psij.descriptor import Descriptor
 
         __PSI_J_EXECUTORS__ = [
-            Descriptor(name=<name>, version=StrictVersion(<version_str>),
+            Descriptor(name=<name>, version=Version(<version_str>),
                        cls=<fqn_str>),
             ...
         ]
 
         __PSI_J_LAUNCHERS__ = [
-            Descriptor(name=<name>, version=StrictVersion(<version_str>),
+            Descriptor(name=<name>, version=Version(<version_str>),
                        cls=<fqn_str>),
             ...
         ]
