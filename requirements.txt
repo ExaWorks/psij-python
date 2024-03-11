@@ -3,3 +3,4 @@ psutil~=5.9
 pystache>=0.6.0
 typeguard~=2.12
 typing-compat
+packaging~=24.0

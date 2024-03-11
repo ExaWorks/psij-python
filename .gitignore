@@ -19,3 +19,4 @@ venv*
 build/
 docs/.web-build
 web-build/
+.packages/

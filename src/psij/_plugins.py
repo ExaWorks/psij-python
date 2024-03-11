@@ -1,7 +1,7 @@
 import importlib
 import logging
 from bisect import bisect_left
-from distutils.versionpredicate import VersionPredicate
+from packaging.specifiers import SpecifierSet
 from types import ModuleType
 from typing import Tuple, Dict, List, Union, Type, Any, Optional, TypeVar
 
@@ -116,9 +116,9 @@ def _get_plugin_class(name: str, version_constraint: Optional[str], type: str,
     versions = store[name]
     selected = None
     if version_constraint:
-        pred = VersionPredicate('x(' + version_constraint + ')')
+        pred = SpecifierSet(version_constraint)
         for entry in reversed(versions):
-            if pred.satisfied_by(entry.version):
+            if entry.version in pred:
                 selected = entry
     else:
         selected = versions[-1]
