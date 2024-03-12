@@ -9,7 +9,7 @@ cd "{{.}}"
 {{/job.spec.directory}}
 
 {{> stagein}}
-update_status ACTIVE
+_psij_update_status ACTIVE
 
 set +e
 {{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}

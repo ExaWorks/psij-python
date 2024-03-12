@@ -112,8 +112,24 @@ class URI:
         return self.parts.password
 
     def __str__(self) -> str:
-        """Returns a string representation of this URL."""
+        """Returns a string representation of this URI."""
         return self.parts.geturl()
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Tests if the parameter `other` is equal to this `URI`.
+
+        Returns `True` if `other` is a `URI` and if it represents the same
+        resource as this `URI`.
+        """
+        if isinstance(other, URI):
+            return self.parts == other.parts
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        """Computes a hash of this object."""
+        return hash(self.parts)
 
 
 class StagingMode(Enum):
@@ -223,6 +239,22 @@ class StageIn:
         self.target = target
         self.mode = mode
 
+    def __str__(self) -> str:
+        """Returns a string representation of this object."""
+        return 'StageIn[%s -> %s, %s]' % (self.source, self.target, self.mode)
+
+    def __eq__(self, other: object) -> bool:
+        """Compares `other` to this object."""
+        if isinstance(other, StageIn):
+            return (self.source == other.source and self.target == other.target
+                    and self.mode == other.mode)
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        """Computes a hash of this object."""
+        return (hash(self.source) << 16) + (hash(self.target) << 8) + hash(self.mode)
+
 
 def _normalize_flags(flags: StageOutFlags) -> StageOutFlags:
     if (flags & StageOutFlags.ALWAYS).value == 0:
@@ -285,3 +317,20 @@ class StageOut:
     @flags.setter
     def flags(self, flags: StageOutFlags) -> None:
         self._flags = _normalize_flags(flags)
+
+    def __str__(self) -> str:
+        """Returns a string representation of this object."""
+        return 'StageOut[%s -> %s, %s, %s]' % (self.source, self.target, self.flags, self.mode)
+
+    def __eq__(self, other: object) -> bool:
+        """Compares `other` to this object."""
+        if isinstance(other, StageOut):
+            return (self.source == other.source and self.target == other.target
+                    and self.mode == other.mode and self.flags == other.flags)
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        """Computes a hash of this object."""
+        return ((hash(self.source) << 24) + (hash(self.target) << 16) + (hash(self.mode) << 8)
+                + hash(self.flags))

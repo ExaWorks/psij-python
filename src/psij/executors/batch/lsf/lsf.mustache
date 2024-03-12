@@ -83,7 +83,7 @@ PSIJ_NODEFILE="$LSB_HOSTS"
 export PSIJ_NODEFILE
 
 {{> stagein}}
-update_status ACTIVE
+_psij_update_status ACTIVE
 
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 _PSIJ_JOB_EC=$?

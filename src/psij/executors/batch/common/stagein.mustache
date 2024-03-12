@@ -1,5 +1,5 @@
-update_status STAGE_IN
+_psij_update_status STAGE_IN
 {{#job.spec.stage_in}}
-do_stagein "{{source.path}}" "{{target}}" {{mode}} \
+_psij_do_stagein "{{source.path}}" "{{target}}" {{mode}} \
     "{{{source.scheme}}}" "{{#source.hostname}}{{{.}}}{{#source.port}}:{{{.}}}{{/source.port}}{{/source.hostname}}"
 {{/job.spec.stage_in}}

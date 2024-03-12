@@ -9,7 +9,7 @@ from typeguard import check_argument_types
 
 import psij.resource_spec
 import psij.job_attributes
-from psij.staging import StageIn, StageOut
+from psij.staging import StageIn, StageOut, StageOutFlags
 
 
 def _to_path(arg: Union[str, pathlib.Path, None]) -> Optional[pathlib.Path]:
@@ -70,7 +70,7 @@ class JobSpec(object):
                  stage_in: Optional[Set[StageIn]] = None,
                  stage_out: Optional[Set[StageOut]] = None,
                  cleanup: Optional[Set[Union[str, pathlib.Path]]] = None,
-                 cleanup_on_failure: bool = True):
+                 cleanup_flags: StageOutFlags = StageOutFlags.ALWAYS):
         """
         :param executable: An executable, such as "/bin/date".
         :param arguments: The argument list to be passed to the executable. Unlike with execve(),
@@ -107,6 +107,10 @@ class JobSpec(object):
         :param stage_in: Specifies a set of files to be staged in before the job is launched.
         :param stage_out: Specifies a set of files to be staged out after the job terminates.
         :param cleanup: Specifies a set of files to remove after the stage out process.
+        :param cleanup_flags: Specifies the conditions under which the files in `cleanup` should
+            be removed, such as when the job completes successfully. The flag
+            `StageOutFlags.IF_PRESENT` is ignored and no error condition is triggered if a file
+            specified by the `cleanup` argument is not present.
 
 
         All constructor parameters are accessible as properties.
@@ -171,7 +175,7 @@ class JobSpec(object):
         self.stage_in = stage_in
         self.stage_out = stage_out
         self._cleanup = _all_to_path(cleanup)
-        self.cleanup_on_failure = cleanup_on_failure
+        self.cleanup_flags = cleanup_flags
 
         # TODO: `resources` is of type `ResourceSpec`, not `ResourceSpecV1`.  An
         #       connector trying to access `job.spec.resources.process_count`
@@ -284,7 +288,8 @@ class JobSpec(object):
 
         for prop_name in ['name', 'executable', 'arguments', 'directory', 'inherit_environment',
                           'environment', 'stdin_path', 'stdout_path', 'stderr_path', 'resources',
-                          'attributes', 'pre_launch', 'post_launch', 'launcher']:
+                          'attributes', 'pre_launch', 'post_launch', 'launcher', 'stage_in',
+                          'stage_out', 'cleanup', 'cleanup_flags']:
             if getattr(self, prop_name) != getattr(o, prop_name):
                 return False
 

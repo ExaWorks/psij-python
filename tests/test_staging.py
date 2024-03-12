@@ -217,7 +217,7 @@ def test_cleanup2(execparams: ExecutorTestParams) -> None:
             StageOut('out.txt', out_path, flags=StageOutFlags.IF_PRESENT),
         }
         job.spec.cleanup = {Path('out.txt')}
-        job.spec.cleanup_on_failure = False
+        job.spec.cleanup_flags = StageOutFlags.ON_SUCCESS
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
         status = job.wait(timeout=_get_timeout(execparams))

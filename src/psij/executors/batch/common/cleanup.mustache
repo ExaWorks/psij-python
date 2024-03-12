@@ -1,5 +1,5 @@
-update_status CLEANUP
+_psij_update_status CLEANUP
 
 {{#job.spec.cleanup}}
-do_cleanup {{.}} $_PSIJ_JOB_EC
+_psij_do_cleanup {{.}} {{job.spec.cleanup_flags}} $_PSIJ_JOB_EC
 {{/job.spec.cleanup}}

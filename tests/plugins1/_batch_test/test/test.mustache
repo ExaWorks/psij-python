@@ -45,7 +45,7 @@ done
 export PSIJ_NODEFILE
 
 {{> stagein}}
-update_status ACTIVE
+_psij_update_status ACTIVE
 
 {{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}
 {{name}}="{{value}}" \{{/env}}
