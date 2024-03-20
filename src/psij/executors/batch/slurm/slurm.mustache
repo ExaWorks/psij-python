@@ -48,9 +48,9 @@
 #SBATCH --partition="{{.}}"
     {{/queue_name}}
 
-    {{#project_name}}
+    {{#account}}
 #SBATCH --account="{{.}}"
-    {{/project_name}}
+    {{/account}}
 
     {{#reservation_id}}
 #SBATCH --reservation="{{.}}"

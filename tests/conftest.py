@@ -69,6 +69,8 @@ def pytest_addoption(parser):
                      help='A queue to run the batch jobs in.')
     parser.addoption('--project-name', action='store', default=None,
                      help='A project/account name to associate the batch jobs with.')
+    parser.addoption('--account', action='store', default=None,
+                     help='An account to use for billing purposes.')
     parser.addoption('--custom-attributes', action='store', default=None,
                      help='A set of custom attributes to pass to jobs.')
     parser.addoption('--minimal-uploads', action='store_true', default=False,
@@ -152,14 +154,30 @@ def _translate_launcher(config: Dict[str, str], exec: str, launcher: str) -> str
         return launcher
 
 
+_WARNED_ABOUT_ACCOUNT_CLASH = False
+
+
+def _get_account(options):
+    global _WARNED_ABOUT_ACCOUNT_CLASH
+    if options.account:
+        if options.project_name and not _WARNED_ABOUT_ACCOUNT_CLASH:
+            _WARNED_ABOUT_ACCOUNT_CLASH = True
+            logger.warning('Both "account" and "project_name" are specified. Ignoring '
+                           '"project_name".')
+        return options.account
+    else:
+        return options.project_name
+
+
 def pytest_generate_tests(metafunc):
+    options = metafunc.config.option
     if 'execparams' in metafunc.fixturenames:
 
         etps = []
         for x in _get_executors((metafunc.config)):
-            etp = ExecutorTestParams(x, queue_name=metafunc.config.option.queue_name,
-                                     project_name=metafunc.config.option.project_name,
-                                     custom_attributes_raw=metafunc.config.option.custom_attributes)
+            etp = ExecutorTestParams(x, queue_name=options.queue_name,
+                                     account=_get_account(options),
+                                     custom_attributes_raw=options.custom_attributes)
             etps.append(etp)
 
         metafunc.parametrize('execparams', etps, ids=lambda x: str(x))

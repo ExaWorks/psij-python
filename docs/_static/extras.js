@@ -86,8 +86,8 @@ function detectAll(selectorType) {
             else if (text == "queue_name") {
                 $(this).text("QUEUE_NAME");
             }
-            else if (text == "project_name") {
-                $(this).text("PROJECT_NAME");
+            else if (text == "account") {
+                $(this).text("ACCOUNT");
             }
         }
         if (text == '_get_executor_instance') {

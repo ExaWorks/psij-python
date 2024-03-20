@@ -58,7 +58,7 @@ def make_job():
     spec.arguments = ['HELLO WORLD!']
     
     # set project name if no default is specified
-    # spec.attributes.project_name = <PROJECT_NAME>
+    # spec.attributes.account = <PROJECT_NAME>
     
     # set queue if no default is specified
     # spec.attributes.queue_name = <QUEUE_NAME>

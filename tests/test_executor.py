@@ -220,7 +220,7 @@ def test_submit_script_generation(exec_name: str) -> None:
     prefix = _get_attr_prefix(exec_name)
     _check_str_attrs(ex, job, ['executable', 'directory'],
                      lambda k, v: setattr(spec, k, v))
-    _check_str_attrs(ex, job, ['queue_name', 'project_name', 'reservation_id'],
+    _check_str_attrs(ex, job, ['queue_name', 'account', 'reservation_id'],
                      lambda k, v: setattr(attrs, k, v))
     _check_str_attrs(ex, job, [prefix + '.cust_attr1', prefix + '.cust_attr2'],
                      lambda k, v: c_attrs.__setitem__(k, v))
