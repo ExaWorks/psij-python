@@ -335,7 +335,7 @@ and an instance of the
     :lines: 10-18,21-22
 
 where `QUEUE_NAME` is the LRM queue where the job should be sent and
-`PROJECT_NAME` is a project/account that may need to be specified for
+`ACCOUNT` is a project/account that may need to be specified for
 accounting purposes. These values generally depend on the system and allocation
 being used.
 

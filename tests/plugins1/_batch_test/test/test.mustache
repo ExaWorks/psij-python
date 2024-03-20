@@ -18,9 +18,10 @@ export PSIJ_TEST_BATCH_EXEC_COUNT={{.}}
     {{#queue_name}}
 export PSIJ_TEST_BATCH_EXEC_QUEUE="{{.}}"
     {{/queue_name}}
-    {{#project_name}}
+    {{#account}}
 export PSIJ_TEST_BATCH_EXEC_PROJECT="{{.}}"
-    {{/project_name}}
+export PSIJ_TEST_BATCH_EXEC_ACCOUNT="{{.}}"
+    {{/account}}
     {{#reservation_id}}
 export PSIJ_TEST_BATCH_EXEC_RES_ID="{{.}}"
     {{/reservation_id}}
