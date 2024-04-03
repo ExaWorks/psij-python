@@ -164,8 +164,8 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
 
     cwd = (dir / 'code') if clone else Path('.')
     env = dict(os.environ)
-    env['PYTHONPATH'] = str(cwd.resolve() / '.packages') \
-        + ':' + str(cwd.resolve() / 'src') \
+    env['PYTHONPATH'] = str(cwd.resolve() / 'src') \
+        + ':' + str(cwd.resolve() / '.packages') \
         + (':' + env['PYTHONPATH'] if 'PYTHONPATH' in env else '')
     subprocess.run(args, cwd=cwd.resolve(), env=env)
 
