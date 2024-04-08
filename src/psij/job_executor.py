@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from distutils.version import Version
+from packaging.version import Version
 from threading import RLock
 from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
 
