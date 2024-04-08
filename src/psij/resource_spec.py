@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from typeguard import check_argument_types
+from typeguard import typechecked
 
 from psij.exceptions import InvalidJobException
 
@@ -48,6 +48,7 @@ class ResourceSpec(ABC):
 class ResourceSpecV1(ResourceSpec):
     """This class implements V1 of the PSI/J resource specification."""
 
+    @typechecked
     def __init__(self, node_count: Optional[int] = None,
                  process_count: Optional[int] = None,
                  processes_per_node: Optional[int] = None,
@@ -81,7 +82,6 @@ class ResourceSpecV1(ResourceSpec):
 
         All constructor parameters are accessible as properties.
         """
-        assert check_argument_types()
 
         self.node_count = node_count
         self.process_count = process_count
