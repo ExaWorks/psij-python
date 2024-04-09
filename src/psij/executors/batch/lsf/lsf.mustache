@@ -44,10 +44,10 @@
 #BSUB -q "{{.}}"
     {{/queue_name}}
 
-    {{#project_name}}
+    {{#account}}
 #BSUB -G "{{.}}"
 #BSUB -P "{{.}}"
-    {{/project_name}}
+    {{/account}}
 
     {{#reservation_id}}
 #BSUB -U "{{.}}"

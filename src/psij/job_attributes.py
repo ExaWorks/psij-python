@@ -1,8 +1,12 @@
+import logging
 import re
 from datetime import timedelta
 from typing import Optional, Dict
 
 from typeguard import typechecked
+
+
+logger = logging.getLogger(__name__)
 
 
 _WALLTIME_FMT_ERROR = 'Unknown walltime format: %s. Accepted formats are hh:mm:ss, ' \
@@ -14,17 +18,19 @@ class JobAttributes(object):
 
     @typechecked
     def __init__(self, duration: timedelta = timedelta(minutes=10),
-                 queue_name: Optional[str] = None, project_name: Optional[str] = None,
+                 queue_name: Optional[str] = None, account: Optional[str] = None,
                  reservation_id: Optional[str] = None,
-                 custom_attributes: Optional[Dict[str, object]] = None) -> None:
+                 custom_attributes: Optional[Dict[str, object]] = None,
+                 project_name: Optional[str] = None) -> None:
         """
         :param duration: Specifies the duration (walltime) of the job. A job whose execution
             exceeds its walltime can be terminated forcefully.
         :param queue_name: If a backend supports multiple queues, this parameter can be used to
             instruct the backend to send this job to a particular queue.
-        :param project_name: If a backend supports multiple projects for billing purposes, setting
-            this attribute instructs the backend to bill the indicated project for the resources
-            consumed by this job.
+        :param account: An account to use for billing purposes. Please note that the executor
+            implementation (or batch scheduler) may use a different term for the option used for
+            accounting/billing purposes, such as `project`. However, scheduler must map this
+            attribute to the accounting/billing option in the underlying execution mechanism.
         :param reservation_id: Allows specifying an advanced reservation ID. Advanced reservations
             enable the pre-allocation of a set of resources/compute nodes for a certain duration
             such that jobs can be run immediately, without waiting in the queue for resources to
@@ -40,9 +46,11 @@ class JobAttributes(object):
             `pbs.c`, `lsf.core_isolation`) and translate them into the corresponding batch
             scheduler directives (e.g., `#SLURM --constraint=...`, `#PBS -c ...`,
             `#BSUB -core_isolation ...`).
+        :param project_name: Deprecated. Please use the `account` attribute.
 
         All constructor parameters are accessible as properties.
         """
+        self.account = account
         self.duration = duration
         self.queue_name = queue_name
         self.project_name = project_name
@@ -85,8 +93,8 @@ class JobAttributes(object):
 
     def __repr__(self) -> str:
         """Returns a string representation of this object."""
-        return 'JobAttributes(duration={}, queue_name={}, project_name={}, reservation_id={}, ' \
-               'custom_attributes={})'.format(self.duration, self.queue_name, self.project_name,
+        return 'JobAttributes(duration={}, queue_name={}, account={}, reservation_id={}, ' \
+               'custom_attributes={})'.format(self.duration, self.queue_name, self.account,
                                               self.reservation_id, self._custom_attributes)
 
     def __eq__(self, o: object) -> bool:
@@ -98,7 +106,7 @@ class JobAttributes(object):
         if not isinstance(o, JobAttributes):
             return False
 
-        for prop_name in ['duration', 'queue_name', 'project_name', 'reservation_id',
+        for prop_name in ['duration', 'queue_name', 'account', 'reservation_id',
                           'custom_attributes']:
             if getattr(self, prop_name) != getattr(o, prop_name):
                 return False
@@ -149,3 +157,14 @@ class JobAttributes(object):
             elif unit == 's':
                 return timedelta(seconds=val)
         raise ValueError(_WALLTIME_FMT_ERROR % walltime)
+
+    @property
+    def project_name(self) -> Optional[str]:
+        """Deprecated. Please use the `account` attribute."""
+        return self.account
+
+    @project_name.setter
+    def project_name(self, project_name: Optional[str]) -> None:
+        logger.warning('The "project_name" attribute is deprecated. Please use the "account" '
+                       'attribute instead.')
+        self.account = project_name
