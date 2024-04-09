@@ -12,7 +12,7 @@ def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
             executable="/bin/date",
             attributes=JobAttributes(
                 queue_name=execparams.queue_name,
-                project_name=execparams.project_name
+                account=execparams.account
             )
         )
     )
