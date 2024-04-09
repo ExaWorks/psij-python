@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from typeguard import suppress_type_checks
+
 import pytest
 
 from psij import Job, JobExecutor, JobSpec
@@ -13,8 +15,9 @@ def _test_spec(spec: JobSpec) -> None:
 
 def test_environment_types() -> None:
 
-    with pytest.raises(TypeError):
-        _test_spec(JobSpec(executable='true', environment={1: 'foo'}))  # type: ignore
+    with suppress_type_checks():
+        with pytest.raises(TypeError):
+            _test_spec(JobSpec(executable='true', environment={1: 'foo'}))  # type: ignore
 
     with pytest.raises(TypeError):
         spec = JobSpec(executable='true')

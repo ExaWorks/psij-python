@@ -130,7 +130,6 @@ class JobSpec(object):
             the scheduler. In such a case, one must leave the `spec.directory` attribute empty and
             refer to files inside the job directory using relative paths.
         """
-
         self._name = name
         self.executable = executable
         self.arguments = arguments

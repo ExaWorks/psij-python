@@ -43,7 +43,6 @@ class JobAttributes(object):
 
         All constructor parameters are accessible as properties.
         """
-
         self.duration = duration
         self.queue_name = queue_name
         self.project_name = project_name
