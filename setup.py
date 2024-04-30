@@ -12,8 +12,7 @@ if __name__ == '__main__':
         name='psij-python',
         version=VERSION,
 
-        description='''This is an implementation of the PSI/J (Portable Submission Interface for Jobs)
-        specification.''',
+        description='''This is an implementation of the PSI/J (Portable Submission Interface for Jobs) specification.''',
 
         author='The ExaWorks Team',
         author_email='hategan@mcs.anl.gov',
