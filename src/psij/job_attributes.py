@@ -166,6 +166,7 @@ class JobAttributes(object):
 
     @project_name.setter
     def project_name(self, project_name: Optional[str]) -> None:
-        logger.warning('The "project_name" attribute is deprecated. Please use the "account" '
-                       'attribute instead.')
+        if project_name is not None:
+            logger.warning('The "project_name" attribute is deprecated. Please use the "account" '
+                           'attribute instead.')
         self.account = project_name
