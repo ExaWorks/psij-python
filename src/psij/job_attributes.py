@@ -3,7 +3,7 @@ import re
 from datetime import timedelta
 from typing import Optional, Dict
 
-from typeguard import check_argument_types
+from typeguard import typechecked
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +16,7 @@ _WALLTIME_FMT_ERROR = 'Unknown walltime format: %s. Accepted formats are hh:mm:s
 class JobAttributes(object):
     """A class containing ancillary job information that describes how a job is to be run."""
 
+    @typechecked
     def __init__(self, duration: timedelta = timedelta(minutes=10),
                  queue_name: Optional[str] = None, account: Optional[str] = None,
                  reservation_id: Optional[str] = None,
@@ -49,8 +50,6 @@ class JobAttributes(object):
 
         All constructor parameters are accessible as properties.
         """
-        assert check_argument_types()
-
         self.account = account
         self.duration = duration
         self.queue_name = queue_name
