@@ -16,7 +16,7 @@ sphinx-multiversion
 # since Sphinx 4.5.0 does not properly do so and later versions of
 # these plugins require Sphinx >= 5.0.0
 sphinxcontrib-applehelp==1.0.4
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==1.0.6
 sphinxcontrib-htmlhelp==2.0.1
 sphinxcontrib-serializinghtml==1.1.5
 sphinxcontrib-qthelp==1.0.3
