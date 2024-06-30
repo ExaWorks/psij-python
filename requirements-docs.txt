@@ -7,7 +7,7 @@
 
 # Docs
 six
-Sphinx==4.5.0
+Sphinx==7.3.7
 sphinx_rtd_theme
 sphinx-tabs==3.2.0
 sphinx-multiversion
