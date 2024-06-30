@@ -10,3 +10,11 @@ updates:
     schedule:
       interval: "weekly"
     versioning-strategy: auto
+    allow:
+      - dependency-name: "filelock"
+      - dependency-name: "psutil"
+      - dependency-name: "pystache"
+      - dependency-name: "typeguard"
+      - dependency-name: "typing-compat"
+      - dependency-name: "packaging"
+      
