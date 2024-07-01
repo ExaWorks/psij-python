@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import json
 import logging
+import os
 import tempfile
 from datetime import timedelta, datetime
 from pathlib import Path
@@ -8,10 +9,12 @@ from typing import Dict, Optional, cast
 
 from filelock import FileLock
 
+
+uid = os.getuid()
 tmp = tempfile.gettempdir()
-lock_file = Path(tmp) / 'qlist.lock'
-state_file = Path(tmp) / 'qlist'
-log_file = Path(tmp) / 'qlist.log'
+lock_file = Path(tmp) / 'qlist-%s.lock' % uid
+state_file = Path(tmp) / 'qlist-%s' % uid
+log_file = Path(tmp) / 'qlist-%s.log' % uid
 my_dir = Path(__file__).parent
 
 
