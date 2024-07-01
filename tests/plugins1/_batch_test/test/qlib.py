@@ -12,9 +12,9 @@ from filelock import FileLock
 
 uid = os.getuid()
 tmp = tempfile.gettempdir()
-lock_file = Path(tmp) / 'qlist-%s.lock' % uid
-state_file = Path(tmp) / 'qlist-%s' % uid
-log_file = Path(tmp) / 'qlist-%s.log' % uid
+lock_file = Path(tmp) / ('qlist-%s.lock' % uid)
+state_file = Path(tmp) / ('qlist-%s' % uid)
+log_file = Path(tmp) / ('qlist-%s.log' % uid)
 my_dir = Path(__file__).parent
 
 
