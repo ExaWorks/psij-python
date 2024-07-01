@@ -147,12 +147,10 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
-        ids = ','.join(native_ids)
-
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than
         # listing each element of the array independently
-        return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '-j', ids]
+        return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '--me']
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :meth:`~.BatchSchedulerExecutor.parse_status_output`."""
