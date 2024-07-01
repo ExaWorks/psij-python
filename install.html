@@ -1,0 +1,46 @@
+---
+title: Install - PSI/J - Python
+layout: default
+tab: 1
+---
+
+                <v-row class="page-start">
+                    <v-col align="center">
+                        <v-card align="left" class="mb-6 vbox">
+                            <h2><i class="fab fa-python"></i> Installing <span class="psij-font">PSI/J</span> in Python
+                            </h2>
+
+                            <div style="margin-top: 1em">
+                                The psij-python library has the following requirements:
+                                <ul>
+                                    <li>Python 3.7 or later
+                                    <li>Ubuntu 16.04 or later (or an equivalent Linux distribution)
+                                    <li>OS X 10.10 or later
+                                </ul>
+                                <p>
+                                    To install from the command line using <code>pip</code>:
+                                <pre><code class="language-bash">
+$ pip install psij-python
+                    </code></pre>
+                                </p>
+                            </div>
+                        </v-card>
+
+                        <v-card align="left" class="mb-6 vbox">
+                            <h2><i class="fas fa-code"></i> Installing the development version of <span
+                                    class="psij-font">PSI/J</span> in Python</h2>
+
+                            <div>
+                                <p>
+                                    Using the command line:
+                                <pre><code class="language-bash">
+$ git clone https://github.com/ExaWorks/psij-python.git
+$ cd psij-python
+$ pip install -r requirements.txt
+$ python setup.py install
+                  </code></pre>
+                                </p>
+                                </v-card-text>
+                            </div>
+                    </v-col>
+               </v-row>
