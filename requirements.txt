@@ -1,4 +1,4 @@
-psutil >=5.9, <=6.1.0
+psutil >=5.9, <=6.1.1
 pystache>=0.6.0
 typeguard>=3.0.1
 typing-compat
