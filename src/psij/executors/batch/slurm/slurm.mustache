@@ -38,6 +38,9 @@
 #SBATCH --cpus-per-task={{.}}
     {{/cpu_cores_per_process}}
 {{/job.spec.resources}}
+{{^job.spec.resources}}
+#SBATCH --nodes=1
+{{/job.spec.resources}}
 
 {{#formatted_job_duration}}
 #SBATCH --time={{.}}
