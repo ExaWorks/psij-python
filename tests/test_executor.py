@@ -231,6 +231,7 @@ def test_resource_generation1() -> None:
     spec = JobSpec('/bin/date', resources=res)
     job = Job(spec=spec)
     ex = JobExecutor.get_instance('slurm')
+    assert isinstance(ex, BatchSchedulerExecutor)
     with TemporaryFile(mode='w+') as f:
         ex.generate_submit_script(job, ex._create_script_context(job), f)
         f.seek(0)
