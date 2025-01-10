@@ -14,17 +14,17 @@
 #SBATCH --exclusive
     {{/exclusive_node_use}}
 
-    {{#node_count}}
+    {{#computed_node_count}}
 #SBATCH --nodes={{.}}
-    {{/node_count}}
+    {{/computed_node_count}}
 
-    {{#process_count}}
+    {{#computed_process_count}}
 #SBATCH --ntasks={{.}}
-    {{/process_count}}
+    {{/computed_process_count}}
 
-    {{#processes_per_node}}
+    {{#computed_ppn}}
 #SBATCH --ntasks-per-node={{.}}
-    {{/processes_per_node}}
+    {{/computed_ppn}}
 
     {{#gpu_cores_per_process}}
 #SBATCH --gpus-per-task={{.}}
@@ -37,9 +37,6 @@
         hyperthreaded CPUs are used) or CPU core (for non-hyperthreaded CPUs).}}
 #SBATCH --cpus-per-task={{.}}
     {{/cpu_cores_per_process}}
-{{/job.spec.resources}}
-{{^job.spec.resources}}
-#SBATCH --nodes=1
 {{/job.spec.resources}}
 
 {{#formatted_job_duration}}

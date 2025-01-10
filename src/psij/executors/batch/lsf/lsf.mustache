@@ -20,13 +20,13 @@
 
 {{#job.spec.resources}}
 
-    {{#node_count}}
+    {{#computed_node_count}}
 #BSUB -nnodes {{.}}
-    {{/node_count}}
+    {{/computed_node_count}}
 
-    {{#process_count}}
+    {{#computed_process_count}}
 #BSUB -n {{.}}
-    {{/process_count}}
+    {{/computed_process_count}}
 
     {{#gpu_cores_per_process}}
 #BSUB -gpu num={{.}}/task

@@ -14,9 +14,13 @@ from psij.job import Job, JobStatusCallback, FunctionJobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
 from psij.job_launcher import Launcher
 from psij.job_spec import JobSpec
+from psij.resource_spec import ResourceSpecV1
 
 
 logger = logging.getLogger(__name__)
+
+
+_DEFAULT_RESOURCES = ResourceSpecV1()
 
 
 class JobExecutor(ABC):
@@ -92,6 +96,8 @@ class JobExecutor(ABC):
         spec = job.spec
         if not spec:
             raise InvalidJobException('Missing specification')
+        if not spec.resources:
+            spec.resources = _DEFAULT_RESOURCES
 
         if __debug__:
             if spec.environment is not None:

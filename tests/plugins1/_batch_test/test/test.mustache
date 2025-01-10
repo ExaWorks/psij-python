@@ -9,9 +9,9 @@ cd "{{.}}"
 export PSIJ_TEST_BATCH_EXEC_COUNT=1
 
 {{#job.spec.resources}}
-    {{#process_count}}
+    {{#computed_process_count}}
 export PSIJ_TEST_BATCH_EXEC_COUNT={{.}}
-    {{/process_count}}
+    {{/computed_process_count}}
 {{/job.spec.resources}}
 
 {{#job.spec.attributes}}
