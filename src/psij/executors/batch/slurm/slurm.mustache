@@ -22,9 +22,9 @@
 #SBATCH --ntasks={{.}}
     {{/computed_process_count}}
 
-    {{#computed_ppn}}
+    {{#computed_processes_per_node}}
 #SBATCH --ntasks-per-node={{.}}
-    {{/computed_ppn}}
+    {{/computed_processes_per_node}}
 
     {{#gpu_cores_per_process}}
 #SBATCH --gpus-per-task={{.}}
