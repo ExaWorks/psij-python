@@ -224,3 +224,16 @@ def test_submit_script_generation(exec_name: str) -> None:
                      lambda k, v: setattr(attrs, k, v))
     _check_str_attrs(ex, job, [prefix + '.cust_attr1', prefix + '.cust_attr2'],
                      lambda k, v: c_attrs.__setitem__(k, v))
+
+
+def test_resource_generation1() -> None:
+    res = ResourceSpecV1()
+    spec = JobSpec('/bin/date', resources=res)
+    job = Job(spec=spec)
+    ex = JobExecutor.get_instance('slurm')
+    with TemporaryFile(mode='w+') as f:
+        ex.generate_submit_script(job, ex._create_script_context(job), f)
+        f.seek(0)
+        contents = f.read()
+        if contents.find('--exclusive') != -1:
+            pytest.fail('Spurious exclusive flag')
