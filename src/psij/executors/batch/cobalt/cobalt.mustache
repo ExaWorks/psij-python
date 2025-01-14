@@ -6,12 +6,12 @@
 #COBALT --cwd={{.}}
 {{/job.spec.directory}}
 {{#job.spec.resources}}
-    {{#node_count}}
+    {{#computed_node_count}}
 #COBALT --nodecount={{.}}
-    {{/node_count}}
-    {{#process_count}}
+    {{/computed_node_count}}
+    {{#computed_process_count}}
 #COBALT --proccount={{.}}
-    {{/process_count}}
+    {{/computed_process_count}}
 {{/job.spec.resources}}
 {{#formatted_job_duration}}
 #COBALT --time={{duration}}

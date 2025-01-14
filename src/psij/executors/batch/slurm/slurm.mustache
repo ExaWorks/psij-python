@@ -14,17 +14,17 @@
 #SBATCH --exclusive
     {{/exclusive_node_use}}
 
-    {{#node_count}}
+    {{#computed_node_count}}
 #SBATCH --nodes={{.}}
-    {{/node_count}}
+    {{/computed_node_count}}
 
-    {{#process_count}}
+    {{#computed_process_count}}
 #SBATCH --ntasks={{.}}
-    {{/process_count}}
+    {{/computed_process_count}}
 
-    {{#processes_per_node}}
+    {{#computed_processes_per_node}}
 #SBATCH --ntasks-per-node={{.}}
-    {{/processes_per_node}}
+    {{/computed_processes_per_node}}
 
     {{#gpu_cores_per_process}}
 #SBATCH --gpus-per-task={{.}}

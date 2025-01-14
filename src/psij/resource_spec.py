@@ -54,7 +54,7 @@ class ResourceSpecV1(ResourceSpec):
                  processes_per_node: Optional[int] = None,
                  cpu_cores_per_process: Optional[int] = None,
                  gpu_cores_per_process: Optional[int] = None,
-                 exclusive_node_use: bool = True) -> None:
+                 exclusive_node_use: bool = False) -> None:
         """
         Some of the properties of this class are constrained. Specifically,
         `process_count = node_count * processes_per_node`. Specifying all constrained properties
