@@ -13,7 +13,7 @@ This document will guide you through the install procedure and your first Hello 
 
 If you have conda installed you might want to start from a fresh environment. This part is not installing PSI/J but setting up a new environment with the specified python version:
 
-1. `conda create -n psij python=3.7`
+1. `conda create -n psij python=3.8`
 2. `conda activate psij`
 
 
