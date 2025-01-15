@@ -7,7 +7,7 @@ This document will guide you through the install procedure and your first Hello 
 - [Hello World example](#hello-world)
 
 ## Requirements
-- python3.7+
+- python3.8+
 
 ## Install PSI/J
 
@@ -35,7 +35,7 @@ Install PSI/J from the GitHub repository:
 ## Hello World
 
 **Requirements**
-- python3.7
+- python3.8
 - Job executor, e.g. Slurm in this example
 
 **Steps**
