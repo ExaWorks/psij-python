@@ -16,6 +16,3 @@ ignore_missing_imports = True
 
 [mypy-pystache.*]
 ignore_missing_imports = True
-
-[mypy-typing_compat.*]
-ignore_missing_imports = True

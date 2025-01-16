@@ -6,7 +6,6 @@ from datetime import timedelta
 from io import StringIO, TextIOBase
 from pathlib import Path
 from typing import Optional, Dict, Union, List, IO, AnyStr, TextIO
-import typing_compat
 
 from psij import ResourceSpec
 from psij.job_attributes import JobAttributes
@@ -135,12 +134,12 @@ class Serializer(ABC):
 
     def _canonicalize_type(self, t: object) -> object:
         # generics don't appear to be subclasses of Type, so we can't really use Type for t
-        origin = typing_compat.get_origin(t)
+        origin = typing.get_origin(t)
         if origin == Optional:
             # Python converts Optional[T] to Union[T, None], so this shouldn't happen
-            return typing_compat.get_args(t)[0]
+            return typing.get_args(t)[0]
         elif origin == Union:
-            args = typing_compat.get_args(t)
+            args = typing.get_args(t)
             if args[0] == NoneType:
                 return args[1]
             elif args[1] == NoneType:
@@ -171,10 +170,10 @@ class Serializer(ABC):
         else:
             if t == Union[str, Path] or t == Optional[Union[str, Path]]:
                 return str(o)
-            if typing_compat.get_origin(t) == dict:
+            if typing.get_origin(t) == dict:
                 assert isinstance(o, dict)
                 return self._from_dict(o)
-            if typing_compat.get_origin(t) == list:
+            if typing.get_origin(t) == list:
                 assert isinstance(o, list)
                 return self._from_list(o)
         raise ValueError('Cannot convert type "%s".' % t)
@@ -249,10 +248,10 @@ class Serializer(ABC):
             if t == Union[str, Path] or t == Optional[Union[str, Path]]:
                 assert isinstance(s, str)
                 return Path(s)
-            if typing_compat.get_origin(t) == dict:
+            if typing.get_origin(t) == dict:
                 assert isinstance(s, dict)
                 return self._to_dict(s)
-            if typing_compat.get_origin(t) == list:
+            if typing.get_origin(t) == list:
                 assert isinstance(s, list)
                 return self._to_list(s)
         raise ValueError('Cannot convert type "%s".' % t)

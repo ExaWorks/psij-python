@@ -10,7 +10,7 @@ or from source.
 Requirements
 ^^^^^^^^^^^^
 
-The only requirements are Python 3.7+ and pip, which almost always
+The only requirements are Python 3.8+ and pip, which almost always
 comes with Python.
 
 Install from PIP

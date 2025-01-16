@@ -15,6 +15,5 @@ updates:
       - dependency-name: "psutil"
       - dependency-name: "pystache"
       - dependency-name: "typeguard"
-      - dependency-name: "typing-compat"
       - dependency-name: "packaging"
       
