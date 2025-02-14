@@ -318,7 +318,8 @@ install_deps() {
             exit 2
         else
             echo "Done"
-            cat requirements*.txt | md5sum >.packages/req_csum.txt
+            CSUM=`echo $PYTHON | cat - requirements*.txt | md5sum`
+            echo "$CSUM" >.packages/req_csum.txt
         fi
     fi
 
