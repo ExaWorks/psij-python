@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import json
 import os
 import pathlib
@@ -6,7 +7,7 @@ import types
 
 import requests
 from collections import namedtuple
-from typing import List, Dict, Optional, Callable, Awaitable, Tuple, cast
+from typing import List, Dict, Optional, Callable, Awaitable, Tuple, cast, Union
 
 from .install_methods import InstallMethod
 from .log import log
@@ -18,13 +19,19 @@ KEY_PATH = pathlib.Path('~/.psij/key').expanduser()
 Attr = namedtuple('Attr', ['filter', 'name', 'value'])
 
 
+async def _to_thread(func, /, *args, **kwargs):  # type: ignore
+    loop = asyncio.get_running_loop()
+    func_call = functools.partial(func, *args, **kwargs)
+    return await loop.run_in_executor(None, func_call)
+
+
 class _Options:
     def __init__(self) -> None:
         self.custom_attributes = None
 
 
 class ConfWrapper:
-    def __init__(self, dict: Dict[str, str | int | bool | None]):
+    def __init__(self, dict: Dict[str, Union[str, int, bool, None]]):
         self.dict = dict
         self.option = _Options()
         dict['run_id'] = 'x'
@@ -32,7 +39,7 @@ class ConfWrapper:
         dict['upload_results'] = True
         dict['branch_name_override'] = None
 
-    def getoption(self, name: str) -> str | int | bool | None:
+    def getoption(self, name: str) -> Union[str, int, bool, None]:
         return self.dict[name]
 
 
@@ -43,16 +50,16 @@ class State:
         log.write('Conf: ' + str(self.conf) + '\n')
         log.write(str(self.env) + '\n')
         self.disable_install = False
-        self.install_method: InstallMethod | None = None
-        self.active_panel: int | None = None
-        self.scheduler: str | None = None
+        self.install_method: Optional[InstallMethod] = None
+        self.active_panel: Optional[int] = None
+        self.scheduler: Optional[str] = None
         self.attrs = self._parse_attributes()
         self.run_test_job = True
         self.has_key = KEY_PATH.exists()
         if self.has_key:
             with open(KEY_PATH, 'r') as f:
                 self.key = f.read().strip()
-        self.key_is_valid: bool | None = None
+        self.key_is_valid: Optional[bool] = None
         log.write(f'has key: {self.has_key}\n')
 
     def _parse_attributes(self) -> List[Attr]:
@@ -89,15 +96,15 @@ class State:
             self._write_conf_value(name, value)
 
     async def request(self, query: str, data: Dict[str, object], title: str,
-                      error_cb: Callable[[str, str], Awaitable[Dict[str, object] | None]]) \
-            -> Dict[str, object] | None:
+                      error_cb: Callable[[str, str], Awaitable[Optional[Dict[str, object]]]]) \
+            -> Optional[Dict[str, object]]:
         baseUrl = self.conf['server_url']
-        response = await asyncio.to_thread(requests.post, baseUrl + query, data=data)
+        response = await _to_thread(requests.post, baseUrl + query, data=data)  # type: ignore
         return await self._check_error(response, title, error_cb)
 
     async def _check_error(self, response: requests.Response, title: str,
-                           error_cb: Callable[[str, str], Awaitable[Dict[str, object] | None]]) \
-            -> Dict[str, object] | None:
+                           error_cb: Callable[[str, str], Awaitable[Optional[Dict[str, object]]]]) \
+            -> Optional[Dict[str, object]]:
         log.write(f'Response: {response.text}\n')
         if response.status_code != 200:
             msg = self._extract_response_message(response.text)
