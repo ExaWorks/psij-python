@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Optional
 
 from .panel import Panel
 
@@ -16,7 +16,8 @@ class MRadioSet(RadioSet):
         ('enter,space', 'select')
     ]
 
-    def __init__(self, panel: 'SchedulePanel', *radios: RadioButton, id: str | None = None) -> None:
+    def __init__(self, panel: 'SchedulePanel', *radios: RadioButton,
+                 id: Optional[str] = None) -> None:
         super().__init__(*radios, id=id)
         self.panel = panel
 
@@ -39,7 +40,7 @@ class MRadioSet(RadioSet):
 
         self.action_toggle_button()
 
-    def get_selected_index(self) -> int | None:
+    def get_selected_index(self) -> Optional[int]:
         return self._selected
 
 
@@ -86,7 +87,7 @@ class SchedulePanel(Panel):
     def name(self) -> str:
         return 'install'
 
-    def _get_selected_method(self) -> InstallMethod | None:
+    def _get_selected_method(self) -> Optional[InstallMethod]:
         radio_set = self.get_widget_by_id('rs-method')
         assert isinstance(radio_set, MRadioSet)
         selected_index = radio_set.get_selected_index()
@@ -115,7 +116,7 @@ class SchedulePanel(Panel):
                 btn.value = True
                 break
 
-    def radio_focused(self, btn: RadioButton | None) -> None:
+    def radio_focused(self, btn: Optional[RadioButton]) -> None:
         log.write(f'focused {btn}\n')
         preview = self.get_widget_by_id('method-preview')
         assert isinstance(preview, TextArea)

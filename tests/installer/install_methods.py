@@ -34,7 +34,7 @@ def _save_env() -> None:
 
 class InstallMethod(ABC):
     @abstractmethod
-    def is_available(self) -> Tuple[bool, str | None]:
+    def is_available(self) -> Tuple[bool, Optional[str]]:
         pass
 
     @abstractmethod
@@ -73,7 +73,7 @@ class Crontab(InstallMethod):
         minute = random.randint(0, 59)
         self.line = f'{minute} {hour} * * * "{cwd}/psij-ci-run" --log'
 
-    def is_available(self) -> Tuple[bool, str | None]:
+    def is_available(self) -> Tuple[bool, Optional[str]]:
         if not _succeeds("ps -eo command | awk '{print $1}' | grep cron"):
             return False, 'not found'
         if _succeeds('crontab -l 2>&1 | grep "not allowed"'):
@@ -126,7 +126,7 @@ class At(InstallMethod):
         self.minute = random.randint(0, 59)
         self.cmd = f'psij-ci-run --reschedule {self.hour}:{self.minute} --log'
 
-    def is_available(self) -> Tuple[bool, str | None]:
+    def is_available(self) -> Tuple[bool, Optional[str]]:
         fd, path = mkstemp()
         os.close(fd)
 
@@ -187,7 +187,7 @@ class Screen(InstallMethod):
     def __init__(self) -> None:
         self.cmd = 'screen -d -m bash -c "./psij-ci-run --repeat --log"'
 
-    def is_available(self) -> Tuple[bool, str | None]:
+    def is_available(self) -> Tuple[bool, Optional[str]]:
         if _succeeds('which screen'):
             return True, None
         else:
@@ -219,7 +219,7 @@ class Screen(InstallMethod):
 
 
 class Custom(InstallMethod):
-    def is_available(self) -> Tuple[bool, str | None]:
+    def is_available(self) -> Tuple[bool, Optional[str]]:
         return True, None
 
     def already_installed(self) -> bool:
@@ -255,7 +255,7 @@ METHODS = [
 ]
 
 
-def existing() -> InstallMethod | None:
+def existing() -> Optional[InstallMethod]:
     for method in METHODS:
         if method.already_installed():
             return method

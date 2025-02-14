@@ -1,5 +1,5 @@
 import asyncio
-from typing import cast
+from typing import cast, TypeVar, Generic
 
 from textual import on
 from textual.app import App, ComposeResult
@@ -11,7 +11,10 @@ from textual.widgets import Button, Label, RichLog, ProgressBar
 from installer.widgets import DottedLoadingIndicator, ShortcutButton
 
 
-class RunnableDialog[T](ModalScreen[None]):
+T = TypeVar('T')
+
+
+class RunnableDialog(ModalScreen[None], Generic[T]):
     def __init__(self) -> None:
         super().__init__()
         self.done = asyncio.get_running_loop().create_future()
