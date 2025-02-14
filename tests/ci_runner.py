@@ -151,8 +151,9 @@ def run_branch_tests(conf: Dict[str, str], dir: Path, run_id: str, clone: bool =
                 'project_name', 'account']:
         try:
             val = get_conf(conf, opt)
-            args.append('--' + opt.replace('_', '-'))
-            args.append(val)
+            if val != '':
+                args.append('--' + opt.replace('_', '-'))
+                args.append(val)
         except KeyError:
             # sometimes options get added; when they do, they could prevent
             # old test cycles from working, if their configs don't contain
