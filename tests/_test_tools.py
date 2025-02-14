@@ -8,7 +8,7 @@ from typing import Optional, Union, Iterator
 
 from executor_test_params import ExecutorTestParams
 
-from psij import JobStatus, JobState, Job, JobExecutor, JobAttributes
+from psij import JobStatus, JobState, Job, JobExecutor, JobAttributes, ResourceSpecV1
 
 _QUICK_EXECUTORS = set(['local', 'batch-test'])
 
@@ -51,11 +51,16 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) ->
     if job is not None:
         assert job.spec is not None
         job.spec.launcher = ep.launcher
-        job.spec.attributes = JobAttributes(custom_attributes=ep.custom_attributes)
+        attrs = JobAttributes(custom_attributes=ep.custom_attributes)
+        job.spec.attributes = attrs
         if ep.account is not None:
-            job.spec.attributes.account = ep.account
+            attrs.account = ep.account
+        res = job.spec.resources
         if ep.queue_name is not None:
-            job.spec.attributes.queue_name = ep.queue_name
+            attrs.queue_name = ep.queue_name
+        if (res and isinstance(res, ResourceSpecV1) and res.computed_node_count > 1
+                and ep.multi_node_queue_name is not None):
+            attrs.queue_name = ep.multi_node_queue_name
     return JobExecutor.get_instance(ep.executor, url=ep.url)
 
 
