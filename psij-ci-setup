@@ -289,7 +289,8 @@ not_cached() {
         return 0
     fi
     REQ_CSUM=`cat .packages/req_csum.txt`
-    CRT_CSUM=`cat requirements*.txt | md5sum`
+    PYTHON=`which $PYTHON`
+    CRT_CSUM=`echo $PYTHON | cat - requirements*.txt | md5sum`
 
     if [ "$REQ_CSUM" != "$CRT_CSUM" ]; then
         return 0
