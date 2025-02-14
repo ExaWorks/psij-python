@@ -102,7 +102,6 @@ class PSIJCIInstallWizard(App[object]):
         self.watch(body, 'scroll_y', self._on_y_scroll)
         self.next_button.focus()
         self.activate_panel(0)
-        self.copy_to_clipboard('Testing, 1, 2, 3')
 
     async def _on_y_scroll(self, y: int) -> None:
         log.write(f'on_y_scroll({y})\n')
