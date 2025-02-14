@@ -25,6 +25,9 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -r requirements-connector-radical.txt
+        # Radical depends on PSI/J. However, the version we are
+        # testing provide that dependency
+        pip uninstall -y psij-python
     - name: Typecheck and stylecheck
       run: |
         make typecheck
