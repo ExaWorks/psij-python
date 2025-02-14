@@ -668,8 +668,7 @@ class _QueuePollThread(Thread):
             jobs_copy = dict(self._jobs)
         logger.info('Polling for %s jobs', len(jobs_copy))
         try:
-            if exec:
-                out = exec._run_command(exec.get_status_command(jobs_copy.keys()))
+            out = exec._run_command(exec.get_status_command(jobs_copy.keys()))
         except subprocess.CalledProcessError as ex:
             out = ex.output
             exit_code = ex.returncode
