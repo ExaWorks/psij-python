@@ -10,7 +10,7 @@ build:
     tools:
         python: "3.11"
     jobs:
-        post_build:
+        post_install:
             - pip uninstall -y psij-python
 
 python:
