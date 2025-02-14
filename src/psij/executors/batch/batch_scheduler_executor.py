@@ -1,10 +1,10 @@
 import logging
 import os
-import weakref
 
 import subprocess
 import time
 import traceback
+import weakref
 from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
@@ -641,39 +641,36 @@ class _QueuePollThread(Thread):
         super().__init__()
         self.name = name
         self.daemon = True
-        # We don't at this time cache executor instances. Even if we did, it may be wise
-        # to shut down queue polling threads when their executors (the only entities that
-        # use them) are garbage collected. So we wrap the references to the executor and
-        # config in a weak ref and exit when the ref becomes invalid.
-        self.config = weakref.ref(config)
-        self.executor = weakref.ref(executor)
+        self.config = config
+        self.done = False
+        self.executor = weakref.ref(executor, self._stop)
         # native_id -> job
         self._jobs: Dict[str, Set[Job]] = {}
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()
         self.status_updater = cast(_StatusUpdater, _StatusUpdater.get_instance())
-        self.active = True
 
     def run(self) -> None:
         logger.debug('Executor %s: queue poll thread started', self.executor)
-        try:
-            time.sleep(self.get_config().initial_queue_polling_delay)
-            while self.active:
-                self._poll()
-                start = time.time()
-                now = start
-                while now - start < self.get_config().queue_polling_interval:
-                    time.sleep(1)
-                    now = time.time()
-        except StopIteration:
-            logger.info('Thread %s exiting due to executor collection' % self)
 
-    def stop(self) -> None:
-        self.active = False
+        time.sleep(self.config.initial_queue_polling_delay)
+        while not self.done:
+            self._poll()
+            start = time.time()
+            now = start
+            while now - start < self.config.queue_polling_interval:
+                time.sleep(1)
+                now = time.time()
+        logger.info('Thread %s exiting due to executor collection' % self)
+
+    def _stop(self, executor: object) -> None:
+        self.done = True
 
     def _poll(self) -> None:
-        executor = self.get_executor()
+        executor = self.executor()
+        if executor is None:
+            return
         with self._jobs_lock:
             if len(self._jobs) == 0:
                 return
@@ -685,8 +682,7 @@ class _QueuePollThread(Thread):
             out = ex.output
             exit_code = ex.returncode
         except Exception as ex:
-            self._handle_poll_error(True,
-                                    ex,
+            self._handle_poll_error(executor, True, ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
         else:
@@ -696,8 +692,7 @@ class _QueuePollThread(Thread):
         try:
             status_map = executor.parse_status_output(exit_code, out)
         except Exception as ex:
-            self._handle_poll_error(False,
-                                    ex,
+            self._handle_poll_error(executor, False, ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
         try:
@@ -708,12 +703,11 @@ class _QueuePollThread(Thread):
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())
-
                 for job in job_set:
                     executor._set_job_status(job, status)
         except Exception as ex:
             msg = traceback.format_exc()
-            self._handle_poll_error(True, ex, 'Error updating job statuses {}'.format(msg))
+            self._handle_poll_error(executor, True, ex, f'Error updating job statuses {msg}')
 
     def _get_job_status(self, native_id: str, status_map: Dict[str, JobStatus]) -> JobStatus:
         if native_id in status_map:
@@ -721,10 +715,11 @@ class _QueuePollThread(Thread):
         else:
             return JobStatus(JobState.COMPLETED)
 
-    def _handle_poll_error(self, immediate: bool, ex: Exception, msg: str) -> None:
+    def _handle_poll_error(self, executor: BatchSchedulerExecutor, immediate: bool, ex: Exception,
+                           msg: str) -> None:
         logger.warning('Polling error: %s', msg)
         self._poll_error_count += 1
-        if immediate or (self._poll_error_count > self.get_config().queue_polling_error_threshold):
+        if immediate or (self._poll_error_count > self.config.queue_polling_error_threshold):
             self._poll_error_count = 0
             # fail all jobs
             with self._jobs_lock:
@@ -739,11 +734,14 @@ class _QueuePollThread(Thread):
             for job_set in jobs_copy.values():
                 for job in job_set:
                     self.unregister_job(job)
-                    self.get_executor()._set_job_status(job, JobStatus(JobState.FAILED,
-                                                                       message=msg))
+                    executor._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
 
     def register_job(self, job: Job) -> None:
-        self.status_updater.register_job(job, self.get_executor())
+        executor = self.executor()
+        # This method is only called from the executor. It stands to reason that the
+        # executor cannot have been GC-ed.
+        assert executor is not None
+        self.status_updater.register_job(job, executor)
         assert job.native_id
         logger.info('Job %s: registering', job.id)
         with self._jobs_lock:
@@ -766,17 +764,3 @@ class _QueuePollThread(Thread):
                 # first one being unregistered would already have removed
                 # the dict entry
                 pass
-
-    def get_config(self) -> BatchSchedulerExecutorConfig:
-        config = self.config()
-        if config:
-            return config
-        else:
-            raise StopIteration()
-
-    def get_executor(self) -> BatchSchedulerExecutor:
-        ex = self.executor()
-        if ex:
-            return ex
-        else:
-            raise StopIteration()

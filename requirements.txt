@@ -1,5 +1,4 @@
-filelock~=3.4
-psutil~=5.9
+psutil >=5.9, <=6.1.1
 pystache>=0.6.0
-typeguard~=2.12
-typing-compat
+typeguard>=3.0.1
+packaging >= 24.0, <= 24.2

@@ -138,7 +138,10 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
                 elif 'Exit_status' in job_report and job_report['Exit_status'] != 0:
                     state = JobState.FAILED
 
-            msg = job_report["comment"]
+            try:
+                msg = job_report['comment']
+            except KeyError:
+                msg = None
             r[native_id] = JobStatus(state, message=msg)
 
         return r

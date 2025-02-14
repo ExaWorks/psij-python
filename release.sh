@@ -48,6 +48,12 @@ if [ "$LAST" != "$TARGET_VERSION" ]; then
     error "Version $TARGET_VERSION is lower than the latest tagged version ($LAST)."
 fi
 
+if which twine >/dev/null; then
+	echo "Found twine"
+else
+	error "Twine was not found. Please install it and then re-run this script"
+fi
+
 echo "This will tag and release psij-python to version $TARGET_VERSION."
 echo -n "Type 'yes' if you want to continue: "
 read REPLY

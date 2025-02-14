@@ -5,7 +5,7 @@ from __future__ import annotations
 import pathlib
 from typing import Dict, List, Optional, Union, Set
 
-from typeguard import check_argument_types
+from typeguard import typechecked
 
 import psij.resource_spec
 import psij.job_attributes
@@ -48,6 +48,7 @@ def _all_to_path(s: Optional[Set[Union[str, pathlib.Path]]]) -> Optional[Set[pat
 class JobSpec(object):
     """A class that describes the details of a job."""
 
+    @typechecked
     def __init__(self, executable: Optional[str] = None, arguments: Optional[List[str]] = None,
                  # For some odd reason, and only in the constructor, if Path is used directly,
                  # sphinx fails to find the class. Using Path in the getters and setters does not
@@ -153,8 +154,6 @@ class JobSpec(object):
             the scheduler. In such a case, one must leave the `spec.directory` attribute empty and
             refer to files inside the job directory using relative paths.
         """
-        assert check_argument_types()
-
         self._name = name
         self.executable = executable
         self.arguments = arguments

@@ -21,9 +21,9 @@
 {{/formatted_job_duration}}
 
 {{#job.spec.attributes}}
-    {{#project_name}}
-#PBS -P {{.}}
-    {{/project_name}}
+    {{#account}}
+#PBS -A {{.}}
+    {{/account}}
     {{#queue_name}}
 #PBS -q {{.}}
     {{/queue_name}}

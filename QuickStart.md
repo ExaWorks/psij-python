@@ -7,13 +7,13 @@ This document will guide you through the install procedure and your first Hello 
 - [Hello World example](#hello-world)
 
 ## Requirements
-- python3.7+
+- python3.8+
 
 ## Install PSI/J
 
 If you have conda installed you might want to start from a fresh environment. This part is not installing PSI/J but setting up a new environment with the specified python version:
 
-1. `conda create -n psij python=3.7`
+1. `conda create -n psij python=3.8`
 2. `conda activate psij`
 
 
@@ -35,7 +35,7 @@ Install PSI/J from the GitHub repository:
 ## Hello World
 
 **Requirements**
-- python3.7
+- python3.8
 - Job executor, e.g. Slurm in this example
 
 **Steps**
@@ -58,7 +58,7 @@ def make_job():
     spec.arguments = ['HELLO WORLD!']
     
     # set project name if no default is specified
-    # spec.attributes.project_name = <PROJECT_NAME>
+    # spec.attributes.account = <PROJECT_NAME>
     
     # set queue if no default is specified
     # spec.attributes.queue_name = <QUEUE_NAME>
