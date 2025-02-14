@@ -1,10 +1,19 @@
 #!/bin/bash
 
+set -o pipefail
+
 if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
     PIP="pip"
 else
     PIP="pip3"
 fi
+
+if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
+    PYTHON="python"
+else
+    PYTHON="python3"
+fi
+
 
 existing_error_trailer() {
     echo "If you are certain that you want to install multiple entries,   "
@@ -50,7 +59,7 @@ cron_existing_error() {
 }
 
 cron_install() {
-    CMD="$CMD >> testing.log 2>&1"
+    CMD="$CMD --log"
     LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && $CMD"
     echo
     echo "================================================================"
@@ -109,7 +118,7 @@ at_existing_error() {
 }
 
 at_install() {
-    CMD="$CMD --reschedule $HOUR:$MINUTE >> testing.log 2>&1"
+    CMD="$CMD --reschedule $HOUR:$MINUTE --log"
     echo
     echo "================================================================"
     echo "The following will be executed:"
@@ -141,7 +150,7 @@ screen_existing_error() {
 }
 
 screen_install() {
-    CMD="$CMD --repeat >> testing.log 2>&1"
+    CMD="$CMD --repeat --log"
     echo
     echo "================================================================"
     echo "WARNING: Screen sessions do not persist across reboots. Please  "
@@ -166,7 +175,7 @@ manual_existing_error() {
 }
 
 manual_install() {
-    CMD="$CMD --repeat >> testing.log 2>&1"
+    CMD="$CMD --repeat --log"
     echo
     echo "================================================================"
     echo "Please run the following command in the background:             "
@@ -271,14 +280,76 @@ check_key() {
     fi
 }
 
-FORCE=0
 
-if [ "$1" == "-f" ]; then
-    FORCE=1
+not_cached() {
+    if [ ! -d .packages ]; then
+        return 0
+    fi
+    if [ ! -f .packages/req_csum.txt ]; then
+        return 0
+    fi
+    REQ_CSUM=`cat .packages/req_csum.txt`
+    CRT_CSUM=`cat requirements*.txt | md5sum`
+
+    if [ "$REQ_CSUM" != "$CRT_CSUM" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+dots_for_lines() {
+    while read LINE; do
+        echo -n .
+    done
+}
+
+install_deps() {
+    if not_cached; then
+        echo -n "Installing dependencies..."
+
+        exec 3> >(dots_for_lines >> /dev/stdout)
+        OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt --no-compile 2>&1 1>&3`
+
+        if [ "$?" != "0" ]; then
+            echo "FAILED"
+            echo "$OUT"
+            exit 2
+        else
+            echo "Done"
+            cat requirements*.txt | md5sum >.packages/req_csum.txt
+        fi
+    fi
+
+    export PYTHONPATH=`pwd`/.packages:$PYTHONPATH
+}
+
+
+FORCE=0
+PLAIN=0
+
+while [ "$1" != "" ]; do
+    if [ "$1" == "-f" ]; then
+        FORCE=1
+    elif [ "$1" == "--plain" ]; then
+        PLAIN=1
+    else
+        echo "Unknown option \"$1\""
+        exit 1
+    fi
     shift
-fi
+done
 
 MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+cd "$MYPATH"
+
+if [ "$PLAIN" != "1" ]; then
+    install_deps
+
+    echo "Running TUI installer. To run the normal installer, use \"psij-ci-setup --plain\""
+
+    exec $PYTHON tests/run_installer.py
+fi
 
 echo
 echo "================================================================"
@@ -297,21 +368,8 @@ check_email
 
 check_key
 
-cd "$MYPATH"
+install_deps
 
-echo -n "Installing dependencies..."
-
-OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt 2>&1`
-
-if [ "$?" != "0" ]; then
-    echo "FAILED"
-    echo $OUT
-    exit 2
-else
-    echo "Done"
-fi
-
-export PYTHONPATH=`pwd`/.packages:$PYTHONPATH
 
 HOUR=`echo $(($RANDOM % 24))`
 MINUTE=`echo $(($RANDOM % 60))`
