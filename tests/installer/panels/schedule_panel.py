@@ -100,6 +100,8 @@ class SchedulePanel(Panel):
             assert m is not None
             self.state.install_method = m
             m.install()
+            if m.name == 'custom':
+                self.app.copy_to_clipboard(m.preview)
             return True
         except Exception as ex:
             await ErrorDialog('Error scheduling tests', str(ex)).run(self.app)
