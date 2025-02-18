@@ -294,7 +294,14 @@ class BatchSchedulerPanel(Panel):
     async def activate(self) -> None:
         self.update_attrs()
         selector = self.get_widget_by_id('batch-selector')
-        selector.focus(False)
+        assert isinstance(selector, Select)
+        sched = selector.selection
+        if sched is None or sched == 'none':
+            selector.focus(False)
+        elif sched == 'local':
+            self.app._focus_next()  # type: ignore
+        else:
+            self.get_widget_by_id('account-input').focus()
 
     def update_attrs(self) -> None:
         s = ''
