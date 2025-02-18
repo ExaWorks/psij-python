@@ -369,7 +369,7 @@ class BatchSchedulerPanel(Panel):
         await asyncio.sleep(0.1)
         j1 = await self._run_test_job(jd, 1, 'Single node job', None, '')
         j2 = await self._run_test_job(jd, 2, 'Multi node job ', ResourceSpecV1(node_count=4),
-                                      f'test_nodefile[{self.state.scheduler}:single')
+                                      f'test_nodefile[{self.state.scheduler}:multiple')
 
         if j1 and j2:
             jd.focus_continue_button()
@@ -405,7 +405,10 @@ class BatchSchedulerPanel(Panel):
 
         attrs = JobAttributes()
         account = self.state.conf.get('account', '')
-        queue = self.state.conf.get('queue', '')
+        if rspec is not None and rspec.computed_node_count > 1:
+            queue = self.state.conf.get('multi_node_queue_name', '')
+        else:
+            queue = self.state.conf.get('queue_name', '')
         if account != '':
             attrs.account = account
         if queue != '':
