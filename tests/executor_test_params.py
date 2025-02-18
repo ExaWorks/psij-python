@@ -6,6 +6,7 @@ class ExecutorTestParams:
     """A class holding executor, launcher, url pairs."""
 
     def __init__(self, spec: str, queue_name: Optional[str] = None,
+                 multi_node_queue_name: Optional[str] = None,
                  account: Optional[str] = None,
                  custom_attributes_raw: Optional[Dict[str, Dict[str, object]]] = None) \
             -> None:
@@ -19,6 +20,9 @@ class ExecutorTestParams:
             url are specified, the string should be formatted as "<executor>::<url>".
         queue_name
             An optional queue to submit the job to
+        multi_node_queue_name
+            An optional multi-node queue name used for multi-node jobs. If not specified,
+            `queue_name` is used for both single and multi-node jobs.
         account
             An optional account to use for billing purposes.
         custom_attributes
@@ -35,6 +39,10 @@ class ExecutorTestParams:
             self.url = None
 
         self.queue_name = queue_name
+        if multi_node_queue_name is None:
+            self.multi_node_queue_name = queue_name
+        else:
+            self.multi_node_queue_name = multi_node_queue_name
         self.account = account
         self.custom_attributes_raw = custom_attributes_raw
         self.custom_attributes: Dict[str, object] = {}
