@@ -301,7 +301,7 @@ class BatchSchedulerPanel(Panel):
         elif sched == 'local':
             self.app._focus_next()  # type: ignore
         else:
-            self.get_widget_by_id('account-input').focus()
+            self.get_widget_by_id('account-input').focus(False)
 
     def update_attrs(self) -> None:
         s = ''
@@ -328,7 +328,7 @@ class BatchSchedulerPanel(Panel):
         if sched == 'local':
             self.app._focus_next()  # type: ignore
         else:
-            self.get_widget_by_id('account-input').focus()
+            self.get_widget_by_id('account-input').focus(False)
 
     def set_scheduler(self, name: str) -> None:
         selector = self.get_widget_by_id('batch-selector')
@@ -338,7 +338,7 @@ class BatchSchedulerPanel(Panel):
     @on(Input.Submitted, '#account-input')
     def account_submitted(self) -> None:
         next = self.get_widget_by_id('queue-input')
-        next.focus()
+        next.focus(False)
 
     @on(Input.Submitted, '#queue-input')
     def queue_submitted(self, event: Input.Submitted) -> None:
@@ -346,7 +346,7 @@ class BatchSchedulerPanel(Panel):
         assert isinstance(next, Input)
         if next.value == '':
             next.value = event.input.value
-        next.focus()
+        next.focus(False)
 
     @on(Input.Submitted, '#mqueue-input')
     def mqueue_submitted(self) -> None:
