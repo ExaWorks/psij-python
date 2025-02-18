@@ -71,7 +71,7 @@ class SchedulePanel(Panel):
                 classes='h-auto m-b-1'
             ),
             Vertical(
-                Label('Preview', classes='form-label'),
+                Label('Preview:', classes='form-label'),
                 TextArea('-', id='method-preview', classes='', language='bash',
                          read_only=True, disabled=True),
                 classes='form-row h-auto'

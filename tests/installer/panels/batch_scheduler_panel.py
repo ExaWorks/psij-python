@@ -238,33 +238,39 @@ class BatchSchedulerPanel(Panel):
                          ('PBS', 'pbs'), ('LSF', 'lsf'), ('Cobalt', 'cobalt')],
                         id='batch-selector',
                         allow_blank=False),
-                    classes='form-col-3 form-row'
-                ),
-                Vertical(
-                    Label('Queue:', classes='form-label'),
-                    Input(id='queue-input'),
-                    classes='form-col-3 form-row batch-valid'
+                    classes='bs-col-1 form-row', id='batch-selector-col'
                 ),
                 Vertical(
                     Label('Account/project:', classes='form-label'),
                     Input(id='account-input'),
-                    classes='form-col-3 form-row batch-valid'
+                    classes='bs-col-2 form-row batch-valid'
                 ),
-                classes='w-100 form-row', id='batch-system-group'
+                classes='w-100 form-row', id='batch-system-group-1'
+            ),
+            Horizontal(
+                Vertical(
+                    Label('Queue:', classes='form-label'),
+                    Input(id='queue-input'),
+                    classes='bs-col-1 form-row batch-valid'
+                ),
+                Vertical(
+                    Label('Multi-node queue:', classes='form-label'),
+                    Input(id='mqueue-input'),
+                    classes='bs-col-2 form-row batch-valid'
+                ),
+                Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job',
+                         id='cb-run-test-job', classes='bs-col-3 m-t-1 batch-valid'),
+                classes='w-100 form-row', id='batch-system-group-2'
             ),
             Horizontal(
                 Vertical(
                     Label('Custom attributes:', classes='form-label'),
-                    TextArea('', id='custom-attrs', read_only=True, soft_wrap=False),
-                    id='attr-cell',
-                    classes='form-col-2 h-auto'
+                    ShortcutButton('&Edit attrs.', id='btn-edit-attrs'),
+                    classes='bs-col-1 h-auto'
                 ),
                 Vertical(
-                    Label('', classes='form-label'),
-                    ShortcutButton('&Edit attributes', id='btn-edit-attrs'),
-                    Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job',
-                             id='cb-run-test-job', classes='m-t-1'),
-                    classes='form-col-2 h-auto'
+                    TextArea('', id='custom-attrs', read_only=True, soft_wrap=False),
+                    classes='bs-col-23 h-auto'
                 ),
                 classes='w-100 h-auto batch-valid'
             ),
@@ -315,20 +321,28 @@ class BatchSchedulerPanel(Panel):
         if sched == 'local':
             self.app._focus_next()  # type: ignore
         else:
-            self.get_widget_by_id('queue-input').focus()
+            self.get_widget_by_id('account-input').focus()
 
     def set_scheduler(self, name: str) -> None:
         selector = self.get_widget_by_id('batch-selector')
         assert isinstance(selector, Select)
         selector.value = name
 
-    @on(Input.Submitted, '#queue-input')
-    def queue_submitted(self) -> None:
-        bottom = self.get_widget_by_id('account-input')
-        bottom.focus()
-
     @on(Input.Submitted, '#account-input')
     def account_submitted(self) -> None:
+        next = self.get_widget_by_id('queue-input')
+        next.focus()
+
+    @on(Input.Submitted, '#queue-input')
+    def queue_submitted(self, event: Input.Submitted) -> None:
+        next = self.get_widget_by_id('mqueue-input')
+        assert isinstance(next, Input)
+        if next.value == '':
+            next.value = event.input.value
+        next.focus()
+
+    @on(Input.Submitted, '#mqueue-input')
+    def mqueue_submitted(self) -> None:
         self.app._focus_next()  # type: ignore
 
     @on(Button.Pressed, '#btn-edit-attrs')
@@ -368,8 +382,7 @@ class BatchSchedulerPanel(Panel):
                             rspec: Optional[ResourceSpecV1], test_name: str) -> bool:
         try:
             jd.set_running(job_no)
-            await asyncio.sleep(2)
-
+            await asyncio.sleep(0.5)
             job = self._launch_job(test_name, rspec)
 
             await self._wait_for_queued_state(job)

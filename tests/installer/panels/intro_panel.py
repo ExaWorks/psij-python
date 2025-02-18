@@ -22,7 +22,7 @@ class IntroPanel(Panel):
 
     @property
     def label(self) -> str:
-        return 'Introduction'
+        return 'Welcome'
 
     @property
     def name(self) -> str:
