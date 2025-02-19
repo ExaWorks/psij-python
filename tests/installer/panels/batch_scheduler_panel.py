@@ -308,6 +308,11 @@ class BatchSchedulerPanel(Panel):
 
     async def activate(self) -> None:
         self.update_attrs()
+
+        self._set_input('account-input', self.state.conf.get('account', ''))
+        self._set_input('queue-input', self.state.conf.get('queue_name', ''))
+        self._set_input('mqueue-input', self.state.conf.get('multi_node_queue_name', ''))
+
         scheduler = self._get_scheduler()
         if scheduler is None or scheduler == 'none':
             self.get_widget_by_id('batch-selector').focus(False)
@@ -315,6 +320,13 @@ class BatchSchedulerPanel(Panel):
             self.app._focus_next()  # type: ignore
         else:
             self.get_widget_by_id('account-input').focus(False)
+
+    def _set_input(self, id: str, value: Optional[str]) -> None:
+        if value is None:
+            value = ''
+        input = self.get_widget_by_id(id)
+        assert isinstance(input, Input)
+        input.value = value
 
     def update_attrs(self) -> None:
         s = ''
