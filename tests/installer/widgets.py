@@ -55,10 +55,12 @@ class DottedLoadingIndicator(LoadingIndicator):
 
 
 class MInput(Input):
-    # A version of input that also runs the submit action on blur (seems silly from a UI
-    # perspective to allow moving the focus from this input without the value being
+    # A version of input that also runs the submit action when the tab button is pressed (seems
+    # silly from a UI perspective to allow moving the focus from this input without the value being
     # committed to whatever model is underneath.
 
-    async def _on_blur(self, event: Blur) -> None:  # type: ignore
-        super()._on_blur(event)
+    BINDINGS = [('tab', 'tab_pressed')]
+
+
+    async def action_tab_pressed(self) -> None:
         await self.action_submit()
