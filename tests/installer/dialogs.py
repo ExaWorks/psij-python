@@ -128,7 +128,7 @@ class TestJobsDialog(RunnableDialog[bool]):
             Label('Running test jobs', classes='header', shrink=True, expand=True),
             Horizontal(
                 Label('Single node job', id='label-job-1', classes='test-job-label'),
-                Label('[ ', classes='test-job-marker'),
+                Label(r'\[ ', classes='test-job-marker'),
                 DottedLoadingIndicator(id='indicator-job-1', classes='test-job-indicator hidden'),
                 Label('', id='status-job-1', classes='test-job-status'),
                 Label(' ]', classes='test-job-marker'),
@@ -136,7 +136,7 @@ class TestJobsDialog(RunnableDialog[bool]):
             ),
             Horizontal(
                 Label('Multi node job ', id='label-job-2', classes='test-job-label'),
-                Label('[ ', classes='test-job-marker'),
+                Label(r'\[ ', classes='test-job-marker'),
                 DottedLoadingIndicator(id='indicator-job-2', classes='test-job-indicator hidden'),
                 Label('', id='status-job-2', classes='test-job-status'),
                 Label(' ]', classes='test-job-marker'),
