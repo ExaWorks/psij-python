@@ -16,7 +16,7 @@ from psij.launchers.script_based_launcher import ScriptBasedLauncher
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
-from psij.utils import _StatusUpdater
+from psij.utils import _StatusUpdater, _FileCleaner
 
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
@@ -206,6 +206,7 @@ class BatchSchedulerExecutor(JobExecutor):
         assert config
         self.work_directory = config.work_directory / self.name
         self.work_directory.mkdir(parents=True, exist_ok=True)
+        cast(_FileCleaner, _FileCleaner.get_instance()).clean(self.work_directory)
 
     def submit(self, job: Job) -> None:
         """See :func:`~psij.JobExecutor.submit`."""

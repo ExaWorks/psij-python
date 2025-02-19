@@ -19,7 +19,7 @@ from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
 from psij.executors.batch.batch_scheduler_executor import _env_to_mustache
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
-from psij.utils import SingletonThread, _StatusUpdater
+from psij.utils import SingletonThread, _StatusUpdater, _FileCleaner
 
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
 
@@ -232,6 +232,7 @@ class LocalJobExecutor(JobExecutor):
         self._reaper = _ProcessReaper.get_instance()
         self._work_dir = Path.home() / '.psij' / 'work' / 'local'
         self._work_dir.mkdir(parents=True, exist_ok=True)
+        cast(_FileCleaner, _FileCleaner.get_instance()).clean(self._work_dir)
         self._status_updater = cast(_StatusUpdater, _StatusUpdater.get_instance())
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'local'
                                                   / 'local.mustache')
@@ -339,12 +340,21 @@ class LocalJobExecutor(JobExecutor):
                 message = p.out
             state = JobState.FAILED
 
+        if state.final:
+            self._clean_submit_file(p.job)
         # We need to ensure that the status updater has processed all updates that
         # have been sent up to this point
         self._status_updater.flush()
         self._status_updater.unregister_job(p.job)
         self._set_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
                                               message=message))
+
+    def _clean_submit_file(self, job: Job) -> None:
+        submit_file_path = self._work_dir / (job.id + '.job')
+        try:
+            submit_file_path.unlink()
+        except FileNotFoundError:
+            pass
 
     def list(self) -> List[str]:
         """

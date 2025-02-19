@@ -2,11 +2,13 @@ import atexit
 import io
 import logging
 import os
+import queue
 import random
 import socket
 import tempfile
 import threading
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Type, Dict, Optional, Tuple, Set, List
 
@@ -15,6 +17,9 @@ import psutil
 from psij import JobExecutor, Job, JobState, JobStatus
 
 logger = logging.getLogger(__name__)
+
+
+_MAX_FILE_AGE_DAYS = 30
 
 
 class SingletonThread(threading.Thread):
@@ -207,3 +212,37 @@ class _StatusUpdater(SingletonThread):
                     pass
             if job:
                 executor._set_job_status(job, JobStatus(state))
+
+
+class _FileCleaner(SingletonThread):
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = 'File Cleaner'
+        self.daemon = True
+        self.queue: queue.SimpleQueue[Path] = queue.SimpleQueue()
+
+    def clean(self, path: Path) -> None:
+        self.queue.put(path)
+
+    def run(self) -> None:
+        while True:
+            try:
+                path = self.queue.get(block=True, timeout=1)
+                try:
+                    self._do_clean(path)
+                except Exception as ex:
+                    print(f'Warning: cannot clean {path}: {ex}')
+            except queue.Empty:
+                pass
+
+    def _do_clean(self, path: Path) -> None:
+        now = datetime.now()
+        max_age = timedelta(days=_MAX_FILE_AGE_DAYS)
+        for child in path.iterdir():
+            m_time = datetime.fromtimestamp(child.lstat().st_mtime)
+            if now - m_time > max_age:
+                try:
+                    child.unlink()
+                except FileNotFoundError:
+                    # we try our best
+                    pass
