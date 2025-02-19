@@ -291,6 +291,16 @@ check_python_version() {
     fi
 }
 
+check_pip_version() {
+    PYTHON_VERSION=`$PYTHON --version | awk '{print $2}' | cut -d '.' -f 1,2`
+    PIP_PYTHON_VERSION=`$PIP --version | sed -nE 's/.*\(python\s(.*)\)/\1/p'`
+
+    if [ "$PYTHON_VERSION" != "$PIP_PYTHON_VERSION" ]; then
+        echo -e "\e[33mWarning: The installed $PIP comes from Python $PIP_PYTHON_VERSION while your"
+        echo -e "Python interpreter has version $PYTHON_VERSION. This is likely to cause problems.\e[0m"
+    fi
+}
+
 not_cached() {
     if [ ! -d .packages ]; then
         return 0
@@ -353,6 +363,7 @@ while [ "$1" != "" ]; do
 done
 
 check_python_version
+check_pip_version
 
 MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd "$MYPATH"
