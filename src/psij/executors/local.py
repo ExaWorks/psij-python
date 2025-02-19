@@ -284,7 +284,7 @@ class LocalJobExecutor(JobExecutor):
                 'script_dir': str(self._work_dir),
                 'us_file': self._status_updater.update_file_name,
                 'us_port': self._status_updater.update_port,
-                'us_addrs': ', '.join(self._status_updater.ips),
+                'us_addrs': '127.0.0.1',
                 'debug': logger.isEnabledFor(logging.DEBUG),
                 'nodefile': nodefile
             }
