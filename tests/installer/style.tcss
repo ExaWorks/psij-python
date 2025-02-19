@@ -162,8 +162,8 @@ App.no-unicode ToggleButton .toggle--button {
 }
 
 ToggleButton.-on .toggle--button {
-    color: #000060;
-    background: #000060;
+    color: #00ff00;
+    background: #606060;
 }
 
 App.no-unicode ToggleButton.-on .toggle--button {
@@ -175,8 +175,8 @@ ToggleButton:focus .toggle--button {
 }
 
 ToggleButton.-on:focus .toggle--button {
-    background: #0040a0;
-    color: #0040a0;
+    background: #606060;
+    color: #00ff00;
 }
 
 ToggleButton:focus .toggle--label {
