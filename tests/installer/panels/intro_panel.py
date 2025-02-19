@@ -41,4 +41,5 @@ class IntroPanel(Panel):
             if result == 'quit':
                 self.app.exit()
             if result == 'update':
+                self.state.backup_conf()
                 self.app.disable_install()  # type: ignore

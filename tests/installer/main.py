@@ -235,14 +235,21 @@ class PSIJCIInstallWizard(App[object]):
 
     async def action_quit(self) -> None:
         install_method = self.state.install_method
+        messages = []
+        if self.state.conf_backed_up:
+            messages.append('Your previous configuration was saved in "testing.conf.bk"')
         if install_method is not None and install_method.name == 'custom':
-            self.exit(message=f'Tests can be run with the following command:\n'
-                              f'\t{install_method.preview}')
+            messages.append(f'Tests can be run with the following command:\n'
+                            f'\t{install_method.preview}')
+        if len(messages) > 0:
+            self.exit(message='\n\n'.join(messages))
         else:
             self.exit()
 
     def set_default_executor(self) -> None:
-        label, name = self.state.get_executor()
+        label, name = self.state.get_batch_executor()
+        if name is None:
+            name = 'none'
 
         batch_warner = self.get_widget_by_id('warn-no-batch')
         if name == 'none':

@@ -78,5 +78,5 @@ ignore = B902, D205, D400, D401, D100, W503
 
 per-file-ignores =
     tests/*: D103
-    tests/installer/*: D101, D102, D103, D104, D107
+    tests/installer/*: D101, D102, D103, D104, D105, D107
     tests/installer/main.py: E402, D101, D102, D103, D107

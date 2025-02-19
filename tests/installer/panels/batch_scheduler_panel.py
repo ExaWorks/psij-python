@@ -6,7 +6,7 @@ from psij import JobExecutor, Job, JobSpec, ResourceSpecV1, JobAttributes, JobSt
 from .panel import Panel
 from ..dialogs import TestJobsDialog
 from ..log import log
-from ..state import Attr
+from ..state import Attr, State
 from ..widgets import MSelect, ShortcutButton
 
 from textual import on
@@ -220,6 +220,10 @@ class BatchSchedulerPanel(Panel):
         ('alt+t', 'toggle_test_job')
     ]
 
+    def __init__(self, state: State) -> None:
+        super().__init__(state)
+        self._auto_scheduler: Optional[str] = None
+
     def _build_widgets(self) -> Widget:
         return Vertical(
             Label('Select and configure a batch system.', classes='header'),
@@ -258,7 +262,7 @@ class BatchSchedulerPanel(Panel):
                     Input(id='mqueue-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
-                Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job',
+                Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job', value=False,
                          id='cb-run-test-job', classes='bs-col-3 m-t-1 batch-valid'),
                 classes='w-100 form-row', id='batch-system-group-2'
             ),
@@ -278,7 +282,11 @@ class BatchSchedulerPanel(Panel):
         )
 
     async def validate(self) -> bool:
-        if self.state.run_test_job and self.state.scheduler is not None:
+        run_test_job = self.get_widget_by_id('cb-run-test-job')
+        assert isinstance(run_test_job, Checkbox)
+        scheduler = self._get_scheduler()
+
+        if run_test_job.value and scheduler != 'none' and scheduler != 'local':
             return await self.run_test_jobs()
         else:
             return True
@@ -291,14 +299,19 @@ class BatchSchedulerPanel(Panel):
     def name(self) -> str:
         return 'scheduler'
 
-    async def activate(self) -> None:
-        self.update_attrs()
+    def _get_scheduler(self) -> str:
         selector = self.get_widget_by_id('batch-selector')
         assert isinstance(selector, Select)
-        sched = selector.selection
-        if sched is None or sched == 'none':
-            selector.focus(False)
-        elif sched == 'local':
+        value = selector.selection
+        assert isinstance(value, str)
+        return value
+
+    async def activate(self) -> None:
+        self.update_attrs()
+        scheduler = self._get_scheduler()
+        if scheduler is None or scheduler == 'none':
+            self.get_widget_by_id('batch-selector').focus(False)
+        elif scheduler == 'local':
             self.app._focus_next()  # type: ignore
         else:
             self.get_widget_by_id('account-input').focus(False)
@@ -316,40 +329,48 @@ class BatchSchedulerPanel(Panel):
 
     @on(Select.Changed, '#batch-selector')
     def batch_system_selected(self) -> None:
-        selector = cast(Select[str], self.get_widget_by_id('batch-selector'))
-        sched = selector.selection
-        disabled = (sched is None or sched == 'none' or sched == 'local')
-        if disabled:
-            self.state.scheduler = None
-        else:
-            self.state.scheduler = sched
+        scheduler = self._get_scheduler()
+
+        self.state.set_batch_executor(scheduler)
+
+        disabled = (scheduler is None or scheduler == 'none' or scheduler == 'local')
         for widget in self.query('.batch-valid'):
             widget.disabled = disabled
-        if sched == 'local':
+        run_test_job = self.get_widget_by_id('cb-run-test-job')
+        assert isinstance(run_test_job, Checkbox)
+        run_test_job.value = not disabled
+        if scheduler == 'local':
             self.app._focus_next()  # type: ignore
         else:
             self.get_widget_by_id('account-input').focus(False)
 
     def set_scheduler(self, name: str) -> None:
+        if name == '':
+            name = 'none'
         selector = self.get_widget_by_id('batch-selector')
         assert isinstance(selector, Select)
         selector.value = name
+        self._auto_scheduler = name
 
     @on(Input.Submitted, '#account-input')
-    def account_submitted(self) -> None:
+    def account_submitted(self, event: Input.Submitted) -> None:
+        self.state.update_conf('account', event.value)
         next = self.get_widget_by_id('queue-input')
         next.focus(False)
 
     @on(Input.Submitted, '#queue-input')
     def queue_submitted(self, event: Input.Submitted) -> None:
+        self.state.update_conf('queue_name', event.value)
         next = self.get_widget_by_id('mqueue-input')
         assert isinstance(next, Input)
         if next.value == '':
             next.value = event.input.value
+            self.state.update_conf('multi_node_queue_name', event.value)
         next.focus(False)
 
     @on(Input.Submitted, '#mqueue-input')
-    def mqueue_submitted(self) -> None:
+    def mqueue_submitted(self, event: Input.Submitted) -> None:
+        self.state.update_conf('multi_node_queue_name', event.value)
         self.app._focus_next()  # type: ignore
 
     @on(Button.Pressed, '#btn-edit-attrs')
@@ -405,12 +426,13 @@ class BatchSchedulerPanel(Panel):
             return False
 
     def _launch_job(self, test_name: str, rspec: Optional[ResourceSpecV1]) -> Job:
-        s = self.state.scheduler
-        assert s is not None
+        scheduler = self._get_scheduler()
+        assert scheduler is not None
 
-        ex = JobExecutor.get_instance(s)
+        ex = JobExecutor.get_instance(scheduler)
 
         attrs = JobAttributes()
+
         account = self.state.conf.get('account', '')
         if rspec is not None and rspec.computed_node_count > 1:
             queue = self.state.conf.get('multi_node_queue_name', '')
@@ -423,7 +445,7 @@ class BatchSchedulerPanel(Panel):
         for attr in self.state.attrs:
             if re.match(attr.filter, test_name):
                 attrs.set_custom_attribute(attr.name, attr.value)
-
+        log.write(f'attrs: {attrs}, rspec: {rspec}\n')
         job = Job(JobSpec('/bin/date', attributes=attrs, resources=rspec))
         ex.submit(job)
         log.write('Job submitted\n')
