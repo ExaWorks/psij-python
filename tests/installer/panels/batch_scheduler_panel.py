@@ -333,12 +333,8 @@ class BatchSchedulerPanel(Panel):
 
         self.state.set_batch_executor(scheduler)
 
-        disabled = (scheduler is None or scheduler == 'none' or scheduler == 'local')
-        for widget in self.query('.batch-valid'):
-            widget.disabled = disabled
-        run_test_job = self.get_widget_by_id('cb-run-test-job')
-        assert isinstance(run_test_job, Checkbox)
-        run_test_job.value = not disabled
+        self._update_controls(scheduler)
+
         if scheduler == 'local':
             self.app._focus_next()  # type: ignore
         else:
@@ -350,7 +346,15 @@ class BatchSchedulerPanel(Panel):
         selector = self.get_widget_by_id('batch-selector')
         assert isinstance(selector, Select)
         selector.value = name
-        self._auto_scheduler = name
+        self._update_controls(name)
+
+    def _update_controls(self, scheduler: Optional[str]) -> None:
+        disabled = (scheduler is None or scheduler == 'none' or scheduler == 'local')
+        for widget in self.query('.batch-valid'):
+            widget.disabled = disabled
+        run_test_job = self.get_widget_by_id('cb-run-test-job')
+        assert isinstance(run_test_job, Checkbox)
+        run_test_job.value = not disabled
 
     @on(Input.Submitted, '#account-input')
     def account_submitted(self, event: Input.Submitted) -> None:
