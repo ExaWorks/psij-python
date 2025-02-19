@@ -4,7 +4,7 @@ import string
 
 from .panel import Panel
 from ..log import log
-from ..widgets import ShortcutButton
+from ..widgets import ShortcutButton, MInput
 
 from textual import on
 from textual.containers import Vertical, Horizontal
@@ -17,8 +17,8 @@ FQDN = socket.getfqdn()
 
 class BasicInfoPanel(Panel):
     def _build_widgets(self) -> Widget:
-        self.name_input = Input(placeholder='Enter machine name', id='name-input')
-        self.email_input = Input(placeholder='Enter email', id='email-input')
+        self.name_input = MInput(placeholder='Enter machine name', id='name-input')
+        self.email_input = MInput(placeholder='Enter email', id='email-input')
         return Vertical(
             Label('Some basic information', classes='header'),
             Label('The name should be something descriptive, such as '

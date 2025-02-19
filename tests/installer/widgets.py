@@ -1,7 +1,8 @@
 from textual.app import RenderResult
 from typing import Optional, Any
 from textual.binding import Binding
-from textual.widgets import Select, Button, LoadingIndicator
+from textual.events import Blur
+from textual.widgets import Select, Button, LoadingIndicator, Input
 
 
 class MSelect(Select[str]):
@@ -51,3 +52,13 @@ class DottedLoadingIndicator(LoadingIndicator):
         text = super().render()
         text.plain = '......'  # type: ignore
         return text
+
+
+class MInput(Input):
+    # A version of input that also runs the submit action on blur (seems silly from a UI
+    # perspective to allow moving the focus from this input without the value being
+    # committed to whatever model is underneath.
+
+    async def _on_blur(self, event: Blur) -> None:  # type: ignore
+        super()._on_blur(event)
+        await self.action_submit()

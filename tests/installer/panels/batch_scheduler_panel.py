@@ -7,7 +7,7 @@ from .panel import Panel
 from ..dialogs import TestJobsDialog
 from ..log import log
 from ..state import Attr, State
-from ..widgets import MSelect, ShortcutButton
+from ..widgets import MSelect, ShortcutButton, MInput
 
 from textual import on
 from textual.app import ComposeResult
@@ -246,7 +246,7 @@ class BatchSchedulerPanel(Panel):
                 ),
                 Vertical(
                     Label('Account/project:', classes='form-label'),
-                    Input(id='account-input'),
+                    MInput(id='account-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
                 classes='w-100 form-row', id='batch-system-group-1'
@@ -254,12 +254,12 @@ class BatchSchedulerPanel(Panel):
             Horizontal(
                 Vertical(
                     Label('Queue:', classes='form-label'),
-                    Input(id='queue-input'),
+                    MInput(id='queue-input'),
                     classes='bs-col-1 form-row batch-valid'
                 ),
                 Vertical(
                     Label('Multi-node queue:', classes='form-label'),
-                    Input(id='mqueue-input'),
+                    MInput(id='mqueue-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
                 Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job', value=False,
