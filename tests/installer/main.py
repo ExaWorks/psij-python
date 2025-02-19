@@ -253,9 +253,9 @@ class PSIJCIInstallWizard(App[object]):
 
         batch_warner = self.get_widget_by_id('warn-no-batch')
         if name == 'none':
-            batch_warner.visible = True
+            batch_warner.remove_class('hidden')
         else:
-            batch_warner.visible = False
+            batch_warner.add_class('hidden')
 
         self.scheduler_panel.set_scheduler(name)
 

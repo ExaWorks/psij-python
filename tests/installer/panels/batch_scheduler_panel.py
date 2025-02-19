@@ -227,13 +227,6 @@ class BatchSchedulerPanel(Panel):
     def _build_widgets(self) -> Widget:
         return Vertical(
             Label('Select and configure a batch system.', classes='header'),
-            Vertical(
-                Label('Your system does not appear to have a batch scheduler. If you are certain '
-                      'that this is wrong, you can select one below. If not, tests will be run '
-                      'using non-batch executors.', classes='help-text media-large',
-                      shrink=True, expand=True),
-                id='warn-no-batch'
-            ),
             Horizontal(
                 Vertical(
                     Label('Batch system:', classes='form-label'),
@@ -249,6 +242,8 @@ class BatchSchedulerPanel(Panel):
                     Input(id='account-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
+                Label('No batch scheduler detected.', classes='help-text',
+                      id='warn-no-batch', shrink=True, expand=True),
                 classes='w-100 form-row', id='batch-system-group-1'
             ),
             Horizontal(

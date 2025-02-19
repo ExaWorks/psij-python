@@ -213,14 +213,14 @@ LoadingIndicator {
 
 .dialog Button {
     border-top: tall #80a0a0;
-    background: #408080;
+    background: #004040;
     border-bottom: tall #204040;
 }
 
 .dialog Button:focus {
     border-top: tall #a0ffff;
     background: #60a0a0;
-    border-top: tall #408080;
+    border-bottom: tall #408080;
 }
 
 .dialog Button.-error {
@@ -433,9 +433,21 @@ Button.-primary {
 }
 
 Button.-primary:focus {
-    border-top: tall #80a0ff;
+    border-top: tall #a0ffff;
     background: #0080ff;
     border-bottom: tall #004080;
+}
+
+Button.-error {
+    border-top: tall #800000;
+    background: #ff8080;
+    border-bottom: tall #000000;
+}
+
+Button.-error:focus {
+    border-top: tall #ffa0a0;
+    background: #ff8080;
+    border-bottom: tall #800000;
 }
 
 .header {
@@ -527,7 +539,17 @@ App.small .form-label {
 }
 
 #warn-no-batch {
-    height: auto;
+    height: 100%;
+    color: yellow;
+    width: 30%;
+    align: left middle;
+    margin-top: 2;
+    margin-left: 1;
+}
+
+App.small #warn-no-batch {
+    margin-top: 1;
+    margin-left: 1;
 }
 
 #batch-warn {
@@ -576,8 +598,12 @@ App.small .form-label {
     min-width: 16;
     width: 27;
     max-width: 32;
-    margin-top: 1;
+    margin-top: 2;
     margin-right: 2;
+}
+
+App.small #cb-run-test-job {
+    margin-top: 1;
 }
 
 #btn-edit-attrs {

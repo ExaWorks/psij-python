@@ -1,8 +1,7 @@
 from textual.app import RenderResult
 from typing import Optional, Any
 from textual.binding import Binding
-from textual.events import Blur
-from textual.widgets import Select, Button, LoadingIndicator, Input
+from textual.widgets import Select, Button, LoadingIndicator
 
 
 class MSelect(Select[str]):
