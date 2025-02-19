@@ -55,7 +55,7 @@ def pytest_addoption(parser):
                      help='Maximum age, in hours, of tests to keep saved.')
     parser.addoption('--id', action='store', default='hostname',
                      help='An identifier for this site to attach to tests when aggregated.')
-    parser.addoption('--server-url', action='store', default='https://testing.exaworks.org',
+    parser.addoption('--server-url', action='store', default='https://testing.psij.io',
                      help='The base URL of the test aggregation server.')
     parser.addoption('--key', action='store', default='random',
                      help='A secret to use when communicating to the aggregation server.')
@@ -67,6 +67,8 @@ def pytest_addoption(parser):
                      help='Pretend that the current git branch is this value.')
     parser.addoption('--queue-name', action='store', default=None,
                      help='A queue to run the batch jobs in.')
+    parser.addoption('--multi-node-queue-name', action='store', default=None,
+                     help='An optional queue to run multi-node batch jobs in.')
     parser.addoption('--project-name', action='store', default=None,
                      help='A project/account name to associate the batch jobs with.')
     parser.addoption('--account', action='store', default=None,
@@ -176,6 +178,7 @@ def pytest_generate_tests(metafunc):
         etps = []
         for x in _get_executors((metafunc.config)):
             etp = ExecutorTestParams(x, queue_name=options.queue_name,
+                                     multi_node_queue_name=options.multi_node_queue_name,
                                      account=_get_account(options),
                                      custom_attributes_raw=options.custom_attributes)
             etps.append(etp)
