@@ -7,7 +7,7 @@ from .panel import Panel
 from ..dialogs import TestJobsDialog
 from ..log import log
 from ..state import Attr, State
-from ..widgets import MSelect, ShortcutButton, MInput
+from ..widgets import MSelect, ShortcutButton
 
 from textual import on
 from textual.app import ComposeResult
@@ -246,7 +246,7 @@ class BatchSchedulerPanel(Panel):
                 ),
                 Vertical(
                     Label('Account/project:', classes='form-label'),
-                    MInput(id='account-input'),
+                    Input(id='account-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
                 classes='w-100 form-row', id='batch-system-group-1'
@@ -254,12 +254,12 @@ class BatchSchedulerPanel(Panel):
             Horizontal(
                 Vertical(
                     Label('Queue:', classes='form-label'),
-                    MInput(id='queue-input'),
+                    Input(id='queue-input'),
                     classes='bs-col-1 form-row batch-valid'
                 ),
                 Vertical(
                     Label('Multi-node queue:', classes='form-label'),
-                    MInput(id='mqueue-input'),
+                    Input(id='mqueue-input'),
                     classes='bs-col-2 form-row batch-valid'
                 ),
                 Checkbox('Run [b bright_yellow]t[/b bright_yellow]est job', value=False,
@@ -286,10 +286,19 @@ class BatchSchedulerPanel(Panel):
         assert isinstance(run_test_job, Checkbox)
         scheduler = self._get_scheduler()
 
+        self.state.update_conf('account', self._get_input('account-input'))
+        self.state.update_conf('queue_name', self._get_input('queue-input'))
+        self.state.update_conf('multi_node_queue_name', self._get_input('mqueue-input'))
+
         if run_test_job.value and scheduler != 'none' and scheduler != 'local':
             return await self.run_test_jobs()
         else:
             return True
+
+    def _get_input(self, id: str) -> str:
+        input = self.get_widget_by_id(id)
+        assert isinstance(input, Input)
+        return input.value
 
     @property
     def label(self) -> str:

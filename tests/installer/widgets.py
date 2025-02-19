@@ -52,15 +52,3 @@ class DottedLoadingIndicator(LoadingIndicator):
         text = super().render()
         text.plain = '......'  # type: ignore
         return text
-
-
-class MInput(Input):
-    # A version of input that also runs the submit action when the tab button is pressed (seems
-    # silly from a UI perspective to allow moving the focus from this input without the value being
-    # committed to whatever model is underneath.
-
-    BINDINGS = [('tab', 'tab_pressed')]
-
-
-    async def action_tab_pressed(self) -> None:
-        await self.action_submit()
