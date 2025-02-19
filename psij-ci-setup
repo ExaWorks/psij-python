@@ -296,8 +296,9 @@ check_pip_version() {
     PIP_PYTHON_VERSION=`$PIP --version | sed -nE 's/.*\(python\s(.*)\)/\1/p'`
 
     if [ "$PYTHON_VERSION" != "$PIP_PYTHON_VERSION" ]; then
-        echo -e "\e[33mWarning: The installed $PIP comes from Python $PIP_PYTHON_VERSION while your"
-        echo -e "Python interpreter has version $PYTHON_VERSION. This is likely to cause problems.\e[0m"
+        echo -e "\e[33mWarning: The installed $PIP comes from Python $PIP_PYTHON_VERSION while your Python"
+        echo -e "interpreter has version $PYTHON_VERSION. If this causes problems, please use a "
+        echo -e "virtual environment.\e[0m"
     fi
 }
 
