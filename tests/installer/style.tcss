@@ -776,8 +776,12 @@ Label.-error {
 }
 
 #method-status {
-    margin-top: 1;
+    margin-top: 2;
     color: #b04040;
+}
+
+App.small #method-status {
+    margin-top: 1;
 }
 
 #method-preview {
