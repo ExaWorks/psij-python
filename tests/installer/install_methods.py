@@ -185,7 +185,7 @@ class At(InstallMethod):
 
 class Screen(InstallMethod):
     def __init__(self) -> None:
-        self.cmd = 'screen -d -m bash -c "./psij-ci-run --repeat --log"'
+        self.cmd = 'screen -d -m bash -c "./psij-ci-run --repeat --tee"'
 
     def is_available(self) -> Tuple[bool, Optional[str]]:
         if _succeeds('which screen'):
@@ -218,6 +218,41 @@ class Screen(InstallMethod):
                 'reboots.')
 
 
+class Tmux(InstallMethod):
+    def __init__(self) -> None:
+        self.cmd = 'tmux new -d bash -c "./psij-ci-run --repeat --tee"'
+
+    def is_available(self) -> Tuple[bool, Optional[str]]:
+        if _succeeds('which tmux'):
+            return True, None
+        else:
+            return False, 'not found'
+
+    def already_installed(self) -> bool:
+        ec, out = _run('tmux list-sessions -F "#{pane_start_command}" | grep psij-ci-run')
+        return ec == 0
+
+    def install(self) -> None:
+        _must_succeed(self.cmd)
+
+    @property
+    def preview(self) -> str:
+        return self.cmd
+
+    @property
+    def name(self) -> str:
+        return 'tmux'
+
+    @property
+    def label(self) -> str:
+        return 'tmux - another terminal multiplexer'
+
+    @property
+    def help_message(self) -> str:
+        return ('Uses tmux to run tests in a tmux pane. Does not persist across '
+                'reboots.')
+
+
 class Custom(InstallMethod):
     def is_available(self) -> Tuple[bool, Optional[str]]:
         return True, None
@@ -231,7 +266,7 @@ class Custom(InstallMethod):
     @property
     def preview(self) -> str:
         cwd = os.getcwd()
-        return f'"{cwd}/psij-ci-run" --log'
+        return f'"{cwd}/psij-ci-run" --log --repeat'
 
     @property
     def name(self) -> str:
@@ -251,6 +286,7 @@ METHODS = [
     Crontab(),
     At(),
     Screen(),
+    Tmux(),
     Custom()
 ]
 
