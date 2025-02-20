@@ -13,6 +13,9 @@ Usage: ./psij-ci-run [--help] [--repeat] [--reschedule HH:MM] [--log]
     --log
         Disables output and redirects to a log instead. Used
         when running the tests automatically.
+    --tee
+        Logs output as if --log was specified, but also prints
+        on stdout.
 EOF
 }
 
@@ -34,6 +37,7 @@ fi
 REPEAT=0
 RESCHEDULE=0
 NO_OUT=0
+TEE=0
 
 while [ "$1" != "" ]; do
     case "$1" in
@@ -54,6 +58,10 @@ while [ "$1" != "" ]; do
             NO_OUT=1
             shift
             ;;
+        --tee)
+            TEE=1
+            shift
+            ;;
         *)
             echo "Unrecognized command line option: $1."
             usage
@@ -62,11 +70,24 @@ while [ "$1" != "" ]; do
     esac
 done
 
+tee() {
+    while read LINE; do
+        echo "$LINE" >&3
+        echo "$LINE" >>./testing.log
+    done
+}
+
 if [ "$NO_OUT" == "1" ]; then
     exec 1<&-
     exec 2<&-
 
     exec 1>>./testing.log
+    exec 2>&1
+elif [ "$TEE" == "1" ]; then
+    exec 3>&1-
+    exec 2<&-
+
+    exec 1> >(tee)
     exec 2>&1
 fi
 
