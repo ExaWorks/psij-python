@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import time
 from abc import ABC, abstractmethod
@@ -135,11 +136,13 @@ class At(InstallMethod):
             if ec != 0:
                 return False, 'not found'
             time.sleep(0.2)
-            if out.startswith('job'):
-                job_no = out.split()[1]
-                _run(f'atrm {job_no}')
-                if 'No atd' in out:
-                    return False, 'not running'
+            match = re.search('job ([0-9]+)', out)
+            if not match:
+                return False, 'error'
+            job_no = match.group(1)
+            _run(f'atrm {job_no}')
+            if 'No atd' in out:
+                return False, 'not running'
             if os.path.exists(path):
                 os.remove(path)
                 return False, 'unknown error'
