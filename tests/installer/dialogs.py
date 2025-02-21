@@ -286,7 +286,7 @@ class ExistingInstallConfirmDialog(RunnableDialog[str]):
         assert self.method is not None
         yield Vertical(
             Label('Existing installation detected', classes='header'),
-            Label(f'An existing {self.method} installation of the tests was detected. Continuing '
+            Label(f'An existing "{self.method}" installation of the tests was detected. Continuing '
                   'will update the settings used by the existing installation.',
                   classes='main-text',
                   shrink=True, expand=True),
