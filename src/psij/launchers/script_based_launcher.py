@@ -204,4 +204,7 @@ class ScriptBasedLauncher(Launcher):
 
     def get_launcher_failure_message(self, output: str) -> str:
         """See :func:`~psij.Launcher.get_launcher_failure_message`."""
-        return '\n'.join(output.split('\n')[:-2])
+        # If, according to the above, it is a launcher failure, then
+        # the magic line should not be present (aka, all of the output
+        # is the failure).
+        return output
