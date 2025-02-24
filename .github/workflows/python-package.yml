@@ -25,6 +25,9 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -r requirements-connector-radical.txt
+        # Radical depends on PSI/J. However, the version we are
+        # testing provide that dependency
+        pip uninstall -y psij-python
     - name: Typecheck and stylecheck
       run: |
         make typecheck
@@ -37,6 +40,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    #- uses: mxschmitt/action-tmate@v3
+    #  with:
+    #    detached: true
+    #    limit-access-to-actor: true
     - name: Test with pytest
       uses: addnab/docker-run-action@v3
       with:
@@ -46,7 +53,7 @@ jobs:
           cd /workspace
           echo "Running in ${PWD}"
           sudo apt update
-          sudo apt install -y openssh-server openssh-client
+          sudo apt install -y openssh-server openssh-client netcat-traditional
           mkdir -p "$HOME/.ssh"
           chmod 0755 "$HOME"
           chmod 0700 "$HOME/.ssh"
