@@ -167,6 +167,8 @@ def test_list(execparams: ExecutorTestParams) -> None:
     assert job.native_id is not None
     ids = ex.list()
     assert job.native_id in ids
+    status = job.wait(timeout=_get_timeout(execparams))
+    assert_completed(job, status)
 
 
 def _get_batch_executors() -> List[str]:
