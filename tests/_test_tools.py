@@ -31,7 +31,7 @@ def _read_file(path: Optional[Path]) -> str:
     try:
         with open(path, 'r') as f:
             return f.read()
-    except FileNotFoundError as ex:
+    except FileNotFoundError:
         return '<missing>'
     except Exception as ex:
         return f'<error: {ex}>'
