@@ -36,6 +36,22 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
         assert contents == '_x_'
 
 
+def test_stderr_redirect(execparams: ExecutorTestParams) -> None:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
+        outp = Path(td, 'stderr.txt')
+        job = Job(JobSpec(executable='/bin/bash', arguments=['-c', 'echo -n _x_ 1>&2'],
+                          stderr_path=outp))
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
+        status = job.wait(timeout=_get_timeout(execparams))
+        assert_completed(job, status)
+        f = outp.open("r")
+        contents = f.read()
+        f.close()
+        assert contents == '_x_'
+
+
 def test_attach(execparams: ExecutorTestParams) -> None:
     job1 = Job(JobSpec(executable='/bin/sleep', arguments=['1']))
     ex = _get_executor_instance(execparams, job1)

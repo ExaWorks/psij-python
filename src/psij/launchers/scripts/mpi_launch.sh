@@ -15,12 +15,29 @@ fi
 
 pre_launch
 
+filter_out() {
+    sed -nE 's/^\[[^]]+\]<stdout>:(.*)/\1/p'
+}
+
+filter_err() {
+    sed -nE 's/^\[[^]]+\]<stderr>:(.*)/\1/p'
+}
+
+filter_out_5() {
+    sed -nE 's/^\[[^]]+\]<stdout>: (.*)/\1/p'
+}
+
+filter_err_5() {
+    sed -nE 's/^\[[^]]+\]<stderr>: (.*)/\1/p'
+}
+
 set +e
 if [ "$IS_OPENMPI_5" == "1" ]; then
-    # there is no -q parameter in OMPI 5
-    mpirun --oversubscribe -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
+    mpirun --oversubscribe --output TAG -n $_PSI_J_PROCESS_COUNT "$@" \
+        1> >(filter_out_5 > $_PSI_J_STDOUT) 2> >(filter_err_5 > $_PSI_J_STDERR) <$_PSI_J_STDIN
 elif [ "$IS_OPENMPI" == "1" ]; then
-    mpirun --oversubscribe -q -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
+    mpirun --oversubscribe --tag-output -q -n $_PSI_J_PROCESS_COUNT "$@" \
+        1> >(filter_out > "$_PSI_J_STDOUT") 2> >(filter_err > $_PSI_J_STDERR) <$_PSI_J_STDIN
 else
     mpirun -n $_PSI_J_PROCESS_COUNT "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
 fi
