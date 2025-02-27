@@ -28,8 +28,13 @@ def _read_file(path: Optional[Path]) -> str:
     if path is None:
         return ''
 
-    with open(path, 'r') as f:
-        return f.read()
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return '<missing>'
+    except Exception as ex:
+        return f'<error: {ex}>'
 
 
 def assert_completed(job: Job, status: Optional[JobStatus], attached: bool = False) -> None:
