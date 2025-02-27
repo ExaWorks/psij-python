@@ -1,0 +1,29 @@
+---
+title: PSI/J - Python
+layout: raw
+tab: 2
+---
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Documentation - PSI/J - Python</title>
+        <script src="{{ site.baseurl }}/versions.js"></script>
+        <script src="{{ site.baseurl }}/versioning.js"></script>
+    </head>
+    <body>
+        <script type="application/javascript">
+            var latest = getLatestVersion();
+            document.write("Redirecting to <a href=\"v/" + latest + "\">Version " + latest + " documentation</a>");
+            var loc = window.location.href;
+            if (loc.endsWith(".html")) {
+                loc = loc.substring(0, loc.lastIndexOf("/"));
+            }
+            if (loc.endsWith("/")) {
+                loc = loc.substring(0, loc.length - 1);
+            }
+            window.location = loc + "/v/" + latest + "/";
+        </script>
+    </body>
+</html>
+
