@@ -7,6 +7,7 @@ import subprocess
 import threading
 import time
 from abc import ABC, abstractmethod
+from pathlib import Path
 from tempfile import mkstemp
 from types import FrameType
 from typing import Optional, Dict, List, Tuple, Type, cast
@@ -16,7 +17,12 @@ import psutil
 from psij import InvalidJobException, SubmitException, Launcher, ResourceSpecV1
 from psij import Job, JobSpec, JobExecutorConfig, JobState, JobStatus
 from psij import JobExecutor
-from psij.utils import SingletonThread
+from psij.executors.batch.batch_scheduler_executor import _env_to_mustache
+from psij.executors.batch.script_generator import TemplatedScriptGenerator
+from psij.utils import SingletonThread, _StatusUpdater, _FileCleaner
+
+from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,10 +64,13 @@ class _ProcessEntry(ABC):
     @abstractmethod
     def kill(self) -> None:
         assert self.process is not None
-        root = psutil.Process(self.process.pid)
-        for proc in root.children(recursive=True):
-            proc.kill()
-        self.process.kill()
+        try:
+            root = psutil.Process(self.process.pid)
+            for proc in root.children(recursive=True):
+                proc.kill()
+            self.process.kill()
+        except psutil.NoSuchProcess:
+            pass
 
     @abstractmethod
     def poll(self) -> Tuple[Optional[int], Optional[str]]:
@@ -117,32 +126,6 @@ class _AttachedProcessEntry(_ProcessEntry):
             return None, None
 
 
-def _get_env(spec: JobSpec, nodefile: Optional[str]) -> Optional[Dict[str, str]]:
-    env: Optional[Dict[str, str]] = None
-    if spec.inherit_environment:
-        if spec.environment is None and nodefile is None:
-            # if env is none in Popen, it inherits env from parent
-            return None
-        else:
-            # merge current env with spec env
-            env = os.environ.copy()
-            if spec.environment:
-                env.update(spec.environment)
-            if nodefile is not None:
-                env['PSIJ_NODEFILE'] = nodefile
-            return env
-    else:
-        # only spec env
-        if nodefile is None:
-            env = spec.environment
-        else:
-            env = {'PSIJ_NODEFILE': nodefile}
-            if spec.environment:
-                env.update(spec.environment)
-
-        return env
-
-
 class _ProcessReaper(SingletonThread):
 
     @classmethod
@@ -170,8 +153,8 @@ class _ProcessReaper(SingletonThread):
                 jobs = dict(self._jobs)
             try:
                 done = self._check_processes(jobs)
-            except Exception as ex:
-                logger.error('Error polling for process status', ex)
+            except Exception:
+                logger.exception('Error polling for process status.')
             with self._cvar:
                 self._cvar.wait(_REAPER_SLEEP_TIME)
 
@@ -204,6 +187,7 @@ class _ProcessReaper(SingletonThread):
                 entry.exit_code = exit_code
                 entry.done_time = time.time()
                 entry.out = out
+                logger.debug('Output from job: %s' % out)
                 done.append(entry)
 
         for entry in done:
@@ -246,6 +230,12 @@ class LocalJobExecutor(JobExecutor):
         """
         super().__init__(url=url, config=config if config else JobExecutorConfig())
         self._reaper = _ProcessReaper.get_instance()
+        self._work_dir = Path.home() / '.psij' / 'work' / 'local'
+        self._work_dir.mkdir(parents=True, exist_ok=True)
+        cast(_FileCleaner, _FileCleaner.get_instance()).clean(self._work_dir)
+        self._status_updater = cast(_StatusUpdater, _StatusUpdater.get_instance())
+        self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'local'
+                                                  / 'local.mustache')
 
     def _generate_nodefile(self, job: Job, p: _ChildProcessEntry) -> Optional[str]:
         assert job.spec is not None
@@ -283,24 +273,44 @@ class LocalJobExecutor(JobExecutor):
 
         p = _ChildProcessEntry(job, self, self._get_launcher(self._get_launcher_name(spec)))
         assert p.launcher
-        args = p.launcher.get_launch_command(job)
+        launch_command = p.launcher.get_launch_command(job)
 
+        nodefile = self._generate_nodefile(job, p)
+        ctx = {
+            'job': job,
+            'env': _env_to_mustache(job),
+            'psij': {
+                'lib': FUNCTION_LIBRARY,
+                'launch_command': launch_command,
+                'script_dir': str(self._work_dir),
+                'us_file': self._status_updater.update_file_name,
+                'us_port': self._status_updater.update_port,
+                'us_addrs': '127.0.0.1',
+                'debug': logger.isEnabledFor(logging.DEBUG),
+                'nodefile': nodefile
+            }
+        }
+
+        submit_file_path = self._work_dir / (job.id + '.job')
+        with submit_file_path.open('w') as submit_file:
+            self.generator.generate_submit_script(job, ctx, submit_file)
+
+        args = ['/bin/bash', str(submit_file_path.absolute())]
+        self._status_updater.register_job(job, self)
         try:
             with job._status_cv:
                 if job.status.state == JobState.CANCELED:
                     raise SubmitException('Job canceled')
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug('Running %s', _format_shell_cmd(args))
-            nodefile = self._generate_nodefile(job, p)
-            env = _get_env(spec, nodefile)
             p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                         close_fds=True, cwd=spec.directory, env=env)
+                                         close_fds=True, cwd=spec.directory)
             self._reaper.register(p)
             job._native_id = p.process.pid
             self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
                                                 metadata={'nativeId': job._native_id}))
-            self._set_job_status(job, JobStatus(JobState.ACTIVE, time=time.time()))
         except Exception as ex:
+            self._status_updater.unregister_job(job)
             raise SubmitException('Failed to submit job', exception=ex)
 
     def cancel(self, job: Job) -> None:
@@ -309,11 +319,13 @@ class LocalJobExecutor(JobExecutor):
 
         :param job: The job to cancel.
         """
+        self._status_updater.unregister_job(job)
         self._set_job_status(job, JobStatus(JobState.CANCELED))
         self._reaper.cancel(job)
 
     def _process_done(self, p: _ProcessEntry) -> None:
         assert p.exit_code is not None
+        logger.debug('%s Process done. EC: %s', p.job.id, p.exit_code)
         message = None
         if p.exit_code == 0:
             state = JobState.COMPLETED
@@ -324,12 +336,25 @@ class LocalJobExecutor(JobExecutor):
             # the exit code of the launcher is the exit code of the job, we must use a different
             # mechanism to distinguish between job errors and launcher errors. So we delegate to
             # the launcher implementation to figure out if the error belongs to the job or not
-            if p.launcher and p.out and p.launcher.is_launcher_failure(p.out):
-                message = p.launcher.get_launcher_failure_message(p.out)
+            if p.out and '_PSIJ_SCRIPT_DONE' not in p.out:
+                message = p.out
             state = JobState.FAILED
 
+        if state.final:
+            self._clean_submit_file(p.job)
+        # We need to ensure that the status updater has processed all updates that
+        # have been sent up to this point
+        self._status_updater.flush()
+        self._status_updater.unregister_job(p.job)
         self._set_job_status(p.job, JobStatus(state, time=p.done_time, exit_code=p.exit_code,
                                               message=message))
+
+    def _clean_submit_file(self, job: Job) -> None:
+        submit_file_path = self._work_dir / (job.id + '.job')
+        try:
+            submit_file_path.unlink()
+        except FileNotFoundError:
+            pass
 
     def list(self) -> List[str]:
         """
@@ -364,6 +389,8 @@ class LocalJobExecutor(JobExecutor):
         job.executor = self
         pid = int(native_id)
 
+        job._native_id = pid
+        self._status_updater.register_job(job, self)
         self._reaper.register(_AttachedProcessEntry(job, psutil.Process(pid), self))
         # We assume that the native_id above is a PID that was obtained at some point using
         # list(). If so, the process is either still running or has completed. Either way, we must

@@ -54,17 +54,26 @@ only results in empty files that are not cleaned up}}
 export {{name}}={{value}}
 {{/env}}
 
+exec &>> "{{psij.script_dir}}/$PBS_JOBID.out"
+
+{{> batch_lib}}
+
 PSIJ_NODEFILE="$PBS_NODEFILE"
 export PSIJ_NODEFILE
-
 
 {{#job.spec.directory}}
 cd "{{.}}"
 {{/job.spec.directory}}
 
-exec &>> "{{psij.script_dir}}/$PBS_JOBID.out"
+{{> stagein}}
+_psij_update_status ACTIVE
 
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+_PSIJ_JOB_EC=$?
+
+{{> stageout}}
+{{> cleanup}}
 
 {{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
-echo "$?" > "{{psij.script_dir}}/$PBS_JOBID.ec"
+echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$PBS_JOBID.ec"
+echo "_PSIJ_SCRIPT_DONE"
