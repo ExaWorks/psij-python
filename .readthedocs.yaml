@@ -9,6 +9,9 @@ build:
     os: ubuntu-22.04
     tools:
         python: "3.11"
+    jobs:
+        post_install:
+            - pip uninstall -y psij-python
 
 python:
     install:

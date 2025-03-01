@@ -197,14 +197,3 @@ class ScriptBasedLauncher(Launcher):
         :param job: The job that is being launched.
         """
         return []
-
-    def is_launcher_failure(self, output: str) -> bool:
-        """See :func:`~psij.Launcher.is_launcher_failure`."""
-        return output.split('\n')[-2] != '_PSI_J_LAUNCHER_DONE'
-
-    def get_launcher_failure_message(self, output: str) -> str:
-        """See :func:`~psij.Launcher.get_launcher_failure_message`."""
-        # If, according to the above, it is a launcher failure, then
-        # the magic line should not be present (aka, all of the output
-        # is the failure).
-        return output
