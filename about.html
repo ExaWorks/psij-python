@@ -1,0 +1,86 @@
+---
+title: About - PSI/J - Python
+layout: default
+tab: 4
+---
+
+
+                <v-row class="page-start">
+                    <v-col align="center">
+                        <v-card align="left" class="mb-6 vbox">
+                            <h2>The motivation behind <span class="psij-font">PSI/J</span></h2>
+
+                            <p>
+                                The <a href="exaworks.org">ExaWorks</a> project is a community-led project
+                                under the umbrella of the <a href="exascaleproject.org">Exascale Computing
+                                    Project</a> which brings together a number of high level HPC tools developed
+                                by the members of ExaWorks. We noticed that most of these projects, as well as
+                                many of the community projects, implemented a software layer/library to interact
+                                with HPC schedulers in order to insulate the core functionality from the
+                                details of how things are specified for each scheduler. We also noticed that
+                                the respective libraries were mostly limited to schedulers running on resources that
+                                each team had access to. We used our combined knowledge to
+                                design a single API/library for this goal, one that would be tested on all
+                                resources that all ExaWorks teams have access to. We then shared this API
+                                and library so that all high level HPC tools can benefit from it.
+                            </p>
+                        </v-card>
+
+                        <v-card align="left" class="mb-6 vbox">
+                            <h2>The complexity of testing HPC libraries</h2>
+
+                            <p>
+                                A major difficulty in maintaining HPC software
+                                tools is that access to HPC resources is generally limited to a small number
+                                of clusters local to each team. Additionally, HPC resources vary
+                                widely depending on the institution that maintains them. Consequently,
+                                software that is tested on resources that a HPC tool development
+                                team has access to is likely to encounter problems on other HPC resources. A first step in addressing this problem is by
+                                pooling teams' respective resources for testing purposes.
+                                <span class="psij-font">PSI/J</span> takes it a step further by exposing an
+                                infrastructure that allows any user <span class="psij-font">PSI/J</span> user
+                                to easily contribute test results to <span class="psij-font">PSI/J</span>,
+                                and do so automatically. This is mutually beneficial: the
+                                <span class="psij-font">PSI/J</span> community gains assurance that <span class="psij-font">PSI/J</span> functions correctly on
+                                a wide range of resources, while users contributing tests have a mechanism to
+                                ensure that the <span class="psij-font">PSI/J</span> team is aware of
+                                potential problems specific to their resources and can address them, thus
+                                ensuring that <span class="psij-font">PSI/J</span> continues to function
+                                correctly on those resources.
+                            </p>
+                        </v-card>
+
+                        <v-card align="left" class="mb-6 vbox">
+                            <h2>Precursors to <span class="psij-font">PSI/J</span></h2>
+                            <br />
+                            <h3>SAGA</h3>
+                            <p>
+                                SAGA &mdash; an <a href="http://dx.doi.org/10.1016/j.softx.2015.03.001">OGF
+                                    standard</a> &mdash; abstracts away the specificity of diverse queue systems,
+                                offering a consistent representation of jobs and of the capabilities required
+                                to submit them to the resources.
+                                <a href="https://github.com/radical-cybertools/radical.saga">RADICAL-SAGA</a>
+                                implements a subset of the SAGA standard, exposing a homogeneous programming
+                                interface to the batch systems of HPC and HTC resources, enabling job
+                                submissions and file transfers across resources. RADICAL-SAGA is used by
+                                <a href="https://github.com/radical-cybertools/radical.pilot">RADICAL-Pilot</a>
+                                to acquire resources and staging data to and from HPC platforms.
+                                <span class="psij-font">PSI/J</span> will replace RADICAL-SAGA, offering
+                                streamlined capabilities and a modern implementation.
+                            </p>
+                            <br />
+                            <h3>Java CoG Kit</h3>
+                            <p>
+                                The <span class="psij-font">PSI/J</span> API is in no small part inspired by
+                                the Java CoG Kit
+                                <a href="https://ieeexplore.ieee.org/document/1271452">Abstraction API</a>.
+
+                                The <a href="swift-lang.org">Swift</a> workflow system made extensive use of
+                                and improved on the Java Cog Kit Abstraction API. While the original Swift
+                                (Swift/K) is not maintained any more, its two spiritual successors,
+                                <a href="http://swift-lang.org/Swift-T/">Swift/T</a> and
+                                <a href="https://parsl-project.org/">Parsl</a> are.
+                            </p>
+                        </v-card>
+                    </v-col>
+                </v-row>
