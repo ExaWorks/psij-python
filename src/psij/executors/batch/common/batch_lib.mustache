@@ -1,0 +1,138 @@
+_psij_update_status() {
+    STATUS="$1"
+
+    ADDRS={{psij.us_addrs}}
+    for ADDR in ${ADDRS//,/ }; do
+        echo "{{job.id}} $STATUS" >/dev/udp/$ADDR/{{psij.us_port}}
+    done
+}
+
+_psij_fail() {
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Failing: $2"
+    echo $2
+    exit $1
+}
+
+_psij_check_remote() {
+    SCHEME="$1"
+    HOSTPORT="$2"
+
+    if [ "$SCHEME" != "" ] && [ "$SCHEME" != "file" ]; then
+        _psij_fail 121 "$SCHEME staging is not supported"
+    fi
+    if [ "$HOSTPORT" != "" ] && [ "$HOSTPORT" != "localhost" ]; then
+        _psij_fail 121 "The host, if specified, must be \"localhost\". Got \"$HOSTPORT\"."
+    fi
+}
+
+_psij_do_stagein() {
+    SOURCE="$1"
+    TARGET="$2"
+    MODE="$3"
+    SCHEME="$6"
+    HOSTPORT="$7"
+
+    _psij_check_remote "$SCHEME" "$HOSTPORT" || exit $?
+
+    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" 0
+}
+
+_psij_do_stage() {
+    SOURCE="$1"
+    TARGET="$2"
+    MODE="$3"
+    MISSING_OK="$4"
+
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Stage $SOURCE -> $TARGET, mode: $MODE, missingok: $MISSING_OK"
+
+    if [ ! -e "$SOURCE" ]; then
+        if [ "$MISSING_OK" == "0" ]; then
+            [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Missing source file: $SOURCE"
+            _psij_fail 121 "Missing source file: $SOURCE"
+        else
+            [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Skipping staging of missing file $SOURCE"
+            return 0
+        fi
+    fi
+
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Staging $SOURCE to $TARGET"
+
+    TARGET_DIR=`dirname "$TARGET"`
+
+    if [ "$TARGET_DIR" != "" ]; then
+        mkdir -p "$TARGET_DIR"
+    fi
+
+    if [ -d "$TARGET" ] && [ ! -d "$SOURCE" ]; then
+        _psij_fail 121 "Target is a directory: $TARGET"
+    fi
+
+    if [ "$MODE" == "1" ]; then
+        # copy
+        cp -r -T "$SOURCE" "$TARGET" || _psij_fail 121 "Failed to copy \"$SOURCE\" to \"$TARGET\""
+    elif [ "$MODE" == "2" ]; then
+        # link
+        {{!we want the same semantics as cp and mv, which is "overwrite if exists"}}
+        {{!we resolve the source since it may be a path relative to the job dir}}
+        rm -f "$TARGET"
+        SOURCE=`readlink -m $SOURCE`
+        ln -s "$SOURCE" "$TARGET"  || _psij_fail 121 "Failed to link \"$SOURCE\" to \"$TARGET\""
+    elif [ "$MODE" == "3" ]; then
+        # move
+        mv -T -f "$SOURCE" "$TARGET" || _psij_fail 121 "Failed to move \"$SOURCE\" to \"$TARGET\""
+    fi
+}
+
+_FLAG_IF_PRESENT=1
+_FLAG_ON_SUCCESS=2
+_FLAG_ON_ERROR=4
+_FLAG_ON_CANCEL=8
+
+_psij_do_stageout() {
+    SOURCE="$1"
+    TARGET="$2"
+    MODE="$3"
+    FLAGS="$4"
+    FAILED="$5"
+    SCHEME="$6"
+    HOSTPORT="$7"
+
+    _psij_check_remote "$SCHEME" "$HOSTPORT"
+
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG do_stageout $SOURCE -> $TARGET, mode: $MODE, flags: $FLAGS, failed: $FAILED"
+
+    if [ "$FAILED" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+        return 0
+    fi
+    if [ "$FAILED" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+        return 0
+    fi
+    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" $((FLAGS & _FLAG_IF_PRESENT))
+}
+
+_psij_do_cleanup() {
+    TARGET="$1"
+    FLAGS="$2"
+    FAILED="$3"
+
+    if [ "$FAILED" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+        return 0
+    fi
+    if [ "$FAILED" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+        return 0
+    fi
+
+    TARGET=`readlink -m "$TARGET"`
+    DIR=`readlink -m "{{job.spec.directory}}"`
+
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Cleaning up $TARGET"
+
+    case "$TARGET" in
+        "$DIR"*)
+            rm -rf "$TARGET"
+            ;;
+        *)
+            _psij_fail 121 "Cannot clean $TARGET outside of job directory $DIR"
+            ;;
+    esac
+}

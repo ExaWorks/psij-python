@@ -12,5 +12,4 @@ log "Command done: $_PSI_J_EC"
 
 post_launch
 
-echo "_PSI_J_LAUNCHER_DONE"
 exit $_PSI_J_EC

@@ -18,6 +18,7 @@ class TestCallbacks(TestCase):
 
     def state_cb(self, job: psij.Job, status: psij.JobStatus) -> None:
         """State callback."""
+        print('status change: %s' % status)
         self._cb_states.append(status.state)
 
     def test_job_callbacks(self) -> None:
@@ -29,9 +30,14 @@ class TestCallbacks(TestCase):
         jex.submit(job)
         job.wait()
 
-        self.assertEqual(len(self._cb_states), 3)
+        print('States: %s' % self._cb_states)
+
+        self.assertEqual(len(self._cb_states), 6)
         self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_IN, self._cb_states)
         self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_OUT, self._cb_states)
+        self.assertIn(psij.JobState.CLEANUP, self._cb_states)
         self.assertIn(psij.JobState.FAILED, self._cb_states)
 
         self._cb_states = list()
@@ -41,9 +47,12 @@ class TestCallbacks(TestCase):
         jex.submit(job)
         job.wait()
 
-        self.assertEqual(len(self._cb_states), 3)
+        self.assertEqual(len(self._cb_states), 6)
         self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_IN, self._cb_states)
         self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_OUT, self._cb_states)
+        self.assertIn(psij.JobState.CLEANUP, self._cb_states)
         self.assertIn(psij.JobState.COMPLETED, self._cb_states)
 
     def test_job_executor_callbacks(self) -> None:
@@ -55,7 +64,12 @@ class TestCallbacks(TestCase):
         jex.submit(job)
         job.wait()
 
-        self.assertEqual(len(self._cb_states), 3)
+        print('States: %s' % self._cb_states)
+
+        self.assertEqual(len(self._cb_states), 6)
         self.assertIn(psij.JobState.QUEUED, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_IN, self._cb_states)
         self.assertIn(psij.JobState.ACTIVE, self._cb_states)
+        self.assertIn(psij.JobState.STAGE_OUT, self._cb_states)
+        self.assertIn(psij.JobState.CLEANUP, self._cb_states)
         self.assertIn(psij.JobState.COMPLETED, self._cb_states)
