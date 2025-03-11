@@ -113,6 +113,13 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
         if 'PSIJ_BATCH_KEEP_FILES' in os.environ:
             self.keep_files = True
 
+    @classmethod
+    def _from_config(cls, config: JobExecutorConfig) -> 'BatchSchedulerExecutorConfig':
+        new = cls()
+        new.work_directory = config.work_directory
+        new.launcher_log_file = config.launcher_log_file
+        return new
+
 
 class InvalidJobStateError(Exception):
     """An exception that signals that a job cannot be cancelled due to it being already done."""
@@ -199,13 +206,20 @@ class BatchSchedulerExecutor(JobExecutor):
             An configuration for this executor instance; if none is specified, a default
             configuration is used.
         """
-        super().__init__(url=url, config=config if config else BatchSchedulerExecutorConfig())
+        super().__init__(url=url, config=self._get_config(config))
         assert config
         self.work_directory = config.work_directory / self.name
         self._queue_poll_thread = self._start_queue_poll_thread()
 
     def _ensure_work_dir(self) -> None:
         self.work_directory.mkdir(parents=True, exist_ok=True)
+
+    def _get_config(self, config: Optional[JobExecutorConfig]) -> BatchSchedulerExecutorConfig:
+        if config is None:
+            return BatchSchedulerExecutorConfig()
+        if isinstance(config, BatchSchedulerExecutorConfig):
+            return config
+        return BatchSchedulerExecutorConfig._from_config(config)
 
     def submit(self, job: Job) -> None:
         """See :func:`~psij.JobExecutor.submit`."""
