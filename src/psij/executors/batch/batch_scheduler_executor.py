@@ -105,7 +105,7 @@ class BatchSchedulerExecutorConfig(JobExecutorConfig):
             Whether to keep submit files and auxiliary job files (exit code and output files) after
             a job has completed.
         """
-        super().__init__(work_directory, launcher_log_file)
+        super().__init__(launcher_log_file, work_directory)
         self.queue_polling_interval = queue_polling_interval
         self.initial_queue_polling_delay = initial_queue_polling_delay
         self.queue_polling_error_threshold = queue_polling_error_threshold
