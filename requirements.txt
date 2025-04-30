@@ -1,4 +1,4 @@
 psutil >=5.9, <=7.0.0
 pystache>=0.6.0
 typeguard>=3.0.1
-packaging >= 24.0, <= 24.2
+packaging >= 24.0, <= 25.0
