@@ -53,7 +53,8 @@ class JobAttributes(object):
         self.account = account
         self.duration = duration
         self.queue_name = queue_name
-        self.project_name = project_name
+        if project_name is not None:
+            self.project_name = project_name
         self.reservation_id = reservation_id
         self._custom_attributes = custom_attributes
 
