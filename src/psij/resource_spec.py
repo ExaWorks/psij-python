@@ -188,7 +188,7 @@ class ResourceSpecV1(ResourceSpec):
         return self._computed_ppn
 
     @property
-    def mem_kb(self) -> Optional[int]:
+    def memory_kb(self) -> Optional[int]:
         """
         Returns the memory limit specified by the `memory` property, but in KB.
 
