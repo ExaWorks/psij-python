@@ -99,7 +99,7 @@ def _supported(ep: ExecutorTestParams) -> bool:
 def test_memory(execparams: ExecutorTestParams) -> None:
     job = Job(JobSpec(executable='/bin/hostname', launcher=execparams.launcher))
     assert job.spec is not None
-    job.spec.resources = ResourceSpecV1(memory=1024 * 1024)
+    job.spec.resources = ResourceSpecV1(memory=1024 * 1024 * 100)
     ex = _get_executor_instance(execparams, job)
     ex.submit(job)
     status = job.wait(timeout=_get_timeout(execparams))
