@@ -352,7 +352,10 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
             job.status.state = self._get_state(cols[7])
             job.current_info.submission_time = datetime.fromisoformat(cols[8])
             spec.directory = Path(cols[9])
-            job.current_info.dispatch_time = datetime.fromisoformat(cols[10])
+            if cols[10] == "N/A":
+                job.current_info.dispatch_time = None
+            else:
+                job.current_info.dispatch_time = datetime.fromisoformat(cols[10])
             job.current_info.owner = cols[11]
             job.current_info.resourcelist = []
             if len(cols) > 12:
