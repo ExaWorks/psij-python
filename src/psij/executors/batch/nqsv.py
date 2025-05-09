@@ -131,15 +131,17 @@ class NQSVJobExecutor(BatchSchedulerExecutor):
         self.generator = TemplatedScriptGenerator(config, path)
         self.submit_frag = False
         self.cancel_frag = False
+        self.use_wait_command = False
         self._wait_threads: List[_NQSJobWaitingThread] = []
 
     # Override submit function.
     def submit(self, job: Job) -> None:
         """Submit a job to the NQSV scheduler."""
         super().submit(job)
-        thread = _NQSJobWaitingThread(job, self)
-        thread.start()
-        self._wait_threads.append(thread)
+        if self.use_wait_command:
+            thread = _NQSJobWaitingThread(job, self)
+            thread.start()
+            self._wait_threads.append(thread)
         return None
 
     def generate_submit_script(self,
