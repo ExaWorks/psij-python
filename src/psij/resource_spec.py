@@ -54,7 +54,8 @@ class ResourceSpecV1(ResourceSpec):
                  processes_per_node: Optional[int] = None,
                  cpu_cores_per_process: Optional[int] = None,
                  gpu_cores_per_process: Optional[int] = None,
-                 exclusive_node_use: bool = False) -> None:
+                 exclusive_node_use: bool = False,
+                 memory: Optional[int] = None) -> None:
         """
         Some of the properties of this class are constrained. Specifically,
         `process_count = node_count * processes_per_node`. Specifying all constrained properties
@@ -79,6 +80,7 @@ class ResourceSpecV1(ResourceSpec):
             set to `False`, which is the default, the LRM is free to co-schedule multiple jobs
             on a given node if the number of cores requested by those jobs total less than the
             amount available on the node.
+        :param memory: The total amount, in bytes, of memory requested for the job.
 
         All constructor parameters are accessible as properties.
         """
@@ -88,6 +90,7 @@ class ResourceSpecV1(ResourceSpec):
         self.cpu_cores_per_process = cpu_cores_per_process
         self.gpu_cores_per_process = gpu_cores_per_process
         self.exclusive_node_use = exclusive_node_use
+        self.memory = memory
         self._check_constraints()
 
     def _check_constraints(self) -> None:
@@ -183,6 +186,19 @@ class ResourceSpecV1(ResourceSpec):
         """
         assert self._computed_ppn is not None
         return self._computed_ppn
+
+    @property
+    def memory_kb(self) -> Optional[int]:
+        """
+        Returns the memory limit specified by the `memory` property, but in KB.
+
+        :return: If the `memory` property is set on this object, returns `memory // 1024`. If the
+            `memory` property is `None`, this method returns `None`.
+        """
+        if self.memory:
+            return self.memory // 1024
+        else:
+            return None
 
     @property
     def version(self) -> int:

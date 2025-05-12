@@ -10,7 +10,7 @@
 {{/job.spec.inherit_environment}}
 
 {{#job.spec.resources}}
-#PBS -l nodes={{computed_node_count}}:ppn={{computed_processes_per_node}}{{#gpu_cores_per_process}}:gpus={{.}}{{/gpu_cores_per_process}}
+#PBS -l nodes={{computed_node_count}}:ppn={{computed_processes_per_node}}{{#gpu_cores_per_process}}:gpus={{.}}{{/gpu_cores_per_process}}{{#memory}}:mem={{.}}{{/memory}}
     {{#exclusive_node_use}}
 #PBS -n
     {{/exclusive_node_use}}
