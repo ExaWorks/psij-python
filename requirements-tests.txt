@@ -8,6 +8,6 @@ requests >= 2.25.1
 pytest-cov
 pytest-timeout
 filelock >= 3.4, < 3.19
-textual
+textual==3.2.0
 tree-sitter
 tree-sitter-bash
