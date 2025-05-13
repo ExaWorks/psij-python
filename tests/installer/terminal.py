@@ -119,16 +119,16 @@ def patch_borders() -> None:
 def patch_toggle_button(unicode: bool) -> None:
     from textual.widgets._toggle_button import ToggleButton
     from textual.widgets._radio_button import RadioButton
-    from rich.text import Text
-    from rich.style import Style
+    from textual.content import Content
+    from textual.style import Style
 
     class PatchedToggleButton(ToggleButton):
         @property
-        def _button(self) -> Text:
-            button_style = self.get_component_rich_style('toggle--button')
-            side_style = Style.from_color(self.colors[3].rich_color,
-                                          self.background_colors[1].rich_color)
-            return Text.assemble(
+        def _button(self) -> Content:
+            button_style = self.get_visual_style("toggle--button")
+            side_style = Style(self.colors[3],
+                               self.background_colors[1])
+            return Content.assemble(
                 (self.BUTTON_LEFT, side_style),
                 (self.BUTTON_INNER, button_style),
                 (self.BUTTON_RIGHT, side_style)
