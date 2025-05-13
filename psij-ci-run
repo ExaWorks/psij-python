@@ -2,9 +2,20 @@
 
 usage() {
     cat <<EOF
-Usage: ./psij-ci-run [--help] [--repeat]
-    --help          Displays this message
-    --repeat        If specified, run tests every 24 hours in a loop.
+Usage: ./psij-ci-run [--help] [--repeat] [--reschedule HH:MM] [--log]
+    --help
+        Displays this message.
+    --repeat
+        If specified, run tests every 24 hours in a loop.
+    --reschedule HH:MM
+        If specified, reschedule the tests at HH:MM using the
+        at command.
+    --log
+        Disables output and redirects to a log instead. Used
+        when running the tests automatically.
+    --tee
+        Logs output as if --log was specified, but also prints
+        on stdout.
 EOF
 }
 
@@ -16,12 +27,17 @@ failifempty() {
     fi
 }
 
+MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+cd "$MYPATH"
+
 if [ -f psij-ci-env ]; then
     source psij-ci-env
 fi
 
 REPEAT=0
 RESCHEDULE=0
+NO_OUT=0
+TEE=0
 
 while [ "$1" != "" ]; do
     case "$1" in
@@ -38,12 +54,42 @@ while [ "$1" != "" ]; do
             TIME="$2"
             shift 2
             ;;
+        --log)
+            NO_OUT=1
+            shift
+            ;;
+        --tee)
+            TEE=1
+            shift
+            ;;
         *)
             echo "Unrecognized command line option: $1."
             usage
             exit 1
+            ;;
     esac
 done
+
+tee() {
+    while read LINE; do
+        echo "$LINE" >&3
+        echo "$LINE" >>./testing.log
+    done
+}
+
+if [ "$NO_OUT" == "1" ]; then
+    exec 1<&-
+    exec 2<&-
+
+    exec 1>>./testing.log
+    exec 2>&1
+elif [ "$TEE" == "1" ]; then
+    exec 3>&1-
+    exec 2<&-
+
+    exec 1> >(tee)
+    exec 2>&1
+fi
 
 if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
     PYTHON="python"
@@ -68,7 +114,7 @@ if [ "$REPEAT" == "1" ]; then
         sleep $TO_SLEEP
     done
 elif [ "$RESCHEDULE" == "1" ]; then
-    CMD="./psij-ci-run --reschedule $TIME >> testing.log 2>&1"
+    CMD="./psij-ci-run --reschedule $TIME --log"
     echo "$CMD" | at $TIME
     $PYTHON tests/ci_runner.py $MODE
 else

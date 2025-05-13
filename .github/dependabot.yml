@@ -16,4 +16,5 @@ updates:
       - dependency-name: "pystache"
       - dependency-name: "typeguard"
       - dependency-name: "packaging"
+      - dependency-name: "requests"
       
