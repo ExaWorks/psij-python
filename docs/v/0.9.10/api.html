@@ -1,0 +1,422 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Reference &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/extras.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PSI/J Core" href=".generated/tree.html" />
+    <link rel="prev" title="User Guide" href="user_guide.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href=".generated/tree.html" title="PSI/J Core"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="user_guide.html" title="User Guide"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">API Reference</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href=".generated/tree.html">PSI/J Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#job">Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobspec">JobSpec</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobattributes">JobAttributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#resourcespec">ResourceSpec</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#resourcespecv1">ResourceSpecV1</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobstatus">JobStatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobstate">JobState</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#serialization">Serialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#psij-serialize-export">psij.serialize.Export</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#psij-serialize-import">psij.serialize.Import</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#module-psij.utils">psij.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#module-psij.version">psij.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#descriptor">Descriptor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#exceptions">Exceptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#module-psij.exceptions">psij.exceptions module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href=".generated/tree.html#executors">Executors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#cobalt">Cobalt</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#cobaltexecutorconfig">CobaltExecutorConfig</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#flux">Flux</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#local">Local</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#lsf">LSF</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#lsfexecutorconfig">LsfExecutorConfig</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#pbs-pro">PBS Pro</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#pbs-classic">PBS Classic</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#radical-pilot">Radical Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#slurm">Slurm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#slurmexecutorconfig">SlurmExecutorConfig</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href=".generated/tree.html#executor-infrastructure">Executor Infrastructure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobexecutor">JobExecutor</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jobexecutorconfig">JobExecutorConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#module-psij.executors.batch.batch_scheduler_executor">psij.executors.batch.batch_scheduler_executor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#batchschedulerexecutor">BatchSchedulerExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#batchschedulerexecutorconfig">BatchSchedulerExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/tree.html#check-status-exit-code">check_status_exit_code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#submitscriptgenerator">SubmitScriptGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#templatedscriptgenerator">TemplatedScriptGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#module-psij.executors.batch.template_function_library">psij.executors.batch.template_function_library module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href=".generated/tree.html#launchers">Launchers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#aprun">aprun</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#jrun">jrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#mpirun">mpirun</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#multiple">multiple</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#single">single</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#srun">srun</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href=".generated/tree.html#launcher-infrastructure">Launcher Infrastructure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#launcher">Launcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#scriptbasedlauncher">ScriptBasedLauncher</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href=".generated/index.html">Index</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/index.html#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#aprunlauncher">AprunLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#batchschedulerexecutor">BatchSchedulerExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#batchschedulerexecutorconfig">BatchSchedulerExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#cobaltexecutorconfig">CobaltExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#cobaltjobexecutor">CobaltJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#descriptor">Descriptor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#functionjobstatuscallback">FunctionJobStatusCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#genericpbsjobexecutor">GenericPBSJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#invalidjobexception">InvalidJobException</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#invalidjobstateerror">InvalidJobStateError</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#job">Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobattributes">JobAttributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobexecutor">JobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobexecutorconfig">JobExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobspec">JobSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobstate">JobState</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobstateorder">JobStateOrder</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobstatus">JobStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jobstatuscallback">JobStatusCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#jsrunlauncher">JsrunLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#launcher">Launcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#localjobexecutor">LocalJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#lsfexecutorconfig">LsfExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#lsfjobexecutor">LsfJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#mpilauncher">MPILauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#multiplelauncher">MultipleLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#pbsclassicjobexecutor">PBSClassicJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#pbsexecutorconfig">PBSExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#pbsjobexecutor">PBSJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#rpjobexecutor">RPJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#resourcespec">ResourceSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#resourcespecv1">ResourceSpecV1</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#scriptbasedlauncher">ScriptBasedLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#singlelauncher">SingleLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#singletonthread">SingletonThread</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#slurmexecutorconfig">SlurmExecutorConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#slurmjobexecutor">SlurmJobExecutor</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#srunlauncher">SrunLauncher</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#submitexception">SubmitException</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#submitscriptgenerator">SubmitScriptGenerator</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#templatedscriptgenerator">TemplatedScriptGenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/index.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#bash-escape">bash_escape</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#check-status-exit-code">check_status_exit_code</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/index.html#walltime-to-minutes">walltime_to_minutes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html">PSI/J Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#executors">Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#executor-infrastructure">Executor Infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#launchers">Launchers</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/tree.html#launcher-infrastructure">Launcher Infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href=".generated/index.html">Index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="user_guide.html"
+                          title="Previous page">&larr; User Guide</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href=".generated/tree.html"
+                          title="Next page">&rarr; PSI/J Core</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href=".generated/tree.html" title="PSI/J Core"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="user_guide.html" title="User Guide"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">API Reference</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>
