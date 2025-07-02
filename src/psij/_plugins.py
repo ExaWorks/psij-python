@@ -53,7 +53,7 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)  # type: ignore
         cls = getattr(mod, cls_name)
-        cls.__psij_file__ = mod_path  # type: ignore
+        cls.__psij_file__ = mod_path
     except Exception as ex:
         s = str(ex)
         logger.info(s)
