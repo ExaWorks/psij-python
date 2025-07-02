@@ -10,7 +10,7 @@
 {{/job.spec.inherit_environment}}
 
 {{#job.spec.resources}}
-#PBS -l select={{computed_node_count}}:ncpus={{computed_processes_per_node}}:mpiprocs={{computed_processes_per_node}}
+#PBS -l select={{computed_node_count}}:ncpus={{computed_processes_per_node}}:mpiprocs={{computed_processes_per_node}}{{#memory}}:mem={{.}}{{/memory}}
     {{#exclusive_node_use}}
 #PBS -l place=scatter:exclhost
     {{/exclusive_node_use}}

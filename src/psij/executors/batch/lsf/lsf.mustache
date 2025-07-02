@@ -32,6 +32,10 @@
 #BSUB -gpu num={{.}}/task
     {{/gpu_cores_per_process}}
 
+    {{#memory}}
+#BSUB -M {{memory_kb}}KB
+    {{/memory}}
+
 {{/job.spec.resources}}
 
 

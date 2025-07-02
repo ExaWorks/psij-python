@@ -1,0 +1,84 @@
+#!/bin/bash
+
+{{#job.spec.name}}
+#PBS -N {{.}}
+{{/job.spec.name}}
+
+{{#job.spec.inherit_environment}}
+#PBS -V
+{{/job.spec.inherit_environment}}
+{{#env}}
+#PBS -v {{name}}="{{value}}"
+{{/env}}
+
+{{#job.spec.resources}}
+  {{#exclusive_node_use}}
+#PBS --exclusive
+  {{/exclusive_node_use}}
+#PBS --cpunum-lhost={{computed_processes_per_node}} -b {{computed_node_count}}
+  {{#gpu_cores_per_process}}
+#PBS --gpunum-lhost=${{.}}
+  {{/gpu_cores_per_process}}
+{{/job.spec.resources}}
+
+{{#job.spec.attributes}}
+  {{#duration}}
+#PBS -l elapstim_req={{.}}
+  {{/duration}}
+  {{#queue_name}}
+#PBS -q {{.}}
+  {{/queue_name}}
+  {{#project_name}}
+#PBS -A {{.}}
+  {{/project_name}}
+  {{#reservation_id}}
+#PBS -y {{.}}
+  {{/reservation_id}}
+{{/job.spec.attributes}}
+
+#custom_attributes
+  {{#custom_attributes}}
+    {{#nqsv}}
+#PBS -{{key}} {{value}}
+    {{/nqsv}}
+  {{/custom_attributes}}
+
+{{!we replace the follow environment variable to cpus when the job is submitted.}}
+#PBS -e /dev/null
+#PBS -o /dev/null
+
+{{#job.spec.directory}}
+cd "{{.}}"
+{{/job.spec.directory}}
+
+J=`echo $PBS_JOBID | awk -F ':' '{print $1}'`
+ID=`echo  $PBS_JOBID | awk -F ':' '{print $2}' | awk -F '.' '{print $1}'`
+if [ "$J" = "0" ]; then
+    exec &>> "{{psij.script_dir}}/$ID.out"
+fi
+
+# create node file for PSIJ
+{{#job.spec.resources}}
+_PSIJ_PPN={{computed_processes_per_node}}
+{{/job.spec.resources}}
+
+PSIJ_NODEFILE="{{psij.script_dir}}/$ID.nodefile"
+while read line 
+do
+    for i in `seq 1 $_PSIJ_PPN`;
+    do
+	echo $line >> $PSIJ_NODEFILE
+    done
+done < $PBS_NODEFILE
+export PSIJ_NODEFILE
+
+{{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+
+E=$?
+
+{{!we redirect to a file tied to the native ID so that we can reach the file with attach().}}
+if [ "$J" = "0" ]; then
+  echo "$E" > "{{psij.script_dir}}/$ID.ec"
+fi
+
+exit $E

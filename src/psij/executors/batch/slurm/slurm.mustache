@@ -37,6 +37,10 @@
         hyperthreaded CPUs are used) or CPU core (for non-hyperthreaded CPUs).}}
 #SBATCH --cpus-per-task={{.}}
     {{/cpu_cores_per_process}}
+
+    {{#memory}}
+#SBATCH --mem={{memory_kb}}K
+    {{/memory}}
 {{/job.spec.resources}}
 
 {{#formatted_job_duration}}
