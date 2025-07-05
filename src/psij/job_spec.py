@@ -137,7 +137,7 @@ class JobSpec(object):
         # care of the conversion, but mypy gets confused
         self._directory = _to_path(directory)
         self.inherit_environment = inherit_environment
-        self.environment = _to_env_dict(environment)
+        self._environment = _to_env_dict(environment)
         self._stdin_path = _to_path(stdin_path)
         self._stdout_path = _to_path(stdout_path)
         self._stderr_path = _to_path(stderr_path)
