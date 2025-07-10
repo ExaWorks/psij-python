@@ -159,8 +159,46 @@ class JobExecutor(ABC):
         underlying implementation and before the client code receives the completion notification.
         In such a case, the job will never enter the `CANCELED` state and
         `job.wait(JobState.CANCELED)` would hang indefinitely.
-
         :param job: The job to be canceled.
+
+        :raises SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation.
+        """
+        pass
+
+    @abstractmethod
+    def hold(self, job: Job) -> None:
+        """
+        Holds a job that has been submitted to underlying executor implementation.
+
+        A successful return of this method only indicates that the request for hold has been
+        communicated to the underlying implementation.
+        The job on hold will not be executed until it is released. The job must be in the
+        :attr:`~psij.JobState.HELD` state. The job will be put on hold at the discretion of
+        the implementation, which may be at some later time. A successful hold is reflected in a
+        change of status of the respective job to :attr:`~psij.JobState.HELD`. User code can
+        synchronously wait until the :attr:`~psij.JobState.HELD` state is reached using
+        `job.wait(JobState.HELD)`.
+        :param job: The job to be put on hold.
+
+        :raises SubmitException: Thrown if the request cannot be sent to the underlying
+            implementation.
+        """
+        pass
+
+    @abstractmethod
+    def release(self, job: Job) -> None:
+        """
+        Relases a job that has been put on hold.
+        A successful return of this method only indicates that the request for release has been
+        communicated to the underlying implementation.
+        The job on hold will not be executed until it is released. The job must be in the
+        :attr:`~psij.JobState.QUEUED` state. The job will be released at the discretion of
+        the implementation, which may be at some later time. A successful release is reflected in a
+        change of status of the respective job to :attr:`~psij.JobState.QUEUED`. User code can
+        synchronously wait until the :attr:`~psij.JobState.QUEUED` state is reached using
+        `job.wait(JobState.QUEUED)`.
+        :param job: The job to be released.
 
         :raises SubmitException: Thrown if the request cannot be sent to the underlying
             implementation.
@@ -183,6 +221,18 @@ class JobExecutor(ABC):
 
         :param job: A job to attach. The job must be in the :attr:`~psij.JobState.NEW` state.
         :param native_id: The native ID to attach to as returned by :attr:`~psij.Job.native_id`.
+        """
+        pass
+
+    @abstractmethod
+    def info(self, jobs: Optional[List[Job]] = None, owner: Optional[str] = None) -> List[Job]:
+        """
+        Returns information about jobs.
+
+        :param jobs: An optional list of jobs to get information about. If not specified, the method
+            returns information about about all jobs.
+        :param owner: An optional list of job owners to get information about. If not specified,
+            the method returns information about all jobs.
         """
         pass
 
