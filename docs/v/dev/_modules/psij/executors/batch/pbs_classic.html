@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>psij.executors.batch.pbs_classic &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/extras.js"></script>
+
+    
+    
+     
+        <script src="../../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.pbs_classic</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for psij.executors.batch.pbs_classic</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">psij.executors.batch.pbs_base</span> <span class="kn">import</span> <span class="n">PBSExecutorConfig</span><span class="p">,</span> <span class="n">GenericPBSJobExecutor</span>
+<span class="kn">from</span> <span class="nn">psij.executors.batch.script_generator</span> <span class="kn">import</span> <span class="n">TemplatedScriptGenerator</span>
+
+
+<div class="viewcode-block" id="PBSClassicJobExecutor"><a class="viewcode-back" href="../../../../.generated/tree.html#psij.executors.batch.pbs_classic.PBSClassicJobExecutor">[docs]</a><span class="k">class</span> <span class="nc">PBSClassicJobExecutor</span><span class="p">(</span><span class="n">GenericPBSJobExecutor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A :class:`~psij.JobExecutor` for classic PBS systems.</span>
+
+<span class="sd">    This executor uses resource specifications specific to Open PBS. Specifically,</span>
+<span class="sd">    this executor uses the `-l nodes=n:ppn=m` way of specifying nodes, which</span>
+<span class="sd">    differs from the scheme used by PBS Pro.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PBSExecutorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url</span>
+<span class="sd">            Not used, but required by the spec for automatic initialization.</span>
+<span class="sd">        config</span>
+<span class="sd">            An optional configuration for this executor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">PBSExecutorConfig</span><span class="p">()</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">TemplatedScriptGenerator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;pbs&#39;</span>
+                                             <span class="o">/</span> <span class="s1">&#39;pbs_classic.mustache&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="../../../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.pbs_classic</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>
