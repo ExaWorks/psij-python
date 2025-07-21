@@ -1,10 +1,21 @@
 #!/bin/bash
 
+MIN_PYTHON_VERSION="3.8"
+
+set -o pipefail
+
 if pip --version 2>&1 | egrep -q 'python 3\..*' >/dev/null 2>&1 ; then
     PIP="pip"
 else
     PIP="pip3"
 fi
+
+if python --version 2>&1 | egrep -q 'Python 3\..*' >/dev/null 2>&1 ; then
+    PYTHON="python"
+else
+    PYTHON="python3"
+fi
+
 
 existing_error_trailer() {
     echo "If you are certain that you want to install multiple entries,   "
@@ -50,7 +61,7 @@ cron_existing_error() {
 }
 
 cron_install() {
-    CMD="$CMD >> testing.log 2>&1"
+    CMD="$CMD --log"
     LINE="$MINUTE $HOUR * * * cd \"$MYPATH\" && $CMD"
     echo
     echo "================================================================"
@@ -109,7 +120,7 @@ at_existing_error() {
 }
 
 at_install() {
-    CMD="$CMD --reschedule $HOUR:$MINUTE >> testing.log 2>&1"
+    CMD="$CMD --reschedule $HOUR:$MINUTE --log"
     echo
     echo "================================================================"
     echo "The following will be executed:"
@@ -141,7 +152,7 @@ screen_existing_error() {
 }
 
 screen_install() {
-    CMD="$CMD --repeat >> testing.log 2>&1"
+    CMD="$CMD --repeat --log"
     echo
     echo "================================================================"
     echo "WARNING: Screen sessions do not persist across reboots. Please  "
@@ -166,7 +177,7 @@ manual_existing_error() {
 }
 
 manual_install() {
-    CMD="$CMD --repeat >> testing.log 2>&1"
+    CMD="$CMD --repeat --log"
     echo
     echo "================================================================"
     echo "Please run the following command in the background:             "
@@ -271,14 +282,100 @@ check_key() {
     fi
 }
 
-FORCE=0
+check_python_version() {
+    VERSION=`$PYTHON --version | awk '{print $2}'`
+    FIRST=`echo -e "$VERSION\n$MIN_PYTHON_VERSION" | sort -V|head -n 1`
+    if [ "$FIRST" == "$VERSION" ]; then
+        echo "Error: PSI/J requires Python $MIN_PYTHON_VERSION or above. Your current version is $VERSION."
+        exit 2
+    fi
+}
 
-if [ "$1" == "-f" ]; then
-    FORCE=1
+check_pip_version() {
+    PYTHON_VERSION=`$PYTHON --version | awk '{print $2}' | cut -d '.' -f 1,2`
+    PIP_PYTHON_VERSION=`$PIP --version | sed -nE 's/.*\(python\s(.*)\)/\1/p'`
+
+    if [ "$PYTHON_VERSION" != "$PIP_PYTHON_VERSION" ]; then
+        echo -e "\e[33mWarning: The installed $PIP comes from Python $PIP_PYTHON_VERSION while your Python"
+        echo -e "interpreter has version $PYTHON_VERSION. If this causes problems, please use a "
+        echo -e "virtual environment.\e[0m"
+    fi
+}
+
+not_cached() {
+    if [ ! -d .packages ]; then
+        return 0
+    fi
+    if [ ! -f .packages/req_csum.txt ]; then
+        return 0
+    fi
+    REQ_CSUM=`cat .packages/req_csum.txt`
+    PYTHON=`which $PYTHON`
+    CRT_CSUM=`echo $PYTHON | cat - requirements*.txt | md5sum`
+
+    if [ "$REQ_CSUM" != "$CRT_CSUM" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+dots_for_lines() {
+    while read LINE; do
+        echo -n .
+    done
+}
+
+install_deps() {
+    if not_cached; then
+        echo -n "Installing dependencies..."
+
+        exec 3> >(dots_for_lines >> /dev/stdout)
+        OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt --no-compile 2>&1 1>&3`
+
+        if [ "$?" != "0" ]; then
+            echo "FAILED"
+            echo "$OUT"
+            exit 2
+        else
+            echo "Done"
+            CSUM=`echo $PYTHON | cat - requirements*.txt | md5sum`
+            echo "$CSUM" >.packages/req_csum.txt
+        fi
+    fi
+
+    export PYTHONPATH=`pwd`/.packages:$PYTHONPATH
+}
+
+
+FORCE=0
+PLAIN=0
+
+while [ "$1" != "" ]; do
+    if [ "$1" == "-f" ]; then
+        FORCE=1
+    elif [ "$1" == "--plain" ]; then
+        PLAIN=1
+    else
+        echo "Unknown option \"$1\""
+        exit 1
+    fi
     shift
-fi
+done
+
+check_python_version
+check_pip_version
 
 MYPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+cd "$MYPATH"
+
+if [ "$PLAIN" != "1" ]; then
+    install_deps
+
+    echo "Running TUI installer. To run the normal installer, use \"psij-ci-setup --plain\""
+
+    exec $PYTHON tests/run_installer.py
+fi
 
 echo
 echo "================================================================"
@@ -297,21 +394,8 @@ check_email
 
 check_key
 
-cd "$MYPATH"
+install_deps
 
-echo -n "Installing dependencies..."
-
-OUT=`$PIP install --target .packages --upgrade -r requirements-tests.txt 2>&1`
-
-if [ "$?" != "0" ]; then
-    echo "FAILED"
-    echo $OUT
-    exit 2
-else
-    echo "Done"
-fi
-
-export PYTHONPATH=`pwd`/.packages:$PYTHONPATH
 
 HOUR=`echo $(($RANDOM % 24))`
 MINUTE=`echo $(($RANDOM % 60))`

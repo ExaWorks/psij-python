@@ -55,7 +55,7 @@ max-line-length = 100
 # One can omit the description on the __init__ docstring and simply
 # document the parameters, but then flake8 complains about the
 # structure of the __init__ doctsring. The D205 and D400 errors are
-# precisely those complains. We disable these in order to have a
+# precisely those complaints. We disable these in order to have a
 # sane way of documenting classes with Sphinx' autoclass.
 
 
@@ -63,6 +63,20 @@ ignore = B902, D205, D400, D401, D100, W503
 
 # D103 - Missing docstring in public function
 #
-# Ignore docstrings requirement in tests
+# Ignore docstrings requirement in tests.
+#
+# D101, D102, D103, D107
+#
+# We don't quite document the installer.
+#
+# E402 - module level import not at top of file
+#
+# In the installer, we need to patch Textual for non-unicode terminal
+# support, and that needs to be the first thing done before we import
+# other stuff.
+#
 
-per-file-ignores = tests/*:D103
+per-file-ignores =
+    tests/*: D103
+    tests/installer/*: D101, D102, D103, D104, D105, D107
+    tests/installer/main.py: E402, D101, D102, D103, D107

@@ -1,0 +1,800 @@
+Screen {
+    align: center middle;
+}
+
+Header, Footer {
+    background: #008080;
+}
+
+Button {
+    text-style: none;
+}
+
+.hidden {
+    display: none;
+}
+
+App.large .media-small {
+    display: none;
+}
+
+App.small .media-large {
+    display: none;
+}
+
+App.no-unicode RadioSet {
+    border: tall #202020;
+    padding: 1;
+    background: #202020;
+}
+
+App.small RadioSet, App.small.no-unicode RadioSet {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 1;
+    padding-right: 1;
+}
+
+* {
+    scrollbar-color: #006060;
+}
+
+*:disabled {
+    scrollbar-color: #002080;
+    scrollbar-background: #000040;
+}
+
+
+App.no-unicode RadioSet:focus {
+    border: tall #0080ff;
+    background: #282828;
+}
+
+App.no-unicode RadioSet > RadioButton {
+    color: #202020;
+}
+
+App.no-unicode RadioSet:focus > RadioButton.-selected {
+    color: #0080ff;
+    background: #0080ff;
+}
+
+RadioSet:focus {
+    background: #282828;
+    background-tint: 0%;
+}
+
+RadioSet > RadioButton {
+    padding: 0;
+    background: #202020;
+    color: #404040;
+}
+
+RadioSet > RadioButton .toggle--button {
+    background: #000000;
+    color: #000000;
+}
+
+App.no-unicode RadioSet > RadioButton .toggle--button {
+    background: #404040;
+}
+
+RadioSet > RadioButton .toggle--label {
+    color: #d0d0d0;
+    background: #202020;
+}
+
+RadioSet > RadioButton .toggle--button {
+    background: #404040;
+}
+
+RadioSet:focus > RadioButton .toggle--button {
+    background: #404040;
+}
+
+RadioSet > RadioButton.-on .toggle--button {
+    color: #00ff80;
+    background: #404040;
+}
+
+RadioSet:focus > RadioButton.-on .toggle--button {
+    background: #404040;
+}
+
+RadioSet:focus > RadioButton, RadioSet:focus > RadioButton .toggle--label {
+    background: #282828;
+    background-tint: 0%;
+}
+
+RadioSet:focus > RadioButton.-selected {
+    background: #0080ff;
+    text-style: none;
+}
+
+RadioSet:focus > RadioButton.-selected .toggle--label {
+    color: #ffffff;
+    background: #0080ff;
+}
+
+RadioSet > RadioButton:disabled .toggle--label {
+    color: #808080;
+}
+
+Input.invalid {
+    background: #400000;
+}
+
+Button.invalid {
+    background: #400000;
+}
+
+ToggleButton {
+    background: #000060;
+    border: none;
+    padding: 1;
+    color: #606060;
+}
+
+ToggleButton:disabled {
+    color: #404040;
+}
+
+App.no-unicode ToggleButton {
+    color: #ffffff;
+}
+
+ToggleButton:focus {
+    background: #0040a0;
+}
+
+ToggleButton .toggle--label {
+    color: #ffffff;
+}
+
+ToggleButton .toggle--button {
+    color: #00ff00;
+    background: #606060;
+}
+
+App.no-unicode ToggleButton .toggle--button {
+    color: black;
+    background: transparent;
+}
+
+ToggleButton.-on .toggle--button {
+    color: #00ff00;
+    background: #606060;
+}
+
+App.no-unicode ToggleButton.-on .toggle--button {
+    color: #00ff00;
+}
+
+ToggleButton:focus .toggle--button {
+    background: #606060;
+}
+
+ToggleButton.-on:focus .toggle--button {
+    background: #606060;
+    color: #00ff00;
+}
+
+ToggleButton:focus .toggle--label {
+    text-style: none;
+    background: #0040a0;
+}
+
+LoadingIndicator {
+    margin-left: 1;
+    width: 8;
+    height: 1;
+    color: #0000ff;
+}
+
+*:disabled .form-label {
+    color: #808080;
+}
+
+.dialog {
+    width: 90%;
+    height: 90%;
+    border: round #000000;
+    background: #d0d0d0;
+}
+
+.dialog .header {
+    color: #000000;
+}
+
+.dialog .main-text {
+    color: #404040;
+    display: block;
+}
+
+.dialog Button {
+    border-top: tall #80a0a0;
+    background: #004040;
+    border-bottom: tall #204040;
+}
+
+.dialog Button:focus {
+    border-top: tall #a0ffff;
+    background: #60a0a0;
+    border-bottom: tall #408080;
+}
+
+.dialog Button.-error {
+    background: #400000;
+}
+
+.dialog Button.-error:focus {
+    background: #a00000;
+}
+
+.dialog .action-area Button {
+    margin-right: 1;
+}
+
+.dialog .action-area Button:last-of-type {
+    margin-right: 2;
+}
+
+.dialog Label {
+    color: #606060;
+}
+
+.dialog .attrs .th {
+    width: 50%;
+}
+
+.dialog .attrs .td {
+    width: 50%;
+}
+
+.dialog #btn-add-attr {
+    margin-top: 1;
+}
+
+.dialog .action-area {
+    padding-top: 1;
+    padding-right: 1;
+    padding-left: 1;
+    align: right middle;
+    dock: bottom;
+    height: 4;
+}
+
+#sidebar {
+    dock: left;
+    color: #e0e0e0;
+    background: #002080;
+    height: 100%;
+    width: 10%;
+    min-width: 18;
+    padding-left: 2;
+    padding-top: 2;
+}
+
+App.small #sidebar {
+    min-width: 14;
+    padding-left: 1;
+    padding-top: 1;
+}
+
+#sidebar Label {
+    margin-right: 2;
+}
+
+#sidebar Label:disabled {
+    color: #808080;
+}
+
+App.small #sidebar Label {
+    margin-right: 1;
+}
+
+#body {
+    background: #0f2080;
+    height: 100%;
+    border-left: round #008080;
+}
+
+.v-scrollable {
+    overflow-y: scroll;
+}
+
+#main {
+    height: 100%;
+    width: 100%;
+}
+
+#bottom {
+    width: 100%;
+    height: 4;
+    background: #0f2080;
+    border-left: round #008080;
+    padding-left: 0;
+    dock: bottom;
+}
+
+#buttons {
+    align: center top;
+    width: 70%;
+    height: 4;
+    background: #0f2080;
+}
+
+#left-padding, #right-padding {
+    width: 15%;
+    background: #0f2080;
+    height: 4;
+}
+
+Button {
+    padding-left: 2;
+    padding-right: 2;
+}
+
+#btn-prev {
+    width: 40%;
+    margin-left: 2;
+    margin-right: 2;
+    margin-bottom: 1;
+}
+
+#btn-next {
+    width: 40%;
+    margin-left: 2;
+    margin-right: 2;
+    margin-bottom: 1;
+}
+
+.panel {
+    width: 100%;
+    padding: 2;
+    padding-top: 2;
+    min-height: 100%;
+    height: auto;
+}
+
+.panel-wrapper {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    align-horizontal: center;
+}
+
+App.small .panel {
+    padding: 1;
+    padding-top: 1;
+}
+
+App.large .panel {
+    width: 80%;
+    min-width: 70;
+}
+
+.p {
+    padding: 2;
+}
+
+.p-l {
+    padding-left: 2;
+}
+
+.p-r {
+    padding-right: 2;
+}
+
+.m-b {
+    margin-bottom: 1;
+}
+
+.m-t {
+    margin-top: 2;
+}
+
+.m-b-1 {
+    margin-bottom: 1;
+}
+
+.m-t-1 {
+    margin-top: 1;
+}
+
+.m-l {
+    margin-left: 2;
+}
+
+.m-r {
+    margin-right: 2;
+}
+
+.m-r-1 {
+    margin-right: 1;
+}
+
+Button {
+    border-top: tall #a0a0a0;
+    background: #808080;
+    border-bottom: tall #606060;
+}
+
+Button:focus {
+    border-top: tall #e0e0e0;
+    background: #a0a0a0;
+    border-bottom: tall #808080;
+}
+
+Button.-primary {
+    border-top: tall #0060a0;
+    background: #004080;
+    border-bottom: tall #004040;
+}
+
+Button.-primary:focus {
+    border-top: tall #a0ffff;
+    background: #0080ff;
+    border-bottom: tall #004080;
+}
+
+Button.-error {
+    border-top: tall #800000;
+    background: #ff8080;
+    border-bottom: tall #000000;
+}
+
+Button.-error:focus {
+    border-top: tall #ffa0a0;
+    background: #ff8080;
+    border-bottom: tall #800000;
+}
+
+.header {
+    color: white;
+    margin-bottom: 2;
+}
+
+App.small .header {
+    margin-bottom: 1;
+}
+
+.main-text, .main-text-nh {
+    color: #b0b0b0;
+}
+
+.help-text {
+    margin-top: 2;
+    margin-bottom: 1;
+    margin-left: 1;
+    max-width: 80;
+    color: #b0b0b0;
+}
+
+App.small .help-text {
+    margin-top: 0;
+    margin-bottom: 1;
+    margin-left: 1;
+}
+
+.warning-text {
+    color: yellow;
+    padding-top: 1;
+    margin-left: 2;
+}
+
+.h-auto {
+    height: auto;
+}
+
+.w-auto {
+    width: auto;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.c {
+    background: #ff2020;
+}
+
+.d {
+    background: #20ffff;
+}
+
+
+#name-input-group {
+    width: 100%;
+    height: auto;
+}
+
+#key-email-input-group {
+    width: 100%;
+    height: 1fr;
+}
+
+#key-input {
+    padding: 0;
+    margin: 0;
+    padding-left: 1;
+}
+
+#btn-use-fqdn, #btn-request-key {
+    width: auto;
+    dock: right;
+}
+
+.form-label {
+    margin-bottom: 1;
+    color: #ffffff;
+}
+
+App.small .form-label {
+    margin-bottom: 0;
+}
+
+#batch-selector-col {
+    min-width: 18;
+}
+
+#warn-no-batch {
+    height: 100%;
+    color: yellow;
+    width: 30%;
+    align: left middle;
+    margin-top: 2;
+    margin-left: 1;
+}
+
+App.small #warn-no-batch {
+    margin-top: 1;
+    margin-left: 1;
+}
+
+#batch-warn {
+    padding-top: 2;
+}
+
+.bs-col-1 {
+    width: 36%;
+}
+
+.bs-col-2 {
+    width: 30%;
+}
+
+.bs-col-3 {
+    width: 34%;
+}
+
+.bs-col-23 {
+    width: 64%;
+}
+
+.form-col-3 {
+    width: 33%;
+    margin-right: 1;
+    margin-bottom: 1;
+}
+
+.form-col-4 {
+    width: 25%;
+    margin-right: 0;
+    margin-bottom: 1;
+}
+
+.form-col-2 {
+    width: 50%;
+    margin-right: 2;
+    margin-bottom: 1;
+}
+
+.form-col-2 Button {
+    width: 27;
+}
+
+#cb-run-test-job {
+    min-width: 16;
+    width: 27;
+    max-width: 32;
+    margin-top: 2;
+    margin-right: 2;
+}
+
+App.small #cb-run-test-job {
+    margin-top: 1;
+}
+
+#btn-edit-attrs {
+    margin-right: 1;
+    width: 100%;
+}
+
+#custom-attrs {
+    background: #002040;
+    height: 5;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 0;
+    border: none;
+    color: #c0c0c0;
+    border-left: tall #002040;
+}
+
+.form-row {
+    min-height: 6;
+    max-height: 6;
+    padding-bottom: 1;
+}
+
+App.large .form-row {
+    margin-bottom: 1;
+}
+
+App.small .form-row {
+    min-height: 5;
+}
+
+#edit-attrs-dialog {
+    padding-top: 0;
+    width: 96%;
+    height: 94%;
+}
+
+#attr-rows {
+    overflow-y: scroll;
+    height: 80%;
+}
+
+#attr-rows .td, #attr-rows .th {
+    width: 30%;
+}
+
+#attr-rows .td:last-of-type, #attr-rows .th:last-of-type {
+    width: 40%;
+}
+
+#edit-attrs-dialog .attr-row {
+    margin-bottom: 1;
+}
+
+.dialog {
+    padding-left: 1;
+    padding-right: 1;
+    padding-top: 1;
+}
+
+.error-dialog {
+    border: #ff0000;
+    height: 14;
+    width: 60;
+}
+
+.error-dialog .header {
+    color: #800000;
+}
+
+#progress-dialog {
+    width: 50;
+    height: 6;
+}
+
+#progress-dialog .header {
+    margin-left: 1;
+}
+
+#progress-indicator-indeterminate {
+    color: #008000;
+    margin-top: 1;
+}
+
+#progress-dialog #progress-indicator-indeterminate {
+    width: 32;
+    margin-left: 8;
+}
+
+#progress-indicator-indeterminate .bar--indeterminate {
+    color: #ff0000;
+}
+
+Label.-success {
+    color: #00ff00;
+}
+
+Label.-error {
+    color: #ff0000;
+}
+
+#key-request-dialog {
+    width: 70;
+    max-width: 80;
+    height: 20;
+}
+
+#key-request-url {
+    margin-top: 1;
+    margin-left: 2;
+    margin-bottom: 1;
+    background: #000000;
+    color: #808080;
+    padding-top: 1;
+    padding-bottom: 1;
+    padding-left: 2;
+    padding-right: 2;
+}
+
+#key-request-dialog #status-label {
+    margin-top: 1;
+    margin-left: 2;
+}
+
+.form-col {
+    width: auto;
+    margin-right: 1;
+    padding-bottom: 1;
+}
+
+.test-job-indicator {
+    width: 4;
+    margin-left: 1;
+    margin-right: 1;
+}
+
+.job-progress-row {
+    height: 1;
+}
+
+#test-job-errors {
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+.test-job-label {
+    color: #ffffff;
+    margin-right: 2;
+}
+
+.test-job-status {
+    width: 6;
+}
+
+#test-jobs-dialog .status-succeeded {
+    text-style: bold;
+    color: #00a040;
+    padding-left: 2;
+}
+
+#test-jobs-dialog .status-failed {
+    color: #ff0000;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#test-jobs-dialog Button {
+    margin-left: 1;
+}
+
+#method-status {
+    margin-top: 2;
+    color: #b04040;
+}
+
+App.small #method-status {
+    margin-top: 1;
+}
+
+#method-preview {
+    border: none;
+    padding: 0;
+    background: #0f2040;
+    padding-left: 1;
+    padding-right: 1;
+    height: 3;
+}
+
+#method-preview:disabled {
+    background-tint: 0%;
+    opacity: 100%;
+    text-opacity: 100%;
+}
