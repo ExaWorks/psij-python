@@ -1,0 +1,3 @@
+/* This overwrites the standard docs extras.css which contains styling
+   for the selectors and would otherwise mess up the specific styling
+   used for the web build of the docs */
