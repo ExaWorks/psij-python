@@ -51,5 +51,4 @@ log "All completed"
 
 post_launch
 
-echo "_PSI_J_LAUNCHER_DONE"
 exit $_PSI_J_FAILED_EC

@@ -1,5 +1,6 @@
 import logging
 import os
+
 import subprocess
 import time
 import traceback
@@ -8,13 +9,14 @@ from abc import abstractmethod
 from datetime import timedelta
 from pathlib import Path
 from threading import Thread, RLock
-from typing import Optional, List, Dict, Collection, cast, Union, IO
+from typing import Optional, List, Dict, Collection, cast, Union, IO, Set
 
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 
 from psij import JobExecutor, JobExecutorConfig, Launcher, Job, SubmitException, \
     JobStatus, JobState
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
+from psij.utils import _StatusUpdater, _FileCleaner
 
 UNKNOWN_ERROR = 'PSIJ: Unknown error'
 
@@ -207,12 +209,11 @@ class BatchSchedulerExecutor(JobExecutor):
             configuration is used.
         """
         super().__init__(url=url, config=self._get_config(config))
+        self._queue_poll_thread = self._start_queue_poll_thread()
         assert config
         self.work_directory = config.work_directory / self.name
-        self._queue_poll_thread = self._start_queue_poll_thread()
-
-    def _ensure_work_dir(self) -> None:
         self.work_directory.mkdir(parents=True, exist_ok=True)
+        cast(_FileCleaner, _FileCleaner.get_instance()).clean(self.work_directory)
 
     def _get_config(self, config: Optional[JobExecutorConfig]) -> BatchSchedulerExecutorConfig:
         if config is None:
@@ -224,8 +225,6 @@ class BatchSchedulerExecutor(JobExecutor):
     def submit(self, job: Job) -> None:
         """See :func:`~psij.JobExecutor.submit`."""
         logger.info('Job %s: submitting', job.id)
-        self._ensure_work_dir()
-
         self._check_job(job)
 
         context = self._create_script_context(job)
@@ -504,7 +503,10 @@ class BatchSchedulerExecutor(JobExecutor):
             'psij': {
                 'lib': FUNCTION_LIBRARY,
                 'launch_command': launch_command,
-                'script_dir': str(self.work_directory)
+                'script_dir': str(self.work_directory),
+                'us_file': self._queue_poll_thread.status_updater.update_file_name,
+                'us_port': self._queue_poll_thread.status_updater.update_port,
+                'us_addrs': ', '.join(self._queue_poll_thread.status_updater.ips)
             }
         }
         assert job.spec is not None
@@ -546,9 +548,11 @@ class BatchSchedulerExecutor(JobExecutor):
             # is_greater_than returns T/F if the states are comparable and None if not, so
             # we have to check explicitly for the boolean value rather than truthiness
             return
-        if status.state.final and job.native_id:
-            self._clean_submit_script(job)
-            self._read_aux_files(job, status)
+        if status.state.final:
+            self._queue_poll_thread.unregister_job(job)
+            if job.native_id:
+                self._clean_submit_script(job)
+                self._read_aux_files(job, status)
         super()._set_job_status(job, status)
 
     def _clean_submit_script(self, job: Job) -> None:
@@ -588,9 +592,8 @@ class BatchSchedulerExecutor(JobExecutor):
                     # already present
                     out = self._read_aux_file(job, '.out')
                     if out:
-                        launcher = self._get_launcher_from_job(job)
-                        if launcher.is_launcher_failure(out):
-                            status.message = launcher.get_launcher_failure_message(out)
+                        if '_PSIJ_SCRIPT_DONE' not in out:
+                            status.message = out
                     logger.debug('Output from launcher: %s', status.message)
                 else:
                     self._delete_aux_file(job, '.out')
@@ -657,24 +660,31 @@ class _QueuePollThread(Thread):
         self.done = False
         self.executor = weakref.ref(executor, self._stop)
         # native_id -> job
-        self._jobs: Dict[str, List[Job]] = {}
+        self._jobs: Dict[str, Set[Job]] = {}
         # counts consecutive errors while invoking qstat or equivalent
         self._poll_error_count = 0
         self._jobs_lock = RLock()
+        self.status_updater = cast(_StatusUpdater, _StatusUpdater.get_instance())
 
     def run(self) -> None:
-        logger.debug('Executor %s: queue poll thread started', self.executor())
+        logger.debug('Executor %s: queue poll thread started', self.executor)
+
         time.sleep(self.config.initial_queue_polling_delay)
         while not self.done:
             self._poll()
-            time.sleep(self.config.queue_polling_interval)
+            start = time.time()
+            now = start
+            while now - start < self.config.queue_polling_interval:
+                time.sleep(1)
+                now = time.time()
+        logger.info('Thread %s exiting due to executor collection' % self)
 
-    def _stop(self, exec: object) -> None:
+    def _stop(self, executor: object) -> None:
         self.done = True
 
     def _poll(self) -> None:
-        exec = self.executor()
-        if exec is None:
+        executor = self.executor()
+        if executor is None:
             return
         with self._jobs_lock:
             if len(self._jobs) == 0:
@@ -682,12 +692,12 @@ class _QueuePollThread(Thread):
             jobs_copy = dict(self._jobs)
         logger.info('Polling for %s jobs', len(jobs_copy))
         try:
-            out = exec._run_command(exec.get_status_command(jobs_copy.keys()))
+            out = executor._run_command(executor.get_status_command(jobs_copy.keys()))
         except subprocess.CalledProcessError as ex:
             out = ex.output
             exit_code = ex.returncode
         except Exception as ex:
-            self._handle_poll_error(exec, True, ex,
+            self._handle_poll_error(executor, True, ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
         else:
@@ -695,27 +705,24 @@ class _QueuePollThread(Thread):
             self._poll_error_count = 0
         logger.debug('Output from status command: %s', out)
         try:
-            status_map = exec.parse_status_output(exit_code, out)
+            status_map = executor.parse_status_output(exit_code, out)
         except Exception as ex:
-            self._handle_poll_error(exec, False, ex,
+            self._handle_poll_error(executor, False, ex,
                                     f'Failed to poll for job status: {traceback.format_exc()}')
             return
         try:
-            for native_id, job_list in jobs_copy.items():
+            for native_id, job_set in jobs_copy.items():
                 try:
                     status = self._get_job_status(native_id, status_map)
                 except Exception:
                     status = JobStatus(JobState.FAILED,
                                        message='Failed to update job status: %s' %
                                                traceback.format_exc())
-                for job in job_list:
-                    exec._set_job_status(job, status)
-                if status.state.final:
-                    with self._jobs_lock:
-                        del self._jobs[native_id]
+                for job in job_set:
+                    executor._set_job_status(job, status)
         except Exception as ex:
             msg = traceback.format_exc()
-            self._handle_poll_error(exec, True, ex, 'Error updating job statuses {}'.format(msg))
+            self._handle_poll_error(executor, True, ex, f'Error updating job statuses {msg}')
 
     def _get_job_status(self, native_id: str, status_map: Dict[str, JobStatus]) -> JobStatus:
         if native_id in status_map:
@@ -723,7 +730,7 @@ class _QueuePollThread(Thread):
         else:
             return JobStatus(JobState.COMPLETED)
 
-    def _handle_poll_error(self, exec: BatchSchedulerExecutor, immediate: bool, ex: Exception,
+    def _handle_poll_error(self, executor: BatchSchedulerExecutor, immediate: bool, ex: Exception,
                            msg: str) -> None:
         logger.warning('Polling error: %s', msg)
         self._poll_error_count += 1
@@ -739,16 +746,36 @@ class _QueuePollThread(Thread):
                 assert len(self._jobs) > 0
                 jobs_copy = dict(self._jobs)
                 self._jobs.clear()
-            for job_list in jobs_copy.values():
-                for job in job_list:
-                    exec._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
+            for job_set in jobs_copy.values():
+                for job in job_set:
+                    self.unregister_job(job)
+                    executor._set_job_status(job, JobStatus(JobState.FAILED, message=msg))
 
     def register_job(self, job: Job) -> None:
+        executor = self.executor()
+        # This method is only called from the executor. It stands to reason that the
+        # executor cannot have been GC-ed.
+        assert executor is not None
+        self.status_updater.register_job(job, executor)
         assert job.native_id
         logger.info('Job %s: registering', job.id)
         with self._jobs_lock:
             native_id = job.native_id
-            if native_id not in self._jobs:
-                self._jobs[native_id] = [job]
-            else:
-                self._jobs[job.native_id].append(job)
+            try:
+                self._jobs[native_id].add(job)
+            except KeyError:
+                self._jobs[native_id] = {job}
+
+    def unregister_job(self, job: Job) -> None:
+        self.status_updater.unregister_job(job)
+        assert job.native_id
+        logger.info('Job %s: unregistering', job.id)
+        with self._jobs_lock:
+            native_id = job.native_id
+            try:
+                del self._jobs[native_id]
+            except KeyError:
+                # If two or more jobs are attached to the same native ID, the
+                # first one being unregistered would already have removed
+                # the dict entry
+                pass
