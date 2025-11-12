@@ -1,0 +1,453 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>psij.executors.batch.slurm &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/extras.js"></script>
+
+    
+    
+     
+        <script src="../../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.slurm</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for psij.executors.batch.slurm</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">IO</span>
+
+<span class="kn">from</span> <span class="nn">psij</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JobState</span><span class="p">,</span> <span class="n">SubmitException</span>
+<span class="kn">from</span> <span class="nn">psij.executors.batch.batch_scheduler_executor</span> <span class="kn">import</span> <span class="n">BatchSchedulerExecutor</span><span class="p">,</span> \
+    <span class="n">BatchSchedulerExecutorConfig</span><span class="p">,</span> <span class="n">check_status_exit_code</span>
+<span class="kn">from</span> <span class="nn">psij.executors.batch.script_generator</span> <span class="kn">import</span> <span class="n">TemplatedScriptGenerator</span>
+
+
+<span class="n">_SQUEUE_COMMAND</span> <span class="o">=</span> <span class="s1">&#39;squeue&#39;</span>
+
+
+<div class="viewcode-block" id="SlurmExecutorConfig"><a class="viewcode-back" href="../../../../.generated/tree.html#psij.executors.batch.slurm.SlurmExecutorConfig">[docs]</a><span class="k">class</span> <span class="nc">SlurmExecutorConfig</span><span class="p">(</span><span class="n">BatchSchedulerExecutorConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A configuration class for the Slurm executor.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SlurmJobExecutor"><a class="viewcode-back" href="../../../../.generated/tree.html#psij.executors.batch.slurm.SlurmJobExecutor">[docs]</a><span class="k">class</span> <span class="nc">SlurmJobExecutor</span><span class="p">(</span><span class="n">BatchSchedulerExecutor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A :class:`~psij.JobExecutor` for the Slurm Workload Manager.</span>
+
+<span class="sd">    The `Slurm Workload Manager &lt;https://slurm.schedmd.com/overview.html&gt;`_ is a</span>
+<span class="sd">    widely used resource manager running on machines such as</span>
+<span class="sd">    NERSC&#39;s Perlmutter, as well as a variety of LLNL machines.</span>
+
+<span class="sd">    Uses the &#39;sbatch&#39;, &#39;squeue&#39;, and &#39;scancel&#39; commands, respectively, to submit,</span>
+<span class="sd">    monitor, and cancel jobs.</span>
+
+<span class="sd">    Creates a batch script with #SBATCH directives when submitting a job.</span>
+
+<span class="sd">    Renders all custom attributes set on a job&#39;s attributes with a `slurm.` prefix into</span>
+<span class="sd">    corresponding Slurm directives with long-form parameters. For example,</span>
+<span class="sd">    `job.spec.attributes.custom_attributes[&#39;slurm.qos&#39;] = &#39;debug&#39;` causes a directive</span>
+<span class="sd">    `#SBATCH --qos=debug` to be placed in the submit script.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># see https://slurm.schedmd.com/squeue.html</span>
+    <span class="n">_STATE_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;BF&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;CA&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">,</span>
+        <span class="s1">&#39;CD&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span>
+        <span class="s1">&#39;CF&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;CG&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;DL&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;NF&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;OOM&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;PD&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;PR&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;RD&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;RF&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;RH&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;RQ&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;SO&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;TO&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="c1"># TODO: double-check these</span>
+        <span class="s1">&#39;RS&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;RV&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+        <span class="s1">&#39;SI&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;SE&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;ST&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span>
+        <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span>
+    <span class="p">}</span>
+
+    <span class="c1"># see https://slurm.schedmd.com/squeue.html</span>
+    <span class="n">_REASONS_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;AssociationJobLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s association has reached its maximum job count.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;AssociationResourceLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s association has reached some resource limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;AssociationTimeLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s association has reached its time limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;BadConstraints&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s constraints can not be satisfied.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;BeginTime&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s earliest start time has not yet been reached.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Cleaning&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is being requeued and still cleaning up from its previous execution.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Dependency&#39;</span><span class="p">:</span> <span class="s1">&#39;This job is waiting for a dependent job to complete.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;FrontEndDown&#39;</span><span class="p">:</span> <span class="s1">&#39;No front end node is available to execute this job.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;InactiveLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job reached the system InactiveLimit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;InvalidAccount&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s account is invalid.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;InvalidQOS&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s QOS is invalid.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JobHeldAdmin&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is held by a system administrator.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JobHeldUser&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is held by the user.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;JobLaunchFailure&#39;</span><span class="p">:</span> <span class="s1">&#39;The job could not be launched.This may be due to a file system &#39;</span>
+                            <span class="s1">&#39;problem, invalid program name, etc.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Licenses&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is waiting for a license.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NodeDown&#39;</span><span class="p">:</span> <span class="s1">&#39;A node required by the job is down.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NonZeroExitCode&#39;</span><span class="p">:</span> <span class="s1">&#39;The job terminated with a non-zero exit code.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PartitionDown&#39;</span><span class="p">:</span> <span class="s1">&#39;The partition required by this job is in a DOWN state.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PartitionInactive&#39;</span><span class="p">:</span> <span class="s1">&#39;The partition required by this job is in an Inactive state and not &#39;</span>
+                             <span class="s1">&#39;able to start jobs.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PartitionNodeLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The number of nodes required by this job is outside of its &#39;</span>
+                              <span class="s1">&#39;partition</span><span class="se">\&#39;</span><span class="s1">s current limits. Can also indicate that required nodes &#39;</span>
+                              <span class="s1">&#39;are DOWN or DRAINED.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PartitionTimeLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s time limit exceeds its partition</span><span class="se">\&#39;</span><span class="s1">s current time limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Priority&#39;</span><span class="p">:</span> <span class="s1">&#39;One or more higher priority jobs exist for this partition or advanced &#39;</span>
+                    <span class="s1">&#39;reservation.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Prolog&#39;</span><span class="p">:</span> <span class="s1">&#39;Its PrologSlurmctld program is still running.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;QOSJobLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s QOS has reached its maximum job count.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;QOSResourceLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s QOS has reached some resource limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;QOSTimeLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job</span><span class="se">\&#39;</span><span class="s1">s QOS has reached its time limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ReqNodeNotAvail&#39;</span><span class="p">:</span> <span class="s1">&#39;Some node specifically required by the job is not currently available. &#39;</span>
+                           <span class="s1">&#39;The node may currently be in use, reserved for another job, in an &#39;</span>
+                           <span class="s1">&#39;advanced reservation, DOWN, DRAINED, or not responding. Nodes which &#39;</span>
+                           <span class="s1">&#39;are DOWN, DRAINED, or not responding will be identified as part of &#39;</span>
+                           <span class="s1">&#39;the job</span><span class="se">\&#39;</span><span class="s1">s &quot;reason&quot; field as &quot;UnavailableNodes&quot;. Such nodes will &#39;</span>
+                           <span class="s1">&#39;typically require the intervention of a system administrator to make &#39;</span>
+                           <span class="s1">&#39;available.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Reservation&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is waiting its advanced reservation to become available.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Resources&#39;</span><span class="p">:</span> <span class="s1">&#39;The job is waiting for resources to become available.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;SystemFailure&#39;</span><span class="p">:</span> <span class="s1">&#39;Failure of the Slurm system, a file system, the network, etc.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TimeLimit&#39;</span><span class="p">:</span> <span class="s1">&#39;The job exhausted its time limit.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;QOSUsageThreshold&#39;</span><span class="p">:</span> <span class="s1">&#39;Required QOS threshold has been breached.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;WaitingForScheduling&#39;</span><span class="p">:</span> <span class="s1">&#39;No reason has been set for this job yet. Waiting for the &#39;</span>
+                                <span class="s1">&#39;scheduler to determine the appropriate reason.&#39;</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlurmExecutorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url</span>
+<span class="sd">            Not used, but required by the spec for automatic initialization.</span>
+<span class="sd">        config</span>
+<span class="sd">            An optional configuration for this executor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">SlurmExecutorConfig</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">TemplatedScriptGenerator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;slurm&#39;</span>
+                                                  <span class="o">/</span> <span class="s1">&#39;slurm.mustache&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+                               <span class="n">submit_file</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.generate_submit_script`.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">generate_submit_script</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">submit_file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_submit_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">submit_file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.get_submit_command`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;sbatch&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">submit_file_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())]</span>
+
+    <span class="k">def</span> <span class="nf">get_cancel_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.get_cancel_command`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;scancel&#39;</span><span class="p">,</span> <span class="s1">&#39;-Q&#39;</span><span class="p">,</span> <span class="n">native_id</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">process_cancel_command_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">SubmitException</span><span class="p">(</span><span class="s1">&#39;Failed job cancel job: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">out</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_status_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_ids</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.get_status_command`.&quot;&quot;&quot;</span>
+        <span class="c1"># we&#39;re not really using job arrays, so this is equivalent to the job ID. However, if</span>
+        <span class="c1"># we were to use arrays, this would return one ID for the entire array rather than</span>
+        <span class="c1"># listing each element of the array independently</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_SQUEUE_COMMAND</span><span class="p">,</span> <span class="s1">&#39;-O&#39;</span><span class="p">,</span> <span class="s1">&#39;JobArrayID,StateCompact,Reason&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;--me&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse_status_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.parse_status_output`.&quot;&quot;&quot;</span>
+        <span class="n">check_status_exit_code</span><span class="p">(</span><span class="n">_SQUEUE_COMMAND</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="c1"># skip header</span>
+        <span class="n">lines</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+            <span class="n">native_id</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_state</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_message</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">r</span><span class="p">[</span><span class="n">native_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="nf">get_list_command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.get_list_command`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;squeue&#39;</span><span class="p">,</span> <span class="s1">&#39;--me&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobState</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">SlurmJobExecutor</span><span class="o">.</span><span class="n">_STATE_MAP</span>
+        <span class="k">return</span> <span class="n">SlurmJobExecutor</span><span class="o">.</span><span class="n">_STATE_MAP</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SlurmJobExecutor</span><span class="o">.</span><span class="n">_REASONS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">reason</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2"> - no description available&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">job_id_from_submit_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_format_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># https://slurm.schedmd.com/sbatch.html#OPT_time:</span>
+        <span class="c1">#   Acceptable time formats include &quot;minutes&quot;, &quot;minutes:seconds&quot;, &quot;hours:minutes:seconds&quot;,</span>
+        <span class="c1">#   &quot;days-hours&quot;, &quot;days-hours:minutes&quot; and &quot;days-hours:minutes:seconds&quot;.</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">days</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">days</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">days</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span>
+        <span class="k">return</span> <span class="n">days</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">seconds</span> <span class="o">//</span> <span class="mi">3600</span><span class="p">,</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">seconds</span> <span class="o">//</span> <span class="mi">60</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">seconds</span> <span class="o">%</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_clean_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_clean_submit_script</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_aux_file</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s1">&#39;.nodefile&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="../../../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.slurm</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>
