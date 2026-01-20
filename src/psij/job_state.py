@@ -6,7 +6,8 @@ class JobState(bytes, Enum):
     """
     An enumeration holding the possible job states.
 
-    The possible states are: `NEW`, `QUEUED`, `ACTIVE`, `COMPLETED`, `FAILED`, and `CANCELED`.
+    The possible states are: `NEW`, `QUEUED`, `ACTIVE`, `COMPLETED`, `FAILED`, `HOLD`,
+    and `CANCELED`.
     """
 
     def __new__(cls, index: int, order: int, name: str, final: bool) -> 'JobState':  # noqa: D102
@@ -32,6 +33,11 @@ class JobState(bytes, Enum):
     QUEUED = (1, 1, 'QUEUED', False)
     """
     This is the state of the job after being accepted by a backend for execution, but before the
+    execution of the job begins.
+    """
+    HELD = (1, 2, 'HELD', False)
+    """
+    This state represents a job that has been held by the backend for execution, but before the
     execution of the job begins.
     """
     ACTIVE = (2, 2, 'ACTIVE', False)
@@ -128,6 +134,8 @@ class JobStateOrder:
         if state == JobState.COMPLETED:
             return JobState.ACTIVE
         if state == JobState.ACTIVE:
+            return JobState.QUEUED
+        if state == JobState.HELD:
             return JobState.QUEUED
         if state == JobState.QUEUED:
             return JobState.NEW

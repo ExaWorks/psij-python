@@ -10,6 +10,7 @@ from psij.exceptions import SubmitException
 from psij.job_spec import JobSpec
 from psij.job_state import JobState, JobStateOrder
 from psij.job_status import JobStatus
+from psij.job_info import JobInfo
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ class Job(object):
         self._native_id: Optional[object] = None
         self._cb: Optional[JobStatusCallback] = None
         self._status_cv = threading.Condition()
+        self._current_info = JobInfo()
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('New Job: {}'.format(self))
 
@@ -118,6 +120,17 @@ class Job(object):
         if self.executor:
             self.executor._notify_callback(self, status)
 
+    @property
+    def current_info(self) -> JobInfo:
+        """
+        The current information about this job.
+
+        This property returns the most recent job information available. The information is
+        obtained by calling :func:`~psij.JobExecutor.info` on the job executor that was used to
+        submit this job.
+        """
+        return self._current_info
+
     def set_job_status_callback(self,
                                 cb: Union['JobStatusCallback',
                                           Callable[['Job', 'psij.JobStatus'], None]]) -> None:
@@ -155,6 +168,52 @@ class Job(object):
             raise SubmitException('Cannot cancel job: not bound to an executor.')
         else:
             self.executor.cancel(self)
+
+    def hold(self) -> None:
+        """
+        Holds this job.
+
+        The job is held by calling :func:`~psij.JobExecutor.hold` on the job
+        executor that was used to submit this job.
+        :raises SubmitException: if the job has not yet been submitted.
+        """
+        if self.status.final:
+            return
+        if not self.executor:
+            raise SubmitException('Cannot hold job: not bound to an executor.')
+        else:
+            self.executor.hold(self)
+
+    def release(self) -> None:
+        """
+        Releases this job.
+
+        The job is released by calling :func:`~psij.JobExecutor.release` on the job
+        executor that was used to submit this job.
+        :raises SubmitException: if the job has not yet been submitted.
+        """
+        if self.status.final:
+            return
+        if not self.executor:
+            raise SubmitException('Cannot release job: not bound to an executor.')
+        else:
+            self.executor.release(self)
+
+    def info(self) -> None:
+        """
+        Returns the information about this job.
+
+        The job information is obtained by calling :func:`~psij.JobExecutor.info` on the job
+        executor that was used to submit this job.
+        :return: a dictionary containing information about this job
+        :raises SubmitException: if the job has not yet been submitted
+        """
+        if self.status.final:
+            return
+        if not self.executor:
+            raise SubmitException('Cannot release job: not bound to an executor.')
+        else:
+            self.executor.info(jobs=[self])
 
     def _all_greater(self, states: Optional[Union[JobState, Sequence[JobState]]]) \
             -> Optional[Set[JobState]]:

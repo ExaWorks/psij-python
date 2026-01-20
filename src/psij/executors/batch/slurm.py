@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, IO
+from typing import Optional, Collection, List, Dict, IO, Union
+import re
 
-from psij import Job, JobStatus, JobState, SubmitException
+from psij import Job, JobStatus, JobState, SubmitException, JobSpec, ResourceSpecV1
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
     BatchSchedulerExecutorConfig, check_status_exit_code
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
@@ -145,6 +146,26 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         """See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
+    def get_hold_command(self, native_id: str) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_hold_command`."""
+        return ['scontrol', 'hold', native_id]
+
+    def process_hold_command_output(self, exit_code: int, out: str) -> str:
+        """See :meth:`~.BatchSchedulerExecutor.process_hold_command_output`."""
+        if exit_code != 0:
+            raise SubmitException('Failed job hold: %s' % out)
+        return out
+
+    def get_release_command(self, native_id: str) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_release_command`."""
+        return ['scontrol', 'release', native_id]
+
+    def process_release_command_output(self, exit_code: int, out: str) -> str:
+        """See :meth:`~.BatchSchedulerExecutor.process_release_command_output`."""
+        if exit_code != 0:
+            raise SubmitException('Failed job release: %s' % out)
+        return out
+
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
         """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
@@ -200,3 +221,150 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
     def _clean_submit_script(self, job: Job) -> None:
         super()._clean_submit_script(job)
         self._delete_aux_file(job, '.nodefile')
+
+    def get_info_command(self, native_ids: Optional[List[str]] = None,
+                         owner: Optional[str] = None) -> List[str]:
+        """See :meth:`~.BatchSchedulerExecutor.get_info_command`."""
+        args = [_SQUEUE_COMMAND, '-ho', '%A %a %C %l %j %M %P %t %V %Z %S %u %N']
+
+        # Create commna-separated list of job IDs.
+        if native_ids is not None and len(native_ids) > 0:
+            jobids = ""
+            for id in native_ids:
+                if len(id) == 0:
+                    continue
+                if jobids is None:
+                    jobids = id
+                else:
+                    jobids += ',' + id
+            args.append('--job')
+            args.append(jobids)
+
+        if owner is not None:
+            args.append('--user')
+            args.append(owner)
+
+        return args
+
+    def _parse_nodes(self, node_list: str, cpu_per_node: int) -> List[Dict[str, Union[str, int]]]:
+        """
+        Parse the node list of squeue, and return a list of dictionaries with
+        node names and CPU counts.
+        """
+        result: List[Dict[str, Union[str, int]]] = []
+        for match in re.findall(r'([^,\[]+)(?:\[([^\]]+)\])?', str(node_list)):
+            prefix, range_str = match
+            if range_str:
+                for x in range_str.split(","):
+                    if re.match(r'^(\d+)-(\d+)$', x):
+                        match = re.match(r'^(\d+)-(\d+)$', x)
+                        if match is not None:
+                            start, end = map(int, match.groups())
+                            range_values = range(start, end + 1)
+                            result.extend({"name": prefix + str(n),
+                                           "procs": cpu_per_node} for n in range_values)
+                    else:
+                        result.append({"name": prefix + x, "procs": cpu_per_node})
+            elif prefix:
+                result.append({"name": prefix, "procs": cpu_per_node})
+        return result
+
+    def _parse_duration(self, duration: str) -> timedelta:
+        """Parse the duration string of squeue, and return a timedelta object."""
+        #   Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds",
+        #   "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+        #   The default time format is "minutes:seconds".
+        if '-' in duration:
+            days, time = duration.split('-')
+            days_val = int(days)
+            hours, minutes, seconds = map(int, time.split(':'))
+            return timedelta(days=days_val, hours=hours, minutes=minutes, seconds=seconds)
+        else:
+            time_parts = duration.split(':')
+            if len(time_parts) == 1:
+                minutes = int(time_parts[0])
+                return timedelta(minutes=minutes)
+            elif len(time_parts) == 2:
+                minutes, seconds = map(int, time_parts)
+                return timedelta(minutes=minutes, seconds=seconds)
+            elif len(time_parts) == 3:
+                hours, minutes, seconds = map(int, time_parts)
+                return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+            else:
+                raise ValueError(f"Invalid duration format: {duration}")
+
+    def parse_info_command_output(self, exit_code: int, out: str,
+                                  jobs: Optional[List[Job]] = None) -> List[Job]:
+        """See :meth:`~.BatchSchedulerExecutor.parse_info_output`."""
+        check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
+        """ Output of example: Spaces added for clarity.
+            $ squeue -o "%A %a %C %l %j %M %P %t %V %Z %S %u %B %N"
+        cols[0]   [1]     [2]  [3]        [4]    [5]    [6]       [7]   [8]
+            JOBID ACCOUNT CPUS TIME_LIMIT NAME   TIME   PARTITION ST    SUBMIT_TIME
+            1418  (null)  1    UNLIMITED  sbatch 0:00   aaa       PD    2025-03-31T13:07:28
+            1424  (null)  1    UNLIMITED  sbatch 0:08   aaa       R     2025-04-07T11:34:38
+            [9]        [10]                [11] [12]      [13]
+            WORK_DIR   START_TIME          USER EXEC_HOST NODELIST
+            /home/XYZ  N/A                 XYZ  N/A       n/a
+            /home/XYZ  2025-04-07T11:34:38 XYZ  ehost     ehost
+            """
+        lines = iter(out.split('\n'))
+        job_list = []
+        for line in lines:
+            if not line:
+                continue
+            cols = line.split()
+            assert len(cols) > 10
+            native_id = cols[0]
+            # Search the job which have native id.
+            job = None
+            if jobs is not None:
+                for job in jobs:
+                    if job.native_id == native_id:
+                        break
+            if job is None:
+                # Create a new job object
+                spec = JobSpec()
+                job = Job(spec=spec)
+
+            if job.executor is None:
+                job.executor = self
+
+            if job.spec is None:
+                job.spec = JobSpec()
+
+            job._native_id = native_id
+            spec = job.spec
+            if cols[1] != "(null)":
+                spec.attributes.account = cols[1]
+            else:
+                spec.attributes.account = None
+            if spec.resources is None:
+                spec.resources = ResourceSpecV1(process_count=int(cols[2]))
+            elif isinstance(spec.resources, ResourceSpecV1):
+                spec.resources.process_count = int(cols[2])
+            if cols[3] == "UNLIMITED":
+                spec.attributes.duration = timedelta(seconds=0)
+            else:
+                spec.attributes.duration = self._parse_duration(cols[3])
+            spec.name = cols[4]
+            job.current_info.wall_time = int(self._parse_duration(cols[5]).total_seconds())
+            spec.attributes.queue_name = cols[6]
+            job.status.state = self._get_state(cols[7])
+            job.current_info.submission_time = datetime.fromisoformat(cols[8])
+            spec.directory = Path(cols[9])
+            if cols[10] == "N/A":
+                job.current_info.dispatch_time = None
+            else:
+                job.current_info.dispatch_time = datetime.fromisoformat(cols[10])
+            job.current_info.owner = cols[11]
+            job.current_info.resourcelist = []
+            if len(cols) > 12:
+                job.current_info.resourcelist = self._parse_nodes(cols[12], int(cols[2]))
+
+            job.current_info.submit_host = None  # Can not get submit host from squeue
+            job.current_info.cpu_time = None     # Can not get CPU time from squeue
+
+            job_list.append(job)
+
+        return job_list
