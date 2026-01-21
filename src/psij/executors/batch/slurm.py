@@ -180,8 +180,9 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         return SlurmJobExecutor._STATE_MAP[state]
 
     def _get_message(self, reason: str) -> str:
-        assert reason in SlurmJobExecutor._REASONS_MAP
-        return SlurmJobExecutor._REASONS_MAP[reason]
+        return SlurmJobExecutor._REASONS_MAP.get(
+            reason, f"{reason} - no description available"
+        )
 
     def job_id_from_submit_output(self, out: str) -> str:
         """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
