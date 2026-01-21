@@ -2,6 +2,9 @@ from enum import Enum
 from typing import Optional
 
 
+_NAME_MAP = {}
+
+
 class JobState(bytes, Enum):
     """
     An enumeration holding the possible job states.
@@ -16,6 +19,7 @@ class JobState(bytes, Enum):
         obj._order = order
         obj._name = name
         obj._final = final
+        _NAME_MAP[name] = obj
         return obj
 
     def __init__(self, *args: object) -> None:  # noqa: D107
@@ -34,19 +38,32 @@ class JobState(bytes, Enum):
     This is the state of the job after being accepted by a backend for execution, but before the
     execution of the job begins.
     """
-    ACTIVE = (2, 2, 'ACTIVE', False)
+    STAGE_IN = (2, 2, 'STAGE_IN', False)
+    """
+    This state indicates that the job is staging files in, in preparation for execution.
+    """
+    ACTIVE = (3, 3, 'ACTIVE', False)
     """This state represents an actively running job."""
-    COMPLETED = (3, 3, 'COMPLETED', True)
+    STAGE_OUT = (4, 4, 'STAGE_OUT', False)
+    """
+    This state indicates that the executable has finished running and that files are being staged
+    out.
+    """
+    CLEANUP = (5, 5, 'CLEANUP', False)
+    """
+    This state indicates that cleanup is actively being done for this job.
+    """
+    COMPLETED = (6, 6, 'COMPLETED', True)
     """
     This state represents a job that has completed *successfully* (i.e., with a zero exit code).
     In other words, a job with the executable set to `/bin/false` cannot enter this state.
     """
-    FAILED = (4, 3, 'FAILED', True)
+    FAILED = (7, 6, 'FAILED', True)
     """
     Represents a job that has either completed unsuccessfully (with a non-zero exit code) or a job
     whose handling and/or execution by the backend has failed in some way.
     """
-    CANCELED = (5, 3, 'CANCELED', True)
+    CANCELED = (8, 6, 'CANCELED', True)
     """Represents a job that was canceled by a call to :func:`~psij.Job.cancel()`."""
 
     def is_greater_than(self, other: 'JobState') -> Optional[bool]:
@@ -112,6 +129,28 @@ class JobState(bytes, Enum):
         """Returns a hash for this object."""
         return self._value_  # type: ignore
 
+    @staticmethod
+    def from_name(name: str) -> 'JobState':
+        """
+        Returns a `JobState` object corresponding to its string representation.
+
+        This method is such that `state == JobState.from_name(str(state))`.
+        """
+        return _NAME_MAP[name]
+
+
+_PREV_STATE = {
+    JobState.NEW: None,
+    JobState.QUEUED: JobState.NEW,
+    JobState.STAGE_IN: JobState.QUEUED,
+    JobState.ACTIVE: JobState.STAGE_IN,
+    JobState.STAGE_OUT: JobState.ACTIVE,
+    JobState.CLEANUP: JobState.STAGE_OUT,
+    JobState.COMPLETED: JobState.CLEANUP,
+    JobState.FAILED: None,
+    JobState.CANCELED: None
+}
+
 
 class JobStateOrder:
     """A class that can be used to reconstruct missing states."""
@@ -125,10 +164,4 @@ class JobStateOrder:
         previous state. For example, the FAILED state does not have a previous state, since it can
         be reached from multiple states.
         """
-        if state == JobState.COMPLETED:
-            return JobState.ACTIVE
-        if state == JobState.ACTIVE:
-            return JobState.QUEUED
-        if state == JobState.QUEUED:
-            return JobState.NEW
-        return None
+        return _PREV_STATE[state]

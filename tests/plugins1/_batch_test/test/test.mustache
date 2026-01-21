@@ -2,6 +2,8 @@
 
 exec &> "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.out"
 
+{{> batch_lib}}
+
 {{#job.spec.directory}}
 cd "{{.}}"
 {{/job.spec.directory}}
@@ -43,8 +45,17 @@ done
 
 export PSIJ_NODEFILE
 
+{{> stagein}}
+_psij_update_status ACTIVE
+
 {{#job.spec.inherit_environment}}env \{{/job.spec.inherit_environment}}{{^job.spec.inherit_environment}}env --ignore-environment \{{/job.spec.inherit_environment}}{{#env}}
 {{name}}="{{value}}" \{{/env}}
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
+_PSIJ_JOB_EC="$?"
 
-echo "$?" > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"
+{{> stageout}}
+{{> cleanup}}
+
+
+echo $_PSIJ_JOB_EC > "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.ec"
+echo "_PSIJ_SCRIPT_DONE"

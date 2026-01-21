@@ -1,7 +1,6 @@
 import os
 from typing import List, Tuple
 
-import pkg_resources
 import subprocess
 import sys
 

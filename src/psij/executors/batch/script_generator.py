@@ -1,11 +1,22 @@
 import pathlib
 from abc import ABC
-from typing import Dict, Callable, IO
+from enum import Enum
+from typing import Dict, Callable, IO, Optional
 
 import pystache
 
 from psij import Job, JobExecutorConfig
 from .escape_functions import bash_escape
+
+
+class _Renderer(pystache.Renderer):  # type: ignore
+    def str_coerce(self, val: object) -> str:
+        if isinstance(val, Enum):
+            return str(val.value)
+        elif isinstance(val, bool):
+            return str(int(val))
+        else:
+            return super().str_coerce(val)  # type: ignore
 
 
 class SubmitScriptGenerator(ABC):
@@ -16,7 +27,7 @@ class SubmitScriptGenerator(ABC):
     script specific to a certain batch scheduler.
     """
 
-    def __init__(self, config: JobExecutorConfig) -> None:
+    def __init__(self, config: Optional[JobExecutorConfig]) -> None:
         """
         Parameters
         ----------
@@ -56,7 +67,7 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
     implementation of the Mustache templating language (https://mustache.github.io/).
     """
 
-    def __init__(self, config: JobExecutorConfig, template_path: pathlib.Path,
+    def __init__(self, config: Optional[JobExecutorConfig], template_path: pathlib.Path,
                  escape: Callable[[object], str] = bash_escape) -> None:
         """
         Parameters
@@ -72,7 +83,8 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
         super().__init__(config)
         with template_path.open('r') as template_file:
             self.template = pystache.parse(template_file.read())
-        self.renderer = pystache.Renderer(escape=escape)
+        common_dir = pathlib.Path(__file__).parent / 'common'
+        self.renderer = _Renderer(escape=escape, search_dirs=[str(common_dir)])
 
     def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
         """See :func:`~SubmitScriptGenerator.generate_submit_script`.

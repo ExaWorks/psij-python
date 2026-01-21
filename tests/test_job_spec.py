@@ -38,6 +38,7 @@ def test_environment_types() -> None:
     assert spec.environment['foo'] == 'bar'
 
     spec.environment = {'foo': 'biz', 'bar': 42}
+    assert spec.environment is not None
     assert spec.environment['foo'] == 'biz'
     assert spec.environment['bar'] == '42'
 

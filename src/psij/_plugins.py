@@ -1,4 +1,4 @@
-import importlib
+import importlib.util
 import logging
 from bisect import bisect_left
 from packaging.specifiers import SpecifierSet
