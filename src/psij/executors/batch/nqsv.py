@@ -78,7 +78,7 @@ class _NQSJobWaitingThread(Thread):
               target_states: Optional[Union[JobState, Sequence[JobState]]] = None) \
             -> Any:
 
-        # NQSV's qwait command is not support ACTIVE/QUEUED state, then use the orignal wait func.
+        # NQSV's qwait command is not support ACTIVE/QUEUED state, then use the original wait func.
         if self._enable_wait_status(target_states) is False:
             return self._ex._job_wait(timeout, target_states)
 
