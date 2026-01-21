@@ -14,7 +14,7 @@ if [ "$1" != "--quick" ]; then
 	pip install -r requirements-docs.txt
 	# RP has PSI/J as a dependency. However, this causes
 	# two sets of executors to be installed.
-	pip uninstall psij-python
+	pip uninstall -y psij-python
 
 	if [ "$1" == "--dev" ]; then
 	    make web-docs-dev
