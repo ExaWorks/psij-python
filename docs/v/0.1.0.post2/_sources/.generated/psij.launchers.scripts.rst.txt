@@ -1,0 +1,10 @@
+psij.launchers.scripts package
+==============================
+
+Module contents
+---------------
+
+.. automodule:: psij.launchers.scripts
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,142 @@
+psij package
+============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   psij.executors
+   psij.launchers
+
+Submodules
+----------
+
+psij.descriptor module
+----------------------
+
+.. automodule:: psij.descriptor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.exceptions module
+----------------------
+
+.. automodule:: psij.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job module
+---------------
+
+.. automodule:: psij.job
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_attributes module
+---------------------------
+
+.. automodule:: psij.job_attributes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_executor module
+-------------------------
+
+.. automodule:: psij.job_executor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_executor\_config module
+---------------------------------
+
+.. automodule:: psij.job_executor_config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_launcher module
+-------------------------
+
+.. automodule:: psij.job_launcher
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_spec module
+---------------------
+
+.. automodule:: psij.job_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_state module
+----------------------
+
+.. automodule:: psij.job_state
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.job\_status module
+-----------------------
+
+.. automodule:: psij.job_status
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launcher module
+--------------------
+
+.. automodule:: psij.launcher
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.resource\_spec module
+--------------------------
+
+.. automodule:: psij.resource_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.serialize module
+---------------------
+
+.. automodule:: psij.serialize
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.utils module
+-----------------
+
+.. automodule:: psij.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.version module
+-------------------
+
+.. automodule:: psij.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: psij
+   :members:
+   :undoc-members:
+   :show-inheritance:
