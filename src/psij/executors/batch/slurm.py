@@ -150,20 +150,19 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than
         # listing each element of the array independently
-        return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '--me']
+        # Use -o with | delimiter to handle reasons containing spaces
+        return [_SQUEUE_COMMAND, '-o', '%i|%t|%r', '-h', '-t', 'all', '--me']
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
         """See :meth:`~.BatchSchedulerExecutor.parse_status_output`."""
         check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
         r = {}
-        lines = iter(out.split('\n'))
-        # skip header
-        lines.__next__()
-        for line in lines:
+        for line in out.split('\n'):
             if not line:
                 continue
-            cols = line.split()
-            assert len(cols) == 3
+            cols = line.split('|')
+            if len(cols) != 3:
+                continue
             native_id = cols[0]
             state = self._get_state(cols[1])
             msg = self._get_message(cols[2]) if state == JobState.FAILED else None
