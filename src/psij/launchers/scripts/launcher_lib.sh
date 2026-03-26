@@ -34,12 +34,23 @@ if [ "$_PSI_J_LOG_FILE" == "" ]; then
     _PSI_J_LOG_FILE="/dev/null"
 fi
 
-ts() {
-    while read LINE; do
-        TZ=UTC TS=$(date '+%Y-%m-%d %H:%M:%S')
-        echo "$TS $_PSI_J_JOB_ID $LINE"
-    done
-}
+if [ "${BASH_VERSINFO[0]}" -gt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -ge 2 ]; }; then
+    ts() {
+        local TZ=UTC
+        while read LINE; do
+            printf -v TS '%(%Y-%m-%d %H:%M:%S)T' -1
+            echo "$TS $_PSI_J_JOB_ID $LINE"
+        done
+    }
+else
+    ts() {
+        local TZ=UTC
+        while read LINE; do
+            TS=$(date '+%Y-%m-%d %H:%M:%S')
+            echo "$TS $_PSI_J_JOB_ID $LINE"
+        done
+    }
+fi
 
 log() {
     echo "$@" >&3
