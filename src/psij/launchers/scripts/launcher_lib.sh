@@ -5,18 +5,12 @@ set -e
 # Retrieved 2026-03-26, License - CC BY-SA 3.0
 
 function _psi_j_abspath() {
-    if [ -d "$1" ]; then
-        # dir
-        (cd "$1"; pwd)
-    elif [ -f "$1" ]; then
-        # file
-        if [[ $1 = /* ]]; then
-            echo "$1"
-        elif [[ $1 == */* ]]; then
-            echo "$(cd "${1%/*}"; pwd)/${1##*/}"
-        else
-            echo "$(pwd)/$1"
-        fi
+    if [[ $1 = /* ]]; then
+        echo "$1"
+    elif [[ $1 == */* ]]; then
+        echo "$(cd "${1%/*}"; pwd)/${1##*/}"
+    elif [ -n "$1" ]; then
+        echo "$(pwd)/$1"
     fi
 }
 
