@@ -8,7 +8,7 @@ if [ "$EXPECTED_N_NODES" == "" ]; then
     exit 3
 fi
 
-ACTUAL_N_NODES=`cat "$PSIJ_NODEFILE" | wc -l`
+ACTUAL_N_NODES=$(wc -l < "$PSIJ_NODEFILE" | tr -d ' ')
 
 if [ "$EXPECTED_N_NODES" != "$ACTUAL_N_NODES" ]; then
     echo "Invalid node file. Expected $EXPECTED_N_NODES nodes, but got $ACTUAL_N_NODES."
