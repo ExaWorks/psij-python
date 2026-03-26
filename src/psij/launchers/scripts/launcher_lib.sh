@@ -1,12 +1,32 @@
 set -e
 
+# abspath Source - https://stackoverflow.com/a/23002317
+# Posted by Alexander Klimetschek, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-03-26, License - CC BY-SA 3.0
+
+function _psi_j_abspath() {
+    if [ -d "$1" ]; then
+        # dir
+        (cd "$1"; pwd)
+    elif [ -f "$1" ]; then
+        # file
+        if [[ $1 = /* ]]; then
+            echo "$1"
+        elif [[ $1 == */* ]]; then
+            echo "$(cd "${1%/*}"; pwd)/${1##*/}"
+        else
+            echo "$(pwd)/$1"
+        fi
+    fi
+}
+
 _PSI_J_JOB_ID="$1"
-_PSI_J_LOG_FILE="$2"
-_PSI_J_PRE_LAUNCH="$3"
-_PSI_J_POST_LAUNCH="$4"
-_PSI_J_STDIN="$5"
-_PSI_J_STDOUT="$6"
-_PSI_J_STDERR="$7"
+_PSI_J_LOG_FILE=$(_psi_j_abspath "$2")
+_PSI_J_PRE_LAUNCH=$(_psi_j_abspath "$3")
+_PSI_J_POST_LAUNCH=$(_psi_j_abspath "$4")
+_PSI_J_STDIN=$(_psi_j_abspath "$5")
+_PSI_J_STDOUT=$(_psi_j_abspath "$6")
+_PSI_J_STDERR=$(_psi_j_abspath "$7")
 
 shift 7
 
@@ -16,7 +36,7 @@ fi
 
 ts() {
     while read LINE; do
-        TZ=UTC TS=`date '+%Y-%m-%d %H:%M:%S'`
+        TZ=UTC TS=$(date '+%Y-%m-%d %H:%M:%S')
         echo "$TS $_PSI_J_JOB_ID $LINE"
     done
 }
