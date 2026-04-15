@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname "$0")/launcher_lib.sh
+source "${0%/*}/launcher_lib.sh"
 
 _PSI_J_PROCESS_COUNT="$1"
 shift
@@ -8,7 +8,7 @@ shift
 pre_launch
 
 set +e
-srun "$@" 1>$_PSI_J_STDOUT 2>$_PSI_J_STDERR <$_PSI_J_STDIN
+srun "$@" 1>"$_PSI_J_STDOUT" 2>"$_PSI_J_STDERR" <"$_PSI_J_STDIN"
 _PSI_J_EC=$?
 set -e
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname "$0")/launcher_lib.sh
+source "${0%/*}/launcher_lib.sh"
 
 pre_launch
 
@@ -18,20 +18,20 @@ export _PSI_J_PPN
 EXECUTABLE="$1"
 shift
 if [ "$EXECUTABLE" == "/bin/hostname" ]; then
-    EXECUTABLE=$(dirname "$0")/hostname
+    EXECUTABLE="${0%/*}/hostname"
 fi
 
 log "Running stuff"
-log "STDOUT: $_PSI_J_STDOUT"
-log "STDERR: $_PSI_J_STDERR"
+log "STDOUT: \"$_PSI_J_STDOUT\""
+log "STDERR: \"$_PSI_J_STDERR\""
 
-for NODE in $(seq 1 1 $_PSI_J_NODE_COUNT); do
+for NODE in $(seq 1 1 "$_PSI_J_NODE_COUNT"); do
     log "Node: $NODE"
-    for NODE_PROC in $(seq 1 1 $_PSI_J_PPN); do
+    for NODE_PROC in $(seq 1 1 "$_PSI_J_PPN"); do
         log "Node proc: $NODE_PROC"
         INDEX=$(($NODE * $_PSI_J_PPN + $NODE_PROC))
         log "Index: $INDEX"
-        _PSI_J_NODE_INDEX_=$NODE _PSI_J_PROCESS_INDEX_=$INDEX "$EXECUTABLE" "$@" 1>>$_PSI_J_STDOUT 2>>$_PSI_J_STDERR  <$_PSI_J_STDIN &
+        _PSI_J_NODE_INDEX_=$NODE _PSI_J_PROCESS_INDEX_=$INDEX "$EXECUTABLE" "$@" 1>>"$_PSI_J_STDOUT" 2>>"$_PSI_J_STDERR"  <"$_PSI_J_STDIN" &
         PIDS="$PIDS $!"
     done
 done
