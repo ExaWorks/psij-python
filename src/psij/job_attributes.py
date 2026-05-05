@@ -17,10 +17,11 @@ class JobAttributes(object):
     """A class containing ancillary job information that describes how a job is to be run."""
 
     @typechecked
-    def __init__(self, duration: timedelta = timedelta(minutes=10),
+    def __init__(self,
+                 custom_attributes: Optional[Dict[str, object]] = None,
+                 duration: timedelta = timedelta(minutes=10),
                  queue_name: Optional[str] = None, account: Optional[str] = None,
                  reservation_id: Optional[str] = None,
-                 custom_attributes: Optional[Dict[str, object]] = None,
                  project_name: Optional[str] = None) -> None:
         """
         :param duration: Specifies the duration (walltime) of the job. A job whose execution
@@ -29,7 +30,7 @@ class JobAttributes(object):
             instruct the backend to send this job to a particular queue.
         :param account: An account to use for billing purposes. Please note that the executor
             implementation (or batch scheduler) may use a different term for the option used for
-            accounting/billing purposes, such as `project`. However, scheduler must map this
+            accounting/billing purposes, such as `project`. However, PSI/J executors must map this
             attribute to the accounting/billing option in the underlying execution mechanism.
         :param reservation_id: Allows specifying an advanced reservation ID. Advanced reservations
             enable the pre-allocation of a set of resources/compute nodes for a certain duration
