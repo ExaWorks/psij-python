@@ -1,3 +1,5 @@
-from .remote import RemoteJobExecutorConfig, RemoteJobExecutor
+"""This package contains file relevant to remote executors."""
 
-__all__ = ['RemoteJobExecutor', 'RemoteJobExecutorConfig']
+from .remote import RemoteJobExecutorConfig, RemoteJobExecutor, AsyncRemoteJobExecutor
+
+__all__ = ['RemoteJobExecutor', 'AsyncRemoteJobExecutor', 'RemoteJobExecutorConfig']

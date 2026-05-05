@@ -28,6 +28,7 @@ class PBSJobExecutor(SyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return PBSScheduler, PBSExecutorConfig
 
 
@@ -36,4 +37,5 @@ class AsyncPBSJobExecutor(AsyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return PBSScheduler, PBSExecutorConfig

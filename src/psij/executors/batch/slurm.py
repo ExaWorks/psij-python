@@ -199,6 +199,7 @@ class SlurmJobExecutor(SyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return SlurmScheduler, SlurmExecutorConfig
 
     def _clean_submit_script(self, job: BaseJob) -> None:
@@ -211,6 +212,7 @@ class AsyncSlurmJobExecutor(AsyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return SlurmScheduler, SlurmExecutorConfig
 
     def _clean_submit_script(self, job: BaseJob) -> None:

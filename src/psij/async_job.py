@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import threading
 from abc import ABC, abstractmethod
 from datetime import timedelta, datetime
 from typing import Optional, Sequence, Union, Callable, Awaitable

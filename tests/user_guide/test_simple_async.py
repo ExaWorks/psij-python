@@ -1,7 +1,8 @@
 import asyncio
 
-from psij import Job, JobSpec, JobExecutor, AsyncJobExecutor, AsyncJob
+from psij import JobSpec, AsyncJobExecutor, AsyncJob
 from _test_tools import assert_completed
+
 
 # DOC: start
 async def run_job_async() -> None:
@@ -9,7 +10,7 @@ async def run_job_async() -> None:
     job = AsyncJob(JobSpec(executable='/bin/date'))
     await ex.submit(job)
     status = await job.wait()
-    assert_completed(job, status) # DOC: skip
+    assert_completed(job, status)  # DOC: skip
 # DOC: end
 
 

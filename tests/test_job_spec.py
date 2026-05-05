@@ -5,7 +5,7 @@ from typeguard import suppress_type_checks
 
 import pytest
 
-from psij import Job, JobExecutor, JobSpec, JobAttributes
+from psij import Job, JobExecutor, JobSpec
 
 
 def _test_spec(spec: JobSpec) -> None:

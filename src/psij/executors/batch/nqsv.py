@@ -262,6 +262,7 @@ class NQSVJobExecutor(SyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return NQSVScheduler, NQSVExecutorConfig
 
     # Override submit function.
@@ -295,6 +296,7 @@ class AsyncNQSVJobExecutor(AsyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return NQSVScheduler, NQSVExecutorConfig
 
     async def submit(self, job: AsyncJob) -> None:

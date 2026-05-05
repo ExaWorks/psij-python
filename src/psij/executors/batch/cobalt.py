@@ -138,6 +138,7 @@ class CobaltJobExecutor(SyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return CobaltScheduler, CobaltExecutorConfig
 
 
@@ -146,4 +147,5 @@ class AsyncCobaltJobExecutor(AsyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return CobaltScheduler, CobaltExecutorConfig

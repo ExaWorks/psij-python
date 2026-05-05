@@ -169,16 +169,14 @@ class AsyncJobExecutor(BaseExecutor):
             logger.warning('Error running coroutine.', exc_info=ex)
             raise
 
-    @abstractmethod
     async def disconnect(self, validity: Optional[timedelta] = None) -> str:
         """
         Suspends the connection to the service while maintaining the session.
 
         For details, see :meth:`~psij.JobExecutor.disconnect`.
         """
-        pass
+        return '<sessionid>'
 
-    @abstractmethod
     def reconnect(self, session: str) -> None:
         """
         Reconnects to a previously suspended session.

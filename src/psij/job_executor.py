@@ -116,7 +116,6 @@ class JobExecutor(BaseExecutor):
         if status.state == JobState.FAILED:
             raise JobException(status.message, status.exit_code)
 
-
     @abstractmethod
     def cancel(self, job: Job) -> None:
         """
@@ -182,7 +181,6 @@ class JobExecutor(BaseExecutor):
         else:
             self._cb = FunctionJobStatusCallback(cb)
 
-    @abstractmethod
     def disconnect(self, validity: Optional[timedelta] = None) -> str:
         """
         Suspends the connection to the service while maintaining the session.
@@ -253,6 +251,10 @@ class JobExecutor(BaseExecutor):
         the new executor instance must also call the `suspend_connection`
         method.
 
+        The base `JobExecutor` provides noop implementations for `disconnect`
+        and `reconnect`. Executors that provide session management should
+        override these methods.
+
         Parameters
         ----------
         validity
@@ -275,9 +277,8 @@ class JobExecutor(BaseExecutor):
             validity. The exception object will contain the maximum supported
             validity for this service in the ``max`` attribute.
         """
-        pass
+        return '<sessionid>'
 
-    @abstractmethod
     def reconnect(self, session: str) -> None:
         """
         Reconnects to a previously suspended session.

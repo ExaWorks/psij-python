@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from psij import Job, JobSpec, JobExecutor, StageOut
-from _test_tools import assert_completed, _tempdir
+from _test_tools import _tempdir
 from psij import StageIn
 
 

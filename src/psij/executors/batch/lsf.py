@@ -149,6 +149,7 @@ class LsfJobExecutor(SyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return LsfScheduler, LsfExecutorConfig
 
 
@@ -157,4 +158,5 @@ class AsyncLsfJobExecutor(AsyncBatchSchedulerExecutor):
 
     def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        """See :meth:`~.BatchSchedulerExecutor.get_concrete_classes`"""
         return LsfScheduler, LsfExecutorConfig

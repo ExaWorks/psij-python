@@ -1,6 +1,5 @@
 import asyncio
 from asyncio import AbstractEventLoop, DatagramProtocol
-from functools import partial
 
 import atexit
 import io
@@ -15,7 +14,7 @@ import time
 from aiofile import async_open
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Type, Dict, Optional, Tuple, Set, List, Awaitable, Coroutine, Any, Never
+from typing import Type, Dict, Optional, Tuple, Set, List, Coroutine, Any
 
 import psutil
 
@@ -245,11 +244,11 @@ class _AsyncStatusUpdaterProto(DatagramProtocol):
         self.queue = queue
         self.transport = None
 
-    def connection_made(self, transport) -> None:
+    def connection_made(self, transport: Any) -> None:
         self.transport = transport
 
-    def datagram_received(self, data: bytes, addr) -> None:
-        logger.info('Datagram received: %s', data)
+    def datagram_received(self, data: bytes, addr: Any) -> None:
+        logger.debug('Datagram received: %s', data)
         self.queue.put_nowait(data)
 
 
@@ -281,7 +280,7 @@ class _AsyncStatusUpdater:
         self.socket.bind(('', 0))
         self.update_port = self.socket.getsockname()[1]
         self.transport, self.proto = await self._loop.create_datagram_endpoint(self._get_proto,
-                                                                               sock = self.socket)
+                                                                               sock=self.socket)
         self.ips = self._get_ips()
         logger.debug('Local IPs: %s' % self.ips)
         await self._create_update_file()
@@ -313,7 +312,7 @@ class _AsyncStatusUpdater:
         self.update_file_pos = self.update_file.tell()
 
     async def register_job(self, job: AsyncJob, ex: AsyncJobExecutor) -> None:
-            self._jobs[job.id] = (job, ex)
+        self._jobs[job.id] = (job, ex)
 
     def unregister_job(self, job: AsyncJob) -> None:
         try:
@@ -425,7 +424,7 @@ _UPDATERS: Dict[int, _AsyncStatusUpdater] = {}
 async def _get_async_updater() -> _AsyncStatusUpdater:
     loop_id = id(asyncio.get_running_loop())
     with _LOCK:
-        if not loop_id in _UPDATERS:
+        if loop_id not in _UPDATERS:
             updater = _AsyncStatusUpdater()
             _UPDATERS[loop_id] = updater
             async with updater._init_lock:

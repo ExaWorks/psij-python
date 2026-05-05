@@ -15,7 +15,7 @@ from ...base_job import BaseJob
 
 # We monkey-patch the render method of pystache to allow pre-parsed partials.
 # Otherwise, partials that are virtually immutable are re-parsed on every render
-def patched_render(self, engine, context):
+def _patched_render(self, engine, context):  # type: ignore
     template = engine.resolve_partial(self.key)
     if isinstance(template, ParsedTemplate):
         return template.render(engine, context)
@@ -26,10 +26,10 @@ def patched_render(self, engine, context):
         return engine.render(template, context)
 
 
-_PartialNode.render = patched_render
+_PartialNode.render = _patched_render
 
 
-def _load_partial(partials, prev, name):
+def _load_partial(partials, prev, name):  # type: ignore
     try:
         partial = partials[name]
         if isinstance(partial, ParsedTemplate):
@@ -37,6 +37,7 @@ def _load_partial(partials, prev, name):
     except KeyError:
         pass
     return prev(name)
+
 
 class _Renderer(pystache.Renderer):  # type: ignore
     def str_coerce(self, val: object) -> str:
@@ -47,7 +48,7 @@ class _Renderer(pystache.Renderer):  # type: ignore
         else:
             return super().str_coerce(val)  # type: ignore
 
-    def _make_load_partial(self):
+    def _make_load_partial(self):  # type: ignore
         return partial(_load_partial, self.partials, super()._make_load_partial())
 
 
@@ -150,8 +151,8 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
         common_dir = pathlib.Path(__file__).parent / 'common'
         partials = {}
 
-        for partial in ['batch_lib', 'stagein', 'stageout', 'cleanup']:
-            partials[partial] = self._read_template(common_dir / f'{partial}.mustache')
+        for p in ['batch_lib', 'stagein', 'stageout', 'cleanup']:
+            partials[p] = self._read_template(common_dir / f'{p}.mustache')
 
         self.renderer = _Renderer(escape=escape, partials=partials,
                                   search_dirs=[str(common_dir)])

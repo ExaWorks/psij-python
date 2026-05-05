@@ -86,20 +86,37 @@ class ExecutorException(Exception):
 class JobException(Exception):
     """
     Raised by some methods when a job completes in a failure.
+
+    This class also allows for exceptions encountered during stage-out and
+    cleanup to be chained and reported to the user.
     """
 
     def __init__(self, message: Optional[str], exit_code: Optional[int] = None) -> None:
+        """
+        :param message: A message associated with this exception. This is a descriptive message
+            that is sufficiently clear to be presented to an end-user.
+        :param exit_code: An optional exit code, if available from the job.
+        """
         self.message = message
         self.exit_code = exit_code
         self._others: Optional[List[Exception]] = None
 
     def add_exception(self, ex: Exception) -> None:
+        """
+        Adds a staging/cleanup exception to this `JobException`.
+
+        Parameters
+        ----------
+        ex
+            The exception to add.
+        """
         if self._others is None:
             self._others = [ex]
         else:
             self._others.append(ex)
 
     def __str__(self) -> str:
+        """Converts this exception to a string."""
         if self.message is None:
             s = f'Job failed with exit code {self.exit_code}'
         else:
@@ -112,3 +129,27 @@ class JobException(Exception):
                 s += '\n'
 
         return s
+
+
+class ValidityError(Exception):
+    """
+    Raised when a requested session validity cannot be met by a server.
+
+    See :meth:`~.JobExecutor.disconnect`.
+    """
+
+    def __init__(self, requested: timedelta, max: timedelta) -> None:
+        """
+        Parameters
+        ----------
+        requested
+            The validity that was requested.
+        max
+            The maximum validity allowed by the server.
+        """
+        self.requested = requested
+        self.max = max
+
+    def __str__(self) -> str:
+        """Returns a human-readable representation of this exception."""
+        return f'Maximum validity exceeded: requested {self.requested}, max: {self.max}'

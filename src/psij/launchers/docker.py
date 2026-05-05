@@ -1,12 +1,12 @@
 """A module containing the `MultipleLauncher`."""
 
 from pathlib import Path
-from typing import List, cast, Optional, Dict
+from typing import List, Optional, Dict
 
 from psij import BaseJob, InvalidJobException
 from psij.job_executor_config import JobExecutorConfig
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
-from psij.resource_spec import ResourceSpec, ResourceSpecV1
+
 
 SCRIPT_PATH = Path(__name__).parent / 'scripts' / 'multi_launch.sh'
 
@@ -50,20 +50,19 @@ class MultipleLauncher(ScriptBasedLauncher):
                                       '"docker.spec", "docker.image_id", or "docker.container_id" '
                                       'attributes to be specified')
 
-        l = []
+        r = []
 
         if container_spec is not None:
-            l += ['spec', str(container_spec)]
+            r += ['spec', str(container_spec)]
         elif image_id is not None:
-            l += ['image', str(image_id)]
+            r += ['image', str(image_id)]
         else:
-            l += ['container', str(container_id)]
+            r += ['container', str(container_id)]
 
         for k, v in docker_args.items():
-            l += [f'--{k}', str(v)]
+            r += [f'--{k}', str(v)]
 
-        return l
-
+        return r
 
     def _get_args(self, attrs: Dict[str, object]) -> Dict[str, object]:
         r = {}

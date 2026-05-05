@@ -127,12 +127,12 @@ class _TestLauncher(MultipleLauncher):
 
 
 class _BatchTestExecutor(SyncBatchSchedulerExecutor):
-    def _get_concrete_classes(self) \
+    def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
         return _TestScheduler, _TestExecutorConfig
 
 
 class _AsyncBatchTestExecutor(AsyncBatchSchedulerExecutor):
-    def _get_concrete_classes(self) \
+    def get_concrete_classes(self) \
             -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
         return _TestScheduler, _TestExecutorConfig

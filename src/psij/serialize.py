@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from datetime import timedelta
 from enum import Enum
 from io import StringIO, TextIOBase
-from pathlib import Path, PosixPath, PurePath
+from pathlib import Path, PurePath
 from typing import Optional, Dict, Union, List, IO, AnyStr, TextIO, Tuple
 
 from psij import ResourceSpec, ResourceSpecV1
@@ -272,8 +272,8 @@ class Serializer(ABC):
             r[k] = self._from_object(v, type(v))
         return r
 
-    def _from_iterable(self, l: typing.Iterable[object]) -> List[object]:
-        return [self._from_object(v, type(v)) for v in l]
+    def _from_iterable(self, it: typing.Iterable[object]) -> List[object]:
+        return [self._from_object(v, type(v)) for v in it]
 
     def _from_timedelta(self, t: timedelta) -> str:
         return "%s s" % t.total_seconds()

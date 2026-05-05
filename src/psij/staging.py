@@ -187,10 +187,9 @@ class StagingMode(Enum):
     """
     HN_TO_CN = 6
     """
-    Copies the file from the node where a service runs (typically an HPC "head node") to 
+    Copies the file from the node where a service runs (typically an HPC "head node") to
     a filesystem accessible to the machine where the job runs (typically an HPC "compute node").
     """
-
 
 
 class StageOutFlags(Flag):

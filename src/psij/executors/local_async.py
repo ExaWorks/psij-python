@@ -4,7 +4,6 @@ import logging
 import subprocess
 import tempfile
 from asyncio.subprocess import Process
-from datetime import timedelta
 
 import time
 from abc import ABC
@@ -21,7 +20,7 @@ from psij.async_job import AsyncJob
 from psij.executors.batch.batch_scheduler_executor import _env_to_mustache
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 from psij.executors.local import _format_shell_cmd
-from psij.utils import _StatusUpdater, _FileCleaner, _get_async_updater
+from psij.utils import _FileCleaner, _get_async_updater
 
 from psij.executors.batch.template_function_library import ALL as FUNCTION_LIBRARY
 
@@ -301,10 +300,3 @@ class AsyncLocalJobExecutor(AsyncJobExecutor):
             return 'single'
         else:
             return spec.launcher
-
-    async def disconnect(self, validity: Optional[timedelta] = None) -> str:
-        return 'local'
-
-    def reconnect(self, session: str) -> None:
-        pass
-

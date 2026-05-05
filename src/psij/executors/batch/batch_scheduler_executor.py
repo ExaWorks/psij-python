@@ -851,9 +851,11 @@ class SyncBatchSchedulerExecutor(BatchSchedulerExecutor, JobExecutor):
         self._queue_poll_thread.register_job(job)
 
     def disconnect(self, validity: Optional[timedelta] = None) -> str:
+        """See :meth:`~.JobExecutor.disconnect`."""
         return 'local'
 
     def reconnect(self, session: str) -> None:
+        """See :meth:`~.JobExecutor.reconnect`."""
         pass
 
     def _set_job_status(self, job: Job, status: JobStatus) -> None:
@@ -984,9 +986,11 @@ class AsyncBatchSchedulerExecutor(BatchSchedulerExecutor, AsyncJobExecutor):
         self._queue_poll_thread.register_job(job, asyncio.get_running_loop())
 
     async def disconnect(self, validity: Optional[timedelta] = None) -> str:
+        """See :meth:`~.JobExecutor.disconnect`."""
         return 'local'
 
     def reconnect(self, session: str) -> None:
+        """See :meth:`~.JobExecutor.reconnect`."""
         pass
 
     async def _set_job_status(self, job: AsyncJob, status: JobStatus) -> None:

@@ -5,7 +5,6 @@ import shlex
 import signal
 import subprocess
 import threading
-from datetime import timedelta
 
 import time
 from abc import ABC, abstractmethod
@@ -408,10 +407,3 @@ class LocalJobExecutor(JobExecutor):
             return 'single'
         else:
             return spec.launcher
-
-    def disconnect(self, validity: Optional[timedelta] = None) -> str:
-        return 'local'
-
-    def reconnect(self, session: str) -> None:
-        pass
-

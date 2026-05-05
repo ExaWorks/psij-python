@@ -1,8 +1,3 @@
-from datetime import timedelta
-
-from abc import abstractmethod
-from pathlib import Path
-
 from typing import Optional
 
 from psij import AsyncJobExecutor
@@ -11,6 +6,8 @@ from psij.job_executor_config import JobExecutorConfig
 
 
 class RemoteJobExecutorConfig(JobExecutorConfig):
+    """A base configuration class for remote executors."""
+
     def __init__(self, remote_name: str = 'local',
                  remote_config: Optional[JobExecutorConfig] = None) -> None:
         """
@@ -45,6 +42,10 @@ class RemoteJobExecutor(JobExecutor):
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[RemoteJobExecutorConfig] = None):
+        """
+        :param url: The URL of the remote service.
+        :param config: A configuration for this executor.
+        """
         if config is None:
             config = RemoteJobExecutorConfig()
         super().__init__(url=url, config=config)
@@ -55,6 +56,10 @@ class AsyncRemoteJobExecutor(AsyncJobExecutor):
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[RemoteJobExecutorConfig] = None):
+        """
+        :param url: The URL of the remote service.
+        :param config: A configuration for this executor.
+        """
         if config is None:
             config = RemoteJobExecutorConfig()
         super().__init__(url=url, config=config)

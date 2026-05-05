@@ -3,7 +3,7 @@ from __future__ import annotations
 # for some reason, Sphinx cannot find Path if imported directly
 # from pathlib import Path
 import pathlib
-from typing import Dict, List, Optional, Union, Set, Iterable
+from typing import Dict, List, Optional, Union, Iterable
 
 from typeguard import typechecked
 
@@ -39,7 +39,8 @@ def _to_env_dict(arg: Union[Dict[str, Union[str, int]], None]) -> Optional[Dict[
     return ret
 
 
-def _all_to_path(s: Optional[Set[Union[str, pathlib.Path]]]) -> Optional[Set[pathlib.Path]]:
+def _all_to_path(s: Optional[Iterable[Union[str, pathlib.Path]]]) \
+        -> Optional[Iterable[pathlib.Path]]:
     if s is None:
         return None
     return {_to_path_strict(x) for x in s if x is not None}
@@ -267,12 +268,12 @@ class JobSpec(object):
         self._post_launch = _to_path(post_launch)
 
     @property
-    def cleanup(self) -> Optional[Set[pathlib.Path]]:
+    def cleanup(self) -> Optional[Iterable[pathlib.Path]]:
         """An optional set of cleanup directives."""
         return self._cleanup
 
     @cleanup.setter
-    def cleanup(self, cleanup: Set[Union[str, pathlib.Path]]) -> None:
+    def cleanup(self, cleanup: Iterable[Union[str, pathlib.Path]]) -> None:
         self._cleanup = _all_to_path(cleanup)
 
     def __eq__(self, o: object) -> bool:

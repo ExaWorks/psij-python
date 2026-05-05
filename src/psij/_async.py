@@ -6,10 +6,11 @@ from threading import Thread
 from typing import Optional, Union, Callable, List, Sequence, Dict, Awaitable, Coroutine, Any
 from typing import TypeVar
 
-from psij.job_executor import JobExecutor, JobStatusCallback, JobExecutorConfig
-from psij.async_job_executor import AsyncJobExecutor, AsyncJobStatusCallback
-from psij.job import Job
-from psij.async_job import AsyncJob
+from psij.job_executor import JobExecutor
+from psij.job_executor_config import JobExecutorConfig
+from psij.async_job_executor import AsyncJobExecutor
+from psij.job import Job, JobStatusCallback
+from psij.async_job import AsyncJob, AsyncJobStatusCallback
 from psij.job_state import JobState
 from psij.job_status import JobStatus
 from psij.exceptions import ExecutorException
