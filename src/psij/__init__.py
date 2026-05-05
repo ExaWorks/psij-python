@@ -7,24 +7,30 @@ import sys
 from typing import Callable, TypeVar
 
 from psij.descriptor import Descriptor
-from .exceptions import SubmitException, InvalidJobException
+from .exceptions import SubmitException, InvalidJobException, ExecutorException, BackendException
+from .base_job import BaseJob
 from .job import Job, JobStatusCallback
+from .async_job import AsyncJob, AsyncJobStatusCallback
 from .job_attributes import JobAttributes
 from .job_executor import JobExecutor
+from .async_job_executor import AsyncJobExecutor
 from .job_executor_config import JobExecutorConfig
 from .job_launcher import Launcher
 from .job_spec import JobSpec
 from .job_state import JobState
 from .job_status import JobStatus
 from .resource_spec import ResourceSpec, ResourceSpecV1
+from .staging import StageIn, StageOut, StagingMode, StageOutFlags
 from .version import VERSION
 
 __version__ = VERSION
 
 __all__ = [
-    'JobExecutor', 'JobExecutorConfig', 'Job', 'JobStatusCallback', 'JobSpec', 'JobAttributes',
-    'JobStatus', 'JobState', 'ResourceSpec', 'ResourceSpecV1', 'Launcher', 'SubmitException',
-    'InvalidJobException', 'UnreachableStateException'
+    'JobExecutor', 'JobExecutorConfig', 'BaseJob', 'Job', 'JobStatusCallback', 'JobSpec',
+    'JobAttributes', 'JobStatus', 'JobState', 'ResourceSpec', 'ResourceSpecV1', 'Launcher',
+    'SubmitException', 'InvalidJobException', 'ExecutorException', 'BackendException',
+    'AsyncJobExecutor', 'AsyncJob', 'AsyncJobStatusCallback', 'StageIn', 'StageOut',
+    'StagingMode', 'StageOutFlags'
 ]
 
 logger = logging.getLogger(__name__)
@@ -42,6 +48,7 @@ PACKAGE = ['psij-descriptors']
 
 
 TYPES = [_PluginType('executors', JobExecutor.register_executor),
+         _PluginType('async_executors', AsyncJobExecutor.register_executor),
          _PluginType('launchers', Launcher.register_launcher)]
 
 

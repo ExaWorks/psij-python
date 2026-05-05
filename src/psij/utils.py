@@ -1,3 +1,7 @@
+import asyncio
+from asyncio import AbstractEventLoop, DatagramProtocol
+from functools import partial
+
 import atexit
 import io
 import logging
@@ -8,13 +12,17 @@ import socket
 import tempfile
 import threading
 import time
+from aiofile import async_open
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Type, Dict, Optional, Tuple, Set, List
+from typing import Type, Dict, Optional, Tuple, Set, List, Awaitable, Coroutine, Any, Never
 
 import psutil
 
-from psij import JobExecutor, Job, JobState, JobStatus
+from psij import JobState, JobStatus, AsyncJob, AsyncJobExecutor
+from psij._async import set_job_status
+from psij._base_executor import BaseExecutor
+from psij.base_job import BaseJob
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +104,7 @@ class _StatusUpdater(SingletonThread):
         logger.debug('Update file: %s' % self.update_file.name)
         self.partial_file_data = ''
         self.partial_net_data = ''
-        self._jobs: Dict[str, Tuple[Job, JobExecutor]] = {}
+        self._jobs: Dict[str, Tuple[BaseJob, BaseExecutor, Optional[AbstractEventLoop]]] = {}
         self._jobs_lock = threading.RLock()
         self._sync_ids: Set[str] = set()
         self._last_received = ''
@@ -122,11 +130,14 @@ class _StatusUpdater(SingletonThread):
         self.update_file.seek(0, io.SEEK_END)
         self.update_file_pos = self.update_file.tell()
 
-    def register_job(self, job: Job, ex: JobExecutor) -> None:
+    def register_job(self, job: BaseJob, ex: BaseExecutor,
+                     loop: Optional[AbstractEventLoop] = None) -> None:
+        if isinstance(job, AsyncJob) and loop is None:
+            raise RuntimeError('No loop for async job.')
         with self._jobs_lock:
-            self._jobs[job.id] = (job, ex)
+            self._jobs[job.id] = (job, ex, loop)
 
-    def unregister_job(self, job: Job) -> None:
+    def unregister_job(self, job: BaseJob) -> None:
         with self._jobs_lock:
             try:
                 del self._jobs[job.id]
@@ -175,10 +186,25 @@ class _StatusUpdater(SingletonThread):
         token = '_SYNC ' + str(random.getrandbits(128))
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
-        self._poll_file()
-        delay = 0.0001
+        n = 1
+        delay = 0.00005
+        time.sleep(delay)
         while token not in self._sync_ids:
             time.sleep(delay)
+            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+            n += 1
+            delay *= 2
+        self._sync_ids.remove(token)
+
+    async def aflush(self) -> None:
+        token = '_SYNC ' + str(random.getrandbits(128))
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        delay = 0.00005
+        await asyncio.sleep(delay)
+        while token not in self._sync_ids:
+            await asyncio.sleep(delay)
+            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
             delay *= 2
         self._sync_ids.remove(token)
 
@@ -207,11 +233,205 @@ class _StatusUpdater(SingletonThread):
             job = None
             with self._jobs_lock:
                 try:
-                    (job, executor) = self._jobs[job_id]
+                    (job, executor, loop) = self._jobs[job_id]
                 except KeyError:
                     pass
             if job:
-                executor._set_job_status(job, JobStatus(state))
+                set_job_status(executor, job, JobStatus(state), loop)
+
+
+class _AsyncStatusUpdaterProto(DatagramProtocol):
+    def __init__(self, queue: asyncio.Queue[bytes]) -> None:
+        self.queue = queue
+        self.transport = None
+
+    def connection_made(self, transport) -> None:
+        self.transport = transport
+
+    def datagram_received(self, data: bytes, addr) -> None:
+        logger.info('Datagram received: %s', data)
+        self.queue.put_nowait(data)
+
+
+class _Local(threading.local):
+    def __init__(self) -> None:
+        super().__init__()
+        self.value = None
+
+
+class _AsyncStatusUpdater:
+    # we are expecting short messages in the form <jobid> <status>
+    RECV_BUFSZ = 2048
+
+    _instance = _Local()
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._init_lock = asyncio.Lock()
+
+    def _get_proto(self) -> _AsyncStatusUpdaterProto:
+        return _AsyncStatusUpdaterProto(self._queue)
+
+    async def initialize(self) -> None:
+        self.work_directory = Path.home() / '.psij'
+
+        self._loop = asyncio.get_running_loop()
+        self._queue: asyncio.Queue[bytes] = asyncio.Queue()
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind(('', 0))
+        self.update_port = self.socket.getsockname()[1]
+        self.transport, self.proto = await self._loop.create_datagram_endpoint(self._get_proto,
+                                                                               sock = self.socket)
+        self.ips = self._get_ips()
+        logger.debug('Local IPs: %s' % self.ips)
+        await self._create_update_file()
+        self.partial_file_data = ''
+        self.partial_net_data = ''
+        self._jobs: Dict[str, Tuple[AsyncJob, AsyncJobExecutor]] = {}
+        self._sync_ids: Set[str] = set()
+        self._last_received = ''
+
+    def _get_ips(self) -> List[str]:
+        addrs = psutil.net_if_addrs()
+        r = []
+        for name, l in addrs.items():
+            if name == 'lo':
+                continue
+            for a in l:
+                if a.family == socket.AddressFamily.AF_INET:
+                    r.append(a.address)
+        return r
+
+    async def _create_update_file(self) -> None:
+        f = tempfile.NamedTemporaryFile(dir=self.work_directory, prefix='supd_', delete=False)
+        name = f.name
+        self.update_file_name = name
+        atexit.register(os.remove, name)
+        f.close()
+        self.update_file = await async_open(name, 'r+b')
+        self.update_file.seek(io.SEEK_END)
+        self.update_file_pos = self.update_file.tell()
+
+    async def register_job(self, job: AsyncJob, ex: AsyncJobExecutor) -> None:
+            self._jobs[job.id] = (job, ex)
+
+    def unregister_job(self, job: AsyncJob) -> None:
+        try:
+            del self._jobs[job.id]
+        except KeyError:
+            # There are cases when it's difficult to ensure that this method is only called
+            # once for each job. Instead, ignore errors here, since the ultimate goal is to
+            # remove the job from the _jobs dictionary.
+            pass
+
+    async def _poll_file(self) -> None:
+        self.update_file.seek(io.SEEK_END)
+        pos = self.update_file.tell()
+        if pos > self.update_file_pos:
+            self.update_file.seek(io.SEEK_SET)
+            n = pos - self.update_file_pos
+            self._queue.put_nowait(await self.update_file.read(n))
+            self.update_file_pos = pos
+
+    async def _file_loop(self) -> None:
+        while True:
+            await self._poll_file()
+            await asyncio.sleep(0.5)
+
+    async def _data_loop(self) -> None:
+        try:
+            while True:
+                data = await self._queue.get()
+                logger.info('Got data: %s', data)
+                await self._process_update_data(data)
+        finally:
+            logger.warning('Exiting data loop')
+
+    async def run(self) -> None:
+        asyncio.create_task(self._file_loop())
+        asyncio.create_task(self._data_loop())
+
+    async def flush(self) -> None:
+        # Ensures that, upon return from this call, all updates available before this call have
+        # been processed. To do so, we send a UDP packet to the socket to wake it up and wait until
+        # it is received. This does not guarantee that file-based updates are necessarily
+        # processed, since that depends on many factors.
+        # On the minus side, this method, as implemented, can cause deadlocks if the socket
+        # reads fail for unexpected reasons. This should probably be accounted for.
+        if self._loop != asyncio.get_running_loop():
+            raise RuntimeError('Multiple asyncio loops detected. Only one event loop can be used '
+                               'to interact with a given executor instance.')
+        if not self._loop.is_running():
+            raise RuntimeError('The event loop that was used to create this status updater has '
+                               'been terminated.')
+        token = '_SYNC ' + str(random.getrandbits(128))
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        n = 1
+        delay = 0.00005
+        await asyncio.sleep(delay)
+        while token not in self._sync_ids:
+            await asyncio.sleep(delay)
+            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+            n += 1
+            delay *= 2
+        self._sync_ids.remove(token)
+
+    async def _process_update_data(self, data: bytes) -> None:
+        sdata = data.decode('utf-8')
+        if sdata == self._last_received:
+            # we send UDP packets to all IP addresses of the submit host, which may
+            # result in duplicates, so we drop consecutive messages that are identical
+            return
+        else:
+            self._last_received = sdata
+        lines = sdata.splitlines()
+        for line in lines:
+            if sdata.startswith('_SYNC '):
+                self._sync_ids.add(sdata)
+                continue
+            els = line.split()
+            if len(els) > 2 and els[1] == 'LOG':
+                logger.info('%s %s' % (els[0], ' '.join(els[2:])))
+                continue
+            if len(els) != 2:
+                logger.warning('Invalid status update message received: %s' % line)
+                continue
+            job_id = els[0]
+            state = JobState.from_name(els[1])
+            try:
+                (job, executor) = self._jobs[job_id]
+                await executor._set_job_status(job, JobStatus(state))
+            except KeyError:
+                pass
+
+
+class _UpdaterLoop(threading.Thread):
+    def __init__(self) -> None:
+        super().__init__(name='Status Updater Event Loop')
+        self.loop = asyncio.new_event_loop()
+
+    def run(self) -> None:
+        self.loop.run_forever()
+
+    def spawn(self, coro: Coroutine[Any, Any, None]) -> None:
+        self.loop.create_task(coro)
+
+
+_LOCK = threading.RLock()
+_UPDATERS: Dict[int, _AsyncStatusUpdater] = {}
+
+
+async def _get_async_updater() -> _AsyncStatusUpdater:
+    loop_id = id(asyncio.get_running_loop())
+    with _LOCK:
+        if not loop_id in _UPDATERS:
+            updater = _AsyncStatusUpdater()
+            _UPDATERS[loop_id] = updater
+            async with updater._init_lock:
+                await updater.initialize()
+                asyncio.create_task(updater.run())
+        return _UPDATERS[loop_id]
 
 
 class _FileCleaner(SingletonThread):

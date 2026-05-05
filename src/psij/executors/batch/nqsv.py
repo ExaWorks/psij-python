@@ -1,8 +1,16 @@
+import asyncio
+from asyncio import AbstractEventLoop
 from pathlib import Path
-from psij import Job, JobState, JobStatus, SubmitException
-from typing import IO, Optional, List, Dict, Collection, Union, Sequence, Any, cast
+from psij import Job, JobState, JobStatus, SubmitException, AsyncJob, AsyncJobExecutor
+from typing import Optional, List, Dict, Collection, Union, Sequence, Any, cast, Iterable, Type, \
+    Tuple
+
+from psij._async import set_job_status
+from psij._base_executor import BaseExecutor
+from psij.base_job import BaseJob
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
-from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor
+from psij.executors.batch.batch_scheduler_executor import BatchScheduler, \
+    SyncBatchSchedulerExecutor, AsyncBatchSchedulerExecutor
 from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutorConfig
 from psij.executors.batch.batch_scheduler_executor import check_status_exit_code
 
@@ -23,15 +31,17 @@ LARGE_TIMEOUT = timedelta(days=3650)
 class _NQSJobWaitingThread(Thread):
     """A thread that waits for a job to finish and updates its status."""
 
-    def __init__(self, job: Job, ex: Any) -> None:
+    def __init__(self, job: BaseJob, ex: BaseExecutor,
+                 loop: Optional[AbstractEventLoop] = None) -> None:
         super().__init__()
         self._job = job
         self._ex = ex
+        self._loop = loop
 
     def run(self) -> None:
         """Wait for the job to finish and update its status."""
         st = self._wait()
-        self._ex._set_job_status(self._job, st)
+        set_job_status(self._ex, self._job, st, self._loop)
 
     def _enable_wait_status(self,
                             target_states: Optional[Union[JobState, Sequence[JobState]]] = None) \
@@ -80,7 +90,15 @@ class _NQSJobWaitingThread(Thread):
 
         # NQSV's qwait command is not support ACTIVE/QUEUED state, then use the original wait func.
         if self._enable_wait_status(target_states) is False:
-            return self._ex._job_wait(timeout, target_states)
+            if isinstance(self._job, AsyncJob):
+                assert isinstance(self._ex, AsyncJobExecutor)
+                assert self._loop is not None
+                asyncio.run_coroutine_threadsafe(self._job.wait(timeout, target_states), self._loop)
+                return
+            else:
+                assert isinstance(self._job, Job)
+                self._job.wait(timeout, target_states)
+                return
 
         if timeout:
             command = [_QWAIT_COMMAND, '-w', 'exited', '-t', str(timeout.total_seconds()),
@@ -98,7 +116,7 @@ class NQSVExecutorConfig(BatchSchedulerExecutorConfig):
     pass
 
 
-class NQSVJobExecutor(BatchSchedulerExecutor):
+class NQSVScheduler(BatchScheduler):
     """
     An executor for the NEC NQSV batch scheduler.
     This executor uses NQSV to submit jobs. It is
@@ -122,34 +140,23 @@ class NQSVJobExecutor(BatchSchedulerExecutor):
         'STG': JobState.QUEUED,
     }
 
-    def __init__(self, url: Optional[str] = None, config: Optional[NQSVExecutorConfig] = None):
-        """Initialize the NQSV executor."""
-        if config is None:
-            config = NQSVExecutorConfig()
-        super().__init__(url=url, config=config)
+    def __init__(self, config: NQSVExecutorConfig):
+        """
+        Parameters
+        ----------
+        config
+            A configuration to use for this instance.
+        """
         path = Path(__file__).parent / 'nqsv/nqsv.mustache'
         self.generator = TemplatedScriptGenerator(config, path)
         self.submit_frag = False
         self.cancel_frag = False
-        self.use_wait_command = False
-        self._wait_threads: List[_NQSJobWaitingThread] = []
 
-    # Override submit function.
-    def submit(self, job: Job) -> None:
-        """Submit a job to the NQSV scheduler."""
-        super().submit(job)
-        if self.use_wait_command:
-            thread = _NQSJobWaitingThread(job, self)
-            thread.start()
-            self._wait_threads.append(thread)
-        return None
-
-    def generate_submit_script(self,
-                               job: Job, context: Dict[str, object], submit_file: IO[str]) -> None:
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
         """Generate a submit script for the NQSV scheduler."""
-        self.generator.generate_submit_script(job, context, submit_file)
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
         """Get the command to submit a job to the NQSV scheduler."""
         return [_QSUB_COMMAND, str(submit_file_path.absolute())]
 
@@ -218,8 +225,8 @@ class NQSVJobExecutor(BatchSchedulerExecutor):
 
     def _get_state(self, state: str) -> JobState:
         """Convert the state string to a JobState enum."""
-        assert state in NQSVJobExecutor._STATE_MAP
-        return NQSVJobExecutor._STATE_MAP[state]
+        assert state in NQSVScheduler._STATE_MAP
+        return NQSVScheduler._STATE_MAP[state]
 
     def get_list_command(self) -> List[str]:
         """Get the command to list jobs in the NQSV scheduler."""
@@ -233,3 +240,67 @@ class NQSVJobExecutor(BatchSchedulerExecutor):
             c = line.split('.')
             r.append(c[0])
         return r
+
+
+class NQSVJobExecutor(SyncBatchSchedulerExecutor):
+    """Synchronous job executor for NQSV."""
+
+    def __init__(self, url: Optional[str], config: Optional[BatchSchedulerExecutorConfig] = None):
+        """
+        Parameters
+        ----------
+        url
+            An optional URL pointing to a specific backend. Not used by batch scheduler
+            executors.
+        config
+            An configuration for this executor instance; if none is specified, a default
+            configuration is used.
+        """
+        super().__init__(url, config)
+        self.use_wait_command = False
+        self._wait_threads: List[_NQSJobWaitingThread] = []
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return NQSVScheduler, NQSVExecutorConfig
+
+    # Override submit function.
+    def submit(self, job: Job) -> None:
+        """Submit a job to the NQSV scheduler."""
+        super().submit(job)
+        if self.use_wait_command:
+            thread = _NQSJobWaitingThread(job, self)
+            thread.start()
+            self._wait_threads.append(thread)
+        return None
+
+
+class AsyncNQSVJobExecutor(AsyncBatchSchedulerExecutor):
+    """Asynchronous job executor for NQSV."""
+
+    def __init__(self, url: Optional[str], config: Optional[BatchSchedulerExecutorConfig] = None):
+        """
+        Parameters
+        ----------
+        url
+            An optional URL pointing to a specific backend. Not used by batch scheduler
+            executors.
+        config
+            An configuration for this executor instance; if none is specified, a default
+            configuration is used.
+        """
+        super().__init__(url, config)
+        self.use_wait_command = False
+        self._wait_threads: List[_NQSJobWaitingThread] = []
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return NQSVScheduler, NQSVExecutorConfig
+
+    async def submit(self, job: AsyncJob) -> None:
+        """Submit a job to the NQSV scheduler."""
+        await super().submit(job)
+        if self.use_wait_command:
+            thread = _NQSJobWaitingThread(job, self, asyncio.get_running_loop())
+            thread.start()
+            self._wait_threads.append(thread)

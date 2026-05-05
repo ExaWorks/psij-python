@@ -1,10 +1,11 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, IO
+from typing import Collection, List, Dict, Iterable
 
-from psij import Job, JobStatus, JobState, SubmitException
-from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig, check_status_exit_code
+from psij import JobStatus, JobState, SubmitException
+from psij.base_job import BaseJob
+from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutorConfig, \
+    check_status_exit_code, BatchScheduler
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 import json
@@ -45,8 +46,8 @@ class PBSExecutorConfig(BatchSchedulerExecutorConfig):
     pass
 
 
-class GenericPBSJobExecutor(BatchSchedulerExecutor):
-    """A generic :class:`~psij.JobExecutor` for PBS-type schedulers.
+class GenericPBSScheduler(BatchScheduler):
+    """A generic :class:`~.BatchScheduler` for PBS-type schedulers.
 
     PBS, originally developed by NASA, is one of the oldest resource managers still in use.
     A number of variations are available: `PBS Pro <https://www.altair.com/pbs-professional/>`_,
@@ -64,38 +65,33 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
     directive being placed in the submit script, which disables checkpointing.
     """
 
-    def __init__(self, generator: TemplatedScriptGenerator, url: Optional[str] = None,
-                 config: Optional[PBSExecutorConfig] = None) -> None:
+    def __init__(self, generator: TemplatedScriptGenerator) -> None:
         """
         Parameters
         ----------
-        url
-            Not used, but required by the spec for automatic initialization.
-        config
-            An optional configuration for this executor.
+        generator
+            A template script generator instance.
         """
-        super().__init__(url=url, config=config)
         self.generator = generator
 
     # Submit methods
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: IO[str]) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
-        self.generator.generate_submit_script(job, context, submit_file)
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """See :meth:`~.BatchScheduler.generate_submit_script`."""
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_submit_command`."""
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
+        """See :meth:`~.BatchScheduler.get_submit_command`."""
         return ['qsub', str(submit_file_path.absolute())]
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~.BatchScheduler.job_id_from_submit_output`."""
         return out.strip().split()[-1]
 
     # Cancel methods
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_cancel_command`."""
+        """See :meth:`~.BatchScheduler.get_cancel_command`."""
         # the slurm cancel command had a -Q parameter
         # which does not report an error if the job is already
         # completed.
@@ -106,13 +102,13 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
         return ['qdel', native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`."""
+        """See :meth:`~.BatchScheduler.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
     # Status methods
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~.BatchScheduler.get_status_command`."""
         # -x will include finished jobs
         # -f -F json will give json status output that is more mechanically
         # parseable that the default human readable output. Most importantly,
@@ -121,7 +117,7 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
         return [_QSTAT_COMMAND, '-f', '-F', 'json', '-x'] + list(native_ids)
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :meth:`~.BatchSchedulerExecutor.parse_status_output`."""
+        """See :meth:`~.BatchScheduler.parse_status_output`."""
         check_status_exit_code(_QSTAT_COMMAND, exit_code, out)
         r = {}
 
@@ -147,11 +143,11 @@ class GenericPBSJobExecutor(BatchSchedulerExecutor):
         return r
 
     def get_list_command(self) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        """See :meth:`~.BatchScheduler.get_list_command`."""
         return ['qstat', '-u', self._current_user()]
 
     def parse_list_output(self, out: str) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.parse_list_output`."""
+        """See :meth:`~.BatchScheduler.parse_list_output`."""
         return [s.split()[0].strip() for s in out.splitlines()[2:]]
 
     def _get_state(self, state: str) -> JobState:

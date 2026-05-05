@@ -1,8 +1,9 @@
+import asyncio
 import logging
 import threading
 from abc import ABC, abstractmethod
 from datetime import timedelta, datetime
-from typing import Optional, Sequence, Union, Callable, Set
+from typing import Optional, Sequence, Union, Callable, Awaitable
 
 import psij
 from psij.base_job import BaseJob
@@ -20,11 +21,11 @@ logger = logging.getLogger(__name__)
 LARGE_TIMEOUT = timedelta(days=3650)
 
 
-class Job(BaseJob):
+class AsyncJob(BaseJob):
     """
-    This class represents a synchronous PSI/J job.
+    This class represents an async job PSI/J job.
 
-    It encapsulates all of the information needed to run a job as well as the job’s state.
+    Instances of `AsyncJob` are used with async executors.
     """
 
     def __init__(self, spec: Optional[JobSpec] = None) -> None:
@@ -35,16 +36,16 @@ class Job(BaseJob):
         """
         super().__init__(spec)
         # need indirect ref to avoid a circular reference
-        self.executor: Optional['psij.JobExecutor'] = None
-        self._cb: Optional[JobStatusCallback] = None
-        self._status_cv = threading.Condition()
+        self.executor: Optional['psij.AsyncJobExecutor'] = None
+        self._cb: Optional[AsyncJobStatusCallback] = None
+        self._status_cv = asyncio.Condition()
 
     @property
     def status(self) -> JobStatus:
         """
         Contains the current status of the job.
 
-        It is guaranteed that the status returned by this property is monotonic in time with respect
+        It is guaranteed that the status returned by this method is monotonic in time with respect
         to the partial ordering of :class:`~psij.JobStatus` types. That is, if
         `job_status_1.state` and `job_status_2.state` are comparable and
         `job_status_1.state < job_status_2.state`, then it is impossible for `job_status_2` to be
@@ -56,21 +57,9 @@ class Job(BaseJob):
 
         :return: the current state of this job
         """
-        # For reference, this is not in BaseJob because defining a setter for an inherited
-        # getter doesn't seem to quite work.
         return self._status
 
-    @status.setter
-    def status(self, status: JobStatus) -> None:
-        """
-        Sets this job's status.
-
-        This setter is deprecated. For compatibility with the async conterpart,
-        please use the :meth:`set_status` method.
-        """
-        self.set_status(status)
-
-    def set_status(self, status: JobStatus) -> None:
+    async def set_status(self, status: JobStatus) -> None:
         """
         Set this job's status.
 
@@ -82,7 +71,7 @@ class Job(BaseJob):
         status
             The new status.
         """
-        with self._status_cv:
+        async with self._status_cv:
             crt = self._status.state
             assert crt is not None
             nxt = status.state
@@ -90,25 +79,32 @@ class Job(BaseJob):
             if crt == nxt or crt.is_greater_than(nxt):
                 return
             prev = JobStateOrder.prev(nxt)
-        if prev is not None and prev != crt:
-            self.status = JobStatus(prev)
-        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
-        with self._status_cv:
-            self._status = status
-            self._status_cv.notify_all()
+            missing = prev is not None and prev != crt
+            if not missing:
+                # we can do things here without releasing and re-acquiring the lock
+                logger.debug('Job status change %s: %s -> %s', self, self._status.state,
+                             status.state)
+                self._status = status
+                self._status_cv.notify_all()
+        if missing:
+            assert prev is not None
+            await self.set_status(JobStatus(prev))
+            logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
+            async with self._status_cv:
+                self._status = status
+                self._status_cv.notify_all()
 
         if self._cb:
             try:
-                self._cb.job_status_changed(self, status)
+                await self._cb.job_status_changed(self, status)
             except Exception as ex:
                 logger.warning('Job status callback for %s threw an exception: %s', self.id, ex)
 
         if self.executor:
-            self.executor._notify_callback(self, status)
+            await self.executor._notify_callback(self, status)
 
-    def set_job_status_callback(self,
-                                cb: Union['JobStatusCallback',
-                                          Callable[['Job', 'psij.JobStatus'], None]]) -> None:
+    def set_job_status_callback(self, cb: Union['AsyncJobStatusCallback',
+                                Callable[['AsyncJob', 'psij.JobStatus'], Awaitable[None]]]) -> None:
         """
         Registers a status callback with this job.
 
@@ -123,12 +119,12 @@ class Job(BaseJob):
             parameters, ``job`` of type :class:`~psij.Job`, ``job_status`` of type
             :class:`~psij.JobStatus`, and returning nothing.
         """
-        if isinstance(cb, JobStatusCallback):
+        if isinstance(cb, AsyncJobStatusCallback):
             self._cb = cb
         else:
-            self._cb = FunctionJobStatusCallback(cb)
+            self._cb = AsyncFunctionJobStatusCallback(cb)
 
-    def cancel(self) -> None:
+    async def cancel(self) -> None:
         """
         Cancels this job.
 
@@ -142,25 +138,11 @@ class Job(BaseJob):
         if not self.executor:
             raise SubmitException('Cannot cancel job: not bound to an executor.')
         else:
-            self.executor.cancel(self)
+            await self.executor.cancel(self)
 
-    def _all_greater(self, states: Optional[Union[JobState, Sequence[JobState]]]) \
-            -> Optional[Set[JobState]]:
-        if states is None:
-            return None
-        if isinstance(states, JobState):
-            states = [states]
-        ts = set()
-        for state1 in states:
-            ts.add(state1)
-            for state2 in JobState:
-                if state2.is_greater_than(state1):
-                    ts.add(state2)
-        return ts
-
-    def wait(self, timeout: Optional[timedelta] = None,
-             target_states: Optional[Union[JobState, Sequence[JobState]]] = None) \
-            -> Optional[JobStatus]:
+    async def wait(self, timeout: Optional[timedelta] = None,
+                   target_states: Optional[Union[JobState, Sequence[JobState]]] = None) -> \
+            Optional[JobStatus]:
         """
         Waits for the job to reach certain states.
 
@@ -186,7 +168,7 @@ class Job(BaseJob):
         ts = self._all_greater(target_states)
 
         while True:
-            with self._status_cv:
+            async with self._status_cv:
                 status = self._status
                 state = status.state
                 assert state is not None
@@ -205,23 +187,18 @@ class Job(BaseJob):
                 left_seconds = left.total_seconds()
                 if left_seconds <= 0:
                     return None
-                self._status_cv.wait(left_seconds)
-
-    def __hash__(self) -> int:
-        """Returns a hash for this job."""
-        return hash(self._id)
-
-    def __str__(self) -> str:
-        """Returns a string representation of this job."""
-        return 'Job[id={}, native_id={}, executor={}, status={}]'.format(self._id, self._native_id,
-                                                                         self.executor, self.status)
+                try:
+                    async with asyncio.timeout(left_seconds):
+                        await self._status_cv.wait()
+                except TimeoutError:
+                    pass
 
 
-class JobStatusCallback(ABC):
+class AsyncJobStatusCallback(ABC):
     """An interface used to listen to job status change events."""
 
     @abstractmethod
-    def job_status_changed(self, job: Job, job_status: JobStatus) -> None:
+    async def job_status_changed(self, job: AsyncJob, job_status: JobStatus) -> None:
         """
         This method is invoked when a status change occurs on a job.
 
@@ -241,13 +218,13 @@ class JobStatusCallback(ABC):
         pass
 
 
-class FunctionJobStatusCallback(JobStatusCallback):
+class AsyncFunctionJobStatusCallback(AsyncJobStatusCallback):
     """A JobStatusCallback that wraps a function."""
 
-    def __init__(self, fn: Callable[[Job, 'psij.JobStatus'], None]):
+    def __init__(self, fn: Callable[[AsyncJob, 'psij.JobStatus'], Awaitable[None]]):
         """Initializes a `_FunctionJobStatusCallback`."""
         self.fn = fn
 
-    def job_status_changed(self, job: Job, job_status: 'psij.JobStatus') -> None:
-        """See :meth:`~.JobStatusCallback.job_status_changed`."""
-        self.fn(job, job_status)
+    async def job_status_changed(self, job: AsyncJob, job_status: 'psij.JobStatus') -> None:
+        """See :,eth:`~.AsyncJobStatusCallback.job_status_changed`."""
+        await self.fn(job, job_status)

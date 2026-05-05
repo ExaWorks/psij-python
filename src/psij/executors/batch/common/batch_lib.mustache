@@ -8,9 +8,18 @@ _psij_update_status() {
 }
 
 _psij_fail() {
-    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Failing: $2"
-    echo $2
-    exit $1
+    EXIT_CODE="$1"
+    ERROR_CODE="$2"
+    MESSAGE="$3"
+
+    if [ "$EXIT_CODE" != "0" ]; then
+        MESSAGE="The job failed with exit code $EXIT_CODE. In addition, the following error has occurred during stageout/cleanup: $MESSAGE"
+    fi
+
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Failing: $MESSAGE"
+
+    echo $MESSAGE
+    exit $ERROR_CODE
 }
 
 _psij_check_remote() {
@@ -34,7 +43,7 @@ _psij_do_stagein() {
 
     _psij_check_remote "$SCHEME" "$HOSTPORT" || exit $?
 
-    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" 0
+    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" 0 0
 }
 
 _psij_do_stage() {
@@ -42,13 +51,14 @@ _psij_do_stage() {
     TARGET="$2"
     MODE="$3"
     MISSING_OK="$4"
+    EXIT_CODE="$5"
 
     [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Stage $SOURCE -> $TARGET, mode: $MODE, missingok: $MISSING_OK"
 
     if [ ! -e "$SOURCE" ]; then
         if [ "$MISSING_OK" == "0" ]; then
             [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Missing source file: $SOURCE"
-            _psij_fail 121 "Missing source file: $SOURCE"
+            _psij_fail $EXIT_CODE 121 "Missing source file: $SOURCE"
         else
             [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG Skipping staging of missing file $SOURCE"
             return 0
@@ -64,22 +74,22 @@ _psij_do_stage() {
     fi
 
     if [ -d "$TARGET" ] && [ ! -d "$SOURCE" ]; then
-        _psij_fail 121 "Target is a directory: $TARGET"
+        _psij_fail $EXIT_CODE 121 "Target is a directory: $TARGET"
     fi
 
-    if [ "$MODE" == "1" ]; then
+    if [ "$MODE" == "1" ] || [ "$MODE" == "4" ] || [ "$MODE" == "5" ] || [ "$MODE" == "6" ]; then
         # copy
-        cp -r -T "$SOURCE" "$TARGET" || _psij_fail 121 "Failed to copy \"$SOURCE\" to \"$TARGET\""
+        cp -r -T "$SOURCE" "$TARGET" || _psij_fail $EXIT_CODE 121 "Failed to copy \"$SOURCE\" to \"$TARGET\""
     elif [ "$MODE" == "2" ]; then
         # link
         {{!we want the same semantics as cp and mv, which is "overwrite if exists"}}
         {{!we resolve the source since it may be a path relative to the job dir}}
         rm -f "$TARGET"
         SOURCE=`readlink -m $SOURCE`
-        ln -s "$SOURCE" "$TARGET"  || _psij_fail 121 "Failed to link \"$SOURCE\" to \"$TARGET\""
+        ln -s "$SOURCE" "$TARGET"  || _psij_fail $EXIT_CODE 121 "Failed to link \"$SOURCE\" to \"$TARGET\""
     elif [ "$MODE" == "3" ]; then
         # move
-        mv -T -f "$SOURCE" "$TARGET" || _psij_fail 121 "Failed to move \"$SOURCE\" to \"$TARGET\""
+        mv -T -f "$SOURCE" "$TARGET" || _psij_fail $EXIT_CODE 121 "Failed to move \"$SOURCE\" to \"$TARGET\""
     fi
 }
 
@@ -93,32 +103,36 @@ _psij_do_stageout() {
     TARGET="$2"
     MODE="$3"
     FLAGS="$4"
-    FAILED="$5"
+    EXIT_CODE="$5"
     SCHEME="$6"
     HOSTPORT="$7"
 
     _psij_check_remote "$SCHEME" "$HOSTPORT"
 
-    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG do_stageout $SOURCE -> $TARGET, mode: $MODE, flags: $FLAGS, failed: $FAILED"
+    [ "{{psij.debug}}" != "0" ] && _psij_update_status "LOG do_stageout $SOURCE -> $TARGET, mode: $MODE, flags: $FLAGS, failed: $EXIT_CODE"
 
-    if [ "$FAILED" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+    if [ "$EXIT_CODE" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+        _psij_update_status "LOG Skipping $SOURCE; success and flag not set"
         return 0
     fi
-    if [ "$FAILED" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+    if [ "$EXIT_CODE" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+        _psij_update_status "LOG Skipping $SOURCE; error and flag not set"
         return 0
     fi
-    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" $((FLAGS & _FLAG_IF_PRESENT))
+    _psij_do_stage "$SOURCE" "$TARGET" "$MODE" $((FLAGS & _FLAG_IF_PRESENT)) $EXIT_CODE
 }
 
 _psij_do_cleanup() {
     TARGET="$1"
     FLAGS="$2"
-    FAILED="$3"
+    EXIT_CODE="$3"
 
-    if [ "$FAILED" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+    if [ "$EXIT_CODE" == "0" ] && [ "$((FLAGS & _FLAG_ON_SUCCESS))" == "0" ]; then
+        _psij_update_status "LOG Skipping cleanup; success and flag not set"
         return 0
     fi
-    if [ "$FAILED" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+    if [ "$EXIT_CODE" != "0" ] && [ "$((FLAGS & _FLAG_ON_ERROR))" == "0" ]; then
+        _psij_update_status "LOG Skipping cleanup; success and flag not set"
         return 0
     fi
 
@@ -132,7 +146,7 @@ _psij_do_cleanup() {
             rm -rf "$TARGET"
             ;;
         *)
-            _psij_fail 121 "Cannot clean $TARGET outside of job directory $DIR"
+            _psij_fail $EXIT_CODE 121 "Cannot clean $TARGET outside of job directory $DIR"
             ;;
     esac
 }

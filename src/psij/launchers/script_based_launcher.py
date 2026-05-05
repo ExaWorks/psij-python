@@ -5,9 +5,9 @@ import threading
 from pathlib import Path
 from typing import Optional, List, Any
 
+from psij.base_job import BaseJob
 from psij.job_launcher import Launcher
 from psij.job_executor_config import JobExecutorConfig
-from psij.job import Job
 
 
 logger = logging.getLogger(__name__)
@@ -169,7 +169,7 @@ class ScriptBasedLauncher(Launcher):
                 raise
         return dst_dir
 
-    def get_launch_command(self, job: Job, log_file: Optional[str] = None) -> List[str]:
+    def get_launch_command(self, job: BaseJob, log_file: Optional[str] = None) -> List[str]:
         """See :func:`~psij.Launcher.get_launch_command`."""
         spec = job.spec
         assert spec is not None
@@ -190,7 +190,7 @@ class ScriptBasedLauncher(Launcher):
 
         return args
 
-    def get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: BaseJob) -> List[str]:
         """
         Returns any additional arguments, after first mandatory four, to be passed to the script.
 

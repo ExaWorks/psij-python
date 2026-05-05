@@ -1,17 +1,18 @@
 """Defines a JobExecutor for the Cobalt resource manager."""
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, IO
+from typing import Collection, List, Dict, Iterable, Tuple, Type
 import re
 import os
 import stat
 
-from psij import Job, JobStatus, JobState, SubmitException
+from psij import JobStatus, JobState, SubmitException
+from psij.base_job import BaseJob
 from psij.executors.batch.batch_scheduler_executor import (
-    BatchSchedulerExecutor,
     BatchSchedulerExecutorConfig,
     UNKNOWN_ERROR,
-    check_status_exit_code,
+    check_status_exit_code, AsyncBatchSchedulerExecutor,
+    BatchScheduler, SyncBatchSchedulerExecutor,
 )
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
@@ -26,8 +27,8 @@ class CobaltExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the Cobalt executor."""
 
 
-class CobaltJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the Cobalt Workload Manager.
+class CobaltScheduler(BatchScheduler):
+    """A :class:`~.BatchScheduler` for the Cobalt Workload Manager.
 
     The `Cobalt HPC Job Scheduler <https://xgitlab.cels.anl.gov/aig-public/cobalt>`_,
     is used by `Argonne's <www.anl.gov>`_ `ALCF <www.alcf.anl.gov>`_ systems.
@@ -51,40 +52,33 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         "killing": JobState.FAILED,
     }
 
-    def __init__(self, url: Optional[str] = None,
-                 config: Optional[CobaltExecutorConfig] = None) -> None:
+    def __init__(self, config: CobaltExecutorConfig) -> None:
         """
         Parameters
         ----------
-        url
-            This parameter is not used and is only provided for compatibility reasons.
         config
-            An optional configuration for this executor.
+            A configuration to use for this instance.
         """
-        if not config:
-            config = CobaltExecutorConfig()
-        super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(
             config, Path(__file__).parent / "cobalt" / "cobalt.mustache"
         )
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: IO[str]) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
-        self.generator.generate_submit_script(job, context, submit_file)
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """See :meth:`~.BatchScheduler.generate_submit_script`."""
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_submit_command`."""
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
+        """See :meth:`~.BatchScheduler.get_submit_command`."""
         str_path = str(submit_file_path.absolute())
         os.chmod(str_path, os.stat(str_path).st_mode | stat.S_IEXEC)
         return ["qsub", str_path]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_cancel_command`."""
+        """See :meth:`~.BatchScheduler.get_cancel_command`."""
         return ["qdel", native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`.
+        """See :meth:`~.BatchScheduler.process_cancel_command_output`.
 
         This should be unnecessary because `qdel` only seems to fail on
         non-integer job IDs.
@@ -92,11 +86,11 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         raise SubmitException("Failed job cancel job: %s" % out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~.BatchScheduler.get_status_command`."""
         return [_QSTAT_COMMAND, "-l", "--header=Jobid:State", *native_ids]
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :meth:`~.BatchSchedulerExecutor.parse_status_output`."""
+        """See :meth:`~.BatchScheduler.parse_status_output`."""
         # if none of the job ID passed to Cobalt are recognized, qstat returns 1,
         # but we shouldn't treat that as an error
         if exit_code != 0 and out == UNKNOWN_ERROR:
@@ -121,11 +115,11 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         return job_statuses
 
     def get_list_command(self) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        """See :meth:`~.BatchScheduler.get_list_command`."""
         return [_QSTAT_COMMAND, '-u', self._current_user(), '--header', 'JobId']
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~.BatchScheduler.job_id_from_submit_output`."""
         match = _QSUB_REGEX.search(out)
         if match is None:
             raise SubmitException(out)
@@ -137,3 +131,19 @@ class CobaltJobExecutor(BatchSchedulerExecutor):
         #   value of the format: HH:MM:SS. Enter 0 to get the max allowed walltime.
         # base class _format_duration is HH:MM:SS
         return super()._format_duration(d)
+
+
+class CobaltJobExecutor(SyncBatchSchedulerExecutor):
+    """Synchronous job executor for the Cobalt Workload Manager."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return CobaltScheduler, CobaltExecutorConfig
+
+
+class AsyncCobaltJobExecutor(AsyncBatchSchedulerExecutor):
+    """Asynchronous job executor for the Cobalt Workload Manager."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return CobaltScheduler, CobaltExecutorConfig

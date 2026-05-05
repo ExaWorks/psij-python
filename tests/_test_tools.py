@@ -8,7 +8,9 @@ from typing import Optional, Union, Iterator, IO
 
 from executor_test_params import ExecutorTestParams
 
-from psij import JobStatus, JobState, Job, JobExecutor, JobAttributes, ResourceSpecV1
+from psij import JobStatus, JobState, JobExecutor, JobAttributes, ResourceSpecV1, \
+    AsyncJobExecutor
+from psij.base_job import BaseJob
 
 _QUICK_EXECUTORS = set(['local', 'batch-test'])
 
@@ -37,7 +39,7 @@ def _read_file(path: Optional[Path]) -> str:
         return f'<error: {ex}>'
 
 
-def assert_completed(job: Job, status: Optional[JobStatus], attached: bool = False) -> None:
+def assert_completed(job: BaseJob, status: Optional[JobStatus], attached: bool = False) -> None:
     assert status is not None
     if status.state != JobState.COMPLETED:
         if not attached:
@@ -58,7 +60,7 @@ def assert_completed(job: Job, status: Optional[JobStatus], attached: bool = Fal
                                  % (status.exit_code, status.message))
 
 
-def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) -> JobExecutor:
+def _set_job_params(ep: ExecutorTestParams, job: Optional[BaseJob] = None) -> None:
     if job is not None:
         assert job.spec is not None
         job.spec.launcher = ep.launcher
@@ -72,7 +74,17 @@ def _get_executor_instance(ep: ExecutorTestParams, job: Optional[Job] = None) ->
         if (res and isinstance(res, ResourceSpecV1) and res.computed_node_count > 1
                 and ep.multi_node_queue_name is not None):
             attrs.queue_name = ep.multi_node_queue_name
+
+
+def _get_executor_instance(ep: ExecutorTestParams, job: Optional[BaseJob] = None) -> JobExecutor:
+    _set_job_params(ep, job)
     return JobExecutor.get_instance(ep.executor, url=ep.url)
+
+
+def _get_async_executor_instance(ep: ExecutorTestParams,
+                                 job: Optional[BaseJob] = None) -> AsyncJobExecutor:
+    _set_job_params(ep, job)
+    return AsyncJobExecutor.get_instance(ep.executor, url=ep.url)
 
 
 @contextmanager
@@ -138,9 +150,9 @@ def _tempdir(keep: bool = False) -> Iterator[Path]:
         raise
 
 
-def _write_file(f: Union[Path, IO[str]], contents: str) -> None:
-    if isinstance(f, Path):
-        f = f.open('w')
+def _write_file(f: Union[Path, str, IO[str]], contents: str) -> None:
+    if isinstance(f, Path) or isinstance(f, str):
+        f = open(f, 'w')
     try:
         f.write(contents)
     finally:

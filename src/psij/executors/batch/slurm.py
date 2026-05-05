@@ -1,10 +1,12 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, IO
+from typing import Collection, List, Dict, Iterable, Type, Tuple
 
-from psij import Job, JobStatus, JobState, SubmitException
-from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig, check_status_exit_code
+from psij import JobStatus, JobState, SubmitException
+from psij.base_job import BaseJob
+from psij.executors.batch.batch_scheduler_executor import \
+    BatchSchedulerExecutorConfig, check_status_exit_code, BatchScheduler, \
+    SyncBatchSchedulerExecutor, AsyncBatchSchedulerExecutor
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
@@ -17,8 +19,8 @@ class SlurmExecutorConfig(BatchSchedulerExecutorConfig):
     pass
 
 
-class SlurmJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the Slurm Workload Manager.
+class SlurmScheduler(BatchScheduler):
+    """A :class:`~.BatchScheduler` for the Slurm Workload Manager.
 
     The `Slurm Workload Manager <https://slurm.schedmd.com/overview.html>`_ is a
     widely used resource manager running on machines such as
@@ -113,47 +115,41 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
                                 'scheduler to determine the appropriate reason.'
     }
 
-    def __init__(self, url: Optional[str] = None, config: Optional[SlurmExecutorConfig] = None):
+    def __init__(self, config: SlurmExecutorConfig):
         """
         Parameters
         ----------
-        url
-            Not used, but required by the spec for automatic initialization.
         config
-            An optional configuration for this executor.
+            A configuration to use for this instance.
         """
-        if not config:
-            config = SlurmExecutorConfig()
-        super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'slurm'
                                                   / 'slurm.mustache')
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: IO[str]) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
-        self.generator.generate_submit_script(job, context, submit_file)
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """See :meth:`~.BatchScheduler.generate_submit_script`."""
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_submit_command`."""
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
+        """See :meth:`~.BatchScheduler.get_submit_command`."""
         return ['sbatch', str(submit_file_path.absolute())]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_cancel_command`."""
+        """See :meth:`~.BatchScheduler.get_cancel_command`."""
         return ['scancel', '-Q', native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`."""
+        """See :meth:`~.BatchScheduler.process_cancel_command_output`."""
         raise SubmitException('Failed job cancel job: %s' % out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~.BatchScheduler.get_status_command`."""
         # we're not really using job arrays, so this is equivalent to the job ID. However, if
         # we were to use arrays, this would return one ID for the entire array rather than
         # listing each element of the array independently
         return [_SQUEUE_COMMAND, '-O', 'JobArrayID,StateCompact,Reason', '-t', 'all', '--me']
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :meth:`~.BatchSchedulerExecutor.parse_status_output`."""
+        """See :meth:`~.BatchScheduler.parse_status_output`."""
         check_status_exit_code(_SQUEUE_COMMAND, exit_code, out)
         r = {}
         lines = iter(out.split('\n'))
@@ -172,20 +168,20 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
         return r
 
     def get_list_command(self) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        """See :meth:`~.BatchScheduler.get_list_command`."""
         return ['squeue', '--me', '-o', '%i', '-h', '-r', '-t', 'all']
 
     def _get_state(self, state: str) -> JobState:
-        assert state in SlurmJobExecutor._STATE_MAP
-        return SlurmJobExecutor._STATE_MAP[state]
+        assert state in SlurmScheduler._STATE_MAP
+        return SlurmScheduler._STATE_MAP[state]
 
     def _get_message(self, reason: str) -> str:
-        return SlurmJobExecutor._REASONS_MAP.get(
+        return SlurmScheduler._REASONS_MAP.get(
             reason, f"{reason} - no description available"
         )
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~.BatchScheduler.job_id_from_submit_output`."""
         return out.strip().split()[-1]
 
     def _format_duration(self, d: timedelta) -> str:
@@ -197,6 +193,26 @@ class SlurmJobExecutor(BatchSchedulerExecutor):
             days = str(d.days) + '-'
         return days + "%s:%s:%s" % (d.seconds // 3600, (d.seconds // 60) % 60, d.seconds % 60)
 
-    def _clean_submit_script(self, job: Job) -> None:
+
+class SlurmJobExecutor(SyncBatchSchedulerExecutor):
+    """Synchronous job executor for Slurm."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return SlurmScheduler, SlurmExecutorConfig
+
+    def _clean_submit_script(self, job: BaseJob) -> None:
         super()._clean_submit_script(job)
-        self._delete_aux_file(job, '.nodefile')
+        self._delete_aux_file(self._aux_file_path(job, '.nodefile'))
+
+
+class AsyncSlurmJobExecutor(AsyncBatchSchedulerExecutor):
+    """Asynchronous job executor for Slurm."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return SlurmScheduler, SlurmExecutorConfig
+
+    def _clean_submit_script(self, job: BaseJob) -> None:
+        super()._clean_submit_script(job)
+        self._delete_aux_file(self._aux_file_path(job, '.nodefile'))

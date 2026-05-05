@@ -1,29 +1,39 @@
 from pathlib import Path
-from typing import Optional
+from typing import Type, Tuple
 
-from psij.executors.batch.pbs_base import PBSExecutorConfig, GenericPBSJobExecutor
+from psij.executors.batch.batch_scheduler_executor import SyncBatchSchedulerExecutor, \
+    BatchScheduler, BatchSchedulerExecutorConfig, AsyncBatchSchedulerExecutor
+from psij.executors.batch.pbs_base import PBSExecutorConfig, GenericPBSScheduler
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
-class PBSClassicJobExecutor(GenericPBSJobExecutor):
-    """A :class:`~psij.JobExecutor` for classic PBS systems.
+class PBSClassicScheduler(GenericPBSScheduler):
+    """A :class:`~.BatchScheduler` for classic PBS."""
 
-    This executor uses resource specifications specific to Open PBS. Specifically,
-    this executor uses the `-l nodes=n:ppn=m` way of specifying nodes, which
-    differs from the scheme used by PBS Pro.
-    """
-
-    def __init__(self, url: Optional[str] = None, config: Optional[PBSExecutorConfig] = None):
+    def __init__(self, config: PBSExecutorConfig) -> None:
         """
         Parameters
         ----------
-        url
-            Not used, but required by the spec for automatic initialization.
         config
-            An optional configuration for this executor.
+            A configuration to use for this instance.
         """
-        if not config:
-            config = PBSExecutorConfig()
-        generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'pbs'
-                                             / 'pbs_classic.mustache')
-        super().__init__(generator, url=url, config=config)
+        generator = TemplatedScriptGenerator(
+            config, Path(__file__).parent / 'pbs' / 'pbs_classic.mustache'
+        )
+        super().__init__(generator)
+
+
+class PBSClassicJobExecutor(SyncBatchSchedulerExecutor):
+    """Synchronous job executor for class PBS schedulers."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return PBSClassicScheduler, PBSExecutorConfig
+
+
+class AsyncPBSClassicJobExecutor(AsyncBatchSchedulerExecutor):
+    """Asynchronous job executor for class PBS schedulers."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return PBSClassicScheduler, PBSExecutorConfig

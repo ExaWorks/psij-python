@@ -41,6 +41,9 @@ class _VersionEntry(Generic[T]):
             return NotImplemented
         return self.version > other.version
 
+    def __repr__(self) -> str:
+        return f'_VersionEntry(desc={self.desc}, version={self.version}, path={self.plugin_path})'
+
 
 class Descriptor(object):
     """

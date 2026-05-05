@@ -71,7 +71,7 @@ class FluxJobExecutor(JobExecutor):
 
         Fetch the jobid, set it on the psij.Job, and set the the job to QUEUED.
         """
-        job._native_id = fut.jobid()
+        job.native_id = fut.jobid()
         job_status = JobStatus(JobState.QUEUED, time=time.time())
         self._set_job_status(job, job_status)
 

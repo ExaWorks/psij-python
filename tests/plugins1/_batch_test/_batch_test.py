@@ -1,10 +1,12 @@
 import sys
 from pathlib import Path
-from typing import Optional, Collection, List, Dict, IO, cast
+from typing import Optional, Collection, List, Dict, cast, Type, Tuple, Iterable
 
-from psij import Job, JobStatus, JobState, SubmitException, JobExecutorConfig, ResourceSpecV1
-from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutor, \
-    BatchSchedulerExecutorConfig, InvalidJobStateError, check_status_exit_code
+from psij import Job, JobStatus, JobState, SubmitException, JobExecutorConfig, ResourceSpecV1, \
+    BaseJob
+from psij.executors.batch.batch_scheduler_executor import BatchSchedulerExecutorConfig, \
+    InvalidJobStateError, check_status_exit_code, BatchScheduler, \
+    SyncBatchSchedulerExecutor, AsyncBatchSchedulerExecutor
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 from psij.launchers import MultipleLauncher
 
@@ -31,7 +33,7 @@ class _TestExecutorConfig(BatchSchedulerExecutorConfig):
         assert isinstance(self.work_directory, Path)
 
 
-class _TestJobExecutor(BatchSchedulerExecutor):
+class _TestScheduler(BatchScheduler):
     _STATE_MAP = {
         'F': JobState.FAILED,
         'X': JobState.CANCELED,
@@ -40,18 +42,14 @@ class _TestJobExecutor(BatchSchedulerExecutor):
         'R': JobState.ACTIVE,
     }
 
-    def __init__(self, url: Optional[str] = None, config: Optional[_TestExecutorConfig] = None):
-        if not config:
-            config = _TestExecutorConfig()
-        super().__init__(config=config)
+    def __init__(self, config: _TestExecutorConfig):
         self.generator = TemplatedScriptGenerator(config, Path(__file__).parent / 'test'
                                                   / 'test.mustache')
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: IO[str]) -> None:
-        self.generator.generate_submit_script(job, context, submit_file)
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
         return [sys.executable, QSUB_PATH, str(submit_file_path.absolute())]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
@@ -88,8 +86,8 @@ class _TestJobExecutor(BatchSchedulerExecutor):
         return [sys.executable, QSTAT_PATH]
 
     def _get_state(self, state: str) -> JobState:
-        assert state in _TestJobExecutor._STATE_MAP
-        return _TestJobExecutor._STATE_MAP[state]
+        assert state in _TestScheduler._STATE_MAP
+        return _TestScheduler._STATE_MAP[state]
 
     def _clean_submit_script(self, job: Job):
         super()._clean_submit_script(job)
@@ -126,3 +124,15 @@ class _TestLauncher(MultipleLauncher):
         else:
             raise ValueError('This launcher cannot handle resource specs with version {}'.
                              format(res.version))
+
+
+class _BatchTestExecutor(SyncBatchSchedulerExecutor):
+    def _get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return _TestScheduler, _TestExecutorConfig
+
+
+class _AsyncBatchTestExecutor(AsyncBatchSchedulerExecutor):
+    def _get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return _TestScheduler, _TestExecutorConfig

@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import List, cast, Optional
 
-from psij.job import Job
+from psij import BaseJob
 from psij.job_executor_config import JobExecutorConfig
 from psij.launchers.script_based_launcher import ScriptBasedLauncher
 from psij.resource_spec import ResourceSpec, ResourceSpecV1
@@ -29,7 +29,7 @@ class MultipleLauncher(ScriptBasedLauncher):
         """
         super().__init__(script_path=script_path, config=config)
 
-    def get_additional_args(self, job: Job) -> List[str]:
+    def get_additional_args(self, job: BaseJob) -> List[str]:
         """See \
         :func:`~psij.launchers.script_based_launcher.ScriptBasedLauncher.get_additional_args`."""
         spec = job.spec

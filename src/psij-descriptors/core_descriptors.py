@@ -6,6 +6,11 @@ __PSI_J_EXECUTORS__ = [
                cls='psij.executors.local.LocalJobExecutor')
 ]
 
+__PSI_J_ASYNC_EXECUTORS__ = [
+    Descriptor(name='local', nice_name='Async Local', version=Version('0.1.0'),
+               cls='psij.executors.local_async.AsyncLocalJobExecutor')
+]
+
 __PSI_J_LAUNCHERS__ = [
     Descriptor(name='single', version=Version('0.2.0'),
                cls='psij.launchers.single.SingleLauncher'),

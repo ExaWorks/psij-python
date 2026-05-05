@@ -3,13 +3,14 @@ from datetime import timedelta
 from pathlib import Path
 import re
 import json
-from typing import Optional, Collection, List, Dict, IO
+from typing import Collection, List, Dict, Iterable, Tuple, Type
 
-from psij import Job, JobStatus, JobState, SubmitException
+from psij import JobStatus, JobState, SubmitException
+from psij.base_job import BaseJob
 from psij.executors.batch.batch_scheduler_executor import (
-    BatchSchedulerExecutor,
     BatchSchedulerExecutorConfig,
-    check_status_exit_code,
+    check_status_exit_code, AsyncBatchSchedulerExecutor,
+    BatchScheduler, SyncBatchSchedulerExecutor,
 )
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
@@ -25,8 +26,8 @@ class LsfExecutorConfig(BatchSchedulerExecutorConfig):
     """A configuration class for the LSF executor."""
 
 
-class LsfJobExecutor(BatchSchedulerExecutor):
-    """A :class:`~psij.JobExecutor` for the LSF Workload Manager.
+class LsfScheduler(BatchScheduler):
+    """A :class:`~.BatchScheduler` for the LSF Workload Manager.
 
     The `IBM Spectrum LSF workload manager <https://www.ibm.com/docs/en/spectrum-lsf>`_
     is the system resource manager on LLNL's Sierra and Lassen, and ORNL's Summit.
@@ -57,35 +58,29 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         "ZOMBI": JobState.ACTIVE,  # something unusual, but probably active
     }
 
-    def __init__(self, url: Optional[str], config: Optional[LsfExecutorConfig] = None):
+    def __init__(self, config: LsfExecutorConfig):
         """
         Parameters
         ----------
-        url
-            Not used, but required by the spec for automatic initialization.
         config
-            An optional configuration for this executor.
+            A configuration to use for this instance.
         """
-        if not config:
-            config = LsfExecutorConfig()
-        super().__init__(config=config)
         self.generator = TemplatedScriptGenerator(
             config, Path(__file__).parent / "lsf" / "lsf.mustache"
         )
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object],
-                               submit_file: IO[str]) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.generate_submit_script`."""
+    def generate_submit_script(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """See :meth:`~.BatchScheduler.generate_submit_script`."""
         assert job.spec is not None
         context["job_duration"] = int(job.spec.attributes.duration.total_seconds() // 60)
-        self.generator.generate_submit_script(job, context, submit_file)
+        return self.generator.render(job, context)
 
-    def get_submit_command(self, job: Job, submit_file_path: Path) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_submit_command`."""
+    def get_submit_command(self, job: BaseJob, submit_file_path: Path) -> List[str]:
+        """See :meth:`~.BatchScheduler.get_submit_command`."""
         return ["bsub", str(submit_file_path.absolute())]
 
     def get_cancel_command(self, native_id: str) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_cancel_command`.
+        """See :meth:`~.BatchScheduler.get_cancel_command`.
 
         ``bkill`` will exit with an error set if the job does not exist
         or has already finished.
@@ -93,7 +88,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         return ["bkill", native_id]
 
     def process_cancel_command_output(self, exit_code: int, out: str) -> None:
-        """See :meth:`~.BatchSchedulerExecutor.process_cancel_command_output`.
+        """See :meth:`~.BatchScheduler.process_cancel_command_output`.
 
         Check if the error was raised only because a job already exited.
         """
@@ -101,7 +96,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
             raise SubmitException(out)
 
     def get_status_command(self, native_ids: Collection[str]) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_status_command`."""
+        """See :meth:`~.BatchScheduler.get_status_command`."""
         return [
             _BJOBS_COMMAND,
             "-o",
@@ -112,7 +107,7 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         ]
 
     def parse_status_output(self, exit_code: int, out: str) -> Dict[str, JobStatus]:
-        """See :meth:`~.BatchSchedulerExecutor.parse_status_output`.
+        """See :meth:`~.BatchScheduler.parse_status_output`.
 
         Iterate through the RECORDS entry, grabbing JOBID and STAT entries, as well
         as any state-change reasons if present.
@@ -133,17 +128,33 @@ class LsfJobExecutor(BatchSchedulerExecutor):
         return status_map
 
     def job_id_from_submit_output(self, out: str) -> str:
-        """See :meth:`~.BatchSchedulerExecutor.job_id_from_submit_output`."""
+        """See :meth:`~.BatchScheduler.job_id_from_submit_output`."""
         match = _BSUB_REGEX.search(out)
         if match is None:
             raise SubmitException(out)
         return match.group(0)[5:-1]
 
     def get_list_command(self) -> List[str]:
-        """See :meth:`~.BatchSchedulerExecutor.get_list_command`."""
+        """See :meth:`~.BatchScheduler.get_list_command`."""
         return [_BJOBS_COMMAND, '-a', '-noheader', '-o', 'jobid', '-u', self._current_user()]
 
     def _format_duration(self, d: timedelta) -> str:
         # https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=o-w-1:
         #   bsub -W [hour:]minute[/host_name | /host_model]
         return "%s:%s" % (int(d.total_seconds()) // 3600, (d.seconds // 60) % 60)
+
+
+class LsfJobExecutor(SyncBatchSchedulerExecutor):
+    """Synchronous job executor for LSF."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return LsfScheduler, LsfExecutorConfig
+
+
+class AsyncLsfJobExecutor(AsyncBatchSchedulerExecutor):
+    """Asynchronous job executor for LSF."""
+
+    def get_concrete_classes(self) \
+            -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+        return LsfScheduler, LsfExecutorConfig

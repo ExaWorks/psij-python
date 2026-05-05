@@ -2,9 +2,21 @@ from packaging.version import Version
 from psij.descriptor import Descriptor
 
 
-__PSI_J_EXECUTORS__ = [Descriptor(name='pbs', nice_name='PBS Pro', aliases=['pbspro'],
-                                  version=Version('0.2.0'),
-                                  cls='psij.executors.batch.pbs.PBSJobExecutor'),
-                       Descriptor(name='pbs_classic', nice_name='PBS Classic', aliases=['torque'],
-                                  version=Version('0.2.0'),
-                                  cls='psij.executors.batch.pbs_classic.PBSClassicJobExecutor')]
+__PSI_J_EXECUTORS__ = [
+    Descriptor(name='pbs', nice_name='PBS Pro', aliases=['pbspro'],
+               version=Version('0.3.0'),
+               cls='psij.executors.batch.pbs.PBSJobExecutor'),
+    Descriptor(name='pbs_classic', nice_name='PBS Classic', aliases=['torque'],
+               version=Version('0.3.0'),
+               cls='psij.executors.batch.pbs_classic.PBSClassicJobExecutor')
+]
+
+
+__PSI_J_ASYNC_EXECUTORS__ = [
+    Descriptor(name='pbs', nice_name='PBS Pro', aliases=['pbspro'],
+               version=Version('0.3.0'),
+               cls='psij.executors.batch.pbs.AsyncPBSJobExecutor'),
+    Descriptor(name='pbs_classic', nice_name='PBS Classic', aliases=['torque'],
+               version=Version('0.3.0'),
+               cls='psij.executors.batch.pbs_classic.AsyncPBSClassicJobExecutor')
+]

@@ -18,6 +18,7 @@ PSIJ_NODEFILE={{psij.nodefile}} \
 {{#psij.launch_command}}{{.}} {{/psij.launch_command}}
 _PSIJ_JOB_EC="$?"
 set -e
+ _psij_update_status "LOG Executable done. Exit code: $_PSIJ_JOB_EC"
 
 {{> stageout}}
 {{> cleanup}}

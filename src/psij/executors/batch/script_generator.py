@@ -1,13 +1,42 @@
 import pathlib
-from abc import ABC
+import re
+from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Dict, Callable, IO, Optional
+from functools import partial
+from typing import Dict, Callable, IO, Optional, Iterable
 
 import pystache
+from pystache.parser import ParsedTemplate, NON_BLANK_RE, _PartialNode
 
-from psij import Job, JobExecutorConfig
+from psij import JobExecutorConfig
 from .escape_functions import bash_escape
+from ...base_job import BaseJob
 
+
+# We monkey-patch the render method of pystache to allow pre-parsed partials.
+# Otherwise, partials that are virtually immutable are re-parsed on every render
+def patched_render(self, engine, context):
+    template = engine.resolve_partial(self.key)
+    if isinstance(template, ParsedTemplate):
+        return template.render(engine, context)
+    else:
+        # Indent before rendering.
+        template = re.sub(NON_BLANK_RE, self.indent + r'\1', template)
+
+        return engine.render(template, context)
+
+
+_PartialNode.render = patched_render
+
+
+def _load_partial(partials, prev, name):
+    try:
+        partial = partials[name]
+        if isinstance(partial, ParsedTemplate):
+            return partial
+    except KeyError:
+        pass
+    return prev(name)
 
 class _Renderer(pystache.Renderer):  # type: ignore
     def str_coerce(self, val: object) -> str:
@@ -17,6 +46,9 @@ class _Renderer(pystache.Renderer):  # type: ignore
             return str(int(val))
         else:
             return super().str_coerce(val)  # type: ignore
+
+    def _make_load_partial(self):
+        return partial(_load_partial, self.partials, super()._make_load_partial())
 
 
 class SubmitScriptGenerator(ABC):
@@ -39,12 +71,17 @@ class SubmitScriptGenerator(ABC):
         """
         self.config = config
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
+    def generate_submit_script(self, job: BaseJob,
+                               context: Dict[str, object], out: IO[str]) -> None:
         """Generates a job submit script.
 
-        Concerete implementations of submit script generators must implement this method. Its
+        Concrete implementations of submit script generators must implement this method. Its
         purpose is to generate the content of the submit script. For an extensive explanation of
         the mechanism behind this process, see :class:`~.BatchSchedulerExecutor`.
+
+        .. deprecated:: 0.9.12
+           This method is incompatible with various asyncio file libraries. Use
+           :func:`render` instead.
 
         Parameters
         ----------
@@ -56,6 +93,34 @@ class SubmitScriptGenerator(ABC):
         out
             An opened file-like object to which the contents of the submit script should be
             written.
+        """
+        for chunk in self.render(job, context):
+            out.write(chunk)
+
+    @abstractmethod
+    def render(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """
+        Renders a submit script as a collection of strings.
+
+        Concrete implementations of submit script generators must implement this method. Its
+        purpose is to generate the content of the submit script. For an extensive explanation of
+        the mechanism behind this process, see :class:`~.BatchSchedulerExecutor`. The submit
+        script is returned as an iterable that produces strings which are written consecutively
+        to a file.
+
+        Parameters
+        ----------
+        job
+            The job for which the submit script is to be generated.
+        context
+            A dictionary containing information about the context in which the job is being
+            submitted. For details, see :class:`~.BatchSchedulerExecutor`.
+
+        Returns
+        -------
+        An iterable with the contents of the submit script split in one or more consecutive
+        chunks.
+
         """
         pass
 
@@ -81,14 +146,23 @@ class TemplatedScriptGenerator(SubmitScriptGenerator):
             strings for use in bash scripts is used.
         """
         super().__init__(config)
-        with template_path.open('r') as template_file:
-            self.template = pystache.parse(template_file.read())
+        self.template = self._read_template(template_path)
         common_dir = pathlib.Path(__file__).parent / 'common'
-        self.renderer = _Renderer(escape=escape, search_dirs=[str(common_dir)])
+        partials = {}
 
-    def generate_submit_script(self, job: Job, context: Dict[str, object], out: IO[str]) -> None:
-        """See :func:`~SubmitScriptGenerator.generate_submit_script`.
+        for partial in ['batch_lib', 'stagein', 'stageout', 'cleanup']:
+            partials[partial] = self._read_template(common_dir / f'{partial}.mustache')
+
+        self.renderer = _Renderer(escape=escape, partials=partials,
+                                  search_dirs=[str(common_dir)])
+
+    def _read_template(self, path: pathlib.Path) -> ParsedTemplate:
+        with path.open('r') as template_file:
+            return pystache.parse(template_file.read())
+
+    def render(self, job: BaseJob, context: Dict[str, object]) -> Iterable[str]:
+        """See :func:`~SubmitScriptGenerator.render`.
 
         Renders a submit script using the template specified when this generator was constructed.
         """
-        out.write(self.renderer.render(self.template, context))
+        return [self.renderer.render(self.template, context)]

@@ -5,6 +5,8 @@ import shlex
 import signal
 import subprocess
 import threading
+from datetime import timedelta
+
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -149,7 +151,10 @@ class _ProcessReaper(SingletonThread):
         while True:
             with self._lock:
                 for entry in done:
-                    del self._jobs[entry.job]
+                    try:
+                        del self._jobs[entry.job]
+                    except KeyError:
+                        pass
                 jobs = dict(self._jobs)
             try:
                 done = self._check_processes(jobs)
@@ -263,9 +268,9 @@ class LocalJobExecutor(JobExecutor):
 
         Successful return of this method indicates that the job has been started locally and all
         changes in the job status, including failures, are reported using notifications. If the job
-        specification is invalid, an :class:`~psij.InvalidJobException` is thrown. If
+        specification is invalid, an :class:`~.InvalidJobException` is thrown. If
         the actual submission fails for reasons outside the validity of the job,
-        a :class:`~psij.SubmitException` is thrown.
+        a :class:`~.SubmitException` is thrown.
 
         :param job: The job to be submitted.
         """
@@ -306,7 +311,7 @@ class LocalJobExecutor(JobExecutor):
             p.process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                          close_fds=True, cwd=spec.directory)
             self._reaper.register(p)
-            job._native_id = p.process.pid
+            job.native_id = str(p.process.pid)
             self._set_job_status(job, JobStatus(JobState.QUEUED, time=time.time(),
                                                 metadata={'nativeId': job._native_id}))
         except Exception as ex:
@@ -382,14 +387,14 @@ class LocalJobExecutor(JobExecutor):
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as obtained through
-            :func:`~psij.executors.LocalJobExecutor.list` method.
+            :meth:`~.JobExecutor.list` method.
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')
         job.executor = self
         pid = int(native_id)
 
-        job._native_id = pid
+        job.native_id = str(pid)
         self._status_updater.register_job(job, self)
         self._reaper.register(_AttachedProcessEntry(job, psutil.Process(pid), self))
         # We assume that the native_id above is a PID that was obtained at some point using
@@ -403,3 +408,10 @@ class LocalJobExecutor(JobExecutor):
             return 'single'
         else:
             return spec.launcher
+
+    def disconnect(self, validity: Optional[timedelta] = None) -> str:
+        return 'local'
+
+    def reconnect(self, session: str) -> None:
+        pass
+

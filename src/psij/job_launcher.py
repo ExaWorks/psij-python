@@ -3,10 +3,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Set
 
+from psij.base_job import BaseJob
 from psij.descriptor import Descriptor, _VersionEntry
 from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
 from psij.job_executor_config import JobExecutorConfig
-from psij.job import Job
 
 
 class Launcher(ABC):
@@ -25,7 +25,7 @@ class Launcher(ABC):
         self.config = config
 
     @abstractmethod
-    def get_launch_command(self, job: Job) -> List[str]:
+    def get_launch_command(self, job: BaseJob) -> List[str]:
         """
         Constructs a command to launch a job given a job specification.
 

@@ -1,32 +1,60 @@
 import logging
-from abc import ABC, abstractmethod
-from packaging.version import Version
-from threading import RLock
-from typing import Optional, Dict, List, Type, cast, Union, Callable, Set
+from abc import abstractmethod
+from datetime import timedelta
+from typing import Optional, Dict, List, Type, Set, Union, Callable
 
 import psij
-from psij import InvalidJobException
-from psij.descriptor import Descriptor, _VersionEntry
-from psij._plugins import _register_plugin, _get_plugin_class, _print_plugin_status
+from psij.base_job import BaseJob
+from psij.job_spec import JobSpec
+from psij.async_job import AsyncJob
 from psij.job_state import JobState
+from psij.exceptions import JobException, InvalidJobException
 from psij.job_status import JobStatus
+from psij._base_executor import BaseExecutor
+from psij.descriptor import Descriptor, _VersionEntry
+from psij._plugins import _register_plugin, _print_plugin_status
 from psij.job import Job, JobStatusCallback, FunctionJobStatusCallback
 from psij.job_executor_config import JobExecutorConfig
-from psij.job_launcher import Launcher
-from psij.job_spec import JobSpec
-from psij.resource_spec import ResourceSpecV1
 
 
 logger = logging.getLogger(__name__)
 
 
-_DEFAULT_RESOURCES = ResourceSpecV1()
+class JobExecutor(BaseExecutor):
+    """An abstract base class for all synchronous JobExecutor implementations.
 
+    Job executors implement all the concrete functionality required to run
+    PSI/J jobs on specific types of resources, such as batch schedulers. The
+    essential functionality of a job executor is encapsulated by the
+    :meth:`~.JobExecutor.submit` method:
 
-class JobExecutor(ABC):
-    """An abstract base class for all JobExecutor implementations."""
+    .. code-block:: python
 
-    _executors: Dict[str, List[_VersionEntry['JobExecutor']]] = {}
+        ex = JobExecutor.get_instance("<name>")
+        job = Job(...)
+
+        ex.submit(job)
+
+    The ``submit`` method starts the job on the resource that the executor
+    manages, tracks the job execution cycle, and sends status updates to the
+    job.
+
+    In addition to submitting jobs, job executors provide the following
+    functionality:
+
+        * Listing current active jobs (whether submitted by the executor or
+          other means) through :meth:`~.JobExecutor.list`.
+        * Attaching a :class:`~psij.Job` object to an active job (whether
+          submitted by this executor or other means).
+        * Session management for executors that connect to remote services;
+          this allows clients to submit jobs, disconnect, then re-connect later
+          with the service maintaining job information between connections
+          (see. :meth:`~psij.JobExecutor.disconnect` and
+          :meth:`~psij.JobExecutor.reconnect`.
+
+    """
+
+    _executors: Dict[str, List[_VersionEntry[BaseExecutor]]] = {}
 
     def __init__(self, url: Optional[str] = None,
                  config: Optional[JobExecutorConfig] = None):
@@ -39,80 +67,9 @@ class JobExecutor(ABC):
             must pass a default configuration up the inheritance tree and ensure that the
             `config` parameter of the ABC constructor is non-null.
         """
-        self.url = url
-        assert config
-        self.config = config
+        super().__init__(url, config)
         # _cb is not thread-safe; changing it while jobs are running could lead to badness
         self._cb: Optional[JobStatusCallback] = None
-        self._launchers_lock = RLock()
-        self._launchers: Dict[str, Launcher] = {}
-
-    @property
-    def name(self) -> str:
-        """Returns the name of this executor."""
-        # The _NAME_ class attribute is set by the instantiation mechanism. This is only done to
-        # avoid name duplication/matching issues (name defined by the descriptor vs. name defined
-        # statically by a pre-set _NAME_attribute), but is not otherwise necessary to do so. In
-        # other words, one could very well return a static value here and ensure that the
-        # descriptor has the same name for this class.
-        return cast(str, getattr(self.__class__, '_NAME_'))
-
-    @property
-    def version(self) -> Version:
-        """Returns the version of this executor."""
-        return cast(Version, getattr(self.__class__, '_VERSION_'))
-
-    def _check_job(self, job: Job) -> JobSpec:
-        """
-        Checks a job for consistency and correctness.
-
-        Verifies that various aspects of the job are correctly specified. This includes precisely
-        the following checks:
-        * the job has a non-null specification
-        * job.spec.environment is a Dict[str, [str | int]]
-
-        While this method makes a fair attempt at ensuring the validity of the job, it makes no
-        such guarantees. Specifically, if an executor implementation requires checks not listed
-        above, it should implement them explicitly.
-
-        These checks are meant to trigger common runtime type errors somewhat early and with clear
-        error messages. In production software, these checks can be disabled by invoking Python
-        with one of the optimization flags (`-O` or `-OO`).
-
-        Upon completion, this method sets the :attr:`~psij.Job.executor` attribute of the job and
-        returns the job specification.
-
-        Parameters
-        ----------
-        job
-            The job to validate
-
-        Returns
-        -------
-            A non-null job specification
-        """
-        if job.status.state != JobState.NEW:
-            raise InvalidJobException('Job must be in NEW state')
-        spec = job.spec
-        if not spec:
-            raise InvalidJobException('Missing specification')
-        if not spec.resources:
-            spec.resources = _DEFAULT_RESOURCES
-
-        if __debug__:
-            if spec.environment is not None:
-                for k, v in spec.environment.items():
-                    if not isinstance(k, str):
-                        raise TypeError('environment key "%s" is not a string (%s)'
-                                        % (k, type(k).__name__))
-                    if not isinstance(v, (str, int)):
-                        raise TypeError('environment value for key "%s" must be string '
-                                        'or int type (%s)' % (k, type(v).__name__))
-
-        if job.executor is not None:
-            raise InvalidJobException('Job is already associated with an executor')
-        job.executor = self
-        return spec
 
     @abstractmethod
     def submit(self, job: Job) -> None:
@@ -141,6 +98,24 @@ class JobExecutor(ABC):
             reasons that are transient.
         """
         pass
+
+    def run(self, job: Job) -> None:
+        """
+        A convenience method to submit and wait for a job to complete.
+
+        Parameters
+        ----------
+        job
+            The job to run.
+        timeout
+            A maximum amount of time that the job is allowed to run.
+        """
+        self.submit(job)
+        status = job.wait()
+        assert status is not None
+        if status.state == JobState.FAILED:
+            raise JobException(status.message, status.exit_code)
+
 
     @abstractmethod
     def cancel(self, job: Job) -> None:
@@ -182,13 +157,12 @@ class JobExecutor(ABC):
         Attaches a job to a native job.
 
         :param job: A job to attach. The job must be in the :attr:`~psij.JobState.NEW` state.
-        :param native_id: The native ID to attach to as returned by :attr:`~psij.Job.native_id`.
+        :param native_id: The native ID to attach to as returned by :attr:`~psij.BaseJob.native_id`.
         """
         pass
 
-    def set_job_status_callback(self,
-                                cb: Union[JobStatusCallback,
-                                          Callable[[Job, 'psij.JobStatus'], None]]) -> None:
+    def set_job_status_callback(self, cb: Union[JobStatusCallback,
+                                Callable[[Job, 'psij.JobStatus'], None]]) -> None:
         """
         Registers a status callback with this executor.
 
@@ -208,6 +182,131 @@ class JobExecutor(ABC):
         else:
             self._cb = FunctionJobStatusCallback(cb)
 
+    @abstractmethod
+    def disconnect(self, validity: Optional[timedelta] = None) -> str:
+        """
+        Suspends the connection to the service while maintaining the session.
+
+        For executors that use a client/service architecture, this method is
+        used to inform the service that this executor instance will stop being
+        used and that the service should keep a record of the jobs submitted by
+        this executor to be retrieved later. The method returns a session ID
+        which can be used to re-connect to the service later.
+
+        Executors that do not support session management should provide no-op
+        implementations for this method, as well as the
+        :meth:`~psij.JobExecutor.reconnect` method. The no-op ``disconnect``
+        method should return a fixed string, indicating that a single shared
+        session is in use.
+
+        Using this method in conjunction with
+        :meth:`~psij.JobExecutor.reconnect`, executors can add simple session
+        management that allows them to disconnect and reconnect from/to services
+        for extended periods of time without losing job information. Sessions
+        are not the default and long term job information persistence must be
+        requested explicitly. Furthermore, remote services that maintain the
+        actual session may impose upper bounds on the amount of time that job
+        information can be persisted. However, services must also provide
+        reasonable minimum persistence times as follows:
+
+            * when an executor requests persistence using the ``disconnect``
+              method, completed job information should be kept for a minimum of
+              24 hours after the disconnect request.
+            * for clients not requesting persistence, completed job information
+              should be kept for a minimum of 10 minutes in order to give clients
+              reasonable time to reconnect after a transient network failure.
+
+
+        Upon return from this method, this executor instance cannot be used for
+        further job operations nor will it receive job status updates unless
+        reconnected at a later time. This method returns a session ID that can
+        be used to reconnect this or another executor instance to the service.
+
+        The typical scenario for persistence is when client code needs to use
+        different OS level processes to submit and monitor jobs. A possible
+        scenario is as follows:
+
+        .. code-block:: python
+
+            ex1 = JobExecutor.get_instance('REST', url='https://example.org')
+            job = Job(...)
+            ex1.submit(job)
+            session_id = ex1.suspend_connection()
+
+            write_to_file('pid.txt', session_id)
+            write_to_file('jid.txt', job.native_id)
+
+
+        Then, in a subsequent process:
+
+        .. code-block:: python
+
+            session_id = read_from_file('pid.txt')
+            native_id = read_from_file('jid.txt')
+            ex2 = JobExecutor.get_instance('REST', url='https://example.org')
+            ex2.resume_connection(session_id)
+            job = Job()
+            ex2.attach(job, native_id)
+            print(job.status)
+
+        If further persistence is required after an executor is re-connected,
+        the new executor instance must also call the `suspend_connection`
+        method.
+
+        Parameters
+        ----------
+        validity
+            The minimum amount of time that the service should persist job
+            information when no executor is connected to it. Service
+            implementations should, at a minimum, honor a 24 hour validity.
+            If the requested validity cannot be honored by the service, this
+            method raises a `ValueError`. If the requested validity is zero or
+            ``None``, the service should provide the maximum supported validity.
+
+        Returns
+        -------
+        A string representing the session ID, which can later be used by the
+        :meth:`~psij.JobExecutor.reconnect` method.
+
+        Raises
+        ------
+        ValidityError
+            This exception is raised if the service cannot honor the requested
+            validity. The exception object will contain the maximum supported
+            validity for this service in the ``max`` attribute.
+        """
+        pass
+
+    @abstractmethod
+    def reconnect(self, session: str) -> None:
+        """
+        Reconnects to a previously suspended session.
+
+        This method allows a new instance of a :class:`~psij.JobExecutor`
+        to connect to a service using a previously retrieved session ID (using
+        the :meth:`~psij.JobExecutor.disconnect` method). The executor can then
+        query the status of jobs submitted by previous executors within the same
+        session.
+
+        Parameters
+        ----------
+        session_id
+            The ID of the session to re-connect to.
+
+        """
+        pass
+
+    def _set_job_status(self, job: Job, status: JobStatus) -> None:
+        job.status = status
+
+    def _notify_callback(self, job: Job, status: JobStatus) -> None:
+        if self._cb:
+            try:
+                self._cb.job_status_changed(job, status)
+            except Exception as ex:
+                logger.warning('Job status callback for %s threw an exception:',
+                               job.id, exc_info=ex)
+
     def __str__(self) -> str:
         """Returns a string representation of this executor."""
         if self.url is not None:
@@ -219,7 +318,8 @@ class JobExecutor(ABC):
                                                 getattr(self.__class__, '_VERSION_'))
 
     @staticmethod
-    def get_instance(name: str, version_constraint: Optional[str] = None, url: Optional[str] = None,
+    def get_instance(name: str, version_constraint: Optional[str] = None,
+                     url: Optional[str] = None,
                      config: Optional[JobExecutorConfig] = None) -> 'JobExecutor':
         """
         Returns an instance of a `JobExecutor`.
@@ -235,14 +335,10 @@ class JobExecutor(ABC):
         :return: A JobExecutor.
         """
         # might want to cache these instances if url and config match
-        selected = _get_plugin_class(name, version_constraint, 'executor', JobExecutor._executors)
-
-        assert selected.ecls is not None
-        assert issubclass(selected.ecls, JobExecutor)
-        setattr(selected.ecls, '_NAME_', name)
-        setattr(selected.ecls, '_VERSION_', selected.version)
-        instance = selected.ecls(url=url, config=config)
-        return instance
+        exec = BaseExecutor._get_instance(name, version_constraint, url, config,
+                                          False, JobExecutor._executors)
+        assert isinstance(exec, JobExecutor)
+        return exec
 
     @staticmethod
     def register_executor(desc: Descriptor, root: str) -> None:
@@ -288,23 +384,8 @@ class JobExecutor(ABC):
         """
         return set(JobExecutor._executors.keys())
 
-    def _get_launcher(self, name: str, version_constraint: Optional[str] = None) -> Launcher:
-        with self._launchers_lock:
-            if name not in self._launchers:
-                self._launchers[name] = Launcher.get_instance(name,
-                                                              version_constraint=version_constraint,
-                                                              config=self.config)
-            return self._launchers[name]
-
-    def _set_job_status(self, job: Job, status: JobStatus) -> None:
-        try:
-            job.status = status
-        except Exception as ex:
-            logger.warning('Failed to set status for job %s: %s', job.id, ex)
-
-    def _notify_callback(self, job: Job, status: JobStatus) -> None:
-        if self._cb:
-            try:
-                self._cb.job_status_changed(job, status)
-            except Exception as ex:
-                logger.warning('Job status callback for %s threw an exception: %s', job.id, ex)
+    def _check_job(self, job: BaseJob) -> JobSpec:
+        if isinstance(job, AsyncJob):
+            raise InvalidJobException('Sync executors cannot handle AsyncJob instances. '
+                                      'Please use Job.')
+        return super()._check_job(job)
