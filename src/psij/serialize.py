@@ -1,18 +1,84 @@
+import collections.abc
 import inspect
 import json
+import logging
 import typing
 from abc import ABC, abstractmethod
 from datetime import timedelta
+from enum import Enum
 from io import StringIO, TextIOBase
-from pathlib import Path
-from typing import Optional, Dict, Union, List, IO, AnyStr, TextIO
+from pathlib import Path, PosixPath, PurePath
+from typing import Optional, Dict, Union, List, IO, AnyStr, TextIO, Tuple
 
-from psij import ResourceSpec
+from psij import ResourceSpec, ResourceSpecV1
 from psij.job_attributes import JobAttributes
 from psij.job_spec import JobSpec
+from psij.job_status import JobStatus
+from psij.job_state import JobState
+from psij.staging import StageOut, StageIn, URI
+
+logger = logging.getLogger(__name__)
 
 
 NoneType = type(None)
+
+
+PSIJSerializable = Union[JobSpec, JobStatus]
+
+
+def _canonicalize_type(t: type) -> type:
+    # generics don't appear to be subclasses of Type, so we can't really use Type for t
+    origin = typing.get_origin(t)
+    if origin == Optional:
+        # Python converts Optional[T] to Union[T, None], so this shouldn't happen
+        r = typing.get_args(t)[0]
+    elif origin == Union:
+        args = typing.get_args(t)
+        if args[0] == NoneType:
+            r = args[1]
+        elif args[1] == NoneType:
+            r = args[0]
+        else:
+            r = t
+    else:
+        r = t
+    # assert isinstance(r, type)  # List[T] is in fact not an instance of type
+    return r  # type: ignore
+
+
+def _get_typing_info(t: type) -> Dict[str, Tuple[type, object]]:
+    sig = inspect.signature(getattr(t, '__init__'))
+    types = typing.get_type_hints(getattr(t, '__init__'))
+    r = {}
+
+    for name, param in sig.parameters.items():
+        if name == 'self' or name.startswith('__'):
+            continue
+        t = _canonicalize_type(types[name])
+        r[name] = (t, param.default)
+    return r
+
+
+def _init_typing_info() -> Dict[type, Dict[str, Tuple[type, object]]]:
+    sigs = {}
+    for t in [JobSpec, ResourceSpecV1, JobAttributes, JobStatus, StageIn, StageOut]:
+        sigs[t] = _get_typing_info(t)
+    return sigs
+
+
+_SIGNATURES = _init_typing_info()
+
+
+def _signature(t: type) -> Dict[str, Tuple[type, object]]:
+    try:
+        return _SIGNATURES[t]
+    except KeyError:
+        import traceback
+        traceback.print_stack()
+        logger.warning('Missing cached signature for %s', t)
+        r = _get_typing_info(t)
+        _SIGNATURES[t] = r
+        return r
 
 
 class Serializer(ABC):
@@ -31,24 +97,25 @@ class Serializer(ABC):
     methods to bypass the intermediate representations and implement (de)serialization directly.
     """
 
-    def dump(self, spec: JobSpec, stream: IO[AnyStr]) -> None:
+    def dump(self, obj: PSIJSerializable, stream: IO[AnyStr]) -> None:
         """
-        Serialize the given :class:`~psij.JobSpec` and write the results to `stream`.
+        Serialize the given :class:`~psij.serialize.PSIJSerializable`.
 
         Parameters
         ----------
-        spec
-            The :class:`~psij.JobSpec` to serialize.
+        obj
+            The :class:`~psij.serialize.PSIJSerializable` object to serialize.
         stream
-            A stream to write the serialized `JobSpec` to. Concrete serializers may require that
+            A stream to write the serialized object to. Concrete serializers may require that
             the stream be a binary or text stream.
         """
         # all `_from_*` methods relate to serialization
-        self._dump_dict(self._from_spec(spec), stream)
+        self._dump_dict(self._from_psij_object(obj), stream)
 
-    def load(self, stream: IO[AnyStr]) -> JobSpec:
+    def load(self, stream: IO[AnyStr]) -> PSIJSerializable:
         """
-        Deserialize the contents of a stream to an instance of :class:`~psij.JobSpec`.
+        Deserialize the contents of a stream to an instance of
+        :class:`~psij.serialize.PSIJSerializable`
 
         Parameters
         ----------
@@ -57,33 +124,48 @@ class Serializer(ABC):
             the stream be a binary or text stream.
         Returns
         -------
-        The deserialized `JobSpec` instance.
+        The deserialized object.
         """
         # all `_tp_*` methods relate to deserialization
-        return self._to_spec(self._load_dict(stream))
+        return self._to_psij_object(self._load_dict(stream))
 
-    def dumps(self, spec: JobSpec) -> str:
+    def dumps(self, obj: PSIJSerializable) -> str:
         """
-        Serialize the given :class:`~psij.JobSpec` to a string.
+        Serialize the given :class:`~psij.serialize.PSIJSerializable` to a string.
 
         Serializer implementations that use a binary protocol must override this method and raise
         an error.
 
         Parameters
         ----------
-        spec
-            The :class:`~psij.JobSpec` to serialize.
+        obj
+            The :class:`~psij.serialize.PSIJSerializable` to serialize.
         Returns
         -------
-        A string representation of the `spec`.
+        A string representation of the object.
         """
         f = StringIO()
-        self.dump(spec, f)
+        self.dump(obj, f)
         return f.getvalue()
 
-    def loads(self, s: str) -> JobSpec:
+    def dumpd(self, obj: PSIJSerializable) -> Dict[str, object]:
         """
-        Deserialize a :class:`~psij.JobSpec` from a string.
+        Converts the given object to a dictionary representation.
+
+        Parameters
+        ----------
+        obj
+            The object to convert.
+
+        Returns
+        -------
+            A dictionary representing the object.
+        """
+        return self._from_psij_object(obj)
+
+    def loads(self, s: str) -> PSIJSerializable:
+        """
+        Deserialize a :class:`~psij.serialize.PSIJSerializable` from a string.
 
         Serializer implementations that use a binary protocol must override this method and raise
         an error.
@@ -91,13 +173,29 @@ class Serializer(ABC):
         Parameters
         ----------
         s
-            The string containing the serialized representation of a `JobSpec`.
+            The string containing the serialized representation of the object.
         Returns
         -------
-        The deserialized `JobSpec` instance.
+        The deserialized object.
         """
         f = StringIO(s)
         return self.load(f)
+
+    def loadd(self, d: Dict[str, object]) -> PSIJSerializable:
+        """
+        Converts a dictionary/list representation of an object to an instance.
+
+        Parameters
+        ----------
+        d
+            A dictionary obtained using :meth:`~psij.serialize.Serializer.dumpd`.
+
+        Returns
+        -------
+            An instance of a :class:`~psij.serialize.PSIJSerializable` represented
+            by `d`.
+        """
+        return self._to_psij_object(d)
 
     @abstractmethod
     def _dump_dict(self, dict: Dict[str, object], stream: IO[AnyStr]) -> None:
@@ -107,22 +205,15 @@ class Serializer(ABC):
     def _load_dict(self, stream: IO[AnyStr]) -> Dict[str, object]:
         pass
 
-    def _from_spec(self, o: JobSpec) -> Dict[str, object]:
-        return self._from_psij_object(o)
-
-    def _from_psij_object(self, o: Union[JobSpec, JobAttributes, ResourceSpec]) \
-            -> Dict[str, object]:
+    def _from_psij_object(self, o: Union[JobSpec, JobAttributes, ResourceSpec, JobStatus,
+                          JobState]) -> Dict[str, object]:
         r = {}
 
-        sig = inspect.signature(o.__class__.__init__)
-        types = typing.get_type_hints(o.__class__.__init__)
+        sig = _signature(o.__class__)
 
-        for name, param in sig.parameters.items():
-            if name == 'self':
-                continue
-            t = self._canonicalize_type(types[name])
+        for name, (t, default) in sig.items():
             value = getattr(o, name)
-            if value != param.default:
+            if value != default:
                 # only explicitly serialize if it's not the default
                 r[name] = self._from_object(value, t)
 
@@ -132,37 +223,24 @@ class Serializer(ABC):
 
         return r
 
-    def _canonicalize_type(self, t: object) -> object:
-        # generics don't appear to be subclasses of Type, so we can't really use Type for t
-        origin = typing.get_origin(t)
-        if origin == Optional:
-            # Python converts Optional[T] to Union[T, None], so this shouldn't happen
-            return typing.get_args(t)[0]
-        elif origin == Union:
-            args = typing.get_args(t)
-            if args[0] == NoneType:
-                return args[1]
-            elif args[1] == NoneType:
-                return args[0]
-            else:
-                return t
-        else:
-            return t
-
     def _from_object(self, o: object, t: object) -> object:
         if isinstance(t, type) and inspect.isclass(t):
-            if issubclass(t, JobAttributes):
-                assert isinstance(o, JobAttributes)
-                return self._from_psij_object(o)
-            if issubclass(t, ResourceSpec):
-                assert isinstance(o, ResourceSpec)
-                return self._from_psij_object(o)
-            if str == t or Path == t:
+            for cls in [JobAttributes, ResourceSpec, JobStatus, StageIn, StageOut]:
+                if issubclass(t, cls):
+                    assert isinstance(o, cls)
+                    return self._from_psij_object(o)  # type: ignore
+            if issubclass(t, Enum):
+                assert isinstance(o, Enum)
+                return o.value
+            if str == t or issubclass(t, PurePath):
                 return str(o)
             if bool == t:
                 return bool(o)
             if int == t:
                 assert isinstance(o, int)
+                return o
+            if float == t:
+                assert isinstance(o, float)
                 return o
             if issubclass(t, timedelta):
                 assert isinstance(o, timedelta)
@@ -170,13 +248,19 @@ class Serializer(ABC):
         else:
             if t == Union[str, Path] or t == Optional[Union[str, Path]]:
                 return str(o)
-            if typing.get_origin(t) == dict:
+            if t == Union[URI, Path, str] or t == Optional[Union[URI, Path, str]]:
+                return str(o)
+            origin = typing.get_origin(t)
+            if origin == dict:
                 assert isinstance(o, dict)
                 return self._from_dict(o)
-            if typing.get_origin(t) == list:
-                assert isinstance(o, list)
-                return self._from_list(o)
-        raise ValueError('Cannot convert type "%s".' % t)
+            if origin == list or origin == collections.abc.Iterable:
+                assert isinstance(o, typing.Iterable)
+                return self._from_iterable(o)
+            if origin == set:
+                assert isinstance(o, set)
+                return self._from_iterable(o)
+        raise ValueError('Cannot serialize type "%s".' % t)
 
     def _from_dict(self, d: Dict[object, object]) -> Dict[str, object]:
         r = {}
@@ -188,8 +272,8 @@ class Serializer(ABC):
             r[k] = self._from_object(v, type(v))
         return r
 
-    def _from_list(self, lst: List[object]) -> List[object]:
-        return [self._from_object(v, type(v)) for v in lst]
+    def _from_iterable(self, l: typing.Iterable[object]) -> List[object]:
+        return [self._from_object(v, type(v)) for v in l]
 
     def _from_timedelta(self, t: timedelta) -> str:
         return "%s s" % t.total_seconds()
@@ -199,47 +283,67 @@ class Serializer(ABC):
         assert isinstance(r, JobSpec)
         return r
 
-    def _to_psij_object(self, d: Dict[str, object], expected_type: type) -> object:
-        processed_keys = set()
+    def _guess_type(self, d: Dict[str, object]) -> type:
+        if 'state' in d:
+            return JobStatus
+        else:
+            return JobSpec
+
+    def _to_psij_object(self, d: Dict[str, object],
+                        expected_type: Optional[type] = None) -> PSIJSerializable:
+        if expected_type is None:
+            expected_type = self._guess_type(d)
 
         if '__version' in d:
             assert hasattr(expected_type, 'get_instance')
             r = getattr(expected_type, 'get_instance')(d['__version'])
+            del d['__version']
             expected_type = r.__class__
-            processed_keys.add('__version')
+            sig = _signature(expected_type)
+            for name, value in d.items():
+                try:
+                    t, default = sig[name]
+                except KeyError:
+                    raise ValueError('Unexpected key "%s"' % name)
+                if value != default:
+                    setattr(r, name, self._to_object(value, t))
         else:
-            r = expected_type()
+            sig = _signature(expected_type)
+            kwargs = {}
+            for name, value in d.items():
+                try:
+                    t, default = sig[name]
+                except KeyError:
+                    raise ValueError('Unexpected key "%s"' % name)
+                if value != default:
+                    kwargs[name] = self._to_object(value, t)
+            r = expected_type(**kwargs)
 
-        sig = inspect.signature(getattr(expected_type, '__init__'))
-        types = typing.get_type_hints(getattr(expected_type, '__init__'))
-
-        for name, param in sig.parameters.items():
-            if name == 'self' or name.startswith('__') or name not in d:
-                continue
-            t = self._canonicalize_type(types[name])
-            value = d[name]
-            if value != param.default:
-                print(name)
-                setattr(r, name, self._to_object(value, t))
-            processed_keys.add(name)
-
-        for name in d.keys():
-            if name not in processed_keys:
-                raise ValueError('Unexpected key "%s"' % name)
-
-        return r
+        return r  # type: ignore
 
     def _to_object(self, s: object, t: object) -> object:
-        if isinstance(t, type) and inspect.isclass(t):
+        if isinstance(t, type):
+            if issubclass(t, StageIn):
+                assert isinstance(s, dict)
+                return self._to_psij_object(s, t)
+            if issubclass(t, StageOut):
+                assert isinstance(s, dict)
+                return self._to_psij_object(s, t)
             if issubclass(t, JobAttributes) or issubclass(t, ResourceSpec):
                 assert isinstance(s, dict)
                 return self._to_psij_object(s, t)
+            if issubclass(t, JobState):
+                assert isinstance(s, int)
+                return JobState(s)
             if str == t or Path == t:
                 return str(s)
             if bool == t:
                 return bool(s)
             if int == t:
                 assert isinstance(s, int)
+                return s
+            if float == t:
+                assert isinstance(s, float)
                 return s
             if issubclass(t, timedelta):
                 assert isinstance(s, str)
@@ -248,13 +352,22 @@ class Serializer(ABC):
             if t == Union[str, Path] or t == Optional[Union[str, Path]]:
                 assert isinstance(s, str)
                 return Path(s)
-            if typing.get_origin(t) == dict:
+            if t == Union[URI, Path, str] or t == Optional[Union[URI, Path, str]]:
+                assert isinstance(s, str)
+                return URI(s)
+            origin = typing.get_origin(t)
+            print(f'Origin: {origin}[{typing.get_args(t)}]')
+            if origin == dict:
                 assert isinstance(s, dict)
                 return self._to_dict(s)
-            if typing.get_origin(t) == list:
+            if origin == list or origin == collections.abc.Iterable:
                 assert isinstance(s, list)
-                return self._to_list(s)
-        raise ValueError('Cannot convert type "%s".' % t)
+                arg = typing.get_args(t)[0]
+                return self._to_list(s, arg)
+            if origin == set:
+                assert isinstance(s, set)
+                return self._to_set(s)
+        raise ValueError('Cannot deserialize type "%s, value: %s".' % (t, s))
 
     def _to_dict(self, d: Dict[str, object]) -> Dict[str, object]:
         r = {}
@@ -268,8 +381,14 @@ class Serializer(ABC):
 
         return r
 
-    def _to_list(self, lst: List[object]) -> List[object]:
-        return [self._to_object(v, type(v)) for v in lst]
+    def _to_list(self, lst: List[object], expected_type: Optional[type] = None) -> List[object]:
+        if expected_type is None:
+            return [self._to_object(v, type(v)) for v in lst]
+        else:
+            return [self._to_object(v, expected_type) for v in lst]
+
+    def _to_set(self, lst: typing.Iterable[object]) -> typing.Set[object]:
+        return {self._to_object(v, type(v)) for v in lst}
 
 
 class JSONSerializer(Serializer):
