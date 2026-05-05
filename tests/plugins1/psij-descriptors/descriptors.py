@@ -18,9 +18,14 @@ __PSI_J_EXECUTORS__ = [
     Descriptor(name='_never_loads', version=Version('0.0.1'),
                cls='_test_plugins1._never_loads_executor.NeverLoadsExecutor'),
     # an executor that exercises some of the batch test stuff
-    Descriptor(name='batch-test', version=Version('0.0.1'),
-               cls='_batch_test._batch_test._TestJobExecutor')
+    Descriptor(name='batch-test', version=Version('0.3.0'),
+               cls='_batch_test._batch_test._BatchTestExecutor')
+]
 
+
+__PSI_J_ASYNC_EXECUTORS__ = [
+    Descriptor(name='batch-test', version=Version('0.3.0'),
+               cls='_batch_test._batch_test._AsyncBatchTestExecutor')
 ]
 
 __PSI_J_LAUNCHERS__ = [
