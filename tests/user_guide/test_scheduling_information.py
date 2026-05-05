@@ -6,7 +6,7 @@ from _test_tools import assert_completed, _get_executor_instance
 
 
 def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
-
+    # DOC: start
     job = Job(
         JobSpec(
             executable="/bin/date",
@@ -17,8 +17,11 @@ def test_user_guide_scheduling_info(execparams: ExecutorTestParams) -> None:
         )
     )
 
+    # DOC: end
     executor = _get_executor_instance(execparams, job)
 
+    # DOC: start
     executor.submit(job)
+    # DOC: end
     status = job.wait()
     assert_completed(job, status)

@@ -3,6 +3,7 @@ from _test_tools import assert_completed
 
 
 def test_user_guide_doc_callbacks() -> None:
+    # DOC: start
     ex = JobExecutor.get_instance('local')
     job = Job(JobSpec('/bin/date'))
 
@@ -14,5 +15,6 @@ def test_user_guide_doc_callbacks() -> None:
 
     job.set_job_status_callback(callback)
     ex.submit(job)
+    # DOC: end
     status = job.wait()
     assert_completed(job, status)

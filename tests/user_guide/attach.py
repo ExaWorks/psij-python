@@ -4,6 +4,7 @@ from psij import Job, JobExecutor, JobState
 
 
 def attach() -> None:
+    # DOC: start
     ex = JobExecutor.get_instance('local')
     native_id = sys.stdin.read().strip()
     job = Job()
@@ -12,6 +13,7 @@ def attach() -> None:
     # we wait until we get a non-NEW status.
     status = job.wait(target_states=[JobState.QUEUED, JobState.ACTIVE, JobState.COMPLETED])
     print(status)
+    # DOC: end
 
 
 if __name__ == '__main__':

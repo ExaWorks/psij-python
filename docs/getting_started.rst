@@ -58,7 +58,7 @@ Basic Usage
 
 The most basic way to use PSI/J looks something like the following:
 
-#. Create a :class:`JobExecutor <psij.job_executor.JobExecutor>` instance.
+#. Create a :class:`JobExecutor <psij.JobExecutor>` instance.
 #. Create a :class:`JobSpec <psij.job_spec.JobSpec>` object and populate
    it with information about your job.
 #. Create a :class:`Job <psij.job.Job>` with that
@@ -84,6 +84,23 @@ The ``executable="/bin/date"`` parameter tells PSI/J that we want the job to run
 the ``/bin/date`` command. Once that command has finished executing
 (which should be almost as soon as the job starts, since ``date`` does very little work)
 the resource manager will mark the job as complete, triggering PSI/J to do the same.
+
+AsyncIO Support
+---------------
+
+PSI/J provides asynchronous versions of job executors and job objects:
+:class:`AsyncJobExecutor <psij.AsyncJobExecutor>` and :class:`AsyncJob <psij.AsyncJob>`. These
+classes can be used in a similar fashion to their synchronous counterparts:
+
+.. literalinclude:: ../tests/getting_started/test_simple_example_async.py
+    :language: python
+    :dedent: 4
+    :lines: 7-11
+
+Most executor implementations come with native synchronous and asynchronous flavors. PSI/J provides
+wrappers for executor implementations that only provide one of the flavors. This guarantees that
+for every synchronous executor type that can be instantiated, a corresponding asynchronous version
+exists and vice-versa.
 
 
 Examples

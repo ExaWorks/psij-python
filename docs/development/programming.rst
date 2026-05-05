@@ -25,10 +25,13 @@ and are not documented by the specification. These are:
 
     - The dynamic executor/launcher loading system.
     - The
-      :class:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor`,
-      an abstract submit-script based LRM executor class, which is a convenient superclass for executors interfacing with typical job schedulers.
+      :class:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor` and
+      :class:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler` classes,
+      which are abstract submit-script based LRM executor classes implementing a convenient
+      skeleton for executors interfacing with typical job schedulers.
     - The abstract script-based launcher, which is a base class for
       launchers that can be conveniently implemented by writing a bash script.
+    - asyncio support using :class:`.AsyncJob` and :class:`.AsyncJobExecutor`.
 
 The Executor Loading System
 ---------------------------
@@ -59,9 +62,10 @@ attempts to load all `.py` files in the `psij-descriptors` package. The
 contain an `__init__.py` file.
 
 Files loaded from `psij-descriptors` (the descriptor files) are then
-interpreted and expected to declare one or both of `__PSI_J_EXECUTORS__` or
-`__PSI_J_LAUNCHERS__` as global variables, which are lists containing one or
-more instances of [Descriptor](#descriptor). The code then iterates over all
+interpreted and expected to declare one or more of `__PSI_J_EXECUTORS__`,
+`__PSI_J_ASYNC_EXECUTORS__`, or `__PSI_J_LAUNCHERS__` as global variables,
+which are lists containing one or more instances of [Descriptor](#descriptor).
+The code then iterates over all
 such instances and calls `psij._plugins._register_plugin()`. The
 `_register_plugin` method attempts to import the class pointed to by the `cls`
 property of the descriptor, which is a string representing a fully qualified
@@ -72,10 +76,24 @@ and that descriptor has `cls='psij.executors.pbs.PBSExecutor'` then the file
 The absence of such a file or class will result in PSI/J being unable to
 register the executor.
 
+Executors implementations are encouraged to provide both synchronous and
+asyncio versions of executors. The :py:mod:`.batch_scheduler_executor`
+module abstracts most of the differences between the two executor versions away
+and requires batch scheduler specific methods to only be specified once.
+However, if only one flavour of executor is provided, PSI/J will automatically
+instantiate wrappers around that flavor that allows it to be exposed using the
+complementary interface. For example, if an executor is only provided as a
+subclass of :class:`.JobExecutor` and only appears in a descriptor under
+`__PSI_J_EXECUTORS__`, the call :meth:`.AsyncJobExecutor.get_instance` will
+instantiate the synchronous version using :meth:`.JobExecutor.get_instance` and
+use a wrapper that implements :class:`.AsyncJobExecutor` while delegating method
+calls to the synchronous instance.
+
 If an error occurs after a descriptor is loaded but before the actual executor
 or launcher class is loaded, that error is stored. Successive attempts to
 instantiate that executor using
-:meth:`psij.JobExecutor.get_instance` or launcher using
+:meth:`psij.JobExecutor.get_instance` (or :
+meth:`.AsyncJobExecutor.get_instance`) or launcher using
 :meth:`psij.Launcher.get_instance` will result in the
 stored exception being raised. This prevents packages with broken
 implementations of executors or launchers from reporting errors unless there
@@ -95,7 +113,25 @@ file that contains all relevant job information. It also assumes that there
 exist commands for cancelling the job and for querying for the status of one
 or more previously submitted jobs.
 
-The general workflow used by the batch scheduler executor to submit a job is as
+The core functionality for a batch scheduler executor is contained in a subclass
+of :class:`.BatchScheduler`. Synchronous and asynchronous executors can then
+be defined simply by subclassing :class:`.SyncBatchSchedulerExecutor` and
+:class:`.AsyncBatchSchedulerExecutor` and implementing their respective
+``_get_concrete_classes`` method::
+
+    class MyJobExecutor(MyBatchSchedulerExecutor):
+        def _get_concrete_classes(self) \
+                -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+            return MyBatchScheduler, MyBatchSchedulerExecutorConfig
+
+
+    class AsyncLsfJobExecutor(AsyncBatchSchedulerExecutor):
+        def _get_concrete_classes(self) \
+                -> Tuple[Type[BatchScheduler], Type[BatchSchedulerExecutorConfig]]:
+            return MyBatchScheduler, MyBatchSchedulerExecutorConfig
+
+
+The general workflow used by batch scheduler executors to submit a job is as
 follows:
 
     1. Generate a submit script in the *work directory*, which is obtained
@@ -103,15 +139,15 @@ follows:
     `~/.psij/work/<executor.name>`, where `<executor.name>` is the value of
     the `name` of the implementing class. The submit script is generated using
     the
-    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script`
+    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler.generate_submit_script`
     method of the implementing class. 
 
     2. Execute the command returned by
-    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command` to
+    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler.get_submit_command` to
     pass the generated submit script to the LRM.
 
     3. Invoke
-    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.job_id_from_submit_output`
+    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler.job_id_from_submit_output`
     to obtain the job's native ID from the output of the submit command executed
     in step (2).
 
@@ -122,10 +158,10 @@ queries the LRM for status updates for the submitted jobs using the following
 sequence of steps for each of the jobs registered in step (4), above:
 
     1. Run the command returned by
-    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_status_command`.
+    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler.get_status_command`.
 
     2. Parse the output of the status command, above, using
-    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.parse_status_output`,
+    :meth:`~psij.executors.batch.batch_scheduler_executor.BatchScheduler.parse_status_output`,
     which returns a dictionary mapping LRM id strings to :class:`~psij.job_status.JobStatus` objects.
 
     3. Update the job status with the status object obtained in step (2).

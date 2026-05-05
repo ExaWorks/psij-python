@@ -1,6 +1,12 @@
 PSI/J Core
+    psij.BaseJob
     psij.Job
+    psij.AsyncJob
     psij.JobSpec
+        psij.StageIn
+        psij.StageOut
+        psij.StagingMode
+        psij.StageOutFlags
     psij.JobAttributes
     psij.ResourceSpec
         psij.ResourceSpecV1
@@ -28,10 +34,13 @@ Executors
 
 Executor Infrastructure
     psij.JobExecutor
+    psij.AsyncJobExecutor
     psij.JobExecutorConfig
     psij.executors.batch.batch_scheduler_executor
         psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor
         psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutorConfig
+        psij.executors.batch.batch_scheduler_executor.SyncBatchSchedulerExecutor
+        psij.executors.batch.batch_scheduler_executor.AsyncBatchSchedulerExecutor
         ~psij.executors.batch.batch_scheduler_executor.check_status_exit_code
     psij.executors.batch.script_generator.SubmitScriptGenerator
     psij.executors.batch.script_generator.TemplatedScriptGenerator

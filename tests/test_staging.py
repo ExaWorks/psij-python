@@ -214,7 +214,7 @@ def test_cleanup2(execparams: ExecutorTestParams) -> None:
                           launcher=execparams.launcher))
         assert job.spec is not None
         job.spec.stage_out = {
-            StageOut('out.txt', out_path, flags=StageOutFlags.IF_PRESENT),
+            StageOut('out.txt', out_path, flags=StageOutFlags.IF_PRESENT | StageOutFlags.ON_ERROR),
         }
         job.spec.cleanup = {Path('out.txt')}
         job.spec.cleanup_flags = StageOutFlags.ON_SUCCESS

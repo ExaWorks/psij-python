@@ -6,6 +6,7 @@ from _test_tools import assert_completed
 
 def test_user_guide_redirect() -> None:
     ex = JobExecutor.get_instance('local')
+    # DOC: start
     job = Job(
         JobSpec(
             executable='/bin/date',
@@ -13,6 +14,7 @@ def test_user_guide_redirect() -> None:
             stderr_path=Path('/tmp/date.err')
         )
     )
+    # DOC: end
     ex.submit(job)
     status = job.wait()
     assert_completed(job, status)

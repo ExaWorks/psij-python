@@ -133,6 +133,8 @@ def generate_executors(out: TextIOBase) -> None:
 
     for name in sorted(JobExecutor.get_executor_names()):
         versions = JobExecutor._executors[name.lower()]
+        if len(versions) != 1:
+            print(f'Multiple versions detected for {name}: {versions}')
         assert len(versions) == 1
         qname = versions[0].desc.cls
         write_heading(out, versions[0].desc.nice_name, 1)
@@ -200,7 +202,7 @@ def generate_index() -> None:
         for name, val in _sorted_names(classes):
             write_heading(out, name, 2)
             qname = val.__module__ + '.' + name
-            out.write('.. autoclass:: %s\n' % qname)
+            out.write('.. autoclass:: %s\n    :members:\n' % qname)
             if qname in seen_names or name in seen_names:
                 out.write('    :noindex:\n')
             out.write('\n\n')

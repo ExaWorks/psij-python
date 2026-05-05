@@ -5,7 +5,10 @@ import subprocess
 import sys
 
 import sphinx_rtd_theme
+import sphinx_fontawesome
 from sphinx.ext.apidoc import main
+
+sys.path.append('_ext')
 
 web_docs = False
 if 'PSIJ_WEB_DOCS' in os.environ:
@@ -31,7 +34,9 @@ autodoc_mock_imports = ['flux']
 nitpick_ignore = [
     ('py:class', 'distutils.version.StrictVersion'),
     ('py:class', 'distutils.version.Version'),
-    ('py:class', 'packaging.version.Version')
+    ('py:class', 'packaging.version.Version'),
+    ('py:class', 'asyncio.events.AbstractEventLoop'),
+    ('py:class', 'psij.async_job_executor.T')
 ]
 
 if web_docs:
@@ -58,7 +63,7 @@ html_sidebars = {'**': ['globaltoc.html', 'relations.html', 'sourcelink.html', '
 # These are needed for the dhtml trickery
 html_static_path = ["_static"]
 html_js_files = ["extras.js"]
-html_css_files = ["extras.css"]
+html_css_files = ["extras.css", 'http://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css']
 
 # Setup Sphinx extensions (and associated variables)
 extensions = [
@@ -67,6 +72,8 @@ extensions = [
     'sphinx.ext.autodoc.typehints',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.plantuml',
+    'smartinclude'
 ]
 
 if web_docs:
@@ -99,6 +106,10 @@ read_version(my_dir)
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 }
+
+plantuml = f'java -jar {my_dir}/plantuml.jar'
+plantuml_output_format = 'svg'
+
 
 # -- Setup for Sphinx API Docs -----------------------------------------------
 

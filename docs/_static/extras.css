@@ -55,3 +55,8 @@ select.psij-selector:focus {
 	height: 24pt;
 	border-top: 3px solid #6ab0de;
 }
+
+
+table.align-center td * {
+    text-align: center;
+}

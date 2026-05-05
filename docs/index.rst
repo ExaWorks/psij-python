@@ -22,6 +22,9 @@ scheduler. PSI/J has a number of advantages:
 
 #. **PSI/J is an open source project:** We are establishing a community to develop, test, and deploy PSI/J across many HPC facilities.
 
+#. **Supports AsyncIO:** Since version 0.10.0, an AsyncIO version of every executor is available. If a custom executor does not provide a native AsyncIO version,
+PSI/J automatically uses a wrapper that converts the synchronous implementation to the AsyncIO version.
+
 Most HPC centers feature multiple schedulers, rolling policy changes and
 deployments of software stacks, and subtle differences even across systems with
 similar architectures. **PSI/J is designed to tame this complexity** and provide

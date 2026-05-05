@@ -5,6 +5,7 @@ from _test_tools import assert_completed
 
 def test_user_guide_multiple_jobs() -> None:
     ex = JobExecutor.get_instance('local')
+    # DOC: start
     spec = JobSpec('/bin/sleep', ['5'])
 
     job_1 = Job(spec)
@@ -12,6 +13,7 @@ def test_user_guide_multiple_jobs() -> None:
 
     job_2 = Job(spec)
     ex.submit(job_2)
+    # DOC: end
 
     status1 = job_1.wait()
     status2 = job_2.wait()

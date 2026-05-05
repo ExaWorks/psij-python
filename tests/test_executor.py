@@ -6,7 +6,7 @@ from typing import List, Callable, Dict
 import pytest
 
 from psij import SubmitException, Job, JobSpec, JobState, JobExecutor, JobAttributes, ResourceSpecV1
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import TemporaryDirectory
 
 from executor_test_params import ExecutorTestParams
 from _test_tools import _get_executor_instance, _get_timeout, assert_completed, _make_test_dir
@@ -25,6 +25,21 @@ def test_simple_job_redirect(execparams: ExecutorTestParams) -> None:
     _make_test_dir()
     with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
         outp = Path(td, 'stdout.txt')
+        job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
+        ex = _get_executor_instance(execparams, job)
+        ex.submit(job)
+        status = job.wait(timeout=_get_timeout(execparams))
+        assert_completed(job, status)
+        f = outp.open("r")
+        contents = f.read()
+        f.close()
+        assert contents == '_x_'
+
+
+def test_redirect_spaces_in_name(execparams: ExecutorTestParams) -> None:
+    _make_test_dir()
+    with TemporaryDirectory(dir=Path.home() / '.psij' / 'test') as td:
+        outp = Path(td, 'std out.txt')
         job = Job(JobSpec(executable='/bin/echo', arguments=['-n', '_x_'], stdout_path=outp))
         ex = _get_executor_instance(execparams, job)
         ex.submit(job)
@@ -204,13 +219,12 @@ def _check_str_attrs(ex: BatchSchedulerExecutor, job: Job, names: List[str],
     for name in names:
         tok = secrets.token_hex()
         l(name, tok)
-        with TemporaryFile(mode='w+') as f:
-            ex.generate_submit_script(job, ex._create_script_context(job), f)
-            f.seek(0)
-            contents = f.read()
-            if contents.find(tok) == -1:
-                print('Failed to find "%s" in:\n%s' % (tok, contents))
-                pytest.fail('Script generation failed for %s' % name)
+        contents = ''
+        for chunk in ex.sched.generate_submit_script(job, ex._create_script_context(job)):
+            contents += chunk
+        if contents.find(tok) == -1:
+            print('Failed to find "%s" in:\n%s' % (tok, contents))
+            pytest.fail('Script generation failed for %s' % name)
 
 
 _PREFIX_TR = {'pbspro': 'pbs', 'pbs_classic': 'pbs'}
@@ -250,9 +264,8 @@ def test_resource_generation1() -> None:
     job = Job(spec=spec)
     ex = JobExecutor.get_instance('slurm')
     assert isinstance(ex, BatchSchedulerExecutor)
-    with TemporaryFile(mode='w+') as f:
-        ex.generate_submit_script(job, ex._create_script_context(job), f)
-        f.seek(0)
-        contents = f.read()
-        if contents.find('--exclusive') != -1:
-            pytest.fail('Spurious exclusive flag')
+    contents = ''
+    for chunk in ex.sched.generate_submit_script(job, ex._create_script_context(job)):
+        contents += chunk
+    if contents.find('--exclusive') != -1:
+        pytest.fail('Spurious exclusive flag')
