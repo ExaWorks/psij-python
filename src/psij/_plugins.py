@@ -1,5 +1,6 @@
 import importlib.util
 import logging
+import sys
 from bisect import bisect_left
 from packaging.specifiers import SpecifierSet
 from types import ModuleType
@@ -50,8 +51,12 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
         spec = importlib.util.spec_from_file_location(module, mod_path)
         if spec is None:
             raise Exception('Failed to load %s' % mod_path)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)  # type: ignore
+        if spec.name in sys.modules:
+            mod = sys.modules[spec.name]
+        else:
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)  # type: ignore
+            sys.modules[spec.name] = mod
         cls = getattr(mod, cls_name)
         cls.__psij_file__ = mod_path
     except Exception as ex:
