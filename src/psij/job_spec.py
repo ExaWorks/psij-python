@@ -3,7 +3,7 @@ from __future__ import annotations
 # for some reason, Sphinx cannot find Path if imported directly
 # from pathlib import Path
 import pathlib
-from typing import Dict, List, Optional, Union, Set
+from typing import Dict, List, Optional, Union, Set, Iterable
 
 from typeguard import typechecked
 
@@ -68,9 +68,9 @@ class JobSpec(object):
                  pre_launch: Union[str, pathlib.Path, None] = None,
                  post_launch: Union[str, pathlib.Path, None] = None,
                  launcher: Optional[str] = None,
-                 stage_in: Optional[Set[StageIn]] = None,
-                 stage_out: Optional[Set[StageOut]] = None,
-                 cleanup: Optional[Set[Union[str, pathlib.Path]]] = None,
+                 stage_in: Optional[Iterable[StageIn]] = None,
+                 stage_out: Optional[Iterable[StageOut]] = None,
+                 cleanup: Optional[Iterable[Union[str, pathlib.Path]]] = None,
                  cleanup_flags: StageOutFlags = StageOutFlags.ALWAYS):
         """
         :param executable: An executable, such as "/bin/date".
