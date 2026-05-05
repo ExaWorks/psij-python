@@ -62,3 +62,33 @@ class SubmitException(Exception):
         conditions such an error would persist across subsequent re-tries until correct credentials
         are used.
         """
+
+class JobException(Exception):
+    """
+    Raised by some methods when a job completes in a failure.
+    """
+
+    def __init__(self, message: Optional[str], exit_code: Optional[int] = None) -> None:
+        self.message = message
+        self.exit_code = exit_code
+        self._others: Optional[List[Exception]] = None
+
+    def add_exception(self, ex: Exception) -> None:
+        if self._others is None:
+            self._others = [ex]
+        else:
+            self._others.append(ex)
+
+    def __str__(self) -> str:
+        if self.message is None:
+            s = f'Job failed with exit code {self.exit_code}'
+        else:
+            s = self.message
+
+        if self._others is not None:
+            s += '. In addition, the following error(s) have occurred during staging/cleanup:\n'
+            for ex in self._others:
+                s += str(ex)
+                s += '\n'
+
+        return s
