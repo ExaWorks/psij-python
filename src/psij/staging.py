@@ -3,6 +3,8 @@ from enum import Enum, Flag
 from pathlib import Path
 from typing import Optional, Union
 
+from .job_state import JobState
+
 
 class URI:
     """A class representing a local or remote file."""
@@ -136,9 +138,25 @@ class StagingMode(Enum):
     """
     Defines the possible modes in which the staging of a file can be done.
 
-    JobExecutor implementations are not required to support all staging modes, but must default
-    to `COPY` if other modes are not implemented. Furthermore, modes different from `COPY` may only
-    make sense when staging is done locally.
+    JobExecutor implementations are not required to support all staging modes. Non-remote executors
+    must default to `COPY` if other modes are not implemented. Remote executors must be able to
+    handle `CLIENT_TO_CN` and `CLIENT_TO_HN` modes and must default to `CLIENT_TO_CN` if any of
+    `COPY`
+
+    The modes `COPY`, `LINK`, and `MOVE` imply that the source and destination are filesystems
+    accessible from the machine where the staging is done, which is typically a compute node
+    for most batch scheduler executors.
+
+    The modes `CLIENT_TO_HN`, `CLIENT_TO_CN`, and `HN_TO_CN` are relevant when using a multi-hop
+    executor configuration, such as when using a PSI/J remote executor in combination with a batch
+    scheduler executor. In such cases `CLIENT_TO_HN` indicates that the file should be staged
+    from the machine that the client runs on (i.e., where the process that instantiates the remote
+    executor runs) to the head node (i.e., the machine that the service runs on), whereas
+    `CLIENT_TO_CN` indicates that the file's source is on the client machine and the destination
+    is a filesystem accessible to the compute node where the job runs. The mode `HN_TO_CN` stages
+    files from/to the head node to/from the compute node where the job runs.
+    When running jobs in a single-hop configuration (e.g., directly through a batch scheduler
+    executor), `CLIENT_TO_HN`, `CLIENT_TO_CN`, and `HN_TO_CN` have the same effect as `COPY`.
     """
 
     COPY = 1
@@ -156,8 +174,23 @@ class StagingMode(Enum):
     source and the destination are on the same filesystem. However, the OS will likely have to
     resort to copying the contents of the file and the removing the source file if the source and
     destination are on different filesystems, so it is unlikely for this mode to be beneficial over
-    a `COPY`.
+    a `COPY` in such cases.
     """
+    CLIENT_TO_HN = 4
+    """
+    Copies the file from a remote executor client to the head node where the remote executor
+    service runs.
+    """
+    CLIENT_TO_CN = 5
+    """
+    Copies the file from a remote executor client to the compute node where the job runs.
+    """
+    HN_TO_CN = 6
+    """
+    Copies the file from the node where a service runs (typically an HPC "head node") to 
+    a filesystem accessible to the machine where the job runs (typically an HPC "compute node").
+    """
+
 
 
 class StageOutFlags(Flag):
@@ -167,14 +200,14 @@ class StageOutFlags(Flag):
     The flags can be combined using the bitwise or operator (`|`). For example,
     `IF_PRESENT | ON_ERROR`. If none of the state conditions
     (`ON_SUCCESS`, `ON_ERROR`, `ON_CANCEL`) are specified, it is assumed that the file should be
-    transferred in all cases, subject to the presence of the `IF_PRESENT` flag. That is,
-    `NONE` is equivalent to `ALWAYS` or `ON_SUCCESS | ON_ERROR | ON_CANCEL`, while
-    `IF_PRESENT` is equivalent to `IF_PRESENT | ALWAYS`.
+    transferred only when the job executable invocation succeeds, subject to the presence of the
+    `IF_PRESENT` flag. That is, `NONE` is equivalent to `ON_SUCCESS`, while `IF_PRESENT` is
+    equivalent to `IF_PRESENT | ON_SUCCESS`.
     """
 
     NONE = 0
     """
-    Indicates that no flags are set. This is equivalent to `ALWAYS`.
+    Indicates that no flags are set. This is equivalent to `ON_SUCCESS`.
     """
     IF_PRESENT = 1
     """
@@ -201,6 +234,34 @@ class StageOutFlags(Flag):
     """
     Indicates that a file should be staged out irrespective of the status of the job.
     """
+
+    def matches(self, state: JobState) -> bool:
+        """Checks if the flags match a job state.
+
+        This is a convenience method that checks if a set of flags attached
+        to a stage-out directive indicate that the file should be staged out
+        given a certain job state. For example, if the job state is `COMPLETED`,
+        this method will return `True` if the `ON_SUCCESS` flag is set. This
+        method ignores the `IF_PRESENT` flag.
+
+        Parameters
+        ----------
+        state
+            The job state to check against.
+
+        Returns
+        -------
+            `True` if the file should be stage out and `False` otherwise.
+        """
+        if not state.final:
+            raise ValueError(f'Non-final job state: {state}')
+        if state == JobState.COMPLETED:
+            return StageOutFlags.ON_SUCCESS in self
+        if state == JobState.FAILED:
+            return StageOutFlags.ON_ERROR in self
+        if state == JobState.CANCELED:
+            return StageOutFlags.ON_CANCEL in self
+        return False
 
 
 class StageIn:
@@ -230,8 +291,10 @@ class StageIn:
             :class:`.StagingMode`.
         """
         if isinstance(source, str):
-            source = URI(source)
+            source = Path(source)
         if isinstance(source, Path):
+            if not source.is_absolute():
+                source = source.absolute()
             source = URI(str(source))
         if isinstance(target, str):
             target = Path(target)
@@ -258,7 +321,7 @@ class StageIn:
 
 def _normalize_flags(flags: StageOutFlags) -> StageOutFlags:
     if (flags & StageOutFlags.ALWAYS).value == 0:
-        return flags | StageOutFlags.ALWAYS
+        return flags | StageOutFlags.ON_SUCCESS
     else:
         return flags
 
@@ -267,7 +330,7 @@ class StageOut:
     """A class encapsulating a stageout directive."""
 
     def __init__(self, source: Union[str, Path], target: Union[str, Path, URI],
-                 flags: StageOutFlags = StageOutFlags.ALWAYS,
+                 flags: StageOutFlags = StageOutFlags.ON_SUCCESS,
                  mode: StagingMode = StagingMode.COPY):
         """
         Parameters
@@ -295,11 +358,12 @@ class StageOut:
         if isinstance(source, str):
             source = Path(source)
         if isinstance(target, str):
-            target = URI(target)
+            target = Path(target)
         if isinstance(target, Path):
+            if not target.is_absolute():
+                target = target.absolute()
             target = URI(str(target))
 
-        print(target.parts)
         self.source = source
         self.target = target
         self.flags = flags
