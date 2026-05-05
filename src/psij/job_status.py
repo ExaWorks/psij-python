@@ -7,7 +7,7 @@ from psij.job_state import JobState
 class JobStatus(object):
     """A class containing details about job transitions to new states."""
 
-    def __init__(self, state: JobState, time: Optional[float] = None,
+    def __init__(self, state: Optional[JobState] = None, time: Optional[float] = None,
                  message: Optional[str] = None, exit_code: Optional[int] = None,
                  metadata: Optional[Dict[str, object]] = None) -> None:
         """
@@ -21,7 +21,10 @@ class JobStatus(object):
 
         All constructor parameters are accessible as properties.
         """
-        self.state = state
+        if state is None:
+            self.state = JobState.NEW
+        else:
+            self.state = state
         if time is not None:
             self.time = time
         else:

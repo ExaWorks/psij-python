@@ -78,7 +78,9 @@ class JobState(bytes, Enum):
             `True` is returned if and only if this state can come after `other`. If this state
             is not comparable with `other`, this method returns `None`.
         """
-        if self._order == other._order:
+        if self._order > other._order:
+            return True
+        elif self._order == other._order:
             if self._value_ == other._value_:
                 # same state, so not strictly greater
                 return False
@@ -86,7 +88,7 @@ class JobState(bytes, Enum):
                 # not comparable
                 return None
         else:
-            return self._order > other._order
+            return False
 
     @property
     def final(self) -> bool:
