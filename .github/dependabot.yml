@@ -9,11 +9,11 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    versioning-strategy: auto
+    versioning-strategy: widen
     allow:
       - dependency-name: "filelock"
       - dependency-name: "psutil"
       - dependency-name: "pystache"
       - dependency-name: "typeguard"
       - dependency-name: "packaging"
-      
+      - dependency-name: "aiofile"
