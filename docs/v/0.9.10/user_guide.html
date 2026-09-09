@@ -1,0 +1,841 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Guide &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/extras.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">User Guide</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<p>PSI/J Python is an implementation of the
+<a class="reference external" href="https://exaworks.org/job-api-spec/specification">PSI/J specification</a>, which
+is an API for abstracting HPC job management over local resource managers
+(LRMs), such as Slurm, LSF, and PBS.</p>
+<div class="section" id="overview-of-the-psi-j-api">
+<h2>Overview of the PSI/J API<a class="headerlink" href="#overview-of-the-psi-j-api" title="Permalink to this headline">¶</a></h2>
+<p>The PSI/J API can be logically split into two parts:
+1. The <strong>core classes</strong>, which describe jobs in an abstract fashion,
+independent of how and where they are executed</p>
+<p>2. <strong>Executors and launchers</strong>, which implement specific mechanisms of executing
+jobs, such as running them on a SLURM cluster.</p>
+<div class="section" id="core-classes">
+<h3>Core classes<a class="headerlink" href="#core-classes" title="Permalink to this headline">¶</a></h3>
+<p>The essential core classes are:</p>
+<dl>
+<dt><a class="reference internal" href=".generated/tree.html#psij.Job" title="psij.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></dt><dd><p>Represents an abstract job which has a formal specification represented by
+a <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code> instance as well as a <code class="docutils literal notranslate"><span class="pre">JobStatus</span></code>, which indicates, for
+example, whether the job is running or completed.</p>
+<dl>
+<dt><a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSpec</span></code></a></dt><dd><p>Formally specifies all static aspects of a job, such as the executable
+to run, the arguments, input/output redirection, as well as LRM
+attributes (<code class="docutils literal notranslate"><span class="pre">JobAttributes</span></code>) and cluster resources needed
+(<code class="docutils literal notranslate"><span class="pre">ResourceSpec</span></code>).</p>
+<dl class="simple">
+<dt><a class="reference internal" href=".generated/tree.html#psij.JobAttributes" title="psij.JobAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobAttributes</span></code></a></dt><dd><p>Describes LRM attributes, such as the queue where the job is
+to be sent to or a project name that is used for accounting
+purposes.</p>
+</dd>
+<dt><a class="reference internal" href=".generated/tree.html#psij.ResourceSpec" title="psij.ResourceSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceSpec</span></code></a></dt><dd><p>The resource specification indicates the resources required by the
+job, such as the number of nodes. The <code class="docutils literal notranslate"><span class="pre">ResourceSpec</span></code> class is an
+abstract class with multiple possible concrete implementations.
+However, <a class="reference internal" href=".generated/tree.html#psij.ResourceSpecV1" title="psij.ResourceSpecV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceSpecV1</span></code></a> is
+currently the only concrete implementation.</p>
+</dd>
+</dl>
+</dd>
+<dt><a class="reference internal" href=".generated/tree.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">JobStatus</span></code> class contains information about the position of the
+job in its lifecycle and consists of a
+<a class="reference internal" href=".generated/tree.html#psij.JobState" title="psij.JobState"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobState</span></code></a> and various metadata associated with
+state transition events.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>The following diagram highlights similarities between components of a PSI/J
+job, a typical shell executable invocation, and a standard LRM job:</p>
+<a class="reference internal image-reference" href="_images/psij_arch.png"><img alt="_images/psij_arch.png" class="align-center" src="_images/psij_arch.png" style="width: 500px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="executors-and-launchers">
+<h3>Executors and Launchers<a class="headerlink" href="#executors-and-launchers" title="Permalink to this headline">¶</a></h3>
+<p>Job <a class="reference internal" href=".generated/tree.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">executors</span></code></a> implement the specific mechanisms
+needed to run jobs. For example, the <code class="docutils literal notranslate"><span class="pre">local</span></code> job executor can be used to run
+jobs locally, by forking a sub-process, whereas the <code class="docutils literal notranslate"><span class="pre">Slurm</span></code> executor can be
+used to run jobs through the Slurm resource manager. The PSI/J Python library
+currently provides the following executors:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cobalt</span></code>: <a class="reference external" href="https://www.alcf.anl.gov/support/user-guides/theta/queueing-and-running-jobs/job-and-queue-scheduling/index.html">ALCF’s Cobalt job scheduler</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flux</span></code>: <a class="reference external" href="https://flux-framework.org/">Flux Scheduling Framework</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">local</span></code>: run jobs locally</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lsf</span></code>: <a class="reference external" href="https://www.ibm.com/docs/en/spectrum-lsf">IBM Spectrum LSF</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pbs</span></code>: <a class="reference external" href="https://www.altair.com/pbs-professional">Altair’s PBS-Professional</a> and variations, such as OpenPBS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slurm</span></code>: <a class="reference external" href="https://slurm.schedmd.com/">Slurm Scheduling System</a></p></li>
+</ul>
+</div></blockquote>
+<p>For a complete list of executors provided by this library, please see
+<a class="reference internal" href=".generated/tree.html#available-executors"><span class="std std-ref">Available Executors</span></a>.</p>
+<p>Instances of the <a class="reference internal" href=".generated/tree.html#psij.Launcher" title="psij.Launcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Launcher</span></code></a> class are used
+indirectly (i.e., user code does not directly instantiate <code class="docutils literal notranslate"><span class="pre">Launcher</span></code> objects;
+this is done automatically by the <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> based on information in the
+<code class="docutils literal notranslate"><span class="pre">JobSpec</span></code>) to tell the <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> how to launch the job. The term
+“launch” is specific to LRMs and generally represents the mechanism used to
+start a parallel job on multiple compute nodes from the job’s lead node once
+the job resources (compute nodes) are allocated by the LRM. Examples of
+launchers include <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>, <code class="docutils literal notranslate"><span class="pre">srun</span></code>, <code class="docutils literal notranslate"><span class="pre">ibrun</span></code>, etc.</p>
+</div>
+</div>
+<div class="section" id="the-job-lifecycle">
+<h2>The Job Lifecycle<a class="headerlink" href="#the-job-lifecycle" title="Permalink to this headline">¶</a></h2>
+<p>The basic flow of a PSI/J <code class="docutils literal notranslate"><span class="pre">Job</span></code> is as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Instantiate a <code class="docutils literal notranslate"><span class="pre">Job</span></code> object with an appropriate <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code> and relevant
+attributes and resource specification.</p></li>
+<li><p>Obtain a <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> instance using
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.get_instance" title="psij.JobExecutor.get_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_instance()</span></code></a>.</p></li>
+<li><p>Submit the <code class="docutils literal notranslate"><span class="pre">Job</span></code> instance to the <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> instance.</p></li>
+<li><p>The status of a job can be monitored using either an asynchronous callback
+mechanism or, synchronously, using <a class="reference internal" href=".generated/tree.html#psij.Job.wait" title="psij.Job.wait"><code class="xref py py-func docutils literal notranslate"><span class="pre">wait()</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+<p>The following sections provide concrete details on how these steps can be
+achieved.</p>
+<div class="section" id="creating-a-job">
+<h3>Creating a Job<a class="headerlink" href="#creating-a-job" title="Permalink to this headline">¶</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">Job</span></code> can be created by instantiating a <a class="reference internal" href=".generated/tree.html#psij.Job" title="psij.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.Job</span></code></a> object together
+with a <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.JobSpec</span></code></a>, which describes the details of the job:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">JobSpec</span><span class="p">(</span><span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The shell equivalent of this job is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>/bin/date
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifying-the-job-details">
+<h3>Specifying the Job Details<a class="headerlink" href="#specifying-the-job-details" title="Permalink to this headline">¶</a></h3>
+<p>The example above creates a <code class="docutils literal notranslate"><span class="pre">Job</span></code> that will run the <code class="docutils literal notranslate"><span class="pre">/bin/date</span></code> executable.
+A number of other <code class="docutils literal notranslate"><span class="pre">Job</span></code> details can be specified:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The arguments to be passed to the executable.</p></li>
+<li><p>The environment variables visible to the job.</p></li>
+<li><p>Redirection of input, output, and error streams.</p></li>
+<li><p>Cluster resource requirements for the job’s execution.</p></li>
+<li><p>Various parameters specific to the LRM.</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="job-arguments">
+<h4>Job Arguments<a class="headerlink" href="#job-arguments" title="Permalink to this headline">¶</a></h4>
+<p>The executable’s command line arguments to be used for a job are specified as
+a list of strings in the <code class="docutils literal notranslate"><span class="pre">arguments</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code> instance.
+For example, our previous <code class="docutils literal notranslate"><span class="pre">/bin/date</span></code> job could be changed to request UTC
+time formatting:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+    <span class="n">JobSpec</span><span class="p">(</span>
+        <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">,</span>
+        <span class="n">arguments</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--utc&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">JobSpec</span></code> properties can also be modified directly after the <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code>
+instance is created:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">JobSpec</span><span class="p">()</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">executable</span> <span class="o">=</span> <span class="s1">&#39;/bin/date&#39;</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--utc&#39;</span><span class="p">]</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The shell equivalent for both of these jobs is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>/bin/date<span class="w"> </span>--utc
+</pre></div>
+</div>
+</div>
+<div class="section" id="environment-variables">
+<h4>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h4>
+<p>Environment variables that are accessible by the job can be set using
+the <code class="docutils literal notranslate"><span class="pre">environment</span></code> attribute of <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.JobSpec</span></code></a>, which is a dictionary
+with <code class="docutils literal notranslate"><span class="pre">str</span></code> keys and values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+    <span class="n">JobSpec</span><span class="p">(</span>
+        <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">,</span>
+        <span class="n">environment</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;TZ&#39;</span><span class="p">:</span> <span class="s1">&#39;America/Los_Angeles&#39;</span><span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Environment variables set this way will override prior values of the same
+environment variable. The shell equivalent of the above job is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nv">TZ</span><span class="o">=</span>America/Los_Angeles<span class="w"> </span>/bin/date
+</pre></div>
+</div>
+</div>
+<div class="section" id="redirection">
+<h4>Redirection<a class="headerlink" href="#redirection" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">stdin_path</span></code> attribute of <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.JobSpec</span></code></a> can be used to specify a
+standard input stream for the job, whereas the <code class="docutils literal notranslate"><span class="pre">stdout_path</span></code> and
+<code class="docutils literal notranslate"><span class="pre">stderr_path</span></code> attributes can be used to redirect the output and error
+streams, respectively. The values should be <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> objects
+(although strings are also accepted). It is recommended that the paths be
+absolute to avoid ambiguities. An example of output/error redirection is shown
+below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+    <span class="n">JobSpec</span><span class="p">(</span>
+        <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">,</span>
+        <span class="n">stdout_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/tmp/date.out&#39;</span><span class="p">),</span>
+        <span class="n">stderr_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/tmp/date.err&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The shell equivalent of this example is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>/bin/date<span class="w"> </span><span class="m">1</span>&gt;/tmp/date.out<span class="w"> </span><span class="m">2</span>&gt;/tmp/date.err
+</pre></div>
+</div>
+</div>
+<div class="section" id="job-resources">
+<h4>Job Resources<a class="headerlink" href="#job-resources" title="Permalink to this headline">¶</a></h4>
+<p>A job submitted to a cluster is allocated a specific set of resources to run
+on. The number and type of resources can be defined through a resource
+specification, represented by the <a class="reference internal" href=".generated/tree.html#psij.ResourceSpecV1" title="psij.ResourceSpecV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.ResourceSpecV1</span></code></a> class, and
+attached to the <code class="docutils literal notranslate"><span class="pre">resources</span></code> attribute of <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.JobSpec</span></code></a>. The
+resource specification (V1) supports the following attributes:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">node_count</span></code></dt><dd><p>Allocates that number of compute nodes to the job.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">processes_per_node</span></code></dt><dd><p>On the allocated nodes, executes that number of processes.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">process_count</span></code></dt><dd><p>The total number of processes (MPI ranks) to be started.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cpu_cores_per_process</span></code></dt><dd><p>The number of CPU cores allocated to each launched process.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">gpu_cores_per_process</span></code></dt><dd><p>The number of GPU cores allocated to each launched process.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">exclusive_node_use</span></code></dt><dd><p>When this boolean flag is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, PSI/J will ask the LRM to ensure
+that no other jobs, whether from the same user or from other users, will
+run on any of the compute nodes allocated for this job. If this flag is set
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the LRM will use a default setting.</p>
+</dd>
+</dl>
+<p>The meaning of certain terms in the resource specification, such as
+<code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">core</span></code>, may depend on how the LRM is configured for that system. For,
+example a CPU core may refer to a physical core or to a thread in the sense of
+Intel’s <em>Hyperthreading</em> or AMD’s <em>Simultaneous Multi-Threading</em> technologies.</p>
+<p>A resource specification does not need to define all available attributes. In
+fact, an empty resource spec is valid as it refers to a single process being
+launched on a single cpu core.</p>
+<p>The following snippet creates a job that requests 2 compute nodes with 4
+processes on each node, for a total of 8 processes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+    <span class="n">JobSpec</span><span class="p">(</span>
+        <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">,</span>
+        <span class="n">resources</span><span class="o">=</span><span class="n">ResourceSpecV1</span><span class="p">(</span>
+            <span class="n">node_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">processes_per_node</span><span class="o">=</span><span class="mi">4</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All processes of a job will share at most one MPI communicator
+(<code class="docutils literal notranslate"><span class="pre">MPI_COMM_WORLD</span></code>), independent of their placement, and the term <code class="docutils literal notranslate"><span class="pre">rank</span></code>
+(which usually refers to an MPI rank) is thus equivalent to that of
+<code class="docutils literal notranslate"><span class="pre">process</span></code>. Depending on the job launcher used (e.g., <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>), jobs
+may not get an MPI communicator.</p>
+</div>
+</div>
+</div>
+<div class="section" id="job-launching">
+<h3>Job Launching<a class="headerlink" href="#job-launching" title="Permalink to this headline">¶</a></h3>
+<p>In principle, one of the main jobs of a PSI/J <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code>, the submission,
+stops when the LRM allocates resources for the job and an executable is started
+on the <em>lead node</em> of the job (the precise nature of this <em>lead node</em> or its
+exact name will vary from system to system, and <em>head node</em> or <em>service node</em>
+are also common.)</p>
+<p>In order to run the job an all the allocated nodes, the job needs to be
+<code class="docutils literal notranslate"><span class="pre">launched</span></code> using a <code class="docutils literal notranslate"><span class="pre">launcher</span></code>, such as <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>. The launcher is the
+entity that, when invoked on the lead node, starts all of the job’s processes
+on the compute nodes. Recommendations specific to the cluster where the job is
+launched should be followed when selecting a launcher.</p>
+<p>To specify the launcher to be used, use the <code class="docutils literal notranslate"><span class="pre">launcher</span></code> property of
+<a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSpec</span></code></a> and set it to one of the available launchers, such as
+<code class="docutils literal notranslate"><span class="pre">mpirun</span></code>. For a complete list of launchers, please see
+<a class="reference internal" href=".generated/tree.html#available-launchers"><span class="std std-ref">Available Launchers</span></a>.</p>
+<p>Once a job is launched, the job executable is run in <code class="docutils literal notranslate"><span class="pre">process_count</span></code>
+instances, distributed on the compute nodes according to the job’s resource
+specification. However, it is often desirable to run certain commands that are
+needed to configure the job environment only once rather than as part of each
+process. This is the case with <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">xyz</span></code> commands, which can be very
+resource-demanding if run as part of each job process. Such commands are better
+invoked before the job is launched. The PSI/J <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSpec</span></code></a> provides
+the <code class="docutils literal notranslate"><span class="pre">pre_launch</span></code> and <code class="docutils literal notranslate"><span class="pre">post_launch</span></code> properties, which are paths to user
+scripts that are guaranteed to be invoked only once for a job, before the job
+is launched and after all the job processes complete, respectively. The
+<code class="docutils literal notranslate"><span class="pre">pre_launch</span></code> and <code class="docutils literal notranslate"><span class="pre">post_launch</span></code> scripts are run on the lead node of the job
+and are <em>sourced</em>. That means that any environment variables exported by the
+<code class="docutils literal notranslate"><span class="pre">pre_launch</span></code> script will be made available to the job.</p>
+<div class="section" id="module-loading">
+<h4>Module Loading<a class="headerlink" href="#module-loading" title="Permalink to this headline">¶</a></h4>
+<p>A typical and frequent task that <code class="docutils literal notranslate"><span class="pre">pre_launch</span></code> is supposed to address is that
+of loading <a class="reference external" href="https://modules.sourceforge.net/">environment modules</a>. Running
+<code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span></code> is somewhat resources expensive and doing so on each compute
+node for a large job can exacerbate this. Consequently, the recommended way
+of loading modules is on the lead node, before the job is launched, as the
+following example shows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">ex</span> <span class="o">=</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">JobSpec</span><span class="p">(</span><span class="s1">&#39;/bin/bash&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;xmodule is-loaded test&#39;</span><span class="p">])</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">pre_launch</span> <span class="o">=</span> <span class="n">pre_launch_sh_path</span>
+
+    <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>where the contents of <code class="docutils literal notranslate"><span class="pre">pre_launch.sh</span></code> is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+xmodule<span class="w"> </span>load<span class="w"> </span><span class="nb">test</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="scheduler-information">
+<h3>Scheduler Information<a class="headerlink" href="#scheduler-information" title="Permalink to this headline">¶</a></h3>
+<p>Information specific to LRMs, like queues/partitions, runtime, and so on,
+can be specified using the <code class="docutils literal notranslate"><span class="pre">attributes</span></code> property of <a class="reference internal" href=".generated/tree.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSpec</span></code></a>
+and an instance of the
+<a class="reference internal" href=".generated/index.html#psij.job_attributes.JobAttributes" title="psij.job_attributes.JobAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobAttributes</span></code></a> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+    <span class="n">JobSpec</span><span class="p">(</span>
+        <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/date&quot;</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">JobAttributes</span><span class="p">(</span>
+            <span class="n">queue_name</span><span class="o">=</span><span class="n">execparams</span><span class="o">.</span><span class="n">queue_name</span><span class="p">,</span>
+            <span class="n">account</span><span class="o">=</span><span class="n">execparams</span><span class="o">.</span><span class="n">account</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <cite>QUEUE_NAME</cite> is the LRM queue where the job should be sent and
+<cite>ACCOUNT</cite> is a project/account that may need to be specified for
+accounting purposes. These values generally depend on the system and allocation
+being used.</p>
+</div>
+<div class="section" id="submitting-jobs">
+<h3>Submitting Jobs<a class="headerlink" href="#submitting-jobs" title="Permalink to this headline">¶</a></h3>
+<p>When a <code class="docutils literal notranslate"><span class="pre">Job</span></code> is instantiated, it is in the
+<a class="reference internal" href=".generated/tree.html#psij.JobState.NEW" title="psij.JobState.NEW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">JobState.NEW</span></code></a> state. That is,
+<code class="docutils literal notranslate"><span class="pre">job.status.state</span> <span class="pre">==</span> <span class="pre">JobState.NEW</span></code>. A job in the <code class="docutils literal notranslate"><span class="pre">NEW</span></code> state can be
+<em>submitted</em> to an executor. In order to obtain an executor instance, the
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.get_instance" title="psij.JobExecutor.get_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">JobExecutor.get_instance</span></code></a> static method
+can be used with an executor type as parameter. The executor type can be any of
+the names returned by
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.get_executor_names" title="psij.JobExecutor.get_executor_names"><code class="xref py py-func docutils literal notranslate"><span class="pre">JobExecutor.get_executor_names</span></code></a>.
+The resulting <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> instance can then be used to submit any number of
+new jobs. Submission of a job is done by calling the
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.submit" title="psij.JobExecutor.submit"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit()</span></code></a> method on a <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ex</span> <span class="o">=</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">JobSpec</span><span class="p">(</span><span class="n">executable</span><span class="o">=</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">))</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> implementation will translate all PSI/J API activities into
+the respective backend commands and run them on the backend, while at the same
+time monitoring the backend jobs for failure, completion or other state updates.</p>
+<p>After submitting a job to a LRM, such as Slurm, the new job will be visible in
+the LRM queue.</p>
+<p>A given <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code> instance can be used to submit multiple jobs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">JobSpec</span><span class="p">(</span><span class="s1">&#39;/bin/sleep&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;5&#39;</span><span class="p">])</span>
+
+<span class="n">job_1</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job_1</span><span class="p">)</span>
+
+<span class="n">job_2</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job_2</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>The <a class="reference internal" href=".generated/tree.html#psij.JobExecutor.submit" title="psij.JobExecutor.submit"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit()</span></code></a> call is asynchronous. Its successful
+return implies that the job has been accepted by the backend or LRM for
+execution. It does not indicate completion of the job.</p>
+</div>
+</div>
+<div class="section" id="managing-job-state">
+<h2>Managing Job State<a class="headerlink" href="#managing-job-state" title="Permalink to this headline">¶</a></h2>
+<p>In the above examples, jobs were submitted and left to run without waiting for
+them to complete. The simplest way to check for what the job is doing is to
+query its <a class="reference internal" href=".generated/tree.html#psij.Job.status" title="psij.Job.status"><code class="xref py py-attr docutils literal notranslate"><span class="pre">status</span></code></a> property and the <code class="docutils literal notranslate"><span class="pre">state</span></code> property therein.
+However, it is rarely the case that a direct query of the job state is useful
+in realistic scenarios.</p>
+<div class="section" id="synchronous-waits">
+<h3>Synchronous Waits<a class="headerlink" href="#synchronous-waits" title="Permalink to this headline">¶</a></h3>
+<p>A simple way to ensure that a job completes is to wait for it
+using the <a class="reference internal" href=".generated/tree.html#psij.Job.wait" title="psij.Job.wait"><code class="xref py py-func docutils literal notranslate"><span class="pre">wait()</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="k">assert</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">COMPLETED</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method suspends execution of the current thread until the job
+enters a <em>final</em> state, which is a state that from which no more state changes
+are possible. That is, once a job is in a final state, its state cannot change
+any further. The <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method returns a <a class="reference internal" href=".generated/tree.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">psij.JobStatus</span></code></a> object
+whose <code class="docutils literal notranslate"><span class="pre">state</span></code> property can be queried to find out exactly which state caused
+the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> call to return. In the above example, we expect the job to have
+completed without error.</p>
+<p>One can also wait for other states, such as when the job’s resources are
+allocated and the jobs moves from being queued to an active state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">target_states</span><span class="o">=</span><span class="p">[</span><span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="k">assert</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span>
+</pre></div>
+</div>
+<p>The check for the actual state may be necessary, since the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method
+returns automatically when the job can make no more progress, such as when the
+job has failed.</p>
+<p>The following diagram shows all the possible PSI/J states and all the possible
+transitions.</p>
+<a class="reference internal image-reference" href="_images/state_diagram.png"><img alt="_images/state_diagram.png" class="align-center" src="_images/state_diagram.png" style="width: 340px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The state of the job as returned by the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> method is the state that
+caused the <code class="docutils literal notranslate"><span class="pre">wait()</span></code> call to return. It may or may not match the state
+obtained by subsequently querying the job’s <code class="docutils literal notranslate"><span class="pre">status</span></code> property, even when
+the former state is a final state, since threading can interfere with the
+perceived ordering of events and there is generally no thread-universal
+timeline without enforcement of critical sections by user code. In order to
+get a consistent timeline of state changes, callbacks should be used.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <a class="reference internal" href=".generated/tree.html#psij.JobState.COMPLETED" title="psij.JobState.COMPLETED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">COMPLETED</span></code></a> state requires the job to have completed
+successfully (i.e., with a zero exit code).  A <a class="reference internal" href=".generated/tree.html#psij.JobState.FAILED" title="psij.JobState.FAILED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">FAILED</span></code></a>
+state can be reached either when the job returns a non-zero exit code or
+when the LRM encounters a problem either internally or with the job. To
+distinguish between the two possibilities, the
+<code class="docutils literal notranslate"><span class="pre">exit_code</span></code> property of <a class="reference internal" href=".generated/tree.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a> can be inspected.</p>
+</div>
+</div>
+<div class="section" id="canceling-your-job">
+<h3>Canceling Your Job<a class="headerlink" href="#canceling-your-job" title="Permalink to this headline">¶</a></h3>
+<p>Once a job is submitted, it can be canceled by invoking the
+<a class="reference internal" href=".generated/tree.html#psij.Job.cancel" title="psij.Job.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> method (or, alternatively,
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.cancel" title="psij.JobExecutor.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a>).</p>
+</div>
+<div class="section" id="status-callbacks">
+<h3>Status Callbacks<a class="headerlink" href="#status-callbacks" title="Permalink to this headline">¶</a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">wait()</span></code> to suspend the current thread until a job completes does not
+scale very well with large numbers of concurrent jobs that may have complex
+dependencies, since every concurrent <code class="docutils literal notranslate"><span class="pre">wait()</span></code> call requires a separate thread
+and threads tend to be resources that are significantly more costly than what
+is otherwise associated with a <code class="docutils literal notranslate"><span class="pre">Job</span></code> object.</p>
+<p>The preferred means of monitoring and reacting to job state changes is through
+callbacks. Callbacks can be added either to a specific job, using the
+<a class="reference internal" href=".generated/tree.html#psij.Job.set_job_status_callback" title="psij.Job.set_job_status_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_job_status_callback()</span></code></a> to monitor the status of that job or
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.set_job_status_callback" title="psij.JobExecutor.set_job_status_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_job_status_callback()</span></code></a> to monitor the status of
+all jobs managed by that executor instance.</p>
+<p>An example is shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ex</span> <span class="o">=</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">JobSpec</span><span class="p">(</span><span class="s1">&#39;/bin/date&#39;</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1"> is running&#39;</span> <span class="o">%</span> <span class="n">job</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">final</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1"> has finished&#39;</span> <span class="o">%</span> <span class="n">job</span><span class="p">)</span>
+
+<span class="n">job</span><span class="o">.</span><span class="n">set_job_status_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="detaching-and-attaching-jobs">
+<h2>Detaching and Attaching Jobs<a class="headerlink" href="#detaching-and-attaching-jobs" title="Permalink to this headline">¶</a></h2>
+<p>In certain circumstances it may be necessary to monitor the status of a job
+from a process different than that in which the job was submitted. This means
+that the <code class="docutils literal notranslate"><span class="pre">Job</span></code> instance that was used to submit the job is not available in
+the process where its status needs to be queried. The PSI/J Python library
+provides a mechanism that allows one to “re-connect” to a job that was
+submitted in a different process.</p>
+<p>When a job is submitted and enters the <a class="reference internal" href=".generated/tree.html#psij.JobState.QUEUED" title="psij.JobState.QUEUED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">QUEUED</span></code></a> state, its
+<a class="reference internal" href=".generated/tree.html#psij.Job.native_id" title="psij.Job.native_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">native_id</span></code></a> property becomes valid. The <code class="docutils literal notranslate"><span class="pre">native_id</span></code>
+represents an identifier known to the backend/LRM and is unique to a given
+backend/LRM and independent of the process that launched the job. A subsequent
+process could then instantiate a new <code class="docutils literal notranslate"><span class="pre">Job</span></code> object and use the
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.attach" title="psij.JobExecutor.attach"><code class="xref py py-func docutils literal notranslate"><span class="pre">attach()</span></code></a> method to re-connect to the same backend job.
+An example of how this mechanism can be used is shown below:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">submit.py</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ex</span> <span class="o">=</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">JobSpec</span><span class="p">(</span><span class="s1">&#39;/bin/sleep&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">]))</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">native_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">attach.py</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ex</span> <span class="o">=</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+<span class="n">native_id</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">()</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">native_id</span><span class="p">)</span>
+<span class="c1"># The status may not be updated immediately after the attach() call, so</span>
+<span class="c1"># we wait until we get a non-NEW status.</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">target_states</span><span class="o">=</span><span class="p">[</span><span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span> <span class="n">JobState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span> <span class="n">JobState</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Running the above example involves piping the output of the <code class="docutils literal notranslate"><span class="pre">submit.py</span></code>
+script, which contains the job’s <code class="docutils literal notranslate"><span class="pre">native_id</span></code> to the <code class="docutils literal notranslate"><span class="pre">attach.py</span></code> script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>submit.py<span class="w"> </span><span class="p">|</span><span class="w"> </span>python<span class="w"> </span>attach.py
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href=".generated/tree.html#psij.JobExecutor.attach" title="psij.JobExecutor.attach"><code class="xref py py-func docutils literal notranslate"><span class="pre">attach()</span></code></a> call does not ensure that the job
+status is updated before the call returns and, for efficiency reasons, most
+current <a class="reference internal" href=".generated/tree.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> implementations do not update the status
+until later. In order to ensure that the job state has been updated after
+the job is attached, a call to <a class="reference internal" href=".generated/tree.html#psij.Job.wait" title="psij.Job.wait"><code class="xref py py-func docutils literal notranslate"><span class="pre">wait()</span></code></a> with
+<code class="docutils literal notranslate"><span class="pre">target_states=[JobState.QUEUED]</span></code> is recommended. This call waits for the
+job to be in the <a class="reference internal" href=".generated/tree.html#psij.JobState.QUEUED" title="psij.JobState.QUEUED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">QUEUED</span></code></a> state or any subsequent
+state, effectively making the call a wait for any
+non-<a class="reference internal" href=".generated/tree.html#psij.JobState.NEW" title="psij.JobState.NEW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">NEW</span></code></a> states.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no particular requirement that the <code class="docutils literal notranslate"><span class="pre">native_id</span></code> value supplied to
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor.attach" title="psij.JobExecutor.attach"><code class="xref py py-func docutils literal notranslate"><span class="pre">attach()</span></code></a> be obtained from the
+<a class="reference internal" href=".generated/tree.html#psij.Job.native_id" title="psij.Job.native_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">native_id</span></code></a> property. Concrete implementations of
+<a class="reference internal" href=".generated/tree.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> can document what the <code class="docutils literal notranslate"><span class="pre">native_id</span></code> represents.
+For example, the LRM executors in PSI/J Python use LRM IDs for the
+<code class="docutils literal notranslate"><span class="pre">native_id</span></code>. Consequently, an ID obtained directly from the LRM can be
+used for the <a class="reference internal" href=".generated/tree.html#psij.JobExecutor.attach" title="psij.JobExecutor.attach"><code class="xref py py-func docutils literal notranslate"><span class="pre">attach()</span></code></a> call.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Depending on configuration, many LRMs remove completed or failed jobs
+from their queue after a certain (typically short) interval. If a job is
+attached to a native id representing a LRM job that has been removed from
+the queue, current PSI/J job executors assume that the job has been
+completed. An attempt is made to detect whether the job was launched
+through PSI/J executors, and it may be possible, as a result, for the
+executor to retrieve the job exit code and distinguish between a failed and
+completed job, but that is not guaranteed.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a job is attached to a <code class="docutils literal notranslate"><span class="pre">native_id</span></code>, current executors do not update
+the <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code> to reflect the LRM job represented by the <code class="docutils literal notranslate"><span class="pre">native_id</span></code> and
+is, instead, left empty.</p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-psi-j-api">Overview of the PSI/J API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-classes">Core classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executors-and-launchers">Executors and Launchers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-job-lifecycle">The Job Lifecycle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-job">Creating a Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-the-job-details">Specifying the Job Details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#job-launching">Job Launching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scheduler-information">Scheduler Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submitting-jobs">Submitting Jobs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#managing-job-state">Managing Job State</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synchronous-waits">Synchronous Waits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#canceling-your-job">Canceling Your Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-callbacks">Status Callbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detaching-and-attaching-jobs">Detaching and Attaching Jobs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="getting_started.html"
+                          title="Previous page">&larr; Getting Started</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="api.html"
+                          title="Next page">&rarr; API Reference</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/user_guide.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">User Guide</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>

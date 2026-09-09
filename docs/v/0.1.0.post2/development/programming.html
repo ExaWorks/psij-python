@@ -1,0 +1,464 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Architecture &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/extras.js"></script>
+
+    
+    
+     
+        <script src="../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding an executor" href="tutorial_add_executor.html" />
+    <link rel="prev" title="Contributing" href="contributing.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="tutorial_add_executor.html" title="Adding an executor"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Developer Docs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Architecture</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<p>This section outlines the architecture of the Python PSI/J implementation for
+those who want to contribute improvements to the core
+components or write a new <a class="reference internal" href="../.generated/psij.html#psij.job_executor.JobExecutor" title="psij.job_executor.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> or
+<a class="reference internal" href="../.generated/psij.html#psij.job_launcher.Launcher" title="psij.job_launcher.Launcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Launcher</span></code></a>. The information contained here is in
+addition to the
+<a class="reference external" href="https://exaworks.org/job-api-spec/specification">PSI/J Specification</a>,
+which should be read first.</p>
+<p>The PSI/J specification splits implementations into two main parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The core classes, containing scheduler-agnostic code. Client code, wanting
+to maintain portability, should only directly reference the core classes.</p></li>
+<li><p>Executors and launchers, which are specific to scheduler implementations
+and can be used interchangeably, provided that the underlying scheduler or
+launcher implementation exists.</p></li>
+</ul>
+</div></blockquote>
+<p>Nearly all of the core classes described in the PSI/J Specification are simple
+property containers and the behavior of the few exceptions is thoroughly
+documented therein. There are, however, a few areas that are specific to the
+current PSI/J Python implementation which are mostly a matter of implementation
+and are not documented by the specification. These are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The dynamic executor/launcher loading system.</p></li>
+<li><p>The
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSchedulerExecutor</span></code></a>,
+an abstract submit-script based LRM executor class, which is a convenient superclass for executors interfacing with typical job schedulers.</p></li>
+<li><p>The abstract script-based launcher, which is a base class for
+launchers that can be conveniently implemented by writing a bash script.</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="the-executor-loading-system">
+<h2>The Executor Loading System<a class="headerlink" href="#the-executor-loading-system" title="Permalink to this headline">¶</a></h2>
+<p>The aim of the executor/launcher loading system is to allow side-loading of
+executor and launcher implementations that are not bundled with the core PSI/J
+Python distribution. Additionally, at least in theory, multiple versions of
+an implementation for an executor or loader targeting the same underlying
+scheduler implementation should be allowed. The goal is that, while compute
+clusters may provide default installations of executors or launchers, the user
+should have the ability to install and use custom versions of such launchers or
+executors, even possibly for the same underlying schedulers. A secondary goal
+is that the steps required to use a certain executor or launcher implementation
+should be minimal. Specifically, installing the Python package containing such
+an implementation should be enough to enable client code to discover and use
+that implementation. However, the requirement that users be able to install
+newer versions of a system-provided package means that a special mechanism
+should exist, a mechanism able to refer to classes that exist in the same
+nominal Python package, but in different directories on disk. Since Python does
+not readily allow that, PSI/J implements a custom solution.</p>
+<p>The solution chosen in the current PSI/J implementation is based on <em>descriptor
+files</em> and Python <a class="reference external" href="https://peps.python.org/pep-0420/">Namespace Packages</a>.
+Specifically, when the main <cite>psij</cite> package is imported, code in
+<cite>psij/__init__.py</cite> goes sequentially through elements in <cite>PYTHONPATH</cite> and
+attempts to load all <cite>.py</cite> files in the <cite>psij-descriptors</cite> package. The
+<cite>psij-descriptors</cite> package must be a namespace package. That is, it must not
+contain an <cite>__init__.py</cite> file.</p>
+<p>Files loaded from <cite>psij-descriptors</cite> (the descriptor files) are then
+interpreted and expected to declare one or both of <cite>__PSI_J_EXECUTORS__</cite> or
+<cite>__PSI_J_LAUNCHERS__</cite> as global variables, which are lists containing one or
+more instances of [Descriptor](#descriptor). The code then iterates over all
+such instances and calls <cite>psij._plugins._register_plugin()</cite>. The
+<cite>_register_plugin</cite> method attempts to import the class pointed to by the <cite>cls</cite>
+property of the descriptor, which is a string representing a fully qualified
+class name. The loading is restricted to the <cite>PYTHONPATH</cite> entry in which the
+descriptor was found. That is, if a descriptor is loaded from <cite>~/lib/python</cite>
+and that descriptor has <cite>cls=’psij.executors.pbs.PBSExecutor’</cite> then the file
+<cite>~/lib/python/psij/executors/pbs.py</cite> must contain a class named <cite>PBSExecutor</cite>.
+The absence of such a file or class will result in PSI/J being unable to
+register the executor.</p>
+<p>If an error occurs after a descriptor is loaded but before the actual executor
+or launcher class is loaded, that error is stored. Successive attempts to
+instantiate that executor/launcher using
+<a class="reference internal" href="../.generated/psij.html#psij.job_executor.JobExecutor.get_instance" title="psij.job_executor.JobExecutor.get_instance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_instance()</span></code></a> or
+<a class="reference internal" href="../.generated/psij.html#psij.job_launcher.Launcher.get_instance" title="psij.job_launcher.Launcher.get_instance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_instance()</span></code></a> will result in the
+stored exception being raised. This prevents packages with broken
+implementations of executors or launchers from reporting errors unless there
+is an actual attempt to use them.</p>
+</div>
+<div class="section" id="the-batch-scheduler-executor">
+<h2>The Batch Scheduler Executor<a class="headerlink" href="#the-batch-scheduler-executor" title="Permalink to this headline">¶</a></h2>
+<p>For a more end-goal oriented view of this topic, please see the <a class="reference internal" href="tutorial_add_executor.html"><span class="doc">tutorial
+for adding an executor</span></a>.</p>
+<p>This is an abstract base class for submit-script based executors. It assumes
+a Local Resource Manager (LRM) that allows job submission by pointing a
+<em>submit</em> command (a tool accessible through a standard POSIX <cite>exec()</cite>) to a
+file that contains all relevant job information. It also assumes that there
+exist commands for cancelling the job, and for querying for the status of one
+or more jobs previously submitted.</p>
+<p>The general workflow used by the batch scheduler executor to submit a job is as
+follows:</p>
+<blockquote>
+<div><p>1. Generate a submit script in the <em>work directory</em>, which is obtained
+from the <cite>config</cite> object at executor intialization, and which defaults to
+<cite>~/.psij/work/&lt;executor.name&gt;</cite>, where <cite>&lt;executor.name&gt;</cite> is the value of
+the <cite>name</cite> of the implementing class. The submit script is generated using
+the
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_submit_script()</span></code></a>
+method of the implementing class.</p>
+<p>2. Execute the command returned by
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_submit_command()</span></code></a> to
+pass the generated submit script to the LRM.</p>
+<p>3. Invoke
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.job_id_from_submit_output" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.job_id_from_submit_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">job_id_from_submit_output()</span></code></a>
+to obtain the job’s native ID from the outut of the submit command executed
+in step (2).</p>
+<ol class="arabic simple" start="4">
+<li><p>Register the job with the <em>status polling thread</em>.</p></li>
+</ol>
+</div></blockquote>
+<p>In parallel, an independent thread, the <em>status polling thread</em>, periodically
+queries the LRM for status updates for the submitted jobs using the following
+sequence of steps for each of the jobs registered in step (4), above:</p>
+<blockquote>
+<div><p>1. Run the command returned by
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_status_command" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_status_command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_status_command()</span></code></a>.</p>
+<p>2. Parse the output of the status command, above, using
+<a class="reference internal" href="../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.parse_status_output" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.parse_status_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_status_output()</span></code></a>,
+which returns a dictionary mapping LRM id strings to <a class="reference internal" href="../.generated/psij.html#psij.job_status.JobStatus" title="psij.job_status.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a> objects.</p>
+<ol class="arabic simple" start="3">
+<li><p>Update the job status with the status object obtained in step (2).</p></li>
+</ol>
+<p>4. If the job state is final, the job is removed from the list of jobs
+managed by the status polling thread.</p>
+</div></blockquote>
+</div>
+<div class="section" id="script-based-launchers">
+<h2>Script Based Launchers<a class="headerlink" href="#script-based-launchers" title="Permalink to this headline">¶</a></h2>
+<p>Launchers are classes that represent entities that, when invoked on the rank 0
+node, start the relevant number of executable instances for a job on the
+allocated compute nodes. Script based launchers are simple wrappers around
+scheduler-provided or general launcher tools, such as <cite>mpirun</cite>, <cite>srun</cite>, etc.
+Currently, all PSI/J launchers are implemented as scripts and have
+<a class="reference internal" href="../.generated/psij.launchers.html#psij.launchers.script_based_launcher.ScriptBasedLauncher" title="psij.launchers.script_based_launcher.ScriptBasedLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptBasedLauncher</span></code></a> as a base
+class.</p>
+<p>The PSI/J executors leave the job of input and output redirection to the
+launchers. Consequently, launcher scripts also take care of redirecting the
+standard streams of the actual launcher tool, which is assumed to properly
+aggregate the output streams of the job ranks.</p>
+<p>In addition to the functions above, PSI/J launchers also take care of invoking
+the pre and post launch scripts.</p>
+<p>Since script based launchers are interchangeable, they must have a well
+defined interface. This interface consists of:</p>
+<blockquote>
+<div><ul>
+<li><p>The command line arguments, which are, in order:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The PSI/J job ID</p></li>
+<li><p>A path to a log file that the launcher script can write debugging
+information to</p></li>
+<li><p>The path of the pre-launch script/executable</p></li>
+<li><p>The path of the post-launch script/executable</p></li>
+<li><p>The path to the job <cite>STDIN</cite> file (or <cite>/dev/null</cite>)</p></li>
+<li><p>The path to the job <cite>STDOUT</cite> file (or <cite>/dev/null</cite>)</p></li>
+<li><p>The path to the job <cite>STDERR</cite> file (or <cite>/dev/null</cite>)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>The output of the launcher script; this must either be terminated
+by the string <cite>_PSI_J_LAUNCHER_DONE</cite> as the last line or an error message
+that can help troubleshoot launching problems, such as errors from the
+underlying launcher executable.</p></li>
+</ul>
+</div></blockquote>
+<p>Writing a custom script based launcher can be as easy as subclassing
+<a class="reference internal" href="../.generated/psij.launchers.html#psij.launchers.script_based_launcher.ScriptBasedLauncher" title="psij.launchers.script_based_launcher.ScriptBasedLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptBasedLauncher</span></code></a> and passing
+a launcher script path to the base class constructor. For example, see the
+<cite>MPI launcher class &lt;https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/mpirun.py&gt;</cite> and the
+<cite>MPI launcher script &lt;https://github.com/ExaWorks/psij-python/blob/main/src/psij/launchers/scripts/mpi_launch.sh&gt;</cite>.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">The PSI/J API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Docs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-executor-loading-system">The Executor Loading System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-batch-scheduler-executor">The Batch Scheduler Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#script-based-launchers">Script Based Launchers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_add_executor.html">Adding an executor</a></li>
+</ul>
+</li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="contributing.html"
+                          title="Previous page">&larr; Contributing</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="tutorial_add_executor.html"
+                          title="Next page">&rarr; Adding an executor</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/development/programming.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="tutorial_add_executor.html" title="Adding an executor"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" >Developer Docs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Architecture</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>

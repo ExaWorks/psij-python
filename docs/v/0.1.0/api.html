@@ -1,0 +1,1433 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The PSI/J API &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/extras.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src" href=".generated/modules.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href=".generated/modules.html" title="src"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">The PSI/J API</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-psi-j-api">
+<h1>The PSI/J API<a class="headerlink" href="#the-psi-j-api" title="Permalink to this headline">¶</a></h1>
+<p>The most important classes in this library are <code class="docutils literal notranslate"><span class="pre">Job</span></code> and <code class="docutils literal notranslate"><span class="pre">JobExecutor</span></code>,
+followed by <code class="docutils literal notranslate"><span class="pre">Launcher</span></code>.</p>
+<div class="section" id="the-job-class-and-its-modifiers">
+<h2>The Job class and its modifiers<a class="headerlink" href="#the-job-class-and-its-modifiers" title="Permalink to this headline">¶</a></h2>
+<p>The Job-related classes listed in this section (<code class="docutils literal notranslate"><span class="pre">Job</span></code>, <code class="docutils literal notranslate"><span class="pre">JobSpec</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ResourceSpec</span></code>, and <code class="docutils literal notranslate"><span class="pre">JobAttributes</span></code>) are independent of
+executor implementations. The authors strongly recommend that users
+program against these classes, rather than adding executor-specific
+configuration options, to the extent possible.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job.html#Job"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class represents a PSI/J job.</p>
+<p>It encapsulates all of the information needed to run a job as well as the job’s state.</p>
+<p>When constructed, a job is in the <a class="reference internal" href=".generated/psij.html#psij.JobState.NEW" title="psij.JobState.NEW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">NEW</span></code></a> state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>spec</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_spec.JobSpec" title="psij.job_spec.JobSpec"><em>JobSpec</em></a><em>]</em>) – an optional <a class="reference internal" href=".generated/psij.html#psij.JobSpec" title="psij.JobSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSpec</span></code></a> that describes the details of the job.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job.html#Job.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Cancels this job.</p>
+<p>The job is canceled by calling <a class="reference internal" href=".generated/psij.html#psij.JobExecutor.cancel" title="psij.JobExecutor.cancel"><code class="xref py py-func docutils literal notranslate"><span class="pre">cancel()</span></code></a> on the job
+executor that was used to submit this job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href=".generated/psij.html#psij.SubmitException" title="psij.SubmitException"><strong>SubmitException</strong></a> – if the job has not yet been submitted.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em></dt>
+<dd><p>A read-only property containing the PSI/J job ID.</p>
+<p>The ID is assigned automatically by the implementation when this <cite>Job</cite> object is
+constructed. The ID is guaranteed to be unique on the machine on which the <cite>Job</cite> object
+was instantiated. The ID does not have to match the ID of the underlying LRM job, but is
+used to identify <cite>Job</cite> instances as seen by a client application.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">native_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>A read-only property containing the native ID of the job.</p>
+<p>The native ID is the ID assigned to the job by the underlying implementation. The native ID
+may not be available until after the job is submitted to a <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a>, in
+which case the value of this property is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set_job_status_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job.html#Job.set_job_status_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Registers a status callback with this job.</p>
+<p>The callback can either be a subclass of <a class="reference internal" href=".generated/psij.html#psij.job.JobStatusCallback" title="psij.job.JobStatusCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusCallback</span></code></a> or a
+procedure accepting two arguments: a <a class="reference internal" href=".generated/psij.html#psij.Job" title="psij.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> and a <a class="reference internal" href=".generated/psij.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a>.</p>
+<p>The callback is invoked whenever a status change occurs for this job, independent of
+any callback registered on the job’s <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a>.  The callback can be
+removed by setting this property to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cb</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.14)"><em>Union</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job.JobStatusCallback" title="psij.job.JobStatusCallback"><em>JobStatusCallback</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job.Job" title="psij.job.Job"><em>Job</em></a><em>, </em><a class="reference internal" href=".generated/psij.html#psij.job_status.JobStatus" title="psij.job_status.JobStatus"><em>JobStatus</em></a><em>]</em><em>, </em><em>None</em><em>]</em><em>]</em>) – An instance of <a class="reference internal" href=".generated/psij.html#psij.job.JobStatusCallback" title="psij.job.JobStatusCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatusCallback</span></code></a> or a callable with two
+parameters, <code class="docutils literal notranslate"><span class="pre">job</span></code> of type <a class="reference internal" href=".generated/psij.html#psij.Job" title="psij.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>, <code class="docutils literal notranslate"><span class="pre">job_status</span></code> of type
+<a class="reference internal" href=".generated/psij.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a>, and returning nothing.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">spec</span></span></dt>
+<dd><p>The job specification of this job.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href=".generated/psij.html#psij.job_status.JobStatus" title="psij.job_status.JobStatus"><span class="pre">JobStatus</span></a></em></dt>
+<dd><p>Contains the current status of the job.</p>
+<p>It is guaranteed that the status returned by this method is monotonic in time with respect
+to the partial ordering of <a class="reference internal" href=".generated/psij.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a> types. That is, if
+<cite>job_status_1.state</cite> and <cite>job_status_2.state</cite> are comparable and
+<cite>job_status_1.state &lt; job_status_2.state</cite>, then it is impossible for <cite>job_status_2</cite> to be
+returned by a call placed prior to a call that returns <cite>job_status_1</cite> if both calls are
+placed from the same thread or if a proper memory barrier is placed between the calls.
+Furthermore the job is guaranteed to go through all intermediate states in the
+<a class="reference external" href="https://exaworks.org/job-api-spec/specification#state-model">state model</a> before
+reaching a particular state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the current state of this job</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job.html#Job.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Waits for the job to reach certain states.</p>
+<p>This method returns either when the job reaches one of the <cite>target_states</cite>, a state
+following one of the <cite>target_states</cite>, a final state, or when an amount of time indicated by
+the <cite>timeout</cite> parameter, if specified, passes. Returns the <a class="reference internal" href=".generated/psij.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a> object
+that has one of the desired states or <cite>None</cite> if the timeout is reached. For example,
+<cite>wait(target_states = [JobState.QUEUED]</cite> waits until the job is in any of the <cite>QUEUED</cite>,
+<cite>ACTIVE</cite>, <cite>COMPLETED</cite>, <cite>FAILED</cite>, or <cite>CANCELED</cite> states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><em>timedelta</em></a><em>]</em>) – An optional timeout after which this method returns even if none of the
+<cite>target_states</cite> was reached. If not specified, wait indefinitely.</p></li>
+<li><p><strong>target_states</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.14)"><em>Union</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_state.JobState" title="psij.job_state.JobState"><em>JobState</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><em>Sequence</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_state.JobState" title="psij.job_state.JobState"><em>JobState</em></a><em>]</em><em>]</em><em>]</em>) – A set of states to wait for. If not specified, wait for any
+of the <a class="reference internal" href=".generated/psij.html#psij.JobState.final" title="psij.JobState.final"><code class="xref py py-attr docutils literal notranslate"><span class="pre">final</span></code></a> states.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns the <a class="reference internal" href=".generated/psij.html#psij.JobStatus" title="psij.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a> object that caused the caused this call to
+complete or <cite>None</cite> if the timeout is specified and reached.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a>[<a class="reference internal" href=".generated/psij.html#psij.job_status.JobStatus" title="psij.job_status.JobStatus"><em>JobStatus</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_status.html#JobStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class containing details about job transitions to new states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<a class="reference internal" href=".generated/psij.html#psij.job_state.JobState" title="psij.job_state.JobState"><em>JobState</em></a>) – The <a class="reference internal" href=".generated/psij.html#psij.JobState" title="psij.JobState"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobState</span></code></a> of this status.</p></li>
+<li><p><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – The time, as would be returned by <a class="reference external" href="https://docs.python.org/3/library/time.html#time.time" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">time.time()</span></code></a>, at which the
+transition to the new state occurred. If not specified, the time when this <cite>JobStatus</cite>
+was instantiated will be used.</p></li>
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – An optional message associated with the transition.</p></li>
+<li><p><strong>exit_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – An optional exit code for the job, if the job has completed.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a><em>]</em><em>]</em>) – Optional metadata provided by the <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+<p>All constructor parameters are accessible as properties.</p>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">final</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em></dt>
+<dd><p>Returns the <cite>final</cite> property of the underlying state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><cite>True</cite> if the state is final and <cite>False</cite> otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_state.html#JobState"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>An enumeration holding the possible job states.</p>
+<p>The possible states are: <cite>NEW</cite>, <cite>QUEUED</cite>, <cite>ACTIVE</cite>, <cite>COMPLETED</cite>, <cite>FAILED</cite>, and <cite>CANCELED</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">ACTIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em></dt>
+<dd><p>This state represents an actively running job.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">CANCELED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em></dt>
+<dd><p>Represents a job that was canceled by a call to <a class="reference internal" href=".generated/psij.html#psij.Job.cancel" title="psij.Job.cancel"><code class="xref py py-func docutils literal notranslate"><span class="pre">cancel()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">CLEANUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em></dt>
+<dd><p>This state indicates that cleanup is actively being done for this job.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">COMPLETED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em></dt>
+<dd><p>This state represents a job that has completed <em>successfully</em> (i.e., with a zero exit code).
+In other words, a job with the executable set to <cite>/bin/false</cite> cannot enter this state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">FAILED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em></dt>
+<dd><p>Represents a job that has either completed unsuccessfully (with a non-zero exit code) or a job
+whose handling and/or execution by the backend has failed in some way.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">NEW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em></dt>
+<dd><p>This is the state of a job immediately after the <a class="reference internal" href=".generated/psij.html#psij.Job" title="psij.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> object is created and
+before being submitted to a <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">QUEUED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em></dt>
+<dd><p>This is the state of the job after being accepted by a backend for execution, but before the
+execution of the job begins.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">STAGE_IN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em></dt>
+<dd><p>This state indicates that the job is staging files in, in preparation for execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">STAGE_OUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em></dt>
+<dd><p>This state indicates that the executable has finished running and that files are being staged
+out.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">final</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em></dt>
+<dd><p>Returns <cite>True</cite> if this state final.</p>
+<p>A state is final when no other state transition can occur after that state has been reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><cite>True</cite> if this is a final state and <cite>False</cite> otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_state.html#JobState.from_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns a <cite>JobState</cite> object corresponding to its string representation.</p>
+<p>This method is such that <cite>state == JobState.from_name(str(state))</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href=".generated/psij.html#psij.job_state.JobState" title="psij.job_state.JobState"><em>JobState</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">is_greater_than</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_state.html#JobState.is_greater_than"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Defines a (strict) partial ordering on the states.</p>
+<p>Not all states are comparable. State transitions cannot violate this ordering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href=".generated/psij.html#psij.job_state.JobState" title="psij.job_state.JobState"><em>JobState</em></a>) – the other <cite>JobState</cite> to compare to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>if this state is comparable with <cite>other</cite>, this method returns <cite>True</cite> or
+<cite>False</cite> depending on the relative order between this state and <cite>other</cite>. That is,
+<cite>True</cite> is returned if and only if this state can come after <cite>other</cite>. If this state
+is not comparable with <cite>other</cite>, this method returns <cite>None</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="job-modifiers">
+<h3>Job modifiers<a class="headerlink" href="#job-modifiers" title="Permalink to this headline">¶</a></h3>
+<p>There can be a lot of configuration information that goes into each
+resource manager job. Its walltime, partition/queue, the number of nodes
+it needs, what kind of nodes, what quality of service the job requires, and
+so on.</p>
+<p>PSI/J splits those three attributes into three groups: one for generic
+POSIX information, one for resource information, and one for resource manager
+scheduling policies.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inherit_environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdout_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_launch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_launch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">launcher</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup_flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StageOutFlags.ALWAYS</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_spec.html#JobSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class that describes the details of a job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>executable</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – An executable, such as “/bin/date”.</p></li>
+<li><p><strong>arguments</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>]</em>) – The argument list to be passed to the executable. Unlike with execve(),
+the first element of the list will correspond to <cite>argv[1]</cite> when accessed by the invoked
+executable.</p></li>
+<li><p><strong>directory</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – The directory, on the compute side, in which the executable is to be run</p></li>
+<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – A name for the job. The name plays no functional role except that
+<a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> implementations may attempt to use the name to label the
+job as presented by the underlying implementation.</p></li>
+<li><p><strong>inherit_environment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If this flag is set to <cite>False</cite>, the job starts with an empty
+environment. The only environment variables that will be accessible to the job are the
+ones specified by this property. If this flag is set to <cite>True</cite>, which is the default,
+the job will also have access to variables inherited from the environment in which the
+job is run.</p></li>
+<li><p><strong>environment</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>]</em><em>]</em>) – A mapping of environment variable names to their respective values.</p></li>
+<li><p><strong>stdin_path</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – Path to a file whose contents will be sent to the job’s standard input.</p></li>
+<li><p><strong>stdout_path</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – A path to a file in which to place the standard output stream of the
+job.</p></li>
+<li><p><strong>stderr_path</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – A path to a file in which to place the standard error stream of the job.</p></li>
+<li><p><strong>resources</strong> (<em>Optional</em><em>[</em><a class="reference internal" href=".generated/psij.html#psij.resource_spec.ResourceSpec" title="psij.resource_spec.ResourceSpec"><em>ResourceSpec</em></a><em>]</em>) – The resource requirements specify the details of how the job is to be run
+on a cluster, such as the number and type of compute nodes used, etc.</p></li>
+<li><p><strong>attributes</strong> (<em>Optional</em><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_attributes.JobAttributes" title="psij.job_attributes.JobAttributes"><em>JobAttributes</em></a><em>]</em>) – Job attributes are details about the job, such as the walltime, that are
+descriptive of how the job behaves. Attributes are, in principle, non-essential in that
+the job could run even though no attributes are specified. In practice, specifying a
+walltime is often necessary to prevent LRMs from prematurely terminating a job.</p></li>
+<li><p><strong>pre_launch</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – An optional path to a pre-launch script. The pre-launch script is
+sourced before the launcher is invoked. It, therefore, runs on the service node of the
+job rather than on all of the compute nodes allocated to the job.</p></li>
+<li><p><strong>post_launch</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>, </em><em>None</em><em>]</em>) – An optional path to a post-launch script. The post-launch script is
+sourced after all the ranks of the job executable complete and is sourced on the same
+node as the pre-launch script.</p></li>
+<li><p><strong>launcher</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – The name of a launcher to use, such as “mpirun”, “srun”, “single”, etc.
+For a list of available launchers, see <span class="xref std std-ref">Available Launchers</span>.</p></li>
+<li><p><strong>stage_in</strong> (<em>Optional</em><em>[</em><em>Set</em><em>[</em><em>StageIn</em><em>]</em><em>]</em>) – Specifies a set of files to be staged in before the job is launched.</p></li>
+<li><p><strong>stage_out</strong> (<em>Optional</em><em>[</em><em>Set</em><em>[</em><em>StageOut</em><em>]</em><em>]</em>) – Specifies a set of files to be staged out after the job terminates.</p></li>
+<li><p><strong>cleanup</strong> (<em>Optional</em><em>[</em><em>Set</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a><em>]</em><em>]</em><em>]</em>) – Specifies a set of files to remove after the stage out process.</p></li>
+<li><p><strong>cleanup_flags</strong> (<em>StageOutFlags</em>) – Specifies the conditions under which the files in <cite>cleanup</cite> should
+be removed, such as when the job completes successfully. The flag
+<cite>StageOutFlags.IF_PRESENT</cite> is ignored and no error condition is triggered if a file
+specified by the <cite>cleanup</cite> argument is not present.</p></li>
+</ul>
+</dd>
+</dl>
+<p>All constructor parameters are accessible as properties.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A note about paths.</p>
+<p>It is strongly recommended that paths to <cite>std*_path</cite>, <cite>directory</cite>, etc. be specified
+as absolute. While paths can be relative, and there are cases when it is desirable to
+specify them as relative, it is important to understand what the implications are.</p>
+<p>Paths in a specification refer to paths <em>that are accessible to the machine where the
+job is running</em>. In most cases, that will be different from the machine on which the
+job is launched (i.e., where PSI/J is invoked from). This means that a given path may
+or may not point to the same file in both the location where the job is running and the
+location where the job is launched from.</p>
+<p>For example, if launching jobs from a login node of a cluster, the path <cite>/tmp/foo.txt</cite>
+will likely refer to locally mounted drives on both the login node and the compute
+node(s) where the job is running. However, since they are local mounts, the file
+<cite>/tmp/foo.txt</cite> written by a job running on the compute node will not be visible by
+opening <cite>/tmp/foo.txt</cite> on the login node. If an output file written on a compute node
+needs to be accessed on a login node, that file should be placed on a shared filesystem.
+However, even by doing so, there is no guarantee that the shared filesystem is mounted
+under the same mount point on both login and compute nodes. While this is an unlikely
+scenario, it remains a possibility.</p>
+<p>When relative paths are specified, even when they point to files on a shared filesystem
+as seen from the submission side (i.e., login node), the job working directory may be
+different from the working directory of the application that is launching the job. For
+example, an application that uses PSI/J to launch jobs on a cluster may be invoked from
+(and have its working directory set to) <cite>/home/foo</cite>, where <cite>/home</cite> is a mount point for
+a shared filesystem accessible by compute nodes. The launched job may specify
+<cite>stdout_path=Path(‘bar.txt’)</cite>, which would resolve to <cite>/home/foo/bar.txt</cite>. However, the
+job may start in <cite>/tmp</cite> on the compute node, and its standard output will be redirected
+to <cite>/tmp/bar.txt</cite>.</p>
+<p>Relative paths are useful when there is a need to refer to the job directory that the
+scheduler chooses for the job, which is not generally known until the job is started by
+the scheduler. In such a case, one must leave the <cite>spec.directory</cite> attribute empty and
+refer to files inside the job directory using relative paths.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>An optional set of cleanup directives.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>The directory, on the compute side, in which the executable is to be run.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">environment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Return the environment dict.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Returns the name of the job.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post_launch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>An optional path to a post-launch script.</p>
+<p>The post-launch script is sourced after all the ranks of the job executable complete and
+is sourced on the same node as the pre-launch script.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pre_launch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>An optional path to a pre-launch script.</p>
+<p>The pre-launch script is sourced before the launcher is invoked. It, therefore, runs on
+the service node of the job rather than on all of the compute nodes allocated to the job.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stderr_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>A path to a file in which to place the standard error stream of the job.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stdin_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>A path to a file whose contents will be sent to the job’s standard input.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stdout_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>A path to a file in which to place the standard output stream of the job.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ResourceSpec</span></span><a class="reference internal" href="_modules/psij/resource_spec.html#ResourceSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>A base class for resource specifications.</p>
+<p>The <cite>ResourceSpec</cite> class is an abstract base class for all possible resource specification
+classes in PSI/J.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/resource_spec.html#ResourceSpec.get_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Creates an instance of a <cite>ResourceSpec</cite> of the specified version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The version of <cite>ResourceSpec</cite> to instantiate. For example, if <cite>version == 1</cite>, this
+method will return a new instance of <cite>ResourceSpecV1</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href=".generated/psij.html#psij.resource_spec.ResourceSpec" title="psij.resource_spec.ResourceSpec"><em>ResourceSpec</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em></dt>
+<dd><p>Returns the version of this resource specification class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.timedelta(seconds=600)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reservation_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_attributes.html#JobAttributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class containing ancillary job information that describes how a job is to be run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><em>timedelta</em></a>) – Specifies the duration (walltime) of the job. A job whose execution
+exceeds its walltime can be terminated forcefully.</p></li>
+<li><p><strong>queue_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – If a backend supports multiple queues, this parameter can be used to
+instruct the backend to send this job to a particular queue.</p></li>
+<li><p><strong>account</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – An account to use for billing purposes. Please note that the executor
+implementation (or batch scheduler) may use a different term for the option used for
+accounting/billing purposes, such as <cite>project</cite>. However, scheduler must map this
+attribute to the accounting/billing option in the underlying execution mechanism.</p></li>
+<li><p><strong>reservation_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Allows specifying an advanced reservation ID. Advanced reservations
+enable the pre-allocation of a set of resources/compute nodes for a certain duration
+such that jobs can be run immediately, without waiting in the queue for resources to
+become available.</p></li>
+<li><p><strong>custom_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a><em>]</em><em>]</em>) – Specifies a dictionary of custom attributes. Implementations of
+<a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> define and are responsible for interpreting custom
+attributes.
+The typical usage scenario for custom attributes is to pass information to the executor
+or underlying job execution mechanism that cannot otherwise be passed using the classes
+and properties provided by PSI/J. A specific example is that of the subclasses of
+<a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSchedulerExecutor</span></code></a>, which
+look for custom attributes prefixed with their name and a dot (e.g., <cite>slurm.constraint</cite>,
+<cite>pbs.c</cite>, <cite>lsf.core_isolation</cite>) and translate them into the corresponding batch
+scheduler directives (e.g., <cite>#SLURM –constraint=…</cite>, <cite>#PBS -c …</cite>,
+<cite>#BSUB -core_isolation …</cite>).</p></li>
+<li><p><strong>project_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Deprecated. Please use the <cite>account</cite> attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+<p>All constructor parameters are accessible as properties.</p>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">custom_attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Returns a dictionary with the custom attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_custom_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_attributes.html#JobAttributes.get_custom_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Retrieves the value of a custom attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_walltime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">walltime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_attributes.html#JobAttributes.parse_walltime"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Parses a walltime string into a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a>.</p>
+<p>The accepted walltime strings formats are:
+* hh:mm:ss
+* hh:mm
+* mm
+* ns*[y|M|d|h|ms]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>walltime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – A string in one of the above formats representing a time duration</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a> representing the same time duration as the <code class="docutils literal notranslate"><span class="pre">walltime</span></code>
+parameter.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><em>timedelta</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Deprecated. Please use the <cite>account</cite> attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set_custom_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_attributes.html#JobAttributes.set_custom_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Sets a custom attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – </p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="executors">
+<span id="id1"></span><h2>Executors<a class="headerlink" href="#executors" title="Permalink to this headline">¶</a></h2>
+<p>Executors are concrete implementations of mechanisms that execute jobs.
+To get an instance of a specific executor, call
+<a class="reference internal" href=".generated/psij.html#psij.job_executor.JobExecutor.get_instance" title="psij.job_executor.JobExecutor.get_instance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobExecutor.get_instance(name)</span></code></a>,
+with <code class="docutils literal notranslate"><span class="pre">name</span></code> being one of the installed executor names. Alternatively, directly
+instantiate the executor, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psij.executors.flux</span> <span class="kn">import</span> <span class="n">FluxJobExecutor</span>
+
+<span class="n">ex</span> <span class="o">=</span> <span class="n">FluxJobExecutor</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Rather than</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">psij</span>
+
+<span class="n">ex</span> <span class="o">=</span> <span class="n">psij</span><span class="o">.</span><span class="n">JobExecutor</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;flux&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Executors can be
+installed from multiple sources, so the precise list of executors
+available to a specific installation of the PSI/J Python library can vary.
+In order to get a list of available executors, you can run, in a
+terminal:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>psij<span class="w"> </span>plugins
+</pre></div>
+</div>
+<div class="section" id="jobexecutor-base-class">
+<h3>JobExecutor Base Class<a class="headerlink" href="#jobexecutor-base-class" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">psij.JobExecutor</span></code> class is abstract, but offers concrete static methods
+for registering, fetching, and listing subclasses of itself.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_executor.html#JobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>An abstract base class for all JobExecutor implementations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – The URL is a string that a <cite>JobExecutor</cite> implementation can interpret as the
+location of a backend.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An configuration specific to each <cite>JobExecutor</cite> implementation. This
+parameter is marked as optional such that concrete <cite>JobExecutor</cite> classes can be
+instantiated with no <cite>config</cite> parameter. However, concrete <cite>JobExecutor</cite> classes
+must pass a default configuration up the inheritance tree and ensure that the
+<cite>config</cite> parameter of the ABC constructor is non-null.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The concrete executor implementations provided by this version of PSI/J Python
+are:</p>
+</div>
+<div class="section" id="cobalt">
+<h3>Cobalt<a class="headerlink" href="#cobalt" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CobaltJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/batch/cobalt.html#CobaltJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSchedulerExecutor</span></code></a></p>
+<p>A <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> for the Cobalt Workload Manager.</p>
+<p>The <a class="reference external" href="https://xgitlab.cels.anl.gov/aig-public/cobalt">Cobalt HPC Job Scheduler</a>,
+is used by <a class="reference external" href="www.anl.gov">Argonne’s</a> <a class="reference external" href="www.alcf.anl.gov">ALCF</a> systems.</p>
+<p>Uses the <code class="docutils literal notranslate"><span class="pre">qsub</span></code>, <code class="docutils literal notranslate"><span class="pre">qstat</span></code>, and <code class="docutils literal notranslate"><span class="pre">qdel</span></code> commands, respectively, to submit,
+monitor, and cancel jobs.</p>
+<p>Creates a batch script with #COBALT directives when submitting a job.</p>
+<p>Custom attributes prefixed with <cite>cobalt.</cite> are rendered as long-form directives in the script.
+For example, setting <cite>custom_attributes[‘cobalt.m’] = ‘co’</cite> results in the <cite>#COBALT –m=co</cite>
+directive being placed in the submit script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – This parameter is not used and is only provided for compatibility reasons.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.cobalt.CobaltExecutorConfig" title="psij.executors.batch.cobalt.CobaltExecutorConfig"><em>CobaltExecutorConfig</em></a><em>]</em>) – An optional configuration for this executor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="flux">
+<h3>Flux<a class="headerlink" href="#flux" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FluxJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/flux.html#FluxJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.html#psij.job_executor.JobExecutor" title="psij.job_executor.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a></p>
+<p>A <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> for the Flux scheduler.</p>
+<p>The <a class="reference external" href="http://flux-framework.org/">Flux resource manager framework</a> is
+deployed and used on a per-user basis at many sites, and is slated to become
+the system-level resource manager at LLNL.</p>
+<p>Uses Flux’s python library/bindings to submit, monitor, and manipulate jobs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Not used, but required by the spec for automatic initialization.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – The <cite>FluxJobExecutor</cite> does not have any configuration options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="lsf">
+<h3>LSF<a class="headerlink" href="#lsf" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LsfJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/batch/lsf.html#LsfJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSchedulerExecutor</span></code></a></p>
+<p>A <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> for the LSF Workload Manager.</p>
+<p>The <a class="reference external" href="https://www.ibm.com/docs/en/spectrum-lsf">IBM Spectrum LSF workload manager</a>
+is the system resource manager on LLNL’s Sierra and Lassen, and ORNL’s Summit.</p>
+<p>Uses the ‘bsub’, ‘bjobs’, and ‘bkill’ commands, respectively, to submit,
+monitor, and cancel jobs.</p>
+<p>Creates a batch script with #BSUB directives when submitting a job.</p>
+<p>Renders all custom attributes of the form <cite>lsf.&lt;name&gt;</cite> into the corresponding
+LSF directive. For example, setting
+<cite>job.spec.attributes.custom_attributes[‘lsf.core_isolation’] = ‘0’ results in a
+`#BSUB -core_isolation 0</cite> directive being placed in the submit script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Not used, but required by the spec for automatic initialization.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.lsf.LsfExecutorConfig" title="psij.executors.batch.lsf.LsfExecutorConfig"><em>LsfExecutorConfig</em></a><em>]</em>) – An optional configuration for this executor.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="pbs">
+<h3>PBS<a class="headerlink" href="#pbs" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="slurm">
+<h3>Slurm<a class="headerlink" href="#slurm" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlurmJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/batch/slurm.html#SlurmJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor" title="psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSchedulerExecutor</span></code></a></p>
+<p>A <a class="reference internal" href=".generated/psij.html#psij.JobExecutor" title="psij.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a> for the Slurm Workload Manager.</p>
+<p>The <a class="reference external" href="https://slurm.schedmd.com/overview.html">Slurm Workload Manager</a> is a
+widely used resource manager running on machines such as
+NERSC’s Perlmutter, as well as a variety of LLNL machines.</p>
+<p>Uses the ‘sbatch’, ‘squeue’, and ‘scancel’ commands, respectively, to submit,
+monitor, and cancel jobs.</p>
+<p>Creates a batch script with #SBATCH directives when submitting a job.</p>
+<p>Renders all custom attributes set on a job’s attributes with a <cite>slurm.</cite> prefix into
+corresponding Slurm directives with long-form parameters. For example,
+<cite>job.spec.attributes.custom_attributes[‘slurm.qos’] = ‘debug’</cite> causes a directive
+<cite>#SBATCH –qos=debug</cite> to be placed in the submit script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Not used, but required by the spec for automatic initialization.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.executors.batch.html#psij.executors.batch.slurm.SlurmExecutorConfig" title="psij.executors.batch.slurm.SlurmExecutorConfig"><em>SlurmExecutorConfig</em></a><em>]</em>) – An optional configuration for this executor.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="local">
+<h3>Local<a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/local.html#LocalJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.html#psij.job_executor.JobExecutor" title="psij.job_executor.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a></p>
+<p>A job executor that runs jobs locally using <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></a>.</p>
+<p>This job executor is intended to be used either to run jobs directly on the same machine as the
+PSI/J library or for testing purposes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In Linux, attached jobs always appear to complete with a zero exit code regardless
+of the actual exit code.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Instantiation of a local executor from both parent process and a <cite>fork()</cite>-ed process
+is not guaranteed to work. In general, using <cite>fork()</cite> and multi-threading in Linux is
+unsafe, as suggested by the <cite>fork()</cite> man page. While PSI/J attempts to minimize problems
+that can arise when <cite>fork()</cite> is combined with threads (which are used by PSI/J), no
+guarantees can be made and the chances of unexpected behavior are high. Please do not use
+PSI/J with <cite>fork()</cite>. If you do, please be mindful that support for using PSI/J with
+<cite>fork()</cite> will be limited.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Not used, but required by the spec for automatic initialization.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href=".generated/psij.html#psij.JobExecutorConfig" title="psij.JobExecutorConfig"><em>JobExecutorConfig</em></a>) – The <cite>LocalJobExecutor</cite> does not have any configuration options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="radical-pilot">
+<h3>Radical Pilot<a class="headerlink" href="#radical-pilot" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RPJobExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/executors/rp.html#RPJobExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.html#psij.job_executor.JobExecutor" title="psij.job_executor.JobExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobExecutor</span></code></a></p>
+<p>A job executor that runs jobs via the <a class="reference external" href="https://radical-cybertools.github.io/radical-pilot/">RADICAL Pilot system</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Not used, but required by the spec for automatic initialization.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – The <cite>RPJobExecutor</cite> does not have any configuration options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="launchers">
+<span id="id2"></span><h2>Launchers<a class="headerlink" href="#launchers" title="Permalink to this headline">¶</a></h2>
+<p>Launchers are mechanisms to start the actual jobs on batch schedulers
+once a set of nodes has been allocated for the job. In essence, launchers
+are wrappers around the job executable which can provide additional
+features, such as setting up an MPI environment, starting a copy of the
+job executable on each allocated node, etc. To get a launcher instance,
+call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Launcher.get_instance(name)</span></code>
+with <code class="docutils literal notranslate"><span class="pre">name</span></code> being the name of a launcher. Like job executors, above,
+launchers are plugins and can come from various places. To obtain a list
+of launchers, you can run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>psij<span class="w"> </span>plugins
+</pre></div>
+</div>
+<div class="section" id="launcher-base-class">
+<h3>Launcher base class<a class="headerlink" href="#launcher-base-class" title="Permalink to this headline">¶</a></h3>
+<p>Like the executor, the <code class="docutils literal notranslate"><span class="pre">Launcher</span></code> base class is abstract, but offers
+concrete static methods for registering and fetching subclasses of itself.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Launcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/job_launcher.html#Launcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>An abstract base class for all launchers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration. If not specified,
+<a class="reference internal" href=".generated/psij.html#psij.JobExecutorConfig.DEFAULT" title="psij.JobExecutorConfig.DEFAULT"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DEFAULT</span></code></a> is used.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The PSI/J Python library comes with a core set of launchers, which are:</p>
+</div>
+<div class="section" id="aprun">
+<h3>aprun<a class="headerlink" href="#aprun" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AprunLauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/aprun.html#AprunLauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.multiple.MultipleLauncher" title="psij.launchers.multiple.MultipleLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleLauncher</span></code></a></p>
+<p>Launches a job using Cobalt’s <code class="docutils literal notranslate"><span class="pre">aprun</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="jsrun">
+<h3>jsrun<a class="headerlink" href="#jsrun" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JsrunLauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/jsrun.html#JsrunLauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.multiple.MultipleLauncher" title="psij.launchers.multiple.MultipleLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleLauncher</span></code></a></p>
+<p>Launches a job using LSF’s <code class="docutils literal notranslate"><span class="pre">jsrun</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="srun">
+<h3>srun<a class="headerlink" href="#srun" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SrunLauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/srun.html#SrunLauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.multiple.MultipleLauncher" title="psij.launchers.multiple.MultipleLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleLauncher</span></code></a></p>
+<p>Launches a job using Slurm’s <code class="docutils literal notranslate"><span class="pre">srun</span></code>.</p>
+<p>See the
+<a class="reference external" href="https://slurm.schedmd.com/overview.html">Slurm Workload Manager</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="mpirun">
+<h3>mpirun<a class="headerlink" href="#mpirun" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MPILauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/mpirun.html#MPILauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.multiple.MultipleLauncher" title="psij.launchers.multiple.MultipleLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleLauncher</span></code></a></p>
+<p>Launches jobs using <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpirun</span></code> is a tool provided by
+<a class="reference external" href="https://www.mpi-forum.org/">MPI</a> implementations, such as
+<a class="reference external" href="https://www.open-mpi.org/">Open MPI</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="single">
+<h3>single<a class="headerlink" href="#single" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SingleLauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/single.html#SingleLauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.script_based_launcher.ScriptBasedLauncher" title="psij.launchers.script_based_launcher.ScriptBasedLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptBasedLauncher</span></code></a></p>
+<p>A launcher that launches a single copy of the executable. This is the default launcher.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="multiple">
+<h3>multiple<a class="headerlink" href="#multiple" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleLauncher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/psij-python/psij-python/src/psij/launchers/scripts/multi_launch.sh')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/multiple.html#MultipleLauncher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.script_based_launcher.ScriptBasedLauncher" title="psij.launchers.script_based_launcher.ScriptBasedLauncher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptBasedLauncher</span></code></a></p>
+<p>A launcher that launches multiple identical copies of the executable.</p>
+<p>The exit code of the job corresponds to the first non-zero exit code encountered in one of the
+executable copies or zero if all invocations of the executable succeed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference internal" href=".generated/psij.html#psij.job_executor_config.JobExecutorConfig" title="psij.job_executor_config.JobExecutorConfig"><em>JobExecutorConfig</em></a><em>]</em>) – An optional configuration.</p></li>
+<li><p><strong>script_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_additional_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/launchers/multiple.html#MultipleLauncher.get_additional_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>See         <a class="reference internal" href=".generated/psij.launchers.html#psij.launchers.script_based_launcher.ScriptBasedLauncher.get_additional_args" title="psij.launchers.script_based_launcher.ScriptBasedLauncher.get_additional_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_additional_args()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job</strong> (<a class="reference internal" href=".generated/psij.html#psij.job.Job" title="psij.job.Job"><em>Job</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="other-package-contents">
+<h2>Other Package Contents<a class="headerlink" href="#other-package-contents" title="Permalink to this headline">¶</a></h2>
+<p>A collection of exceptions used by PSI/J.</p>
+<dl class="py exception">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InvalidJobException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/exceptions.html#InvalidJobException"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>An exception describing a problem with a job specification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – see the <a class="reference internal" href=".generated/psij.html#psij.exceptions.InvalidJobException.message" title="psij.exceptions.InvalidJobException.message"><code class="xref py py-attr docutils literal notranslate"><span class="pre">message</span></code></a> property</p></li>
+<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><em>Exception</em></a><em>]</em>) – see the <a class="reference internal" href=".generated/psij.html#psij.exceptions.InvalidJobException.exception" title="psij.exceptions.InvalidJobException.exception"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exception</span></code></a> property</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">exception</span></span></dt>
+<dd><p>Returns an optional underlying exception that can potentially be used for debugging
+purposes, but which should not, in general, be presented to an end-user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">message</span></span></dt>
+<dd><p>Retrieves the message associated with this exception. This is a descriptive message that is
+sufficiently clear to be presented to an end-user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubmitException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/psij/exceptions.html#SubmitException"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>An exception representing job submission issues.</p>
+<p>This exception is thrown when the <a class="reference internal" href=".generated/psij.html#psij.JobExecutor.submit" title="psij.JobExecutor.submit"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit()</span></code></a> call fails for
+a reason that is independent of the job that is being submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – see <a class="reference internal" href=".generated/psij.html#psij.exceptions.SubmitException.message" title="psij.exceptions.SubmitException.message"><code class="xref py py-attr docutils literal notranslate"><span class="pre">message</span></code></a></p></li>
+<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><em>Exception</em></a><em>]</em>) – see <a class="reference internal" href=".generated/psij.html#psij.exceptions.SubmitException.exception" title="psij.exceptions.SubmitException.exception"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exception</span></code></a></p></li>
+<li><p><strong>transient</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – see <a class="reference internal" href=".generated/psij.html#psij.exceptions.SubmitException.transient" title="psij.exceptions.SubmitException.transient"><code class="xref py py-attr docutils literal notranslate"><span class="pre">transient</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">exception</span></span></dt>
+<dd><p>Returns an optional underlying exception that can potentially be used for debugging
+purposes, but which should not, in general, be presented to an end-user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">message</span></span></dt>
+<dd><p>Retrieves the message associated with this exception. This is a descriptive message
+that is sufficiently clear to be presented to an end-user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transient</span></span></dt>
+<dd><p>Returns <cite>True</cite> if the underlying condition that triggered this exception is transient.
+Jobs that cannot be submitted due to a transient exceptional condition have chance of being
+successfully re-submitted at a later time, which is a suggestion to client code that it
+could re-attempt the operation that triggered this exception. However, the exact chances of
+success depend on many factors and are not guaranteed in any particular case. For example,
+a DNS resolution failure while attempting to connect to a remote service is a transient
+error since it can be reasonably assumed that DNS resolution is a persistent feature of an
+Internet-connected network. By contrast, an authentication failure due to an invalid
+username/password combination would not be a transient failure. While it may be possible
+for a temporary defect in a service to cause such a failure, under normal operating
+conditions such an error would persist across subsequent re-tries until correct credentials
+are used.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href=".generated/modules.html">src</a><ul>
+<li class="toctree-l2"><a class="reference internal" href=".generated/psij.html">psij package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href=".generated/psij.executors.html">psij.executors package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href=".generated/psij.executors.batch.html">psij.executors.batch package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.batch_scheduler_executor">psij.executors.batch.batch_scheduler_executor module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.cobalt">psij.executors.batch.cobalt module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.escape_functions">psij.executors.batch.escape_functions module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.lsf">psij.executors.batch.lsf module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#psij-executors-batch-pbspro-module">psij.executors.batch.pbspro module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.script_generator">psij.executors.batch.script_generator module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.slurm">psij.executors.batch.slurm module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch.template_function_library">psij.executors.batch.template_function_library module</a></li>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.executors.batch.html#module-psij.executors.batch">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#module-psij.executors.flux">psij.executors.flux module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#module-psij.executors.local">psij.executors.local module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#module-psij.executors.rp">psij.executors.rp module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.executors.html#module-psij.executors">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href=".generated/psij.launchers.html">psij.launchers package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href=".generated/psij.launchers.scripts.html">psij.launchers.scripts package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href=".generated/psij.launchers.scripts.html#module-psij.launchers.scripts">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.aprun">psij.launchers.aprun module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.jsrun">psij.launchers.jsrun module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.mpirun">psij.launchers.mpirun module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.multiple">psij.launchers.multiple module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.script_based_launcher">psij.launchers.script_based_launcher module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.single">psij.launchers.single module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers.srun">psij.launchers.srun module</a></li>
+<li class="toctree-l5"><a class="reference internal" href=".generated/psij.launchers.html#module-psij.launchers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.descriptor">psij.descriptor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.exceptions">psij.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job">psij.job module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_attributes">psij.job_attributes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_executor">psij.job_executor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_executor_config">psij.job_executor_config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_launcher">psij.job_launcher module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_spec">psij.job_spec module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_state">psij.job_state module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.job_status">psij.job_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#psij-launcher-module">psij.launcher module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.resource_spec">psij.resource_spec module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.serialize">psij.serialize module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.utils">psij.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij.version">psij.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href=".generated/psij.html#module-psij">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The PSI/J API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-job-class-and-its-modifiers">The Job class and its modifiers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#job-modifiers">Job modifiers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#executors">Executors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jobexecutor-base-class">JobExecutor Base Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cobalt">Cobalt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flux">Flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lsf">LSF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pbs">PBS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slurm">Slurm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#radical-pilot">Radical Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#launchers">Launchers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#launcher-base-class">Launcher base class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aprun">aprun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jsrun">jsrun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#srun">srun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mpirun">mpirun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single">single</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple">multiple</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#other-package-contents">Other Package Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href=".generated/modules.html">src</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="getting_started.html"
+                          title="Previous page">&larr; Getting Started</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href=".generated/modules.html"
+                          title="Next page">&rarr; src</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href=".generated/modules.html" title="src"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting Started"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">The PSI/J API</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>

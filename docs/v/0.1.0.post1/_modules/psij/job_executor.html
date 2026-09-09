@@ -1,0 +1,560 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>psij.job_executor &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/extras.js"></script>
+
+    
+    
+     
+        <script src="../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.job_executor</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for psij.job_executor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">packaging.version</span> <span class="kn">import</span> <span class="n">Version</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">RLock</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span> <span class="nn">psij</span>
+<span class="kn">from</span> <span class="nn">psij</span> <span class="kn">import</span> <span class="n">InvalidJobException</span>
+<span class="kn">from</span> <span class="nn">psij.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">_VersionEntry</span>
+<span class="kn">from</span> <span class="nn">psij._plugins</span> <span class="kn">import</span> <span class="n">_register_plugin</span><span class="p">,</span> <span class="n">_get_plugin_class</span><span class="p">,</span> <span class="n">_print_plugin_status</span>
+<span class="kn">from</span> <span class="nn">psij.job_state</span> <span class="kn">import</span> <span class="n">JobState</span>
+<span class="kn">from</span> <span class="nn">psij.job_status</span> <span class="kn">import</span> <span class="n">JobStatus</span>
+<span class="kn">from</span> <span class="nn">psij.job</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatusCallback</span><span class="p">,</span> <span class="n">FunctionJobStatusCallback</span>
+<span class="kn">from</span> <span class="nn">psij.job_executor_config</span> <span class="kn">import</span> <span class="n">JobExecutorConfig</span>
+<span class="kn">from</span> <span class="nn">psij.job_launcher</span> <span class="kn">import</span> <span class="n">Launcher</span>
+<span class="kn">from</span> <span class="nn">psij.job_spec</span> <span class="kn">import</span> <span class="n">JobSpec</span>
+<span class="kn">from</span> <span class="nn">psij.resource_spec</span> <span class="kn">import</span> <span class="n">ResourceSpecV1</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">_DEFAULT_RESOURCES</span> <span class="o">=</span> <span class="n">ResourceSpecV1</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="JobExecutor"><a class="viewcode-back" href="../../api.html#psij.job_executor.JobExecutor">[docs]</a><span class="k">class</span> <span class="nc">JobExecutor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An abstract base class for all JobExecutor implementations.&quot;&quot;&quot;</span>
+
+    <span class="n">_executors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">_VersionEntry</span><span class="p">[</span><span class="s1">&#39;JobExecutor&#39;</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JobExecutorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param url: The URL is a string that a `JobExecutor` implementation can interpret as the</span>
+<span class="sd">            location of a backend.</span>
+<span class="sd">        :param config: An configuration specific to each `JobExecutor` implementation. This</span>
+<span class="sd">            parameter is marked as optional such that concrete `JobExecutor` classes can be</span>
+<span class="sd">            instantiated with no `config` parameter. However, concrete `JobExecutor` classes</span>
+<span class="sd">            must pass a default configuration up the inheritance tree and ensure that the</span>
+<span class="sd">            `config` parameter of the ABC constructor is non-null.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="k">assert</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="c1"># _cb is not thread-safe; changing it while jobs are running could lead to badness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JobStatusCallback</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_launchers_lock</span> <span class="o">=</span> <span class="n">RLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_launchers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Launcher</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the name of this executor.&quot;&quot;&quot;</span>
+        <span class="c1"># The _NAME_ class attribute is set by the instantiation mechanism. This is only done to</span>
+        <span class="c1"># avoid name duplication/matching issues (name defined by the descriptor vs. name defined</span>
+        <span class="c1"># statically by a pre-set _NAME_attribute), but is not otherwise necessary to do so. In</span>
+        <span class="c1"># other words, one could very well return a static value here and ensure that the</span>
+        <span class="c1"># descriptor has the same name for this class.</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_NAME_&#39;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Version</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the version of this executor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Version</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_VERSION_&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_check_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobSpec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks a job for consistency and correctness.</span>
+
+<span class="sd">        Verifies that various aspects of the job are correctly specified. This includes precisely</span>
+<span class="sd">        the following checks:</span>
+<span class="sd">        * the job has a non-null specification</span>
+<span class="sd">        * job.spec.environment is a Dict[str, [str | int]]</span>
+
+<span class="sd">        While this method makes a fair attempt at ensuring the validity of the job, it makes no</span>
+<span class="sd">        such guarantees. Specifically, if an executor implementation requires checks not listed</span>
+<span class="sd">        above, it should implement them explicitly.</span>
+
+<span class="sd">        These checks are meant to trigger common runtime type errors somewhat early and with clear</span>
+<span class="sd">        error messages. In production software, these checks can be disabled by invoking Python</span>
+<span class="sd">        with one of the optimization flags (`-O` or `-OO`).</span>
+
+<span class="sd">        Upon completion, this method sets the :attr:`~psij.Job.executor` attribute of the job and</span>
+<span class="sd">        returns the job specification.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        job</span>
+<span class="sd">            The job to validate</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            A non-null job specification</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">JobState</span><span class="o">.</span><span class="n">NEW</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidJobException</span><span class="p">(</span><span class="s1">&#39;Job must be in NEW state&#39;</span><span class="p">)</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spec</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidJobException</span><span class="p">(</span><span class="s1">&#39;Missing specification&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spec</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
+            <span class="n">spec</span><span class="o">.</span><span class="n">resources</span> <span class="o">=</span> <span class="n">_DEFAULT_RESOURCES</span>
+
+        <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">environment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;environment key &quot;</span><span class="si">%s</span><span class="s1">&quot; is not a string (</span><span class="si">%s</span><span class="s1">)&#39;</span>
+                                        <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;environment value for key &quot;</span><span class="si">%s</span><span class="s1">&quot; must be string &#39;</span>
+                                        <span class="s1">&#39;or int type (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidJobException</span><span class="p">(</span><span class="s1">&#39;Job is already associated with an executor&#39;</span><span class="p">)</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">spec</span>
+
+<div class="viewcode-block" id="JobExecutor.submit"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.submit">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Submits a Job to the underlying implementation.</span>
+
+<span class="sd">        Successful return of this method indicates that the job has been sent to the underlying</span>
+<span class="sd">        implementation and all changes in the job status, including failures, are reported using</span>
+<span class="sd">        notifications. Conversely, if one of the two possible exceptions is thrown, then the job</span>
+<span class="sd">        has not been successfully sent to the underlying implementation, the job status remains</span>
+<span class="sd">        unchanged, and no status notifications about the job will be fired.</span>
+
+<span class="sd">        A successful return of this method guarantees that the job&#39;s `native_id` property is set.</span>
+
+<span class="sd">        :raises InvalidJobException: Thrown if the job specification cannot be understood.</span>
+<span class="sd">            This exception is fatal in that submitting another job with the exact same details will</span>
+<span class="sd">            also fail with an `InvalidJobException`. In principle, the underlying</span>
+<span class="sd">            implementation / LRM is the entity ultimately responsible for interpreting a</span>
+<span class="sd">            specification and reporting any errors associated with it. However, in many cases, this</span>
+<span class="sd">            reporting may come after a significant delay. In the interest of failing fast, library</span>
+<span class="sd">            implementations should make an effort of validating specifications early and throwing</span>
+<span class="sd">            this exception as soon as possible if that validation fails.</span>
+
+<span class="sd">        :raises SubmitException: Thrown if the request cannot be sent to the underlying</span>
+<span class="sd">            implementation. Unlike `InvalidJobException`, this exception can occur for</span>
+<span class="sd">            reasons that are transient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JobExecutor.cancel"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.cancel">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels a job that has been submitted to underlying executor implementation.</span>
+
+<span class="sd">        A successful return of this method only indicates that the request for cancellation has been</span>
+<span class="sd">        communicated to the underlying implementation. The job will then be canceled at the</span>
+<span class="sd">        discretion of the implementation, which may be at some later time. A successful</span>
+<span class="sd">        cancellation is reflected in a change of status of the respective job to</span>
+<span class="sd">        :attr:`~psij.JobState.CANCELED`. User code can synchronously wait until the</span>
+<span class="sd">        :attr:`~psij.JobState.CANCELED` state is reached using `job.wait(JobState.CANCELED)` or</span>
+<span class="sd">        even `job.wait()`, since the latter would wait for all final states, including</span>
+<span class="sd">        `JobState.CANCELED`. In fact, it is recommended that `job.wait()` be used because it is</span>
+<span class="sd">        entirely possible for the job to complete before the cancellation is communicated to the</span>
+<span class="sd">        underlying implementation and before the client code receives the completion notification.</span>
+<span class="sd">        In such a case, the job will never enter the `CANCELED` state and</span>
+<span class="sd">        `job.wait(JobState.CANCELED)` would hang indefinitely.</span>
+
+<span class="sd">        :param job: The job to be canceled.</span>
+
+<span class="sd">        :raises SubmitException: Thrown if the request cannot be sent to the underlying</span>
+<span class="sd">            implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JobExecutor.list"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.list">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List native IDs of all jobs known to the backend.</span>
+
+<span class="sd">        This method is meant to return a list of native IDs for jobs submitted to the backend</span>
+<span class="sd">        by any means, not necessarily through this executor or through PSI/J.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JobExecutor.attach"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.attach">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">native_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attaches a job to a native job.</span>
+
+<span class="sd">        :param job: A job to attach. The job must be in the :attr:`~psij.JobState.NEW` state.</span>
+<span class="sd">        :param native_id: The native ID to attach to as returned by :attr:`~psij.Job.native_id`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JobExecutor.set_job_status_callback"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.set_job_status_callback">[docs]</a>    <span class="k">def</span> <span class="nf">set_job_status_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                <span class="n">cb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">JobStatusCallback</span><span class="p">,</span>
+                                          <span class="n">Callable</span><span class="p">[[</span><span class="n">Job</span><span class="p">,</span> <span class="s1">&#39;psij.JobStatus&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Registers a status callback with this executor.</span>
+
+<span class="sd">        The callback can either be a subclass of :class:`~psij.job.JobStatusCallback` or a</span>
+<span class="sd">        procedure accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus`.</span>
+
+<span class="sd">        The callback will be invoked whenever a status change occurs for any of the jobs submitted</span>
+<span class="sd">        to this job executor, whether they were submitted with an individual job status callback or</span>
+<span class="sd">        not. To remove the callback, set it to `None`.</span>
+
+<span class="sd">        :param cb: An instance of :class:`~psij.job.JobStatusCallback` or a callable with two</span>
+<span class="sd">            parameters: job of type :class:`~psij.Job` and job_status of type</span>
+<span class="sd">            :class:`~psij.JobStatus`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">JobStatusCallback</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span> <span class="o">=</span> <span class="n">cb</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span> <span class="o">=</span> <span class="n">FunctionJobStatusCallback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a string representation of this executor.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;JobExecutor[</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, url=</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_NAME_&#39;</span><span class="p">),</span>
+                                                        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_VERSION_&#39;</span><span class="p">),</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;JobExecutor[</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_NAME_&#39;</span><span class="p">),</span>
+                                                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s1">&#39;_VERSION_&#39;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="JobExecutor.get_instance"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.get_instance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_instance</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JobExecutorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;JobExecutor&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an instance of a `JobExecutor`.</span>
+
+<span class="sd">        :param name: The name of the executor to return. This must be one of the values returned</span>
+<span class="sd">            by :func:`~psij.JobExecutor.get_executor_names`. If the value of the `name` parameter</span>
+<span class="sd">            is not one of the valid values returned by</span>
+<span class="sd">            :func:`~psij.JobExecutor.get_executor_names`, `ValueError` is raised.</span>
+<span class="sd">        :param version_constraint: A version constraint for the executor in the form</span>
+<span class="sd">            &#39;(&#39; &lt;op&gt; &lt;version&gt;[, &lt;op&gt; &lt;version[, ...]] &#39;)&#39;, such as &quot;( &gt; 0.0.2, != 0.0.4)&quot;.</span>
+<span class="sd">        :param url: An optional URL to pass to the `JobExecutor` instance.</span>
+<span class="sd">        :param config: An optional configuration to pass to the instance.</span>
+<span class="sd">        :return: A JobExecutor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># might want to cache these instances if url and config match</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="n">_get_plugin_class</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version_constraint</span><span class="p">,</span> <span class="s1">&#39;executor&#39;</span><span class="p">,</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">_executors</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">selected</span><span class="o">.</span><span class="n">ecls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">ecls</span><span class="p">,</span> <span class="n">JobExecutor</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">ecls</span><span class="p">,</span> <span class="s1">&#39;_NAME_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">ecls</span><span class="p">,</span> <span class="s1">&#39;_VERSION_&#39;</span><span class="p">,</span> <span class="n">selected</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">selected</span><span class="o">.</span><span class="n">ecls</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span></div>
+
+<div class="viewcode-block" id="JobExecutor.register_executor"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.register_executor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">register_executor</span><span class="p">(</span><span class="n">desc</span><span class="p">:</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Registers a `JobExecutor` class through a :class:`~psij.descriptor.Descriptor`.</span>
+
+<span class="sd">        The class can then be later instantiated using :func:`~psij.JobExecutor.get_instance`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        desc</span>
+<span class="sd">            A :class:`~psij.descriptor.Descriptor` with information about the executor to</span>
+<span class="sd">            be registered.</span>
+<span class="sd">        root</span>
+<span class="sd">            A filesystem path under which the implementation of the executor is to be loaded from.</span>
+<span class="sd">            Executors from other locations, even if under the correct package, will not be</span>
+<span class="sd">            registered by this method. If an executor implementation is only available under a</span>
+<span class="sd">            different root path, this method will throw an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_register_plugin</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="s1">&#39;executor&#39;</span><span class="p">,</span> <span class="n">JobExecutor</span><span class="o">.</span><span class="n">_executors</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_print_plugin_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_print_plugin_status</span><span class="p">(</span><span class="n">JobExecutor</span><span class="o">.</span><span class="n">_executors</span><span class="p">,</span> <span class="s1">&#39;executor&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_cls_attr</span><span class="p">(</span><span class="n">ecls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;JobExecutor&#39;</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ecls</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Class </span><span class="si">{}</span><span class="s1"> is missing the executor </span><span class="si">{}</span><span class="s1"> attribute, &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span>
+                             <span class="nb">format</span><span class="p">(</span><span class="n">ecls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+
+<div class="viewcode-block" id="JobExecutor.get_executor_names"><a class="viewcode-back" href="../../.generated/psij.html#psij.job_executor.JobExecutor.get_executor_names">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_executor_names</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set of registered executor names.</span>
+
+<span class="sd">        Names returned by this method can be passed to :func:`~psij.JobExecutor.get_instance` as</span>
+<span class="sd">        the `name` parameter.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A set of executor names corresponding to the known executors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">JobExecutor</span><span class="o">.</span><span class="n">_executors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_launcher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Launcher</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_launchers_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_launchers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_launchers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Launcher</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+                                                              <span class="n">version_constraint</span><span class="o">=</span><span class="n">version_constraint</span><span class="p">,</span>
+                                                              <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_launchers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed to set status for job </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_notify_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span><span class="o">.</span><span class="n">job_status_changed</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Job status callback for </span><span class="si">%s</span><span class="s1"> threw an exception: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">The PSI/J API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.job_executor</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>
