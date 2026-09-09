@@ -9,7 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    versioning-strategy: widen
+    versioning-strategy: auto
     allow:
       - dependency-name: "filelock"
       - dependency-name: "psutil"
