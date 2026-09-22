@@ -1,0 +1,45 @@
+psij.executors package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   psij.executors.batch
+
+Submodules
+----------
+
+psij.executors.flux module
+--------------------------
+
+.. automodule:: psij.executors.flux
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.executors.local module
+---------------------------
+
+.. automodule:: psij.executors.local
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.executors.rp module
+------------------------
+
+.. automodule:: psij.executors.rp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: psij.executors
+   :members:
+   :undoc-members:
+   :show-inheritance:

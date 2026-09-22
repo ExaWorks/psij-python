@@ -1,0 +1,1031 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>psij.executors.batch.batch_scheduler_executor &#8212; PSI/J</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/extras.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+        <link rel="stylesheet" href="/psij-python/theme-4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans&family=Saira:wght@300;400&family=Nunito+Sans:wght@300;400" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.0.3/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/psij-python/style.css?id=2">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/tender.min.css">
+    <script src="https://kit.fontawesome.com/0f2ef02e2b.js" crossorigin="anonymous"></script>
+    <script src="/psij-python/versions.js"></script>
+    <script src="/psij-python/versioning.js"></script>
+    
+    
+    
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/extras.js"></script>
+
+    
+    
+     
+        <script src="../../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.js"></script>
+    
+
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <v-app id="psij-app" class="psij-docs">
+                <v-app-bar elevation="4" height="48pt" fixed elevate-on-scroll width="100%">
+            <v-tabs v-model="maintabs">
+                <v-tab key="index"><a href="/psij-python/index.html"><div class="psij-font logo">PSI/J</div></a></v-tab>
+                <v-tab key="install"><a href="/psij-python/install.html">Install</a></v-tab>
+                <v-tab key="docs"><a href="/psij-python/docs">Documentation</a></v-tab>
+                <v-tab key="resources"><a href="/psij-python/resources.html">Resources</a></v-tab>
+                <v-tab key="about"><a href="/psij-python/about.html">About</a></v-tab>
+            </v-tabs>
+   
+            <div class="slack-link navbar-link">
+                <a href="https://join.slack.com/t/exaworks/shared_invite/zt-gttapi1i-GSaiHd8Q0h7uKyZnIqAUwQ"
+                    target="_blank"><i class="fab fa-slack"></i></a>&nbsp;&nbsp;
+            </div>
+            <div class="gh-link navbar-link">
+                <a href="https://github.com/exaworks" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </v-app-bar>
+
+        <div id="top-spacer"></div>
+        
+
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.batch_scheduler_executor</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for psij.executors.batch.batch_scheduler_executor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span><span class="p">,</span> <span class="n">RLock</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">IO</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">psij.launchers.script_based_launcher</span> <span class="kn">import</span> <span class="n">ScriptBasedLauncher</span>
+
+<span class="kn">from</span> <span class="nn">psij</span> <span class="kn">import</span> <span class="n">JobExecutor</span><span class="p">,</span> <span class="n">JobExecutorConfig</span><span class="p">,</span> <span class="n">Launcher</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">SubmitException</span><span class="p">,</span> \
+    <span class="n">JobStatus</span><span class="p">,</span> <span class="n">JobState</span>
+<span class="kn">from</span> <span class="nn">psij.executors.batch.template_function_library</span> <span class="kn">import</span> <span class="n">ALL</span> <span class="k">as</span> <span class="n">FUNCTION_LIBRARY</span>
+<span class="kn">from</span> <span class="nn">psij.utils</span> <span class="kn">import</span> <span class="n">_StatusUpdater</span><span class="p">,</span> <span class="n">_FileCleaner</span>
+
+<span class="n">UNKNOWN_ERROR</span> <span class="o">=</span> <span class="s1">&#39;PSIJ: Unknown error&#39;</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="check_status_exit_code"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.check_status_exit_code">[docs]</a><span class="k">def</span> <span class="nf">check_status_exit_code</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if exit_code is nonzero and, if so, raise a RuntimeError.</span>
+
+<span class="sd">    This function produces a somewhat user-friendly exception message that combines</span>
+<span class="sd">    the command that was run with its output.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    command</span>
+<span class="sd">        The command that was run. This is only used to format the error message.</span>
+<span class="sd">    exit_code</span>
+<span class="sd">        The exit code returned by running the ``command``.</span>
+<span class="sd">    out:</span>
+<span class="sd">        The output produced by ``command``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">exit_code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;status command </span><span class="si">{</span><span class="n">command</span><span class="si">!r}</span><span class="s1"> exited &#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;with </span><span class="si">{</span><span class="n">exit_code</span><span class="si">}</span><span class="s1"> and output </span><span class="si">{</span><span class="n">out</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_attrs_to_mustache</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]]]:</span>
+    <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">attributes</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">_custom_attributes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">r</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">_custom_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># always use lower case here</span>
+            <span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">r</span><span class="p">[</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span> <span class="n">r</span><span class="p">[</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">ks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<span class="k">def</span> <span class="nf">_env_to_mustache</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<div class="viewcode-block" id="BatchSchedulerExecutorConfig"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutorConfig">[docs]</a><span class="k">class</span> <span class="nc">BatchSchedulerExecutorConfig</span><span class="p">(</span><span class="n">JobExecutorConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A base configuration class for :class:`~BatchSchedulerExecutor` implementations.</span>
+
+<span class="sd">    When subclassing :class:`~BatchSchedulerExecutor`, specific configuration classes inheriting</span>
+<span class="sd">    from this class should be defined, even if empty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launcher_log_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">work_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">queue_polling_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+                 <span class="n">initial_queue_polling_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="n">queue_polling_error_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="n">keep_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        launcher_log_file</span>
+<span class="sd">            See :class:`~psij.JobExecutorConfig`.</span>
+<span class="sd">        work_directory</span>
+<span class="sd">            See :class:`~psij.JobExecutorConfig`.</span>
+<span class="sd">        queue_polling_interval</span>
+<span class="sd">            an interval, in seconds, at which the batch scheduler queue will be polled for updates</span>
+<span class="sd">            to jobs.</span>
+<span class="sd">        initial_queue_polling_delay</span>
+<span class="sd">            the time to wait before polling the queue for the first time; for quick tests that only</span>
+<span class="sd">            submit a short job that completes nearly instantly or for jobs that fail very quickly,</span>
+<span class="sd">            this can dramatically reduce the time taken to get the necessary job status update.</span>
+<span class="sd">        queue_polling_error_threshold</span>
+<span class="sd">            The number of times consecutive queue polls have to fail in order for the executor to</span>
+<span class="sd">            report them as job failures.</span>
+<span class="sd">        keep_files</span>
+<span class="sd">            Whether to keep submit files and auxiliary job files (exit code and output files) after</span>
+<span class="sd">            a job has completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">launcher_log_file</span><span class="p">,</span> <span class="n">work_directory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_polling_interval</span> <span class="o">=</span> <span class="n">queue_polling_interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_queue_polling_delay</span> <span class="o">=</span> <span class="n">initial_queue_polling_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_polling_error_threshold</span> <span class="o">=</span> <span class="n">queue_polling_error_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_files</span> <span class="o">=</span> <span class="n">keep_files</span>
+        <span class="k">if</span> <span class="s1">&#39;PSIJ_BATCH_KEEP_FILES&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">keep_files</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobExecutorConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BatchSchedulerExecutorConfig&#39;</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">work_directory</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">launcher_log_file</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">launcher_log_file</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
+<div class="viewcode-block" id="InvalidJobStateError"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.InvalidJobStateError">[docs]</a><span class="k">class</span> <span class="nc">InvalidJobStateError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An exception that signals that a job cannot be cancelled due to it being already done.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BatchSchedulerExecutor"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor">[docs]</a><span class="k">class</span> <span class="nc">BatchSchedulerExecutor</span><span class="p">(</span><span class="n">JobExecutor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A base class for batch scheduler executors.</span>
+
+<span class="sd">    This class implements a generic :class:`~psij.JobExecutor` that interacts with batch schedulers.</span>
+<span class="sd">    There are two main components to the executor: job submission and queue polling. Submission</span>
+<span class="sd">    is implemented by generating a submit script which is then fed to the queuing system submit</span>
+<span class="sd">    command.</span>
+
+<span class="sd">    The submit script is generated using a :func:`~generate_submit_script`. An implementation of</span>
+<span class="sd">    this functionality based on Mustache/Pystache (see https://mustache.github.io/ and</span>
+<span class="sd">    https://pypi.org/project/pystache/) exists in :class:`~.TemplatedScriptGenerator`. This class</span>
+<span class="sd">    can be instantiated by concrete implementations of a batch scheduler executor and the submit</span>
+<span class="sd">    script generation can be delegated to that instance, which has a method whose signature matches</span>
+<span class="sd">    that of :func:`~generate_submit_script`. Besides an opened file which points to where the</span>
+<span class="sd">    contents of the submit script are to be written, the parameters to</span>
+<span class="sd">    :func:`~generate_submit_script` are the :class:`~psij.Job` that is being submitted and a</span>
+<span class="sd">    `context`, which is a dictionary with the following structure::</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &#39;job&#39;: &lt;the job being submitted&gt;</span>
+<span class="sd">            &#39;psij&#39;: {</span>
+<span class="sd">                &#39;lib&#39;: &lt;dict; function library&gt;,</span>
+<span class="sd">                &#39;launch_command&#39;: &lt;str; launch command&gt;,</span>
+<span class="sd">                &#39;script_dir&#39;: &lt;str; directory where the submit script is generated&gt;</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+
+<span class="sd">    The *script directory* is a directory (typically `~/.psij/work`) where submit scripts are</span>
+<span class="sd">    written; it is also used for auxiliary files, such as the *exit code file* (see below) or the</span>
+<span class="sd">    *script output file*.</span>
+
+<span class="sd">    The *launch command* is a list of strings which the script generator should render as the</span>
+<span class="sd">    command to execute. It wraps the job executable in the proper :class:`~psij.Launcher`.</span>
+
+<span class="sd">    The function library is a dictionary mapping function names to functions for all public</span>
+<span class="sd">    functions in the :mod:`~.template_function_library` module.</span>
+
+<span class="sd">    The submit script *must* perform two essential actions:</span>
+
+<span class="sd">        1. redirect the output of the executable part of the script to the *script output file*,</span>
+<span class="sd">        which is a file in `&lt;script_dir&gt;` named `&lt;native_id&gt;.out`, where `&lt;native_id&gt;` is the id</span>
+<span class="sd">        given to the job by the queuing system.</span>
+
+<span class="sd">        2. store the exit code of the launch command in the *exit code file* named</span>
+<span class="sd">        `&lt;native_id&gt;.ec`, also inside `&lt;script_dir&gt;`.</span>
+
+<span class="sd">    Additionally, where appropriate, the submit script should set the environment variable named</span>
+<span class="sd">    ``PSIJ_NODEFILE`` to point to a file containing a list of nodes that are allocated for the job,</span>
+<span class="sd">    one per line, with a total number of lines matching the process count of the job.</span>
+
+<span class="sd">    Once the submit script is generated, the executor renders the submit command using</span>
+<span class="sd">    :func:`~get_submit_command` and executes it. Its output is then parsed using</span>
+<span class="sd">    :func:`~job_id_from_submit_output` to retrieve the `native_id` of the job. Subsequently, the</span>
+<span class="sd">    job is registered with the queue polling thread.</span>
+
+<span class="sd">    The queue polling thread regularly polls the batch scheduler queue for updates to job states.</span>
+<span class="sd">    It builds the command for polling the queue using :func:`~get_status_command`, which takes a</span>
+<span class="sd">    list of `native_id` strings corresponding to all registered jobs. Implementations are</span>
+<span class="sd">    strongly encouraged to restrict the query of job states to the specified jobs in order to reduce</span>
+<span class="sd">    the load on the queuing system. The output of the status command is then parsed using</span>
+<span class="sd">    :func:`~parse_status_output` and the status of each job is updated accordingly. If the status</span>
+<span class="sd">    of a registered job is not found in the output of the queue status command, it is assumed</span>
+<span class="sd">    completed (or failed, depending on its exit code), since most queuing systems automatically</span>
+<span class="sd">    purge completed jobs from their databases after a short period of time. The exit code is read</span>
+<span class="sd">    from the exit code file, as described above. If the exit code value is not zero, the job is</span>
+<span class="sd">    assumed failed and an attempt is made to read an error message from the *script output file*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BatchSchedulerExecutorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url</span>
+<span class="sd">            An optional URL pointing to a specific backend</span>
+<span class="sd">        config</span>
+<span class="sd">            An configuration for this executor instance; if none is specified, a default</span>
+<span class="sd">            configuration is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_queue_poll_thread</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">cast</span><span class="p">(</span><span class="n">_FileCleaner</span><span class="p">,</span> <span class="n">_FileCleaner</span><span class="o">.</span><span class="n">get_instance</span><span class="p">())</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JobExecutorConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">config</span>
+        <span class="k">return</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="o">.</span><span class="n">_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.submit"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.submit">[docs]</a>    <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See :func:`~psij.JobExecutor.submit`.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: submitting&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_script_context</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+
+        <span class="c1"># assumes job ids are unique</span>
+        <span class="n">submit_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;.job&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">submit_file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">submit_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_submit_script</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">submit_file</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: running submit command&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_submit_command</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">submit_file_path</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: submit command output: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">_native_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_id_from_submit_output</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: native id: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_job_status</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">(</span><span class="n">JobState</span><span class="o">.</span><span class="n">QUEUED</span><span class="p">,</span>
+                                                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;native_id&#39;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span><span class="p">}))</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                <span class="k">with</span> <span class="n">submit_file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">submit_file</span><span class="p">:</span>
+                    <span class="n">script</span> <span class="o">=</span> <span class="n">submit_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: submit script is: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">script</span><span class="p">))</span>
+
+            <span class="k">raise</span> <span class="n">SubmitException</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">output</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">register_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_launcher_from_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Launcher</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span>
+        <span class="n">launcher_name</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">launcher</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">launcher_name</span><span class="p">:</span>
+            <span class="n">launcher_name</span> <span class="o">=</span> <span class="n">Launcher</span><span class="o">.</span><span class="n">DEFAULT_LAUNCHER_NAME</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_launcher</span><span class="p">(</span><span class="n">launcher_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.cancel"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancels a job if it has not otherwise completed.</span>
+
+<span class="sd">        A command is constructed using :func:`~get_cancel_command` and executed in order to cancel</span>
+<span class="sd">        the job. Also see :func:`~psij.JobExecutor.cancel`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubmitException</span><span class="p">(</span><span class="s1">&#39;Job does not have a native ID.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">final</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_cancel_command</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">native_id</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process_cancel_command_output</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InvalidJobStateError</span><span class="p">:</span>
+                <span class="c1"># do nothing; the job has completed anyway</span>
+                <span class="k">pass</span>
+            <span class="k">except</span> <span class="n">SubmitException</span><span class="p">:</span>
+                <span class="c1"># re-raise</span>
+                <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.attach"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">native_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attaches a job to a native job.</span>
+
+<span class="sd">        Attempts to connect `job` to a native job with `native_id` such that the job correctly</span>
+<span class="sd">        reflects updates to the status of the native job. If the native job was previously</span>
+<span class="sd">        submitted using this executor (hence having an *exit code file* and a *script output file*),</span>
+<span class="sd">        the executor will attempt to retrieve the exit code and errors from the job. Otherwise, it</span>
+<span class="sd">        may be impossible for the executor to distinguish between a failed and successfully</span>
+<span class="sd">        completed job.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        job</span>
+<span class="sd">            The PSI/J job to attach.</span>
+<span class="sd">        native_id</span>
+<span class="sd">            The id of the batch scheduler job to attach to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">_native_id</span> <span class="o">=</span> <span class="n">native_id</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">register_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.generate_submit_script"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.generate_submit_script">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">generate_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+                               <span class="n">submit_file</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called to generate a submit script for a job.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method in</span>
+<span class="sd">        order to generate a submit script for a job.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        job</span>
+<span class="sd">            The job to be submitted.</span>
+<span class="sd">        context</span>
+<span class="sd">            A dictionary containing information about the context in which the job is being</span>
+<span class="sd">            submitted. For details, see the description of this class.</span>
+<span class="sd">        submit_file</span>
+<span class="sd">            An opened file-like object to which the contents of the submit script should be</span>
+<span class="sd">            written.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.get_submit_command"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_submit_command">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_submit_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">submit_file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs a command to submit a job to a batch scheduler.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        job</span>
+<span class="sd">            The job being submitted.</span>
+<span class="sd">        submit_file_path</span>
+<span class="sd">            The path to a submit script generated using :func:`~generate_submit_script`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of strings representing the command and arguments to execute in order to submit</span>
+<span class="sd">        the job, such as `[&#39;qsub&#39;, str(submit_file_path)]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.job_id_from_submit_output"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.job_id_from_submit_output">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">job_id_from_submit_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts a native job id from the output of the submit command.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method. This</span>
+<span class="sd">        method is only invoked if the submit command completes with a zero exit code, so</span>
+<span class="sd">        implementations of this method do not need to determine whether the output reflects an</span>
+<span class="sd">        error from the submit command.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        out</span>
+<span class="sd">            The output from the submit command.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A string representing the native id of the newly submitted job.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.get_cancel_command"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_cancel_command">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_cancel_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs a command to cancel a batch scheduler job.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        native_id</span>
+<span class="sd">            The native id of the job being cancelled.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of strings representing the command and arguments to execute in order to cancel</span>
+<span class="sd">        the job, such as, e.g., `[&#39;qdel&#39;, native_id]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.process_cancel_command_output"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.process_cancel_command_output">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">process_cancel_command_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle output from a failed cancel command.</span>
+
+<span class="sd">        The main purpose of this method is to help distinguish between the cancel command</span>
+<span class="sd">        failing due to an invalid job state (such as the job having completed before the cancel</span>
+<span class="sd">        command was invoked) and other types of errors. Since job state errors are ignored, there</span>
+<span class="sd">        are two options:</span>
+
+<span class="sd">        1. Instruct the cancel command to not fail on invalid state errors and have this</span>
+<span class="sd">        method always raise a :class:`~psij.exceptions.SubmitException`, since it is only invoked</span>
+<span class="sd">        on &quot;other&quot; errors.</span>
+
+<span class="sd">        2. Have the cancel command fail on both invalid state errors and other errors and</span>
+<span class="sd">        interpret the output from the cancel command to distinguish between the two and raise</span>
+<span class="sd">        the appropriate exception.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exit_code</span>
+<span class="sd">            The exit code from the cancel command.</span>
+<span class="sd">        out</span>
+<span class="sd">            The output from the cancel command.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        InvalidJobStateError</span>
+<span class="sd">            Raised if the job cancellation has failed because the job was in a completed or failed</span>
+<span class="sd">            state at the time when the cancellation command was invoked.</span>
+<span class="sd">        SubmitException</span>
+<span class="sd">            Raised for all other reasons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.get_status_command"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_status_command">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_status_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_ids</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs a command to retrieve the status of a list of jobs.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method. In order</span>
+<span class="sd">        to prevent overloading the queueing system, concrete implementations are strongly</span>
+<span class="sd">        encouraged to return a command that only queries for the status of the indicated jobs. The</span>
+<span class="sd">        command returned by this method should produce an output that is understood by</span>
+<span class="sd">        :func:`~parse_status_output`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        jobs</span>
+<span class="sd">            A collection of native ids corresponding to the jobs whose status is sought.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of strings representing the command and arguments to execute in order to get the</span>
+<span class="sd">        status of the jobs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.parse_status_output"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.parse_status_output">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">parse_status_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses the output of a job status command.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method. The output</span>
+<span class="sd">        is meant to have been produced by the command generated by :func:`~get_status_command`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        out</span>
+<span class="sd">            The string output of the status command as prescribed by :func:`~get_status_command`.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A dictionary mapping native job ids to :class:`~psij.JobStatus` objects. The</span>
+<span class="sd">        implementation of this method need not process the *exit code file* or the *script</span>
+<span class="sd">        output file* since it is done by the base `BatchSchedulerExecutor` implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.get_list_command"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.get_list_command">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_list_command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs a command to retrieve the list of jobs known to the LRM for the current user.</span>
+
+<span class="sd">        Concrete implementations of batch scheduler executors must override this method. Upon</span>
+<span class="sd">        running the command, the output can be parsed with :func:`~parse_list_output`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of strings representing the executable and arguments to invoke in order to obtain</span>
+<span class="sd">        the list of jobs the LRM knows for the current user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.parse_list_output"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.parse_list_output">[docs]</a>    <span class="k">def</span> <span class="nf">parse_list_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses the output of the command obtained from :func:`~get_list_command`.</span>
+
+<span class="sd">        The default implementation of this method assumes that the output has no header and</span>
+<span class="sd">        consists of native IDs, one per line, possibly surrounded by whitespace. Concrete</span>
+<span class="sd">        implementations should override this method if a different format is expected.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        out</span>
+<span class="sd">            The output from the &quot;list&quot; command as returned by :func:`~get_list_command`.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of strings representing the native IDs of the jobs known to the LRM for the current</span>
+<span class="sd">        user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_script_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="n">launcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_launcher_from_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">launcher</span><span class="p">,</span> <span class="n">ScriptBasedLauncher</span><span class="p">)</span> <span class="ow">and</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;_launcher.log&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
+            <span class="n">launch_command</span> <span class="o">=</span> <span class="n">launcher</span><span class="o">.</span><span class="n">get_launch_command</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">launch_command</span> <span class="o">=</span> <span class="n">launcher</span><span class="o">.</span><span class="n">get_launch_command</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Launch command: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">launch_command</span><span class="p">)</span>
+
+        <span class="n">ctx</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;job&#39;</span><span class="p">:</span> <span class="n">job</span><span class="p">,</span>
+            <span class="s1">&#39;custom_attributes&#39;</span><span class="p">:</span> <span class="n">_attrs_to_mustache</span><span class="p">(</span><span class="n">job</span><span class="p">),</span>
+            <span class="s1">&#39;env&#39;</span><span class="p">:</span> <span class="n">_env_to_mustache</span><span class="p">(</span><span class="n">job</span><span class="p">),</span>
+            <span class="s1">&#39;psij&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;lib&#39;</span><span class="p">:</span> <span class="n">FUNCTION_LIBRARY</span><span class="p">,</span>
+                <span class="s1">&#39;launch_command&#39;</span><span class="p">:</span> <span class="n">launch_command</span><span class="p">,</span>
+                <span class="s1">&#39;script_dir&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span><span class="p">),</span>
+                <span class="s1">&#39;us_file&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">status_updater</span><span class="o">.</span><span class="n">update_file_name</span><span class="p">,</span>
+                <span class="s1">&#39;us_port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">status_updater</span><span class="o">.</span><span class="n">update_port</span><span class="p">,</span>
+                <span class="s1">&#39;us_addrs&#39;</span><span class="p">:</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">status_updater</span><span class="o">.</span><span class="n">ips</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">duration</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;formatted_job_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ctx</span>
+
+    <span class="k">def</span> <span class="nf">_format_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># the default is hh:mm:ss, with hh not limited to 24; this is the least ambiguous</span>
+        <span class="c1"># choice</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">//</span> <span class="mi">3600</span><span class="p">,</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">seconds</span> <span class="o">//</span> <span class="mi">60</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">seconds</span> <span class="o">%</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="n">res</span><span class="o">.</span><span class="n">stdout</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">msg</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="n">res</span><span class="o">.</span><span class="n">stderr</span>
+            <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">UNKNOWN_ERROR</span>
+            <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">stdout</span>
+
+    <span class="k">def</span> <span class="nf">_start_queue_poll_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;_QueuePollThread&#39;</span><span class="p">:</span>
+        <span class="n">qp_thread</span> <span class="o">=</span> <span class="n">_QueuePollThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; Queue Polling Thread&#39;</span><span class="p">,</span>
+                                     <span class="n">cast</span><span class="p">(</span><span class="n">BatchSchedulerExecutorConfig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">qp_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">qp_thread</span>
+
+    <span class="k">def</span> <span class="nf">_set_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">is_greater_than</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1"># is_greater_than returns T/F if the states are comparable and None if not, so</span>
+            <span class="c1"># we have to check explicitly for the boolean value rather than truthiness</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">final</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue_poll_thread</span><span class="o">.</span><span class="n">unregister_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean_submit_script</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_aux_files</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_job_status</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_clean_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">keep_files</span><span class="p">:</span>
+                <span class="n">submit_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;.job&#39;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">submit_file_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="c1"># this can reasonably happen for attached jobs when the main</span>
+                    <span class="c1"># job cleans up the script instead</span>
+                    <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: failed clean submit script: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read_aux_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">JobStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                <span class="n">launcher_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_aux_file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span>
+                                                   <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;_launcher.log&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">launcher_log</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: launcher log: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">launcher_log</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">:</span>
+                <span class="c1"># exit code and other things are not very meaningful for canceled jobs</span>
+                <span class="k">return</span>
+            <span class="c1"># read exit code and output files</span>
+            <span class="n">exit_code_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_aux_file</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s1">&#39;.ec&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exit_code_str</span><span class="p">:</span>
+                <span class="n">status</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">exit_code_str</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span>
+            <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># only read output from submit script if another error message is not</span>
+                    <span class="c1"># already present</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_aux_file</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s1">&#39;.out&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">out</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;_PSIJ_SCRIPT_DONE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                            <span class="n">status</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">out</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Output from launcher: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_delete_aux_file</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s1">&#39;.out&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: failed to read auxiliary files: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read_aux_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Job</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">job</span>
+            <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+            <span class="k">assert</span> <span class="n">suffix</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">native_id</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Attempting to read </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_delete_aux_file</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> does not exist&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_delete_aux_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Job</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">keep_files</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">job</span>
+            <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+            <span class="k">assert</span> <span class="n">suffix</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_directory</span> <span class="o">/</span> <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">native_id</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># see above; attached job may race with original job</span>
+
+<div class="viewcode-block" id="BatchSchedulerExecutor.list"><a class="viewcode-back" href="../../../../.generated/psij.executors.batch.html#psij.executors.batch.batch_scheduler_executor.BatchSchedulerExecutor.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of jobs known to the underlying implementation.</span>
+
+<span class="sd">        See :func:`~psij.JobExecutor.list`.</span>
+<span class="sd">        The returned list is a list of `native_id` strings representing jobs known to the</span>
+<span class="sd">        underlying batch scheduler implementation, whether submitted through this executor or not.</span>
+<span class="sd">        Implementations are encouraged to restrict the results to jobs accessible by the current</span>
+<span class="sd">        user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_list_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_list_command</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getlogin</span><span class="p">()</span></div>
+
+
+<span class="k">class</span> <span class="nc">_QueuePollThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">BatchSchedulerExecutorConfig</span><span class="p">,</span>
+                 <span class="n">executor</span><span class="p">:</span> <span class="n">BatchSchedulerExecutor</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">)</span>
+        <span class="c1"># native_id -&gt; job</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="n">Job</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># counts consecutive errors while invoking qstat or equivalent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_poll_error_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs_lock</span> <span class="o">=</span> <span class="n">RLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_updater</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">_StatusUpdater</span><span class="p">,</span> <span class="n">_StatusUpdater</span><span class="o">.</span><span class="n">get_instance</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Executor </span><span class="si">%s</span><span class="s1">: queue poll thread started&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">initial_queue_polling_delay</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_poll</span><span class="p">()</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">start</span>
+            <span class="k">while</span> <span class="n">now</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">queue_polling_interval</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Thread </span><span class="si">%s</span><span class="s1"> exiting due to executor collection&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executor</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_poll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">jobs_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Polling for </span><span class="si">%s</span><span class="s1"> jobs&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">jobs_copy</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">_run_command</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">get_status_command</span><span class="p">(</span><span class="n">jobs_copy</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">output</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">returncode</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_poll_error</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s1">&#39;Failed to poll for job status: </span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_poll_error_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Output from status command: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">status_map</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">parse_status_output</span><span class="p">(</span><span class="n">exit_code</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_poll_error</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s1">&#39;Failed to poll for job status: </span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">native_id</span><span class="p">,</span> <span class="n">job_set</span> <span class="ow">in</span> <span class="n">jobs_copy</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_job_status</span><span class="p">(</span><span class="n">native_id</span><span class="p">,</span> <span class="n">status_map</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="p">(</span><span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+                                       <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Failed to update job status: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
+                                               <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">job_set</span><span class="p">:</span>
+                    <span class="n">executor</span><span class="o">.</span><span class="n">_set_job_status</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_poll_error</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Error updating job statuses </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">native_id</span> <span class="ow">in</span> <span class="n">status_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">status_map</span><span class="p">[</span><span class="n">native_id</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">JobStatus</span><span class="p">(</span><span class="n">JobState</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_poll_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executor</span><span class="p">:</span> <span class="n">BatchSchedulerExecutor</span><span class="p">,</span> <span class="n">immediate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span>
+                           <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Polling error: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_poll_error_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">immediate</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_poll_error_count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">queue_polling_error_threshold</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_poll_error_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># fail all jobs</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs_lock</span><span class="p">:</span>
+                <span class="c1"># We should only poll if there is at least one job, so we should not be in a</span>
+                <span class="c1"># situation when we polled and there were no jobs to poll for</span>
+                <span class="c1"># Internal errors are a bit different, since they could, in principle, occur</span>
+                <span class="c1"># after the last job was processed and removed from self._jobs; in practice,</span>
+                <span class="c1"># the code in _poll has the job removal from _jobs as the last possible step</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">jobs_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">job_set</span> <span class="ow">in</span> <span class="n">jobs_copy</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">job_set</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">unregister_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+                    <span class="n">executor</span><span class="o">.</span><span class="n">_set_job_status</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">JobStatus</span><span class="p">(</span><span class="n">JobState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">register_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">()</span>
+        <span class="c1"># This method is only called from the executor. It stands to reason that the</span>
+        <span class="c1"># executor cannot have been GC-ed.</span>
+        <span class="k">assert</span> <span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_updater</span><span class="o">.</span><span class="n">register_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">executor</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: registering&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs_lock</span><span class="p">:</span>
+            <span class="n">native_id</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">[</span><span class="n">native_id</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">[</span><span class="n">native_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">job</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">unregister_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_updater</span><span class="o">.</span><span class="n">unregister_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job </span><span class="si">%s</span><span class="s1">: unregistering&#39;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs_lock</span><span class="p">:</span>
+            <span class="n">native_id</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">native_id</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">[</span><span class="n">native_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># If two or more jobs are attached to the same native ID, the</span>
+                <span class="c1"># first one being unregistered would already have removed</span>
+                <span class="c1"># the dict entry</span>
+                <span class="k">pass</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="../../../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">The PSI/J API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../development/index.html">Developer Docs</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="application/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">PSI/J</a>            <div id="version-selector">
+                <v-select :items="getSortedVersionLabels()" @change="setVersion" v-model="version"></v-select>
+            </div> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">psij.executors.batch.batch_scheduler_executor</a></li> 
+      </ul>
+    </div>
+    </div>
+
+        
+    <div class="footer" role="contentinfo">
+        &#169; Copyright The ExaWorks Team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+        
+                <v-footer>
+            <v-card flat tile class="lighten-1 text-center"
+                style="margin: auto; padding: 2em 0; background-color: #f5f5f5 !important;">
+                <v-card-text>
+                    &copy;2021-<script type="application/javascript">document.write(new Date().getFullYear());</script> - <a href="https://exaworks.org">The ExaWorks Project</a>
+                </v-card-text>
+
+                <v-row justify="center">
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/llnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/anl-200.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="36pt" src="https://exaworks.org/images/bnl.png">
+                    </v-col>
+                    <v-col justify="center">
+                        <img height="30pt" src="https://exaworks.org/images/ornl.png"
+                            style="vertical-align: bottom; margin-top: 0.3em">
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col class="text-end">
+                        <img height="20pt"
+                            src="https://science.osti.gov/-/media/_/images/about/resources/logos/png/high-res/RGB_Color-Seal_Green-Mark_SC_Horizontal.png"
+                            style="vertical-align: middle">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is funded by the U.S. Department of Energy
+                    </v-col>
+                    <v-col class="text-end">
+                        <img height="40pt" src="https://www.ecpannualmeeting.com/images/ecp-horizontal.png">
+                    </v-col>
+                    <v-col class="text-start">
+                        <span class="psij-font">PSI/J</span> is part of the Exascale Computing Project
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-footer>
+    </v-app>
+    
+    
+    
+    
+    <script>
+        /* need this to avoid vue thinking some code block that
+           happens to match some of its syntax is a template that
+           needs to be processed */
+        $("div.highlight > pre").each(function() {
+            $(this).attr("v-pre", "");
+        });
+        v = new Vue({
+            el: '#psij-app',
+            vuetify: new Vuetify(),
+            data: {
+                maintabs: 2,
+                version: getCurrentVersion()
+            },
+            methods: {
+                getSortedVersionLabels: getSortedVersionLabels,
+                setVersion: setVersion,
+                getMainDocsPage: getMainDocsPage,
+                isDocsPage: isDocsPage
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+    
+
+
+  </body>
+</html>

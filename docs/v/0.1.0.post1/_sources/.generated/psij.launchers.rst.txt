@@ -1,0 +1,77 @@
+psij.launchers package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   psij.launchers.scripts
+
+Submodules
+----------
+
+psij.launchers.aprun module
+---------------------------
+
+.. automodule:: psij.launchers.aprun
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.jsrun module
+---------------------------
+
+.. automodule:: psij.launchers.jsrun
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.mpirun module
+----------------------------
+
+.. automodule:: psij.launchers.mpirun
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.multiple module
+------------------------------
+
+.. automodule:: psij.launchers.multiple
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.script\_based\_launcher module
+---------------------------------------------
+
+.. automodule:: psij.launchers.script_based_launcher
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.single module
+----------------------------
+
+.. automodule:: psij.launchers.single
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+psij.launchers.srun module
+--------------------------
+
+.. automodule:: psij.launchers.srun
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: psij.launchers
+   :members:
+   :undoc-members:
+   :show-inheritance:
