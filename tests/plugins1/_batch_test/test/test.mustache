@@ -4,6 +4,10 @@ exec &> "{{psij.script_dir}}/$PSIJ_BATCH_TEST_JOB_ID.out"
 
 {{> batch_lib}}
 
+{{#job.spec.name}}
+# job name: {{.}}
+{{/job.spec.name}}
+
 {{#job.spec.directory}}
 cd "{{.}}"
 {{/job.spec.directory}}
