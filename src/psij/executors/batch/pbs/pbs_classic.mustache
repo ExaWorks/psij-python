@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-{{#job.name}}
+{{#job.spec.name}}
 #PBS -N="{{.}}"
-{{/job.name}}
+{{/job.spec.name}}
 
 {{#job.spec.inherit_environment}}
 #PBS -V

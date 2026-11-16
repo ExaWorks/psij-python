@@ -1,7 +1,7 @@
 #!/bin/bash
-{{#job.name}}
+{{#job.spec.name}}
 #COBALT --jobname={{.}}
-{{/job.name}}
+{{/job.spec.name}}
 {{#job.spec.directory}}
 #COBALT --cwd={{.}}
 {{/job.spec.directory}}

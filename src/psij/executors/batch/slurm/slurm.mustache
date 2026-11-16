@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-{{#job.name}}
+{{#job.spec.name}}
 #SBATCH --job-name="{{.}}"
-{{/job.name}}
+{{/job.spec.name}}
 
 {{#job.spec.directory}}
 #SBATCH --chdir="{{.}}"

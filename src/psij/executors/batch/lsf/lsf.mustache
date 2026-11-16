@@ -1,8 +1,8 @@
 #!/bin/bash
 
-{{#job.name}}
+{{#job.spec.name}}
 #BSUB -J "{{.}}"
-{{/job.name}}
+{{/job.spec.name}}
 
 {{#job.spec.directory}}
 #BSUB -cwd "{{.}}"
