@@ -32,6 +32,7 @@ if __name__ == '__main__':
             '': ['README.md', 'LICENSE'],
             'psij.launchers.scripts': [ '*.sh' ],
             'psij.executors.batch.test': [ 'qdel', 'qstat', 'qsub', 'qrun' ],
+            'psij.executors': [ 'local/*.mustache' ],
             'psij.executors.batch': [ '**/*.mustache' ],
             'psij': ["py.typed"]
         },
