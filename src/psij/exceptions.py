@@ -13,6 +13,7 @@ class InvalidJobException(Exception):
         :param exception: An optional underlying exception that can potentially be used for
             debugging purposes, but which should not, in general, be presented to an end-user.
         """
+        super().__init__(message)
         self.message = message
         self.exception = exception
 
@@ -47,6 +48,7 @@ class BackendException(Exception):
             cause such a failure, under normal operating conditions such an error would persist
             across subsequent re-tries until correct credentials are used.
         """
+        super().__init__(message)
         self.message = message
         self.exception = exception
         self.transient = transient
@@ -79,6 +81,7 @@ class ExecutorException(Exception):
         :param exception: An optional underlying exception that can potentially be used for
             debugging purposes, but which should not, in general, be presented to an end-user.
         """
+        super().__init__(message)
         self.message = message
         self.exception = exception
 
@@ -97,6 +100,7 @@ class JobException(Exception):
             that is sufficiently clear to be presented to an end-user.
         :param exit_code: An optional exit code, if available from the job.
         """
+        super().__init__(message)
         self.message = message
         self.exit_code = exit_code
         self._others: Optional[List[Exception]] = None
