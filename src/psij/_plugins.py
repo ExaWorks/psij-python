@@ -74,7 +74,7 @@ def _register_plugin(desc: Descriptor, root_path: str, type: str,
 
 def _insert(store: Dict[str, List[_VersionEntry[T]]], name: str, type: str, entry: _VersionEntry[T],
             desc: Descriptor, cls: Optional[Type[T]]) -> None:
-    name = desc.name.lower()
+    name = name.lower()
     if name not in store:
         store[name] = []
     existing = store[name]
