@@ -201,8 +201,11 @@ class _ProcessReaper(SingletonThread):
 
     def cancel(self, job: Job) -> None:
         with self._lock:
-            p = self._jobs[job]
-            p.kill_flag = True
+            try:
+                p = self._jobs[job]
+                p.kill_flag = True
+            except KeyError:
+                pass
 
 
 class LocalJobExecutor(JobExecutor):
