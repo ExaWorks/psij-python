@@ -75,7 +75,10 @@ class AsyncJob(BaseJob):
             assert crt is not None
             nxt = status.state
             assert nxt is not None
-            if crt == nxt or crt.is_greater_than(nxt):
+            if crt == nxt:
+                return
+            gt = crt.is_greater_than(nxt)
+            if gt is None or gt:
                 return
             prev = JobStateOrder.prev(nxt)
             missing = prev is not None and prev != crt
