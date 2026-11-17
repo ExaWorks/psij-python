@@ -195,7 +195,7 @@ class ResourceSpecV1(ResourceSpec):
         :return: If the `memory` property is set on this object, returns `memory // 1024`. If the
             `memory` property is `None`, this method returns `None`.
         """
-        if self.memory:
+        if self.memory is not None:
             return self.memory // 1024
         else:
             return None
