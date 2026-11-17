@@ -138,15 +138,15 @@ class AsyncJobExecutor(BaseExecutor):
         """
         Registers a status callback with this executor.
 
-        The callback can either be a subclass of :class:`~psij.job.JobStatusCallback` or a
-        procedure accepting two arguments: a :class:`~psij.Job` and a :class:`~psij.JobStatus`.
+        The callback can either be a subclass of :class:`~psij.job.AsyncJobStatusCallback` or a
+        procedure accepting two arguments: a :class:`~psij.AsyncJob` and a :class:`~psij.JobStatus`.
 
         The callback will be invoked whenever a status change occurs for any of the jobs submitted
         to this job executor, whether they were submitted with an individual job status callback or
         not. To remove the callback, set it to `None`.
 
-        :param cb: An instance of :class:`~psij.job.JobStatusCallback` or a callable with two
-            parameters: job of type :class:`~psij.Job` and job_status of type
+        :param cb: An instance of :class:`~psij.job.AsyncJobStatusCallback` or a callable with two
+            parameters: job of type :class:`~psij.AsyncJob` and job_status of type
             :class:`~psij.JobStatus`.
         """
         if isinstance(cb, AsyncJobStatusCallback):
