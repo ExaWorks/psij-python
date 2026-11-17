@@ -216,7 +216,7 @@ class ResourceSpecV1(ResourceSpec):
 
         for prop_name in ['node_count', 'process_count', 'processes_per_node',
                           'cpu_cores_per_process', 'gpu_cores_per_process',
-                          'exclusive_node_use']:
+                          'exclusive_node_use', 'memory']:
             if getattr(self, prop_name) != getattr(o, prop_name):
                 return False
 
