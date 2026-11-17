@@ -87,15 +87,18 @@ class Job(BaseJob):
             assert crt is not None
             nxt = status.state
             assert nxt is not None
-            if crt == nxt or crt.is_greater_than(nxt):
+            if crt == nxt:
+                return
+            gt = crt.is_greater_than(nxt)
+            if gt is None or gt:
+                # new state is older or not comparable
                 return
             prev = JobStateOrder.prev(nxt)
-        if prev is not None and prev != crt:
-            self.status = JobStatus(prev)
-        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
-        with self._status_cv:
+            if prev is not None and prev != crt:
+                self.status = JobStatus(prev)
             self._status = status
             self._status_cv.notify_all()
+        logger.debug('Job status change %s: %s -> %s', self, self._status.state, status.state)
 
         if self._cb:
             try:
