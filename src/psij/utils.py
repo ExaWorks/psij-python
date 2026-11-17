@@ -113,6 +113,7 @@ class _StatusUpdater(SingletonThread):
         return r
 
     def _create_update_file(self) -> None:
+        self.work_directory.mkdir(parents=True, exist_ok=True)
         f = tempfile.NamedTemporaryFile(dir=self.work_directory, prefix='supd_', delete=False)
         name = f.name
         self.update_file_name = name
