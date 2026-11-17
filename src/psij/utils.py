@@ -107,6 +107,7 @@ class _StatusUpdater(SingletonThread):
         self._jobs_lock = threading.RLock()
         self._sync_ids: Set[str] = set()
         self._last_received = ''
+        self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def _get_ips(self) -> List[str]:
         addrs = psutil.net_if_addrs()
@@ -183,27 +184,25 @@ class _StatusUpdater(SingletonThread):
         # On the minus side, this method, as implemented, can cause deadlocks if the socket
         # reads fail for unexpected reasons. This should probably be accounted for.
         token = '_SYNC ' + str(random.getrandbits(128))
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
         n = 1
         delay = 0.00005
         time.sleep(delay)
         while token not in self._sync_ids:
             time.sleep(delay)
-            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+            self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
             n += 1
             delay *= 2
         self._sync_ids.remove(token)
 
     async def aflush(self) -> None:
         token = '_SYNC ' + str(random.getrandbits(128))
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
         delay = 0.00005
         await asyncio.sleep(delay)
         while token not in self._sync_ids:
             await asyncio.sleep(delay)
-            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+            self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
             delay *= 2
         self._sync_ids.remove(token)
 
@@ -289,6 +288,7 @@ class _AsyncStatusUpdater:
         self._jobs: Dict[str, Tuple[AsyncJob, AsyncJobExecutor]] = {}
         self._sync_ids: Set[str] = set()
         self._last_received = ''
+        self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def _get_ips(self) -> List[str]:
         addrs = psutil.net_if_addrs()
@@ -364,14 +364,13 @@ class _AsyncStatusUpdater:
             raise RuntimeError('The event loop that was used to create this status updater has '
                                'been terminated.')
         token = '_SYNC ' + str(random.getrandbits(128))
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+        self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
         n = 1
         delay = 0.00005
         await asyncio.sleep(delay)
         while token not in self._sync_ids:
             await asyncio.sleep(delay)
-            sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
+            self.send_sock.sendto(bytes(token, 'utf-8'), ('127.0.0.1', self.update_port))
             n += 1
             delay *= 2
         self._sync_ids.remove(token)
