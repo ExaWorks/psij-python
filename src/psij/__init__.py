@@ -55,7 +55,7 @@ TYPES = [_PluginType('executors', JobExecutor.register_executor),
 def _load_plugins(root: str, full_path: str, mod: pkgutil.ModuleInfo) -> None:
     if mod.ispkg:
         return
-    logger.debug('Attempting to load %s from %s', mod.name, path)
+    logger.debug('Attempting to load %s from %s', mod.name, full_path)
     spec = mod.module_finder.find_spec(mod.name, None)
     try:
         if spec is None:
