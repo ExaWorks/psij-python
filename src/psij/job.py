@@ -147,20 +147,6 @@ class Job(BaseJob):
         else:
             self.executor.cancel(self)
 
-    def _all_greater(self, states: Optional[Union[JobState, Sequence[JobState]]]) \
-            -> Optional[Set[JobState]]:
-        if states is None:
-            return None
-        if isinstance(states, JobState):
-            states = [states]
-        ts = set()
-        for state1 in states:
-            ts.add(state1)
-            for state2 in JobState:
-                if state2.is_greater_than(state1):
-                    ts.add(state2)
-        return ts
-
     def wait(self, timeout: Optional[timedelta] = None,
              target_states: Optional[Union[JobState, Sequence[JobState]]] = None) \
             -> Optional[JobStatus]:
