@@ -216,8 +216,8 @@ class _StatusUpdater(SingletonThread):
             self._last_received = sdata
         lines = sdata.splitlines()
         for line in lines:
-            if sdata.startswith('_SYNC '):
-                self._sync_ids.add(sdata)
+            if line.startswith('_SYNC '):
+                self._sync_ids.add(line)
                 continue
             els = line.split()
             if len(els) > 2 and els[1] == 'LOG':
@@ -385,8 +385,8 @@ class _AsyncStatusUpdater:
             self._last_received = sdata
         lines = sdata.splitlines()
         for line in lines:
-            if sdata.startswith('_SYNC '):
-                self._sync_ids.add(sdata)
+            if line.startswith('_SYNC '):
+                self._sync_ids.add(line)
                 continue
             els = line.split()
             if len(els) > 2 and els[1] == 'LOG':
