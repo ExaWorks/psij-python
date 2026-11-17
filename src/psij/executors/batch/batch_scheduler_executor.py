@@ -369,6 +369,7 @@ class BatchScheduler(ABC):
         return [s.strip() for s in out.splitlines()]
 
     def _current_user(self) -> str:
+        # may fail in a container, but that is not a usage scenario
         return os.getlogin()
 
     def _format_duration(self, d: timedelta) -> str:
