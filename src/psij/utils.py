@@ -307,8 +307,8 @@ class _AsyncStatusUpdater:
         self.update_file_name = name
         atexit.register(os.remove, name)
         f.close()
-        self.update_file = await async_open(name, 'r+b')
-        self.update_file.seek(io.SEEK_END)
+        self.update_file = open(name, 'r+b')
+        self.update_file.seek(0, io.SEEK_END)
         self.update_file_pos = self.update_file.tell()
 
     async def register_job(self, job: AsyncJob, ex: AsyncJobExecutor) -> None:
