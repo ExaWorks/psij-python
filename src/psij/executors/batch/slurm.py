@@ -10,6 +10,9 @@ from psij.executors.batch.batch_scheduler_executor import \
 from psij.executors.batch.script_generator import TemplatedScriptGenerator
 
 
+logger = logging.getLogger(__name__)
+
+
 _SQUEUE_COMMAND = 'squeue'
 
 
@@ -159,7 +162,8 @@ class SlurmScheduler(BatchScheduler):
             if not line:
                 continue
             cols = line.split()
-            assert len(cols) == 3
+            if len(cols) != 3:
+                logger.warning('Invalid line in sbatch output: %s', line)
             native_id = cols[0]
             state = self._get_state(cols[1])
             msg = self._get_message(cols[2]) if state == JobState.FAILED else None
