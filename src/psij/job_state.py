@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict
 
-
-_NAME_MAP = {}
+_NAME_MAP: Dict[str, 'JobState'] = {}
 
 
 class JobState(bytes, Enum):
