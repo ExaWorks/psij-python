@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+import os
+import re
+import shutil
+import subprocess
+import tarfile
+import tempfile
+from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+from packaging.version import Version
+
+# The different versions used to be built with sphinx-multiversion. However,
+# that requires a single Sphinx toolchain version for all tags, which means
+# that we can never upgrade Sphinx. This script allows installing the respective
+# docs requirements for each version that is being built.
+
+VERSION_FILTER = r'^\d+\.\d+\.\d+(\..*)?$'
+
+
+def _run(argv: List[str], cwd: Optional[Union[str, Path]] = None,
+         env: Optional[Dict[str, str]] = None) -> str:
+    crt_env = os.environ.copy()
+    if env:
+        crt_env.update(env)
+    p = subprocess.run(argv, capture_output=True, text=True, cwd=cwd, env=crt_env)
+    if p.returncode != 0:
+        print(p.stdout)
+        print(p.stderr)
+        raise Exception(f'Command {" ".join(argv)} failed')
+    else:
+        return p.stdout
+
+
+def get_git_versions() -> Dict[str, str]:
+    versions = _run(['git', 'tag'])
+    v_arr = [Version(v) for v in versions.split() if re.match(VERSION_FILTER, v)]
+    v_arr.sort()
+    r = {}
+    for v in v_arr:
+        r[v.base_version] = str(v)
+    return r
+
+
+def get_tree(dst: Path, tag: str) -> None:
+    tar = f'{dst}.tar'
+    _run(['git', 'archive', '--format', 'tar', '--output', tar, tag])
+    with tarfile.TarFile(tar) as tf:
+        tf.extractall(dst)
+
+
+def check_deps(dst: Path) -> None:
+    # Manually check and adjust Sphinx dependencies
+    reqs_path = dst / 'requirements-docs.txt'
+    with open(reqs_path) as f:
+        reqs = f.read()
+
+    if 'Sphinx==4.5.0' in reqs and 'sphinxcontrib-applehelp' not in reqs:
+        with open(reqs_path, 'w') as f:
+            f.write(reqs)
+            f.write('''
+sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-qthelp==1.0.3
+            ''')
+
+
+def install_packages(dst: Path) -> None:
+    check_deps(dst.parent)
+    _run(['pip', 'install', '-r', 'requirements-docs.txt', '-t', str(dst)], cwd=dst.parent)
+    shutil.rmtree(dst / 'psij')
+    shutil.rmtree(dst / 'psij-descriptors')
+    shutil.rmtree(next(dst.glob('psij_python-*.dist-info')))
+
+
+def build(dst: Path, pd: Path, out: Path) -> None:
+    _run(['python', '-m', 'sphinx', '--keep-going', '-b', 'html', 'docs', str(out)],
+         cwd=dst, env={'PYTHONPATH': f'{pd}:{dst}/src'})
+
+
+def run() -> None:
+    v_dict = get_git_versions()
+
+    with tempfile.TemporaryDirectory() as wd:
+        wdp = Path(wd)
+        for label, tag in v_dict.items():
+            print(f'Building docs for {label}.', end='')
+            dst = wdp / label
+            get_tree(dst, tag)
+            print('.', end='')
+            pd = dst / '.packages'
+            pd.mkdir(parents=True, exist_ok=True)
+            install_packages(pd)
+            print('.', end='')
+            out = Path('docs').absolute() / '.web-build' / 'v' / label
+            out.mkdir(parents=True, exist_ok=True)
+            build(dst, pd, out)
+            print()
+
+
+if __name__ == '__main__':
+    run()
+

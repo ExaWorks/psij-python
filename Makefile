@@ -58,7 +58,7 @@ web-docs:
 	rm -rf docs/.generated
 	rm -rf docs/.web-build
 	git fetch --all --tags
-	PSIJ_WEB_DOCS=1 sphinx-multiversion docs docs/.web-build
+	PSIJ_WEB_DOCS=1 ${PYTHON} web/build-versions
 	PSIJ_WEB_DOCS=1 sphinx-build --keep-going -n -W -b html docs docs/.web-build/v/dev
 
 .PHONY: web-docs-dev
