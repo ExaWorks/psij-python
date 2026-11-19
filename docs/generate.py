@@ -201,6 +201,7 @@ def generate_index() -> None:
             write_heading(out, name, 2)
             qname = val.__module__ + '.' + name
             out.write('.. autoclass:: %s\n' % qname)
+            out.write('    :members:\n')
             if qname in seen_names or name in seen_names:
                 out.write('    :noindex:\n')
             out.write('\n\n')

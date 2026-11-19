@@ -18,10 +18,9 @@ master_doc = 'index'
 project = u'PSI/J'
 copyright = u'The ExaWorks Team'
 if web_docs:
-	html_theme = 'cloud'
+    html_theme = 'cloud'
 else:
 	html_theme = 'sphinx_rtd_theme'
-	html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
 autoclass_content = 'both'
 add_module_names = False
@@ -61,11 +60,11 @@ html_css_files = ["extras.css"]
 
 # Setup Sphinx extensions (and associated variables)
 extensions = [
-    'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autodoc.typehints',
+    'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    #'sphinx_autodoc_typehints'
 ]
 
 if web_docs:
@@ -76,6 +75,9 @@ autodoc_typehints_format = "short"
 autodoc_default_options = {
     'show-inheritance': True
 }
+autodoc_typehints_description_target = "documented"
+typehints_use_signature_return = True
+
 
 release = None
 version = None
@@ -96,7 +98,7 @@ my_dir = os.path.normpath(os.path.dirname(__file__))
 read_version(my_dir)
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
+    'python': (f'https://docs.python.org/3.{sys.version_info.minor}', None),
 }
 
 # -- Setup for Sphinx API Docs -----------------------------------------------
@@ -118,25 +120,7 @@ def run_apidoc(sphinx):
         main(['-f', '-t', os.path.join(my_dir, '_sphinx'), '-o', output_path, src_dir])
 
 
-# The following is a hack to allow returns in numpy style doctstrings to
-# not duplicate the return type specified by the normal type hints.
-# This was taken from https://github.com/svenevs/elba
-# It was submitted as a patch to the napoleon extension. Unfortunately,
-# it was rejected by the maintainers of napoleon
-# (see https://github.com/sphinx-doc/sphinx/issues/7077).
-def _consume_returns_section(self) -> List[Tuple[str, str, List[str]]]:
-    self._consume_empty()
-    desc_lines = []
-    while not self._is_section_break():
-        desc_lines.append(next(self._line_iter))
-
-    return [("", "", desc_lines)]
-
-from sphinx.ext.napoleon.docstring import NumpyDocstring
-NumpyDocstring._consume_returns_section = _consume_returns_section
-
-
-# And this is for "More than one target found for cross-reference"
+# This is for "More than one target found for cross-reference"
 # See https://github.com/sphinx-doc/sphinx/issues/3866
 from sphinx.domains.python import PythonDomain
 
