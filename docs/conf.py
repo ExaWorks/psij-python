@@ -4,7 +4,6 @@ from typing import List, Tuple
 import subprocess
 import sys
 
-import sphinx_rtd_theme
 from sphinx.ext.apidoc import main
 
 web_docs = False
