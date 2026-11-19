@@ -284,7 +284,8 @@ class JobExecutor(ABC):
 
         Returns
         -------
-        A set of executor names corresponding to the known executors.
+        :
+            A set of executor names corresponding to the known executors.
         """
         return set(JobExecutor._executors.keys())
 

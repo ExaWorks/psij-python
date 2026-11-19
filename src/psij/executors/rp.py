@@ -96,9 +96,9 @@ class RPJobExecutor(JobExecutor):
         Successful return of this method indicates that the job has been
         submitted to RP and all changes in the job status, including failures,
         are reported using notifications. If the job specification is invalid,
-        an :class:`~psij.InvalidJobException` is thrown. If the actual
+        an :class:`~psij.exceptions.InvalidJobException` is thrown. If the actual
         submission fails for reasons outside the validity of the job,
-        a :class:`~psij.SubmitException` is thrown.
+        a :class:`~psij.exceptions.SubmitException` is thrown.
 
         :param job: The job to be submitted.
         """
@@ -168,7 +168,7 @@ class RPJobExecutor(JobExecutor):
 
         :param job: The job to attach.
         :param native_id: The native ID of the process to attached to, as
-            obtained through :func:`~list` method.
+            obtained through :meth:`~psij.JobExecutor.list` method.
         """
         if job.status.state != JobState.NEW:
             raise InvalidJobException('Job must be in the NEW state')

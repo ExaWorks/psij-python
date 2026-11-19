@@ -261,8 +261,8 @@ class BatchSchedulerExecutor(JobExecutor):
     def cancel(self, job: Job) -> None:
         """Cancels a job if it has not otherwise completed.
 
-        A command is constructed using :func:`~get_cancel_command` and executed in order to cancel
-        the job. Also see :func:`~psij.JobExecutor.cancel`.
+        A command is constructed using :meth:`~.BatchSchedulerExecutor.get_cancel_command` and
+        executed in order to cancel the job. Also see :func:`~psij.JobExecutor.cancel`.
         """
         if job.native_id is None:
             raise SubmitException('Job does not have a native ID.')
@@ -358,7 +358,8 @@ class BatchSchedulerExecutor(JobExecutor):
 
         Returns
         -------
-        A string representing the native id of the newly submitted job.
+        :
+            A string representing the native id of the newly submitted job.
         """
         pass
 
@@ -470,7 +471,7 @@ class BatchSchedulerExecutor(JobExecutor):
         pass
 
     def parse_list_output(self, out: str) -> List[str]:
-        """Parses the output of the command obtained from :func:`~get_list_command`.
+        """Parses the output of the command obtained from :meth:`~~.BatchSchedulerExecutor.get_list_command`.
 
         The default implementation of this method assumes that the output has no header and
         consists of native IDs, one per line, possibly surrounded by whitespace. Concrete
@@ -479,7 +480,8 @@ class BatchSchedulerExecutor(JobExecutor):
         Parameters
         ----------
         out
-            The output from the "list" command as returned by :func:`~get_list_command`.
+            The output from the "list" command as returned by
+            :meth:`~.BatchSchedulerExecutor.get_list_command`.
         Returns
         -------
         A list of strings representing the native IDs of the jobs known to the LRM for the current

@@ -89,6 +89,7 @@ class Launcher(ABC):
 
         Returns
         -------
-        A set of launcher names corresponding to the known executors.
+        :
+            A set of launcher names corresponding to the known executors.
         """
         return set(Launcher._launchers.keys())

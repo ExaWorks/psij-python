@@ -260,5 +260,5 @@ class FunctionJobStatusCallback(JobStatusCallback):
         self.fn = fn
 
     def job_status_changed(self, job: Job, job_status: 'psij.JobStatus') -> None:
-        """See :func:`~psij.JobStatusCallback.job_status_changed`."""
+        """See :meth:`~.JobStatusCallback.job_status_changed`."""
         self.fn(job, job_status)

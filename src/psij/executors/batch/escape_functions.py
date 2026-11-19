@@ -17,7 +17,8 @@ def bash_escape(o: object) -> str:
 
     Returns
     -------
-    An escaped representation of the object that can be substituted in bash scripts.
+    :
+        An escaped representation of the object that can be substituted in bash scripts.
     """
     if isinstance(o, int):
         return str(o)
