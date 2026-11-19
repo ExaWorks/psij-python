@@ -471,7 +471,8 @@ class BatchSchedulerExecutor(JobExecutor):
         pass
 
     def parse_list_output(self, out: str) -> List[str]:
-        """Parses the output of the command obtained from :meth:`~~.BatchSchedulerExecutor.get_list_command`.
+        """Parses the output of the command obtained from
+        :meth:`~~.BatchSchedulerExecutor.get_list_command`.
 
         The default implementation of this method assumes that the output has no header and
         consists of native IDs, one per line, possibly surrounded by whitespace. Concrete
